@@ -77,7 +77,7 @@ contract SablierMerkleLT is
         TOTAL_PERCENTAGE = totalPercentage;
 
         // Max approve the Lockup contract to spend funds from the MerkleLT contract.
-        ASSET.forceApprove(address(LOCKUP), type(uint256).max);
+        TOKEN.forceApprove(address(LOCKUP), type(uint256).max);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -115,7 +115,7 @@ contract SablierMerkleLT is
                 sender: admin,
                 recipient: recipient,
                 totalAmount: amount,
-                asset: ASSET,
+                asset: TOKEN,
                 cancelable: CANCELABLE,
                 transferable: TRANSFERABLE,
                 timestamps: Lockup.Timestamps({ start: startTime, end: endTime }),

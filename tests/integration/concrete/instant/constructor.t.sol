@@ -9,21 +9,21 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
     /// @dev Needed to prevent "Stack too deep" error
     struct Vars {
         address actualAdmin;
-        address actualAsset;
         uint40 actualExpiration;
         address actualFactory;
         string actualIpfsCID;
         bytes32 actualMerkleRoot;
         string actualName;
         uint256 actualSablierFee;
+        address actualToken;
         address expectedAdmin;
-        address expectedAsset;
         uint40 expectedExpiration;
         address expectedFactory;
         string expectedIpfsCID;
         bytes32 expectedMerkleRoot;
         bytes32 expectedName;
         uint256 expectedSablierFee;
+        address expectedToken;
     }
 
     function test_Constructor() external {
@@ -39,9 +39,9 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         vars.expectedAdmin = users.campaignOwner;
         assertEq(vars.actualAdmin, vars.expectedAdmin, "admin");
 
-        vars.actualAsset = address(constructedInstant.ASSET());
-        vars.expectedAsset = address(dai);
-        assertEq(vars.actualAsset, vars.expectedAsset, "asset");
+        vars.actualToken = address(constructedInstant.TOKEN());
+        vars.expectedToken = address(dai);
+        assertEq(vars.actualToken, vars.expectedToken, "token");
 
         vars.actualExpiration = constructedInstant.EXPIRATION();
         vars.expectedExpiration = defaults.EXPIRATION();

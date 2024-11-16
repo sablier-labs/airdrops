@@ -25,8 +25,8 @@ The Program does NOT cover the following:
 - External code in `node_modules`, except for code that is explicitly used by a deployed contract located in the
   [src](./src) directory.
 - Contract deployments on test networks, such as Sepolia.
-- Bugs in third-party contracts or platforms interacting with Sablier Lockup.
-- Previously reported or discovered vulnerabilities in contracts built by third parties on Sablier Lockup.
+- Bugs in third-party contracts or platforms interacting with Sablier Airdrops.
+- Previously reported or discovered vulnerabilities in contracts built by third parties on Sablier Airdrops.
 - Bugs that have already been reported.
 
 Vulnerabilities contingent upon the occurrence of any of the following also are outside the scope of this Program:
@@ -42,7 +42,7 @@ Vulnerabilities contingent upon the occurrence of any of the following also are 
 
 ### Assumptions
 
-Sablier Lockup has been developed with a number of technical assumptions in mind. For a disclosure to qualify as a
+Sablier Airdrops has been developed with a number of technical assumptions in mind. For a disclosure to qualify as a
 vulnerability, it must adhere to these assumptions as well:
 
 - The total supply of any ERC-20 token remains below 2<sup>128</sup> - 1, i.e., `type(uint128).max`.
@@ -83,9 +83,9 @@ publicly for their contribution if they so choose.
 
 To qualify for a reward under this Program, you must adhere to the following criteria:
 
-- Identify a previously unreported, non-public vulnerability that could result in the loss or freeze of any ERC-20 asset
-  in Sablier Lockup (but not on any third-party platform interacting with Sablier Lockup) and that is within the scope
-  of this Program.
+- Identify a previously unreported, non-public vulnerability that could result in the loss or freeze of any ERC-20 token
+  in Sablier Airdrops (but not on any third-party platform interacting with Sablier Airdrops) and that is within the
+  scope of this Program.
 - The vulnerability must be distinct from the issues covered in the [Audits](https://github.com/sablier-labs/audits).
 - Be the first to report the unique vulnerability to [security@sablier.com](mailto:security@sablier.com) in accordance
   with the disclosure requirements specified above. If multiple similar vulnerabilities are reported within a 24-hour
@@ -96,7 +96,7 @@ To qualify for a reward under this Program, you must adhere to the following cri
 - Avoid exploiting the vulnerability in any manner, such as making it public or profiting from it (aside from the reward
   offered under this Program).
 - Make a genuine effort to prevent privacy violations, data destruction, and any interruption or degradation of Sablier
-  Lockup.
+  Airdrops.
 - Submit only one vulnerability per submission, unless chaining vulnerabilities is necessary to demonstrate the impact
   of any of them.
 - Do not submit a vulnerability that stems from an underlying issue for which a reward has already been paid under this

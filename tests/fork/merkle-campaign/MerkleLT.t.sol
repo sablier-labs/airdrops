@@ -14,7 +14,7 @@ import { Fork_Test } from "./../Fork.t.sol";
 abstract contract MerkleLT_Fork_Test is Fork_Test {
     using MerkleBuilder for uint256[];
 
-    constructor(IERC20 asset_) Fork_Test(asset_) { }
+    constructor(IERC20 token_) Fork_Test(token_) { }
 
     /// @dev Encapsulates the data needed to compute a Merkle tree leaf.
     struct LeafData {
@@ -54,7 +54,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
     function testForkFuzz_MerkleLT(Params memory params) external {
         vm.assume(params.campaignOwner != address(0) && params.campaignOwner != users.campaignOwner);
         vm.assume(params.leafData.length > 0);
-        assumeNoBlacklisted({ token: address(FORK_ASSET), addr: params.campaignOwner });
+        assumeNoBlacklisted({ token: address(FORK_TOKEN), addr: params.campaignOwner });
         params.posBeforeSort = _bound(params.posBeforeSort, 0, params.leafData.length - 1);
 
         // The expiration must be either zero or greater than the block timestamp.
@@ -103,12 +103,12 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         uint256 sablierFee = defaults.DEFAULT_SABLIER_FEE();
 
         vars.expectedLT = computeMerkleLTAddress(
-            params.campaignOwner, params.campaignOwner, FORK_ASSET, vars.merkleRoot, params.expiration, sablierFee
+            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration, sablierFee
         );
 
         vars.baseParams = defaults.baseParams({
             campaignOwner: params.campaignOwner,
-            asset_: FORK_ASSET,
+            token_: FORK_TOKEN,
             merkleRoot: vars.merkleRoot,
             expiration: params.expiration
         });
@@ -140,7 +140,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         });
 
         // Fund the MerkleLT contract.
-        deal({ token: address(FORK_ASSET), to: address(vars.merkleLT), give: vars.aggregateAmount });
+        deal({ token: address(FORK_TOKEN), to: address(vars.merkleLT), give: vars.aggregateAmount });
 
         assertGt(address(vars.merkleLT).code.length, 0, "MerkleLT contract not created");
         assertEq(address(vars.merkleLT), vars.expectedLT, "MerkleLT contract does not match computed address");
@@ -201,7 +201,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         );
         assertEq(lockup.getRefundedAmount(vars.expectedStreamId), 0, "refunded amount");
         assertEq(lockup.getWithdrawnAmount(vars.expectedStreamId), 0, "withdrawn amount");
-        assertEq(lockup.getAsset(vars.expectedStreamId), FORK_ASSET, "asset");
+        assertEq(lockup.getAsset(vars.expectedStreamId), FORK_TOKEN, "token");
         assertEq(lockup.getEndTime(vars.expectedStreamId), getBlockTimestamp() + defaults.TOTAL_DURATION(), "end time");
         assertEq(lockup.isCancelable(vars.expectedStreamId), defaults.CANCELABLE(), "is cancelable");
         assertEq(lockup.isDepleted(vars.expectedStreamId), false, "is depleted");
@@ -231,11 +231,11 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         resetPrank({ msgSender: params.campaignOwner });
 
         if (params.expiration > 0) {
-            vars.clawbackAmount = uint128(FORK_ASSET.balanceOf(address(vars.merkleLT)));
+            vars.clawbackAmount = uint128(FORK_TOKEN.balanceOf(address(vars.merkleLT)));
             vm.warp({ newTimestamp: uint256(params.expiration) + 1 seconds });
 
             resetPrank({ msgSender: params.campaignOwner });
-            expectCallToTransfer({ asset: FORK_ASSET, to: params.campaignOwner, value: vars.clawbackAmount });
+            expectCallToTransfer({ token: FORK_TOKEN, to: params.campaignOwner, value: vars.clawbackAmount });
             vm.expectEmit({ emitter: address(vars.merkleLT) });
             emit ISablierMerkleBase.Clawback({
                 to: params.campaignOwner,

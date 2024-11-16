@@ -18,10 +18,6 @@ interface ISablierMerkleBase is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice The ERC-20 asset to distribute.
-    /// @dev This is an immutable state variable.
-    function ASSET() external returns (IERC20);
-
     /// @notice The cut-off point for the campaign, as a Unix timestamp. A value of zero means there is no expiration.
     /// @dev This is an immutable state variable.
     function EXPIRATION() external returns (uint40);
@@ -35,6 +31,10 @@ interface ISablierMerkleBase is IAdminable {
 
     /// @notice Retrieves the minimum fee required to claim an Airstream, paid in ETH.
     function SABLIER_FEE() external view returns (uint256);
+
+    /// @notice The ERC-20 token to distribute.
+    /// @dev This is an immutable state variable.
+    function TOKEN() external returns (IERC20);
 
     /// @notice Returns the timestamp when the first claim is made.
     function getFirstClaimTime() external view returns (uint40);
@@ -59,7 +59,7 @@ interface ISablierMerkleBase is IAdminable {
 
     /// @notice Makes the claim.
     ///
-    /// @dev Depending on the Merkle campaign, it either transfers assets to the recipient or creates a Lockup stream
+    /// @dev Depending on the Merkle campaign, it either transfers tokens to the recipient or creates a Lockup stream
     /// with an NFT minted to the recipient.
     ///
     /// Requirements:
@@ -70,7 +70,7 @@ interface ISablierMerkleBase is IAdminable {
     ///
     /// @param index The index of the recipient in the Merkle tree.
     /// @param recipient The address of the airdrop recipient.
-    /// @param amount The amount of ERC-20 assets to be transferred to the recipient.
+    /// @param amount The amount of ERC-20 tokens to be transferred to the recipient.
     /// @param merkleProof The proof of inclusion in the Merkle tree.
     function claim(uint256 index, address recipient, uint128 amount, bytes32[] calldata merkleProof) external payable;
 

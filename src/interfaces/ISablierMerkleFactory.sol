@@ -98,7 +98,7 @@ interface ISablierMerkleFactory is IAdminable {
                                NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Creates a new MerkleInstant campaign for instant distribution of assets.
+    /// @notice Creates a new MerkleInstant campaign for instant distribution of tokens.
     ///
     /// @dev Emits a {CreateMerkleInstant} event.
     ///
@@ -108,7 +108,7 @@ interface ISablierMerkleFactory is IAdminable {
     ///
     /// @param baseParams Struct encapsulating the {SablierMerkleBase} parameters, which are documented in
     /// {DataTypes}.
-    /// @param aggregateAmount The total amount of ERC-20 assets to be distributed to all recipients.
+    /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
     /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @return merkleInstant The address of the newly created MerkleInstant contract.
     function createMerkleInstant(
@@ -133,7 +133,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @param cancelable Indicates if the stream will be cancelable after claiming.
     /// @param transferable Indicates if the stream will be transferable after claiming.
     /// @param schedule Struct encapsulating the unlocks schedule, which are documented in {DataTypes}.
-    /// @param aggregateAmount The total amount of ERC-20 assets to be distributed to all recipients.
+    /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
     /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @return merkleLL The address of the newly created Merkle Lockup contract.
     function createMerkleLL(
@@ -163,7 +163,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @param transferable Indicates if the stream will be transferable after claiming.
     /// @param streamStartTime The start time of the streams created through {SablierMerkleBase.claim}.
     /// @param tranchesWithPercentages The tranches with their respective unlock percentages.
-    /// @param aggregateAmount The total amount of ERC-20 assets to be distributed to all recipients.
+    /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
     /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @return merkleLT The address of the newly created Merkle Lockup contract.
     function createMerkleLT(

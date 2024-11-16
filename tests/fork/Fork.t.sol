@@ -11,14 +11,14 @@ abstract contract Fork_Test is Base_Test, Merkle {
                                   STATE VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
 
-    IERC20 internal immutable FORK_ASSET;
+    IERC20 internal immutable FORK_TOKEN;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
     //////////////////////////////////////////////////////////////////////////*/
 
-    constructor(IERC20 forkAsset) {
-        FORK_ASSET = forkAsset;
+    constructor(IERC20 forkToken) {
+        FORK_TOKEN = forkToken;
     }
 
     /*//////////////////////////////////////////////////////////////////////////

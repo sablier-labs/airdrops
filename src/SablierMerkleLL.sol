@@ -57,7 +57,7 @@ contract SablierMerkleLL is
         schedule = schedule_;
 
         // Max approve the Lockup contract to spend funds from the MerkleLL contract.
-        ASSET.forceApprove(address(LOCKUP), type(uint256).max);
+        TOKEN.forceApprove(address(LOCKUP), type(uint256).max);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -91,7 +91,7 @@ contract SablierMerkleLL is
                 sender: admin,
                 recipient: recipient,
                 totalAmount: amount,
-                asset: ASSET,
+                asset: TOKEN,
                 cancelable: CANCELABLE,
                 transferable: TRANSFERABLE,
                 timestamps: timestamps,

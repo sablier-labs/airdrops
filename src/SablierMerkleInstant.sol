@@ -34,8 +34,8 @@ contract SablierMerkleInstant is
 
     /// @inheritdoc SablierMerkleBase
     function _claim(uint256 index, address recipient, uint128 amount) internal override {
-        // Interaction: withdraw the assets to the recipient.
-        ASSET.safeTransfer(recipient, amount);
+        // Interaction: withdraw the tokens to the recipient.
+        TOKEN.safeTransfer(recipient, amount);
 
         // Log the claim.
         emit Claim(index, recipient, amount);

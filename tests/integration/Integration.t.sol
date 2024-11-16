@@ -80,7 +80,7 @@ contract Integration_Test is Base_Test {
         return computeMerkleInstantAddress({
             caller: users.campaignOwner,
             campaignOwner: campaignOwner,
-            asset_: dai,
+            token_: dai,
             merkleRoot: defaults.MERKLE_ROOT(),
             expiration: expiration,
             sablierFee: sablierFee
@@ -127,7 +127,7 @@ contract Integration_Test is Base_Test {
         return computeMerkleLLAddress({
             caller: users.campaignOwner,
             campaignOwner: campaignOwner,
-            asset_: dai,
+            token_: dai,
             merkleRoot: defaults.MERKLE_ROOT(),
             expiration: expiration,
             sablierFee: sablierFee
@@ -178,7 +178,7 @@ contract Integration_Test is Base_Test {
         return computeMerkleLTAddress({
             caller: users.campaignOwner,
             campaignOwner: campaignOwner,
-            asset_: dai,
+            token_: dai,
             merkleRoot: defaults.MERKLE_ROOT(),
             expiration: expiration,
             sablierFee: sablierFee

@@ -62,7 +62,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams({
             campaignOwner: campaignOwner,
-            asset_: dai,
+            token_: dai,
             merkleRoot: defaults.MERKLE_ROOT(),
             expiration: expiration
         });
@@ -102,7 +102,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams({
             campaignOwner: campaignOwner,
-            asset_: dai,
+            token_: dai,
             merkleRoot: defaults.MERKLE_ROOT(),
             expiration: expiration
         });

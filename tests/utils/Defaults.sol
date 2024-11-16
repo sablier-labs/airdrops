@@ -68,7 +68,7 @@ contract Defaults is Constants, Merkle {
                                      VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
 
-    IERC20 private asset;
+    IERC20 private token;
     Users private users;
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -99,8 +99,8 @@ contract Defaults is Constants, Merkle {
         MERKLE_ROOT = getRoot(LEAVES.toBytes32());
     }
 
-    function setAsset(IERC20 asset_) public {
-        asset = asset_;
+    function setToken(IERC20 token_) public {
+        token = token_;
     }
 
     function setUsers(Users memory users_) public {
@@ -116,12 +116,12 @@ contract Defaults is Constants, Merkle {
     //////////////////////////////////////////////////////////////////////////*/
 
     function baseParams() public view returns (MerkleBase.ConstructorParams memory) {
-        return baseParams(users.campaignOwner, asset, EXPIRATION, MERKLE_ROOT);
+        return baseParams(users.campaignOwner, token, EXPIRATION, MERKLE_ROOT);
     }
 
     function baseParams(
         address campaignOwner,
-        IERC20 asset_,
+        IERC20 token_,
         uint40 expiration,
         bytes32 merkleRoot
     )
@@ -130,7 +130,7 @@ contract Defaults is Constants, Merkle {
         returns (MerkleBase.ConstructorParams memory)
     {
         return MerkleBase.ConstructorParams({
-            asset: asset_,
+            token: token_,
             expiration: expiration,
             initialAdmin: campaignOwner,
             ipfsCID: IPFS_CID,

@@ -25,7 +25,7 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleBase
-    IERC20 public immutable override ASSET;
+    IERC20 public immutable override TOKEN;
 
     /// @inheritdoc ISablierMerkleBase
     uint40 public immutable override EXPIRATION;
@@ -62,7 +62,7 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CampaignNameTooLong({ nameLength: bytes(params.name).length, maxLength: 32 });
         }
 
-        ASSET = params.asset;
+        TOKEN = params.token;
         EXPIRATION = params.expiration;
         FACTORY = msg.sender;
         ipfsCID = params.ipfsCID;
@@ -158,7 +158,7 @@ abstract contract SablierMerkleBase is
         }
 
         // Effect: transfer the tokens to the provided address.
-        ASSET.safeTransfer(to, amount);
+        TOKEN.safeTransfer(to, amount);
 
         // Log the clawback.
         emit Clawback(admin, to, amount);

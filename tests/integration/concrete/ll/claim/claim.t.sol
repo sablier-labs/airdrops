@@ -82,7 +82,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
         // Assert that the stream has been created successfully.
         assertEq(lockup.getDepositedAmount(expectedStreamId), defaults.CLAIM_AMOUNT(), "depositedAmount");
-        assertEq(lockup.getAsset(expectedStreamId), dai, "asset");
+        assertEq(lockup.getAsset(expectedStreamId), dai, "token");
         assertEq(lockup.getCliffTime(expectedStreamId), cliffTime, "cliff time");
         assertEq(lockup.getEndTime(expectedStreamId), startTime + defaults.TOTAL_DURATION(), "end time");
         assertEq(lockup.isCancelable(expectedStreamId), defaults.CANCELABLE(), "is cancelable");

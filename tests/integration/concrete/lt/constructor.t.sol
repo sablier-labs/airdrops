@@ -11,7 +11,6 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
     struct Vars {
         address actualAdmin;
         uint256 actualAllowance;
-        address actualAsset;
         bool actualCancelable;
         uint40 actualExpiration;
         address actualFactory;
@@ -21,12 +20,12 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         string actualName;
         uint256 actualSablierFee;
         uint40 actualStreamStartTime;
+        address actualToken;
         uint64 actualTotalPercentage;
         MerkleLT.TrancheWithPercentage[] actualTranchesWithPercentages;
         bool actualTransferable;
         address expectedAdmin;
         uint256 expectedAllowance;
-        address expectedAsset;
         bool expectedCancelable;
         uint40 expectedExpiration;
         address expectedFactory;
@@ -36,6 +35,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         bytes32 expectedName;
         uint256 expectedSablierFee;
         uint40 expectedStreamStartTime;
+        address expectedToken;
         uint64 expectedTotalPercentage;
         MerkleLT.TrancheWithPercentage[] expectedTranchesWithPercentages;
         bool expectedTransferable;
@@ -65,9 +65,9 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedAllowance = MAX_UINT256;
         assertEq(vars.actualAllowance, vars.expectedAllowance, "allowance");
 
-        vars.actualAsset = address(constructedLT.ASSET());
-        vars.expectedAsset = address(dai);
-        assertEq(vars.actualAsset, vars.expectedAsset, "asset");
+        vars.actualToken = address(constructedLT.TOKEN());
+        vars.expectedToken = address(dai);
+        assertEq(vars.actualToken, vars.expectedToken, "token");
 
         vars.actualCancelable = constructedLT.CANCELABLE();
         vars.expectedCancelable = defaults.CANCELABLE();

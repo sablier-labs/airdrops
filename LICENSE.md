@@ -11,9 +11,9 @@ Licensor: Sablier Labs Ltd
 
 Licensed Work: Sablier Airdrops The Licensed Work is (C) 2024 Sablier Labs Ltd
 
-Additional Use Grant: Any uses listed and defined at v2-core-license-grants.sablier.eth
+Additional Use Grant: Any uses listed and defined at airdrops-license-grants.sablier.eth
 
-Change Date: The earlier of 2028-07-03 or a date specified at v2-core-license-date.sablier.eth
+Change Date: The earlier of 2028-07-03 or a date specified at airdrops-license-date.sablier.eth
 
 Change License: GNU General Public License v3.0 or later
 

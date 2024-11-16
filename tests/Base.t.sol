@@ -63,7 +63,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
 
         // Deploy the defaults contract.
         defaults = new Defaults();
-        defaults.setAsset(dai);
+        defaults.setToken(dai);
 
         // Deploy the lockup contract.
         LockupNFTDescriptor nftDescriptor = new LockupNFTDescriptor();
@@ -102,14 +102,14 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
                                       HELPERS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev Approves all contracts to spend assets from the address passed.
+    /// @dev Approves all contracts to spend tokens from the address passed.
     function approveProtocol(address from) internal {
         resetPrank({ msgSender: from });
         dai.approve({ spender: address(merkleFactory), value: MAX_UINT256 });
         usdt.approve({ spender: address(merkleFactory), value: MAX_UINT256 });
     }
 
-    /// @dev Generates a user, labels its address, funds it with test assets, and approves the protocol contracts.
+    /// @dev Generates a user, labels its address, funds it with test tokens, and approves the protocol contracts.
     function createUser(string memory name) internal returns (address payable) {
         address payable user = payable(makeAddr(name));
         vm.deal({ account: user, newBalance: 100 ether });
@@ -143,8 +143,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     }
 
     /// @dev Expects a call to {IERC20.transfer}.
-    function expectCallToTransfer(IERC20 asset, address to, uint256 value) internal {
-        vm.expectCall({ callee: address(asset), data: abi.encodeCall(IERC20.transfer, (to, value)) });
+    function expectCallToTransfer(IERC20 token, address to, uint256 value) internal {
+        vm.expectCall({ callee: address(token), data: abi.encodeCall(IERC20.transfer, (to, value)) });
     }
 
     /// @dev Expects a call to {IERC20.transferFrom}.
@@ -191,7 +191,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     function computeMerkleInstantAddress(
         address caller,
         address campaignOwner,
-        IERC20 asset_,
+        IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
         uint256 sablierFee
@@ -203,7 +203,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         bytes32 salt = keccak256(
             abi.encodePacked(
                 caller,
-                address(asset_),
+                address(token_),
                 expiration,
                 campaignOwner,
                 abi.encode(defaults.IPFS_CID()),
@@ -212,7 +212,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             )
         );
         bytes32 creationBytecodeHash =
-            keccak256(getMerkleInstantBytecode(campaignOwner, asset_, merkleRoot, expiration, sablierFee));
+            keccak256(getMerkleInstantBytecode(campaignOwner, token_, merkleRoot, expiration, sablierFee));
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -223,7 +223,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     function computeMerkleLLAddress(
         address caller,
         address campaignOwner,
-        IERC20 asset_,
+        IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
         uint256 sablierFee
@@ -235,7 +235,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         bytes32 salt = keccak256(
             abi.encodePacked(
                 caller,
-                address(asset_),
+                address(token_),
                 expiration,
                 campaignOwner,
                 abi.encode(defaults.IPFS_CID()),
@@ -248,7 +248,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             )
         );
         bytes32 creationBytecodeHash =
-            keccak256(getMerkleLLBytecode(campaignOwner, asset_, merkleRoot, expiration, sablierFee));
+            keccak256(getMerkleLLBytecode(campaignOwner, token_, merkleRoot, expiration, sablierFee));
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -259,7 +259,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     function computeMerkleLTAddress(
         address caller,
         address campaignOwner,
-        IERC20 asset_,
+        IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
         uint256 sablierFee
@@ -271,7 +271,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         bytes32 salt = keccak256(
             abi.encodePacked(
                 caller,
-                address(asset_),
+                address(token_),
                 expiration,
                 campaignOwner,
                 abi.encode(defaults.IPFS_CID()),
@@ -285,7 +285,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             )
         );
         bytes32 creationBytecodeHash =
-            keccak256(getMerkleLTBytecode(campaignOwner, asset_, merkleRoot, expiration, sablierFee));
+            keccak256(getMerkleLTBytecode(campaignOwner, token_, merkleRoot, expiration, sablierFee));
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -295,7 +295,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
 
     function getMerkleInstantBytecode(
         address campaignOwner,
-        IERC20 asset_,
+        IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
         uint256 sablierFee
@@ -305,7 +305,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         returns (bytes memory)
     {
         bytes memory constructorArgs =
-            abi.encode(defaults.baseParams(campaignOwner, asset_, expiration, merkleRoot), sablierFee);
+            abi.encode(defaults.baseParams(campaignOwner, token_, expiration, merkleRoot), sablierFee);
         if (!isTestOptimizedProfile()) {
             return bytes.concat(type(SablierMerkleInstant).creationCode, constructorArgs);
         } else {
@@ -317,7 +317,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
 
     function getMerkleLLBytecode(
         address campaignOwner,
-        IERC20 asset_,
+        IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
         uint256 sablierFee
@@ -327,7 +327,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         returns (bytes memory)
     {
         bytes memory constructorArgs = abi.encode(
-            defaults.baseParams(campaignOwner, asset_, expiration, merkleRoot),
+            defaults.baseParams(campaignOwner, token_, expiration, merkleRoot),
             lockup,
             defaults.CANCELABLE(),
             defaults.TRANSFERABLE(),
@@ -343,7 +343,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
 
     function getMerkleLTBytecode(
         address campaignOwner,
-        IERC20 asset_,
+        IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
         uint256 sablierFee
@@ -353,7 +353,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         returns (bytes memory)
     {
         bytes memory constructorArgs = abi.encode(
-            defaults.baseParams(campaignOwner, asset_, expiration, merkleRoot),
+            defaults.baseParams(campaignOwner, token_, expiration, merkleRoot),
             lockup,
             defaults.CANCELABLE(),
             defaults.TRANSFERABLE(),

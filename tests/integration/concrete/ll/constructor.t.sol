@@ -11,7 +11,6 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
     struct Vars {
         address actualAdmin;
         uint256 actualAllowance;
-        address actualAsset;
         bool actualCancelable;
         uint40 actualExpiration;
         address actualFactory;
@@ -21,10 +20,10 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         string actualName;
         uint256 actualSablierFee;
         MerkleLL.Schedule actualSchedule;
+        address actualToken;
         bool actualTransferable;
         address expectedAdmin;
         uint256 expectedAllowance;
-        address expectedAsset;
         bool expectedCancelable;
         uint40 expectedExpiration;
         address expectedFactory;
@@ -34,6 +33,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         bytes32 expectedName;
         uint256 expectedSablierFee;
         MerkleLL.Schedule expectedSchedule;
+        address expectedToken;
         bool expectedTransferable;
     }
 
@@ -60,9 +60,9 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.expectedAllowance = MAX_UINT256;
         assertEq(vars.actualAllowance, vars.expectedAllowance, "allowance");
 
-        vars.actualAsset = address(constructedLL.ASSET());
-        vars.expectedAsset = address(dai);
-        assertEq(vars.actualAsset, vars.expectedAsset, "asset");
+        vars.actualToken = address(constructedLL.TOKEN());
+        vars.expectedToken = address(dai);
+        assertEq(vars.actualToken, vars.expectedToken, "token");
 
         vars.actualCancelable = constructedLL.CANCELABLE();
         vars.expectedCancelable = defaults.CANCELABLE();

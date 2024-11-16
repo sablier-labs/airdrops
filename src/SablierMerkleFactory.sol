@@ -134,7 +134,7 @@ contract SablierMerkleFactory is
         bytes32 salt = keccak256(
             abi.encodePacked(
                 msg.sender,
-                baseParams.asset,
+                baseParams.token,
                 baseParams.expiration,
                 baseParams.initialAdmin,
                 abi.encode(baseParams.ipfsCID),
@@ -171,7 +171,7 @@ contract SablierMerkleFactory is
         bytes32 salt = keccak256(
             abi.encodePacked(
                 msg.sender,
-                baseParams.asset,
+                baseParams.token,
                 baseParams.expiration,
                 baseParams.initialAdmin,
                 abi.encode(baseParams.ipfsCID),
@@ -280,7 +280,7 @@ contract SablierMerkleFactory is
         bytes32 salt = keccak256(
             abi.encodePacked(
                 msg.sender,
-                baseParams.asset,
+                baseParams.token,
                 baseParams.expiration,
                 baseParams.initialAdmin,
                 abi.encode(baseParams.ipfsCID),
