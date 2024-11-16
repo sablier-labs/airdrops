@@ -94,6 +94,11 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         assertEq(lockup.getStartTime(expectedStreamId), startTime, "start time");
         assertEq(lockup.wasCanceled(expectedStreamId), false, "was canceled");
 
+        assertEq(lockup.getUnlockAmounts(expectedStreamId).start, defaults.START_AMOUNT(), "unlock amount start");
+
+        uint128 expectedCliffAmount = cliffTime > 0 ? defaults.CLIFF_AMOUNT() : 0;
+        assertEq(lockup.getUnlockAmounts(expectedStreamId).cliff, expectedCliffAmount, "unlock amount cliff");
+
         assertTrue(merkleLL.hasClaimed(defaults.INDEX1()), "not claimed");
 
         assertEq(address(merkleLL).balance, previousFeeAccrued + defaults.DEFAULT_SABLIER_FEE(), "fee collected");

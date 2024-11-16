@@ -5,7 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ud2x18, uUNIT } from "@prb/math/src/UD2x18.sol";
 import { ud } from "@prb/math/src/UD60x18.sol";
-import { LockupLinear, LockupTranched } from "@sablier/lockup/types/DataTypes.sol";
+import { LockupTranched } from "@sablier/lockup/types/DataTypes.sol";
 
 import { MerkleBase, MerkleLL, MerkleLT } from "../../src/types/DataTypes.sol";
 
@@ -32,7 +32,7 @@ contract Defaults is Constants, Merkle {
     uint128 public constant REFUND_AMOUNT = DEPOSIT_AMOUNT - CLIFF_AMOUNT;
     uint256 public constant SEGMENT_COUNT = 2;
     uint40 public immutable START_TIME;
-    uint128 public constant START_AMOUNT = 0;
+    uint128 public constant START_AMOUNT = 100e18;
     uint128 public constant TOTAL_AMOUNT = 10_030.090270812437311935e18; // deposit + broker fee
     uint40 public constant TOTAL_DURATION = 10_000 seconds;
     uint256 public constant TRANCHE_COUNT = 3;
@@ -105,10 +105,6 @@ contract Defaults is Constants, Merkle {
 
     function setUsers(Users memory users_) public {
         users = users_;
-    }
-
-    function unlockAmounts() public pure returns (LockupLinear.UnlockAmounts memory) {
-        return LockupLinear.UnlockAmounts({ start: START_AMOUNT, cliff: CLIFF_AMOUNT });
     }
 
     /*//////////////////////////////////////////////////////////////////////////
