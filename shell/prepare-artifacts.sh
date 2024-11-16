@@ -26,7 +26,6 @@ cp out-optimized/SablierMerkleLL.sol/SablierMerkleLL.json $artifacts
 cp out-optimized/SablierMerkleLT.sol/SablierMerkleLT.json $artifacts
 
 interfaces=./artifacts/interfaces
-cp out-optimized/ISablierBatchLockup.sol/ISablierBatchLockup.json $interfaces
 cp out-optimized/ISablierMerkleFactory.sol/ISablierMerkleFactory.json $interfaces
 cp out-optimized/ISablierMerkleInstant.sol/ISablierMerkleInstant.json $interfaces
 cp out-optimized/ISablierMerkleLL.sol/ISablierMerkleLL.json $interfaces
