@@ -23,13 +23,8 @@ contract Defaults is Constants, Merkle {
     //////////////////////////////////////////////////////////////////////////*/
 
     uint128 public constant CLIFF_AMOUNT = 2500e18;
-    uint40 public immutable CLIFF_TIME;
     uint40 public constant CLIFF_DURATION = 2500 seconds;
-    uint128 public constant DEPOSIT_AMOUNT = 10_000e18;
-    uint40 public immutable END_TIME;
     uint256 public constant MAX_COUNT = 10_000;
-    uint40 public immutable MAX_SEGMENT_DURATION;
-    uint128 public constant REFUND_AMOUNT = DEPOSIT_AMOUNT - CLIFF_AMOUNT;
     uint256 public constant SEGMENT_COUNT = 2;
     uint40 public immutable START_TIME;
     uint128 public constant START_AMOUNT = 100e18;
@@ -77,10 +72,7 @@ contract Defaults is Constants, Merkle {
 
     constructor() {
         START_TIME = JULY_1_2024 + 2 days;
-        CLIFF_TIME = START_TIME + CLIFF_DURATION;
-        END_TIME = START_TIME + TOTAL_DURATION;
         EXPIRATION = JULY_1_2024 + 12 weeks;
-        MAX_SEGMENT_DURATION = TOTAL_DURATION / uint40(MAX_COUNT);
         WARP_26_PERCENT = START_TIME + CLIFF_DURATION + 100 seconds;
     }
 
@@ -165,7 +157,7 @@ contract Defaults is Constants, Merkle {
         schedule_.totalDuration = TOTAL_DURATION;
     }
 
-    /// @dev Mirros the logic from {SablierMerkleLT._calculateStartTimeAndTranches}.
+    /// @dev Mirrors the logic from {SablierMerkleLT._calculateStartTimeAndTranches}.
     function tranchesMerkleLT(
         uint40 streamStartTime,
         uint128 totalAmount

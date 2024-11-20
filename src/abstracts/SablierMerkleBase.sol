@@ -25,9 +25,6 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleBase
-    IERC20 public immutable override TOKEN;
-
-    /// @inheritdoc ISablierMerkleBase
     uint40 public immutable override EXPIRATION;
 
     /// @inheritdoc ISablierMerkleBase
@@ -41,6 +38,9 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     uint256 public immutable override SABLIER_FEE;
+
+    /// @inheritdoc ISablierMerkleBase
+    IERC20 public immutable override TOKEN;
 
     /// @inheritdoc ISablierMerkleBase
     string public override ipfsCID;

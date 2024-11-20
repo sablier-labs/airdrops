@@ -5,7 +5,7 @@
   fs_permissions = [
     { access = "read", path = "./out-optimized" },
     { access = "read", path = "package.json" },
-    { access = "read-write", path = "./script"}
+    { access = "read-write", path = "./script" },
   ]
   gas_limit = 9223372036854775807
   optimizer = true

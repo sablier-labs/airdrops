@@ -31,7 +31,7 @@ contract CreateMerkleLT is BaseScript {
         tranchesWithPercentages[1] =
             MerkleLT.TrancheWithPercentage({ unlockPercentage: UD2x18.wrap(50), duration: 7200 });
 
-        // Deploy MerkleLT contract.
+        // Deploy the MerkleLT contract.
         // TODO: Update address once deployed.
         merkleLT = merkleFactory.createMerkleLT({
             baseParams: baseParams,

@@ -4,4 +4,3 @@
 @sablier/lockup-precompiles=node_modules/@sablier/lockup/precompiles/
 forge-std/=node_modules/forge-std/
 solady/=node_modules/solady/
-solarray/=node_modules/solarray/

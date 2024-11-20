@@ -7,7 +7,6 @@ docs
 node_modules
 out
 out-optimized
-out-svg
 
 # files
 *.env

@@ -1,6 +1,6 @@
 {
   "name": "@sablier/airdrops",
-  "description": "Smart contracts for merkle distribution of tokens",
+  "description": "Merkle-based airdrop distributions powered by Sablier",
   "license": "BUSL-1.1",
   "version": "1.3.0",
   "author": {
@@ -21,7 +21,6 @@
     "lint-staged": "^15.2.8",
     "prettier": "^3.3.2",
     "solady": "0.0.208",
-    "solarray": "github:evmcheb/solarray",
     "solhint": "^5.0.3"
   },
   "files": [
@@ -58,7 +57,7 @@
     "web3"
   ],
   "peerDependencies": {
-    "@prb/math": "4.1.x"
+    "@prb/math": "4.x.x"
   },
   "publishConfig": {
     "access": "public"
@@ -68,15 +67,15 @@
     "build": "forge build",
     "build:optimized": "FOUNDRY_PROFILE=optimized forge build",
     "build:smt": "FOUNDRY_PROFILE=smt forge build",
-    "clean": "rm -rf artifacts broadcast cache docs out out-optimized out-svg",
+    "clean": "rm -rf artifacts broadcast cache docs out out-optimized",
     "lint": "bun run lint:sol && bun run prettier:check",
     "lint:fix": "bun run lint:sol:fix && forge fmt",
     "lint:sol": "forge fmt --check && bun solhint \"{precompiles,script,src,tests}/**/*.sol\"",
     "lint:sol:fix": "bun solhint \"{precompiles,script,src,tests}/**/*.sol\" --fix --noPrompt",
     "prepack": "bun install && bash ./shell/prepare-artifacts.sh",
     "prepare": "husky",
-    "prettier:check": "prettier --check \"**/*.{json,md,svg,yml}\"",
-    "prettier:write": "prettier --write \"**/*.{json,md,svg,yml}\"",
+    "prettier:check": "prettier --check \"**/*.{json,md,yml}\"",
+    "prettier:write": "prettier --write \"**/*.{json,md,yml}\"",
     "test": "forge test",
     "test:lite": "FOUNDRY_PROFILE=lite forge test",
     "test:optimized": "bun run build:optimized && FOUNDRY_PROFILE=test-optimized forge test"

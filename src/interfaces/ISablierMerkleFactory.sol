@@ -11,12 +11,12 @@ import { ISablierMerkleLL } from "./ISablierMerkleLL.sol";
 import { ISablierMerkleLT } from "./ISablierMerkleLT.sol";
 
 /// @title ISablierMerkleFactory
-/// @notice A contract that deploys Merkle Lockups and Merkle Instant campaigns. Both of these use Merkle proofs for
-/// token distribution. Merkle Lockup enable Airstreams, a portmanteau of "airdrop" and "stream". This is an airdrop
-/// model where the tokens are distributed over time, as opposed to all at once. On the other hand, Merkle Instant
-/// enables instant airdrops where tokens are unlocked and distributed immediately. See the Sablier docs for more
-/// guidance: https://docs.sablier.com
-/// @dev Deploys Merkle Lockup and Merkle Instant campaigns with CREATE2.
+/// @notice A contract that deploys Merkle Lockups and Merkle Instant campaigns. Both use Merkle proofs for token
+/// distribution. Merkle Lockup enable Airstreams, a portmanteau of "airdrop" and "stream", an airdrop model where the
+/// tokens are distributed over time, as opposed to all at once. On the other hand, Merkle Instant enables instant
+/// airdrops where tokens are unlocked and distributed immediately. See the Sablier docs for more guidance:
+/// https://docs.sablier.com
+/// @dev The contracts are deployed using CREATE2.
 interface ISablierMerkleFactory is IAdminable {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
@@ -77,7 +77,7 @@ interface ISablierMerkleFactory is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Verifies if the sum of percentages in `tranches` equals 100% , i.e. 1e18.
+    /// @notice Verifies if the sum of percentages in `tranches` equals 100%, i.e. 1e18.
     /// @dev Reverts if the sum of percentages overflows.
     /// @param tranches The tranches with their respective unlock percentages.
     /// @return result True if the sum of percentages equals 100%, otherwise false.
@@ -186,7 +186,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// - The default fee will only be applied to the future campaigns.
     ///
     /// Requirements:
-    /// - msg.sender must be the admin.
+    /// - `msg.sender` must be the admin.
     ///
     /// @param campaignCreator The user for whom the fee is being reset for.
     function resetSablierFeeByUser(address campaignCreator) external;
@@ -198,7 +198,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// - The new fee will only be applied to the future campaigns.
     ///
     /// Requirements:
-    /// - msg.sender must be the admin.
+    /// - `msg.sender` must be the admin.
     ///
     /// @param campaignCreator The user for whom the fee is being set.
     /// @param fee The new fee to be set.
@@ -212,12 +212,12 @@ interface ISablierMerkleFactory is IAdminable {
     /// deployed.
     ///
     /// Requirements:
-    /// - msg.sender must be the admin.
+    /// - `msg.sender` must be the admin.
     ///
-    /// @param defaultFee The new detault fee to be set.
+    /// @param defaultFee The new default fee to be set.
     function setDefaultSablierFee(uint256 defaultFee) external;
 
-    /// @notice Withdraws the Sablier fees accrued on `merkleBase` contract.
+    /// @notice Withdraws the Sablier fees accrued in the `merkleBase` contract.
     /// @dev Emits a {WithdrawSablierFees} event.
     ///
     /// Notes:
@@ -225,7 +225,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// ETH.
     ///
     /// Requirements:
-    /// - msg.sender must be the admin.
+    /// - `msg.sender` must be the admin.
     /// - `to` must not be the zero address.
     ///
     /// @param to The address to receive the Sablier fees.

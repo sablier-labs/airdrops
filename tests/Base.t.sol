@@ -65,7 +65,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         defaults = new Defaults();
         defaults.setToken(dai);
 
-        // Deploy the lockup contract.
+        // Deploy the Lockup contract.
         LockupNFTDescriptor nftDescriptor = new LockupNFTDescriptor();
         lockup = new SablierLockup(users.admin, nftDescriptor, 1000);
 
@@ -120,10 +120,6 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     }
 
     /// @dev Conditionally deploys the protocol normally or from an optimized source compiled with `--via-ir`.
-    /// We cannot use the {DeployProtocol} script because some tests rely on hard coded addresses for the
-    /// deployed contracts. Since the script itself would have to be deployed, using it would bump the
-    /// deployer's nonce, which would in turn lead to different addresses (recall that the addresses
-    /// for contracts deployed via `CREATE` are based on the caller-and-nonce-hash).
     function deployProtocolConditionally() internal {
         if (!isTestOptimizedProfile()) {
             merkleFactory = new SablierMerkleFactory(users.admin);

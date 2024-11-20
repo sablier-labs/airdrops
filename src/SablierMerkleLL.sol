@@ -3,7 +3,7 @@ pragma solidity >=0.8.22;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { ud } from "@prb/math/src/UD60x18.sol";
+import { ZERO } from "@prb/math/src/UD60x18.sol";
 import { ISablierLockup } from "@sablier/lockup/interfaces/ISablierLockup.sol";
 import { Broker, Lockup, LockupLinear } from "@sablier/lockup/types/DataTypes.sol";
 
@@ -95,7 +95,7 @@ contract SablierMerkleLL is
                 cancelable: CANCELABLE,
                 transferable: TRANSFERABLE,
                 timestamps: timestamps,
-                broker: Broker({ account: address(0), fee: ud(0) })
+                broker: Broker({ account: address(0), fee: ZERO })
             }),
             LockupLinear.UnlockAmounts({ start: schedule.startAmount, cliff: schedule.cliffAmount }),
             cliffTime

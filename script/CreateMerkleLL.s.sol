@@ -24,7 +24,7 @@ contract CreateMerkleLL is BaseScript {
         baseParams.merkleRoot = 0x0000000000000000000000000000000000000000000000000000000000000000;
         baseParams.name = "The Boys LL";
 
-        // Deploy MerkleLL contract.
+        // Deploy the MerkleLL contract.
         // TODO: Update address once deployed.
         merkleLL = merkleFactory.createMerkleLL({
             baseParams: baseParams,

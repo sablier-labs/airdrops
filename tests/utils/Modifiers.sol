@@ -19,6 +19,10 @@ abstract contract Modifiers is Utils {
         users = _users;
     }
 
+    /*//////////////////////////////////////////////////////////////////////////
+                                       GIVEN
+    //////////////////////////////////////////////////////////////////////////*/
+
     modifier givenCampaignNotExists() {
         _;
     }
@@ -39,6 +43,10 @@ abstract contract Modifiers is Utils {
         vm.warp({ newTimestamp: getBlockTimestamp() + 8 days });
         _;
     }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                        WHEN
+    //////////////////////////////////////////////////////////////////////////*/
 
     modifier whenAmountValid() {
         _;

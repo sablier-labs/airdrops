@@ -92,8 +92,10 @@ contract SablierMerkleFactory is
     function setSablierFeeByUser(address campaignCreator, uint256 fee) external override onlyAdmin {
         MerkleFactory.SablierFeeByUser storage feeByUser = _sablierFeeByUsers[campaignCreator];
 
-        // Check: if user does not belong to the custom fee list.
-        if (!feeByUser.enabled) feeByUser.enabled = true;
+        // Check: if the user is not in the custom fee list.
+        if (!feeByUser.enabled) {
+            feeByUser.enabled = true;
+        }
 
         // Effect: update the Sablier fee for the given campaign creator.
         feeByUser.fee = fee;

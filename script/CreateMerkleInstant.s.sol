@@ -25,7 +25,7 @@ contract CreateMerkleInstant is BaseScript {
         uint256 campaignTotalAmount = 10_000e18;
         uint256 recipientCount = 100;
 
-        // Deploy MerkleInstant contract.
+        // Deploy the MerkleInstant contract.
         merkleInstant = merkleFactory.createMerkleInstant(baseParams, campaignTotalAmount, recipientCount);
     }
 }
