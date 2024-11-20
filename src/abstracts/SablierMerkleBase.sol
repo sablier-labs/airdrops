@@ -31,13 +31,13 @@ abstract contract SablierMerkleBase is
     address public immutable override FACTORY;
 
     /// @inheritdoc ISablierMerkleBase
+    uint256 public immutable override FEE;
+
+    /// @inheritdoc ISablierMerkleBase
     bytes32 public immutable override MERKLE_ROOT;
 
     /// @dev The name of the campaign stored as bytes32.
     bytes32 internal immutable NAME;
-
-    /// @inheritdoc ISablierMerkleBase
-    uint256 public immutable override SABLIER_FEE;
 
     /// @inheritdoc ISablierMerkleBase
     IERC20 public immutable override TOKEN;
@@ -56,7 +56,7 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Constructs the contract by initializing the immutable state variables.
-    constructor(MerkleBase.ConstructorParams memory params, uint256 sablierFee) Adminable(params.initialAdmin) {
+    constructor(MerkleBase.ConstructorParams memory params, uint256 fee) Adminable(params.initialAdmin) {
         // Check: the campaign name is not greater than 32 bytes
         if (bytes(params.name).length > 32) {
             revert Errors.SablierMerkleBase_CampaignNameTooLong({ nameLength: bytes(params.name).length, maxLength: 32 });
@@ -65,10 +65,10 @@ abstract contract SablierMerkleBase is
         TOKEN = params.token;
         EXPIRATION = params.expiration;
         FACTORY = msg.sender;
+        FEE = fee;
         ipfsCID = params.ipfsCID;
         MERKLE_ROOT = params.merkleRoot;
         NAME = bytes32(abi.encodePacked(params.name));
-        SABLIER_FEE = sablierFee;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -115,9 +115,9 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CampaignExpired({ blockTimestamp: block.timestamp, expiration: EXPIRATION });
         }
 
-        // Check: `msg.value` is not less than the Sablier fee.
-        if (msg.value < SABLIER_FEE) {
-            revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, SABLIER_FEE);
+        // Check: `msg.value` is not less than the fee.
+        if (msg.value < FEE) {
+            revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, FEE);
         }
 
         // Check: the index has not been claimed.

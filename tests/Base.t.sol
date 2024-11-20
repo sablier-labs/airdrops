@@ -72,8 +72,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         // Deploy the protocol.
         deployProtocolConditionally();
 
-        // Set the Sablier fee on the Merkle factory.
-        merkleFactory.setDefaultSablierFee(defaults.DEFAULT_SABLIER_FEE());
+        // Set the default fee on the Merkle factory.
+        merkleFactory.setDefaultFee(defaults.DEFAULT_FEE());
 
         // Create users for testing.
         users.campaignOwner = createUser("CampaignOwner");
@@ -155,7 +155,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     /// @dev Expects a call to {ISablierMerkleBase.claim} with data provided.
     function expectCallToClaimWithData(
         address merkleLockup,
-        uint256 sablierFee,
+        uint256 fee,
         uint256 index,
         address recipient,
         uint128 amount,
@@ -164,7 +164,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         internal
     {
         vm.expectCall(
-            merkleLockup, sablierFee, abi.encodeCall(ISablierMerkleBase.claim, (index, recipient, amount, merkleProof))
+            merkleLockup, fee, abi.encodeCall(ISablierMerkleBase.claim, (index, recipient, amount, merkleProof))
         );
     }
 
@@ -190,7 +190,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
-        uint256 sablierFee
+        uint256 fee
     )
         internal
         view
@@ -208,7 +208,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             )
         );
         bytes32 creationBytecodeHash =
-            keccak256(getMerkleInstantBytecode(campaignOwner, token_, merkleRoot, expiration, sablierFee));
+            keccak256(getMerkleInstantBytecode(campaignOwner, token_, merkleRoot, expiration, fee));
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -222,7 +222,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
-        uint256 sablierFee
+        uint256 fee
     )
         internal
         view
@@ -244,7 +244,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             )
         );
         bytes32 creationBytecodeHash =
-            keccak256(getMerkleLLBytecode(campaignOwner, token_, merkleRoot, expiration, sablierFee));
+            keccak256(getMerkleLLBytecode(campaignOwner, token_, merkleRoot, expiration, fee));
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -258,7 +258,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
-        uint256 sablierFee
+        uint256 fee
     )
         internal
         view
@@ -281,7 +281,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             )
         );
         bytes32 creationBytecodeHash =
-            keccak256(getMerkleLTBytecode(campaignOwner, token_, merkleRoot, expiration, sablierFee));
+            keccak256(getMerkleLTBytecode(campaignOwner, token_, merkleRoot, expiration, fee));
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -294,14 +294,14 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
-        uint256 sablierFee
+        uint256 fee
     )
         internal
         view
         returns (bytes memory)
     {
         bytes memory constructorArgs =
-            abi.encode(defaults.baseParams(campaignOwner, token_, expiration, merkleRoot), sablierFee);
+            abi.encode(defaults.baseParams(campaignOwner, token_, expiration, merkleRoot), fee);
         if (!isTestOptimizedProfile()) {
             return bytes.concat(type(SablierMerkleInstant).creationCode, constructorArgs);
         } else {
@@ -316,7 +316,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
-        uint256 sablierFee
+        uint256 fee
     )
         internal
         view
@@ -328,7 +328,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             defaults.CANCELABLE(),
             defaults.TRANSFERABLE(),
             defaults.schedule(),
-            sablierFee
+            fee
         );
         if (!isTestOptimizedProfile()) {
             return bytes.concat(type(SablierMerkleLL).creationCode, constructorArgs);
@@ -342,7 +342,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         IERC20 token_,
         bytes32 merkleRoot,
         uint40 expiration,
-        uint256 sablierFee
+        uint256 fee
     )
         internal
         view
@@ -355,7 +355,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             defaults.TRANSFERABLE(),
             defaults.STREAM_START_TIME_ZERO(),
             defaults.tranchesWithPercentages(),
-            sablierFee
+            fee
         );
         if (!isTestOptimizedProfile()) {
             return bytes.concat(type(SablierMerkleLT).creationCode, constructorArgs);

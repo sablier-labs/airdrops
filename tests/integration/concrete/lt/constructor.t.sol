@@ -18,7 +18,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         address actualLockup;
         bytes32 actualMerkleRoot;
         string actualName;
-        uint256 actualSablierFee;
+        uint256 actualFee;
         uint40 actualStreamStartTime;
         address actualToken;
         uint64 actualTotalPercentage;
@@ -33,7 +33,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         address expectedLockup;
         bytes32 expectedMerkleRoot;
         bytes32 expectedName;
-        uint256 expectedSablierFee;
+        uint256 expectedFee;
         uint40 expectedStreamStartTime;
         address expectedToken;
         uint64 expectedTotalPercentage;
@@ -52,7 +52,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
             defaults.TRANSFERABLE(),
             defaults.STREAM_START_TIME_ZERO(),
             defaults.tranchesWithPercentages(),
-            defaults.DEFAULT_SABLIER_FEE()
+            defaults.DEFAULT_FEE()
         );
 
         Vars memory vars;
@@ -97,9 +97,9 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedName = defaults.NAME_BYTES32();
         assertEq(bytes32(abi.encodePacked(vars.actualName)), vars.expectedName, "name");
 
-        vars.actualSablierFee = constructedLT.SABLIER_FEE();
-        vars.expectedSablierFee = defaults.DEFAULT_SABLIER_FEE();
-        assertEq(vars.actualSablierFee, vars.expectedSablierFee, "sablierFee");
+        vars.actualFee = constructedLT.FEE();
+        vars.expectedFee = defaults.DEFAULT_FEE();
+        assertEq(vars.actualFee, vars.expectedFee, "fee");
 
         vars.actualStreamStartTime = constructedLT.STREAM_START_TIME();
         vars.expectedStreamStartTime = defaults.STREAM_START_TIME_ZERO();

@@ -99,10 +99,10 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        uint256 sablierFee = defaults.DEFAULT_SABLIER_FEE();
+        uint256 fee = defaults.DEFAULT_FEE();
 
         vars.expectedMerkleInstant = computeMerkleInstantAddress(
-            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration, sablierFee
+            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration, fee
         );
 
         vars.baseParams = defaults.baseParams({
@@ -118,7 +118,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             baseParams: vars.baseParams,
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount,
-            sablierFee: sablierFee
+            fee: fee
         });
 
         vars.merkleInstant = merkleFactory.createMerkleInstant({
@@ -171,7 +171,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
 
         expectCallToClaimWithData({
             merkleLockup: address(vars.merkleInstant),
-            sablierFee: sablierFee,
+            fee: fee,
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -184,7 +184,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             value: vars.amounts[params.posBeforeSort]
         });
 
-        vars.merkleInstant.claim{ value: sablierFee }({
+        vars.merkleInstant.claim{ value: fee }({
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -222,15 +222,15 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
         resetPrank({ msgSender: users.admin });
 
         vm.expectEmit({ emitter: address(merkleFactory) });
-        emit ISablierMerkleFactory.WithdrawSablierFees({
+        emit ISablierMerkleFactory.WithdrawFees({
             admin: users.admin,
             merkleBase: vars.merkleInstant,
             to: users.admin,
-            sablierFees: sablierFee
+            fees: fee
         });
         merkleFactory.withdrawFees({ to: payable(users.admin), merkleBase: vars.merkleInstant });
 
         assertEq(address(vars.merkleInstant).balance, 0, "merkle lockup ether balance");
-        assertEq(users.admin.balance, sablierFee, "admin ether balance");
+        assertEq(users.admin.balance, fee, "admin ether balance");
     }
 }

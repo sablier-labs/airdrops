@@ -27,7 +27,7 @@ library MerkleFactory {
     /// @param enabled Whether the fee is enabled. If false, the default fee will be applied for campaigns created by
     /// the given creator.
     /// @param fee The fee amount.
-    struct SablierFeeByUser {
+    struct CustomFee {
         bool enabled;
         uint256 fee;
     }

@@ -14,7 +14,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         string actualIpfsCID;
         bytes32 actualMerkleRoot;
         string actualName;
-        uint256 actualSablierFee;
+        uint256 actualFee;
         address actualToken;
         address expectedAdmin;
         uint40 expectedExpiration;
@@ -22,7 +22,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         string expectedIpfsCID;
         bytes32 expectedMerkleRoot;
         bytes32 expectedName;
-        uint256 expectedSablierFee;
+        uint256 expectedFee;
         address expectedToken;
     }
 
@@ -31,7 +31,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         resetPrank(address(merkleFactory));
 
         SablierMerkleInstant constructedInstant =
-            new SablierMerkleInstant(defaults.baseParams(), defaults.DEFAULT_SABLIER_FEE());
+            new SablierMerkleInstant(defaults.baseParams(), defaults.DEFAULT_FEE());
 
         Vars memory vars;
 
@@ -63,8 +63,8 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         vars.expectedName = defaults.NAME_BYTES32();
         assertEq(bytes32(abi.encodePacked(vars.actualName)), vars.expectedName, "name");
 
-        vars.actualSablierFee = constructedInstant.SABLIER_FEE();
-        vars.expectedSablierFee = defaults.DEFAULT_SABLIER_FEE();
-        assertEq(vars.actualSablierFee, vars.expectedSablierFee, "sablierFee");
+        vars.actualFee = constructedInstant.FEE();
+        vars.expectedFee = defaults.DEFAULT_FEE();
+        assertEq(vars.actualFee, vars.expectedFee, "fee");
     }
 }

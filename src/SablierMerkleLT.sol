@@ -56,9 +56,9 @@ contract SablierMerkleLT is
         bool transferable,
         uint40 streamStartTime,
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages,
-        uint256 sablierFee
+        uint256 fee
     )
-        SablierMerkleBase(baseParams, sablierFee)
+        SablierMerkleBase(baseParams, fee)
     {
         CANCELABLE = cancelable;
         LOCKUP = lockup;

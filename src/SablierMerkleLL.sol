@@ -47,9 +47,9 @@ contract SablierMerkleLL is
         bool cancelable,
         bool transferable,
         MerkleLL.Schedule memory schedule_,
-        uint256 sablierFee
+        uint256 fee
     )
-        SablierMerkleBase(baseParams, sablierFee)
+        SablierMerkleBase(baseParams, fee)
     {
         CANCELABLE = cancelable;
         LOCKUP = lockup;

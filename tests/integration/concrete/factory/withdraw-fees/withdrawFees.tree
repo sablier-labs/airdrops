@@ -11,11 +11,11 @@ WithdrawFees_Integration_Test
          ├── when provided address not contract
          │  ├── it should transfer fee collected in ETH to the provided address
          │  ├── it should set the ETH balance to 0
-         │  └── it should emit {WithdrawSablierFees} event
+         │  └── it should emit {WithdrawFees} event
          └── when provided address contract
             ├── when provided address not implement receive eth
             │  └── it should revert
             └── when provided address implement receive eth
                ├── it should transfer fee collected in ETH to the provided address
                ├── it should set the ETH balance to 0
-               └── it should emit {WithdrawSablierFees} event
+               └── it should emit {WithdrawFees} event

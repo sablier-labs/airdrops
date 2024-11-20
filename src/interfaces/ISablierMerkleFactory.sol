@@ -28,7 +28,7 @@ interface ISablierMerkleFactory is IAdminable {
         MerkleBase.ConstructorParams baseParams,
         uint256 aggregateAmount,
         uint256 recipientCount,
-        uint256 sablierFee
+        uint256 fee
     );
 
     /// @notice Emitted when a {SablierMerkleLL} campaign is created.
@@ -41,7 +41,7 @@ interface ISablierMerkleFactory is IAdminable {
         MerkleLL.Schedule schedule,
         uint256 aggregateAmount,
         uint256 recipientCount,
-        uint256 sablierFee
+        uint256 fee
     );
 
     /// @notice Emitted when a {SablierMerkleLT} campaign is created.
@@ -56,26 +56,28 @@ interface ISablierMerkleFactory is IAdminable {
         uint256 totalDuration,
         uint256 aggregateAmount,
         uint256 recipientCount,
-        uint256 sablierFee
+        uint256 fee
     );
 
-    /// @notice Emitted when the admin resets Sablier fee to default for a specific user.
-    event ResetSablierFee(address indexed admin, address indexed campaignCreator);
+    /// @notice Emitted when the admin resets the custom fee for the provided campaign creator to the default fee.
+    event ResetCustomFee(address indexed admin, address indexed campaignCreator);
 
-    /// @notice Emitted when the default Sablier fee is set by the admin.
-    event SetDefaultSablierFee(address indexed admin, uint256 defaultSablierFee);
+    /// @notice Emitted when the admin sets a custom fee for the provided campaign creator.
+    event SetCustomFee(address indexed admin, address indexed campaignCreator, uint256 customFee);
 
-    /// @notice Emitted when the admin sets Sablier fee for a specific user.
-    event SetSablierFeeForUser(address indexed admin, address indexed campaignCreator, uint256 sablierFee);
+    /// @notice Emitted when the default fee is set by the admin.
+    event SetDefaultFee(address indexed admin, uint256 defaultFee);
 
-    /// @notice Emitted when the Sablier fees are claimed by the Sablier admin.
-    event WithdrawSablierFees(
-        address indexed admin, ISablierMerkleBase indexed merkleBase, address to, uint256 sablierFees
-    );
+    /// @notice Emitted when the fees are claimed by the Sablier admin.
+    event WithdrawFees(address indexed admin, ISablierMerkleBase indexed merkleBase, address to, uint256 fees);
 
     /*//////////////////////////////////////////////////////////////////////////
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Retrieves the custom fee struct for the provided campaign creator.
+    /// @param campaignCreator The address of the user for whom the details are being retrieved.
+    function customFee(address campaignCreator) external view returns (MerkleFactory.CustomFee memory);
 
     /// @notice Verifies if the sum of percentages in `tranches` equals 100%, i.e. 1e18.
     /// @dev Reverts if the sum of percentages overflows.
@@ -86,13 +88,9 @@ interface ISablierMerkleFactory is IAdminable {
         pure
         returns (bool result);
 
-    /// @notice Retrieves the default Sablier fee required to claim an airstream.
+    /// @notice Retrieves the default fee required to claim an airdrop.
     /// @dev A minimum of this fee must be paid in ETH during {SablierMerkleBase.claim}.
-    function defaultSablierFee() external view returns (uint256);
-
-    /// @notice Retrieves the custom Sablier fee struct for a specified campaign creator.
-    /// @param campaignCreator the address of the user for whom the details are being retrieved.
-    function sablierFeeByUser(address campaignCreator) external view returns (MerkleFactory.SablierFeeByUser memory);
+    function defaultFee() external view returns (uint256);
 
     /*//////////////////////////////////////////////////////////////////////////
                                NON-CONSTANT FUNCTIONS
@@ -104,7 +102,7 @@ interface ISablierMerkleFactory is IAdminable {
     ///
     /// Notes:
     /// - The MerkleInstant contract is created with CREATE2.
-    /// - The immutable Sablier fee will be set to the default value unless a custom fee is set.
+    /// - The immutable fee will be set to the default value unless a custom fee is set.
     ///
     /// @param baseParams Struct encapsulating the {SablierMerkleBase} parameters, which are documented in
     /// {DataTypes}.
@@ -125,7 +123,7 @@ interface ISablierMerkleFactory is IAdminable {
     ///
     /// Notes:
     /// - The MerkleLL contract is created with CREATE2.
-    /// - The immutable Sablier fee will be set to the default value unless a custom fee is set.
+    /// - The immutable fee will be set to the default value unless a custom fee is set.
     ///
     /// @param baseParams Struct encapsulating the {SablierMerkleBase} parameters, which are documented in
     /// {DataTypes}.
@@ -154,7 +152,7 @@ interface ISablierMerkleFactory is IAdminable {
     ///
     /// Notes:
     /// - The MerkleLT contract is created with CREATE2.
-    /// - The immutable Sablier fee will be set to the default value unless a custom fee is set.
+    /// - The immutable fee will be set to the default value unless a custom fee is set.
     ///
     /// @param baseParams Struct encapsulating the {SablierMerkleBase} parameters, which are documented in
     /// {DataTypes}.
@@ -179,33 +177,33 @@ interface ISablierMerkleFactory is IAdminable {
         external
         returns (ISablierMerkleLT merkleLT);
 
-    /// @notice Resets the Sablier fee to default.
-    /// @dev Emits a {ResetSablierFee} event.
+    /// @notice Resets the custom fee for the provided campaign creator to the default fee.
+    /// @dev Emits a {ResetCustomFee} event.
     ///
     /// Notes:
-    /// - The default fee will only be applied to the future campaigns.
+    /// - The default fee will only be applied to future campaigns.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
     ///
-    /// @param campaignCreator The user for whom the fee is being reset for.
-    function resetSablierFeeByUser(address campaignCreator) external;
+    /// @param campaignCreator The user for whom the fee is reset for.
+    function resetCustomFee(address campaignCreator) external;
 
-    /// @notice Sets the custom Sablier fee for a campaign creator.
-    /// @dev Emits a {SetSablierFee} event.
+    /// @notice Sets a custom fee for the provided campaign creator.
+    /// @dev Emits a {SetCustomFee} event.
     ///
     /// Notes:
-    /// - The new fee will only be applied to the future campaigns.
+    /// - The new fee will only be applied to future campaigns.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
     ///
-    /// @param campaignCreator The user for whom the fee is being set.
-    /// @param fee The new fee to be set.
-    function setSablierFeeByUser(address campaignCreator, uint256 fee) external;
+    /// @param campaignCreator The user for whom the fee is set.
+    /// @param newFee The new fee to be set.
+    function setCustomFee(address campaignCreator, uint256 newFee) external;
 
-    /// @notice Sets the default Sablier fee for claiming an airstream.
-    /// @dev Emits a {SetDefaultSablierFee} event.
+    /// @notice Sets the default fee to be applied when claiming airdrops.
+    /// @dev Emits a {SetDefaultFee} event.
     ///
     /// Notes:
     /// - The new default fee will only be applied to the future campaigns and will not affect the ones already
@@ -215,10 +213,10 @@ interface ISablierMerkleFactory is IAdminable {
     /// - `msg.sender` must be the admin.
     ///
     /// @param defaultFee The new default fee to be set.
-    function setDefaultSablierFee(uint256 defaultFee) external;
+    function setDefaultFee(uint256 defaultFee) external;
 
-    /// @notice Withdraws the Sablier fees accrued in the `merkleBase` contract.
-    /// @dev Emits a {WithdrawSablierFees} event.
+    /// @notice Withdraws the fees accrued in the `merkleBase` contract.
+    /// @dev Emits a {WithdrawFees} event.
     ///
     /// Notes:
     /// - This function transfers ETH to the provided address. If the receiver is a contract, it must be able to receive
@@ -228,6 +226,6 @@ interface ISablierMerkleFactory is IAdminable {
     /// - `msg.sender` must be the admin.
     /// - `to` must not be the zero address.
     ///
-    /// @param to The address to receive the Sablier fees.
+    /// @param to The address to transfer the fees to.
     function withdrawFees(address payable to, ISablierMerkleBase merkleBase) external;
 }

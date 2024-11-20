@@ -18,7 +18,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         address actualLockup;
         bytes32 actualMerkleRoot;
         string actualName;
-        uint256 actualSablierFee;
+        uint256 actualFee;
         MerkleLL.Schedule actualSchedule;
         address actualToken;
         bool actualTransferable;
@@ -31,7 +31,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         address expectedLockup;
         bytes32 expectedMerkleRoot;
         bytes32 expectedName;
-        uint256 expectedSablierFee;
+        uint256 expectedFee;
         MerkleLL.Schedule expectedSchedule;
         address expectedToken;
         bool expectedTransferable;
@@ -47,7 +47,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
             defaults.CANCELABLE(),
             defaults.TRANSFERABLE(),
             defaults.schedule(),
-            defaults.DEFAULT_SABLIER_FEE()
+            defaults.DEFAULT_FEE()
         );
 
         Vars memory vars;
@@ -110,8 +110,8 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.expectedTransferable = defaults.TRANSFERABLE();
         assertEq(vars.actualTransferable, vars.expectedTransferable, "transferable");
 
-        vars.actualSablierFee = constructedLL.SABLIER_FEE();
-        vars.expectedSablierFee = defaults.DEFAULT_SABLIER_FEE();
-        assertEq(vars.actualSablierFee, vars.expectedSablierFee, "sablierFee");
+        vars.actualFee = constructedLL.FEE();
+        vars.expectedFee = defaults.DEFAULT_FEE();
+        assertEq(vars.actualFee, vars.expectedFee, "fee");
     }
 }

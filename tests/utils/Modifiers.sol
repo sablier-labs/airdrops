@@ -31,7 +31,7 @@ abstract contract Modifiers is Utils {
         _;
     }
 
-    modifier givenMsgValueNotLessThanSablierFee() {
+    modifier givenMsgValueNotLessThanFee() {
         _;
     }
 

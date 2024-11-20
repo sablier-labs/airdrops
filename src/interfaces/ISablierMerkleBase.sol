@@ -25,12 +25,12 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice Retrieves the address of the factory contract.
     function FACTORY() external view returns (address);
 
+    /// @notice Retrieves the minimum fee required to claim an Airstream, paid in ETH.
+    function FEE() external view returns (uint256);
+
     /// @notice The root of the Merkle tree used to validate the proofs of inclusion.
     /// @dev This is an immutable state variable.
     function MERKLE_ROOT() external returns (bytes32);
-
-    /// @notice Retrieves the minimum fee required to claim an Airstream, paid in ETH.
-    function SABLIER_FEE() external view returns (uint256);
 
     /// @notice The ERC-20 token to distribute.
     /// @dev This is an immutable state variable.
@@ -66,7 +66,7 @@ interface ISablierMerkleBase is IAdminable {
     /// - The campaign must not have expired.
     /// - The stream must not have been claimed already.
     /// - The Merkle proof must be valid.
-    /// - The `msg.value` must not be less than `SABLIER_FEE`.
+    /// - The `msg.value` must not be less than `FEE`.
     ///
     /// @param index The index of the recipient in the Merkle tree.
     /// @param recipient The address of the airdrop recipient.
@@ -88,7 +88,7 @@ interface ISablierMerkleBase is IAdminable {
     /// @param amount The amount of tokens to claw back.
     function clawback(address to, uint128 amount) external;
 
-    /// @notice Withdraws the Sablier fees accrued to the provided address.
+    /// @notice Withdraws the accrued fees to the provided address.
     ///
     /// @dev This function transfers ETH to the provided address. If the receiver is a contract, it must be able to
     /// receive ETH.
@@ -96,7 +96,7 @@ interface ISablierMerkleBase is IAdminable {
     /// Requirements:
     /// - msg.sender must be the `FACTORY` contract.
     ///
-    /// @param to The address to receive the Sablier fees.
+    /// @param to The address to transfer the fees to.
     /// @return feeAmount The amount of ETH transferred to the provided address.
     function withdrawFees(address payable to) external returns (uint256 feeAmount);
 }

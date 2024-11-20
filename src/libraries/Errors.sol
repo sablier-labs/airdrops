@@ -33,11 +33,11 @@ library Errors {
     /// not expired.
     error SablierMerkleBase_ClawbackNotAllowed(uint256 blockTimestamp, uint40 expiration, uint40 firstClaimTime);
 
-    /// @notice Thrown if the Sablier fees withdraw failed.
+    /// @notice Thrown if the fees withdrawal failed.
     error SablierMerkleBase_FeeWithdrawFailed(address to, uint256 amount);
 
     /// @notice Thrown when trying to claim with an insufficient fee payment.
-    error SablierMerkleBase_InsufficientFeePayment(uint256 feePaid, uint256 sablierFee);
+    error SablierMerkleBase_InsufficientFeePayment(uint256 feePaid, uint256 fee);
 
     /// @notice Thrown when trying to claim with an invalid Merkle proof.
     error SablierMerkleBase_InvalidProof();

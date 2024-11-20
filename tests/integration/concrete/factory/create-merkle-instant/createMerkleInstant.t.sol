@@ -53,9 +53,9 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         whenNameNotTooLong
         givenCampaignNotExists
     {
-        // Set the Sablier fee to 0 for this test.
+        // Set the custom fee to 0 for this test.
         resetPrank(users.admin);
-        merkleFactory.setSablierFeeByUser(users.campaignOwner, customFee);
+        merkleFactory.setCustomFee(users.campaignOwner, customFee);
 
         resetPrank(users.campaignOwner);
         address expectedMerkleInstant = computeMerkleInstantAddress(campaignOwner, expiration, customFee);
@@ -74,7 +74,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             baseParams: baseParams,
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT(),
-            sablierFee: customFee
+            fee: customFee
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
@@ -84,7 +84,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         );
 
         // It should create the campaign with custom fee.
-        assertEq(actualInstant.SABLIER_FEE(), customFee, "sablier fee");
+        assertEq(actualInstant.FEE(), customFee, "fee");
 
         // It should set the current factory address.
         assertEq(actualInstant.FACTORY(), address(merkleFactory), "factory");
@@ -114,7 +114,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             baseParams: baseParams,
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT(),
-            sablierFee: defaults.DEFAULT_SABLIER_FEE()
+            fee: defaults.DEFAULT_FEE()
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
@@ -124,7 +124,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         );
 
         // It should create the campaign with custom fee.
-        assertEq(actualInstant.SABLIER_FEE(), defaults.DEFAULT_SABLIER_FEE(), "default sablier fee");
+        assertEq(actualInstant.FEE(), defaults.DEFAULT_FEE(), "default fee");
 
         // It should set the current factory address.
         assertEq(actualInstant.FACTORY(), address(merkleFactory), "factory");
