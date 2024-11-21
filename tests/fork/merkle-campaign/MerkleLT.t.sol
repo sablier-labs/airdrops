@@ -249,19 +249,11 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
                                         WITHDRAW-FEE
         //////////////////////////////////////////////////////////////////////////*/
 
-        // Make the factory admin as the caller.
-        resetPrank({ msgSender: users.admin });
-
         vm.expectEmit({ emitter: address(merkleFactory) });
-        emit ISablierMerkleFactory.WithdrawFees({
-            admin: users.admin,
-            merkleBase: vars.merkleLT,
-            to: users.admin,
-            fees: fee
-        });
-        merkleFactory.withdrawFees({ to: payable(users.admin), merkleBase: vars.merkleLT });
+        emit ISablierMerkleFactory.WithdrawFees({ admin: users.admin, merkleBase: vars.merkleLT, feeAmount: fee });
+        merkleFactory.withdrawFees({ merkleBase: vars.merkleLT });
 
-        assertEq(address(vars.merkleLT).balance, 0, "merkle lockup ether balance");
-        assertEq(users.admin.balance, fee, "admin ether balance");
+        assertEq(address(vars.merkleLT).balance, 0, "merkleLT ETH balance");
+        assertEq(users.admin.balance, fee, "admin ETH balance");
     }
 }

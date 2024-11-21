@@ -68,8 +68,8 @@ interface ISablierMerkleFactory is IAdminable {
     /// @notice Emitted when the default fee is set by the admin.
     event SetDefaultFee(address indexed admin, uint256 defaultFee);
 
-    /// @notice Emitted when the fees are claimed by the Sablier admin.
-    event WithdrawFees(address indexed admin, ISablierMerkleBase indexed merkleBase, address to, uint256 fees);
+    /// @notice Emitted when the accrued fee is sent to the admin.
+    event WithdrawFees(address indexed admin, ISablierMerkleBase indexed merkleBase, uint256 feeAmount);
 
     /*//////////////////////////////////////////////////////////////////////////
                                  CONSTANT FUNCTIONS
@@ -215,17 +215,12 @@ interface ISablierMerkleFactory is IAdminable {
     /// @param defaultFee The new default fee to be set.
     function setDefaultFee(uint256 defaultFee) external;
 
-    /// @notice Withdraws the fees accrued in the `merkleBase` contract.
+    /// @notice Withdraws the accrued fees in the `merkleBase` contract and transfers it to the factory admin.
     /// @dev Emits a {WithdrawFees} event.
     ///
     /// Notes:
-    /// - This function transfers ETH to the provided address. If the receiver is a contract, it must be able to receive
-    /// ETH.
+    /// - If the admin is a contract, it must be able to receive ETH.
     ///
-    /// Requirements:
-    /// - `msg.sender` must be the admin.
-    /// - `to` must not be the zero address.
-    ///
-    /// @param to The address to transfer the fees to.
-    function withdrawFees(address payable to, ISablierMerkleBase merkleBase) external;
+    /// @param merkleBase The address of the merkle contract from which the fees are withdrawn.
+    function withdrawFees(ISablierMerkleBase merkleBase) external;
 }

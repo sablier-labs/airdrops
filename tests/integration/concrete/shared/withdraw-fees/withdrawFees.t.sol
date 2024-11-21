@@ -26,39 +26,49 @@ abstract contract WithdrawFees_Integration_Test is Integration_Test {
         _;
     }
 
-    function test_WhenProvidedAddressNotContract() external whenCallerFactory {
-        uint256 previousToBalance = users.admin.balance;
-
-        merkleBase.withdrawFees(users.admin);
-
-        // It should set the ETH balance to 0.
-        assertEq(address(merkleBase).balance, 0, "merkle lockup eth balance");
-        // It should transfer fee collected in ETH to the provided address.
-        assertEq(users.admin.balance, previousToBalance + defaults.DEFAULT_FEE(), "eth balance");
+    function test_WhenFactoryAdminIsNotContract() external whenCallerFactory {
+        _test_WithdrawFees(users.admin);
     }
 
-    function test_RevertWhen_ProvidedAddressNotImplementReceiveEth()
+    function test_RevertWhen_FactoryAdminDoesNotImplementReceiveFunction()
         external
         whenCallerFactory
-        whenProvidedAddressContract
+        whenFactoryAdminIsContract
     {
-        address payable noReceiveEth = payable(address(contractWithoutReceiveEth));
+        // Transfer the admin to a contract that implements the receive function.
+        resetPrank({ msgSender: users.admin });
+        merkleFactory.transferAdmin(address(contractWithoutReceiveEth));
+
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleBase_FeeWithdrawFailed.selector, noReceiveEth, address(merkleBase).balance
+                Errors.SablierMerkleBase_FeeTransferFail.selector,
+                address(contractWithoutReceiveEth),
+                address(merkleBase).balance
             )
         );
-        merkleBase.withdrawFees(noReceiveEth);
+
+        resetPrank(address(merkleFactory));
+        merkleBase.withdrawFees(address(contractWithoutReceiveEth));
     }
 
-    function test_WhenProvidedAddressImplementReceiveEth() external whenCallerFactory whenProvidedAddressContract {
-        address payable receiveEth = payable(address(contractWithReceiveEth));
+    function test_WhenFactoryAdminImplementsReceiveFunction() external whenCallerFactory whenFactoryAdminIsContract {
+        // Transfer the admin to a contract that implements the receive function.
+        resetPrank({ msgSender: users.admin });
+        merkleFactory.transferAdmin(address(contractWithoutReceiveEth));
 
-        merkleBase.withdrawFees(receiveEth);
+        _test_WithdrawFees(address(contractWithReceiveEth));
+    }
+
+    function _test_WithdrawFees(address admin) private {
+        // Load the initial ETH balance of the admin.
+        uint256 initialAdminBalance = admin.balance;
+
+        resetPrank(address(merkleFactory));
+        merkleBase.withdrawFees(admin);
 
         // It should set the ETH balance to 0.
-        assertEq(address(merkleBase).balance, 0, "merkle lockup eth balance");
-        // It should transfer fee collected in ETH to the provided address.
-        assertEq(receiveEth.balance, defaults.DEFAULT_FEE(), "eth balance");
+        assertEq(address(merkleBase).balance, 0, "merkle lockup ETH balance");
+        // It should transfer fee collected in ETH to the factory admin.
+        assertEq(admin.balance, initialAdminBalance + defaults.DEFAULT_FEE(), "admin ETH balance");
     }
 }

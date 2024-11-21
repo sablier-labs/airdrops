@@ -19,80 +19,70 @@ contract WithdrawFees_Integration_Test is Integration_Test {
         claim();
     }
 
-    function test_RevertWhen_CallerNotAdmin() external {
-        resetPrank(users.eve);
-
-        vm.expectRevert(abi.encodeWithSelector(Errors.CallerNotAdmin.selector, users.admin, users.eve));
-        merkleFactory.withdrawFees(users.eve, merkleBase);
-    }
-
-    function test_RevertWhen_WithdrawalAddressZero() external whenCallerAdmin {
-        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleFactory_WithdrawToZeroAddress.selector));
-        merkleFactory.withdrawFees(payable(address(0)), merkleBase);
-    }
-
-    function test_RevertWhen_ProvidedMerkleLockupNotValid() external whenCallerAdmin whenWithdrawalAddressNotZero {
+    function test_RevertWhen_ProvidedMerkleLockupNotValid() external {
         vm.expectRevert();
-        merkleFactory.withdrawFees(users.eve, ISablierMerkleBase(users.eve));
+        merkleFactory.withdrawFees(ISablierMerkleBase(users.eve));
     }
 
-    function test_WhenProvidedAddressNotContract() external whenCallerAdmin whenProvidedMerkleLockupValid {
-        uint256 previousToBalance = users.eve.balance;
-
-        // It should emit {WithdrawFees} event.
-        vm.expectEmit({ emitter: address(merkleFactory) });
-        emit ISablierMerkleFactory.WithdrawFees({
-            admin: users.admin,
-            merkleBase: merkleBase,
-            to: users.eve,
-            fees: defaults.DEFAULT_FEE()
-        });
-
-        merkleFactory.withdrawFees(users.eve, merkleBase);
-
-        // It should set the ETH balance to 0.
-        assertEq(address(merkleBase).balance, 0, "merkle lockup eth balance");
-        // It should transfer fee collected in ETH to the provided address.
-        assertEq(users.eve.balance, previousToBalance + defaults.DEFAULT_FEE(), "eth balance");
+    function test_WhenFactoryAdminIsNotContract() external whenProvidedMerkleLockupValid {
+        _test_WithdrawFees(users.admin);
     }
 
-    function test_RevertWhen_ProvidedAddressNotImplementReceiveEth()
+    function test_RevertWhen_FactoryAdminDoesNotImplementReceiveFunction()
         external
-        whenCallerAdmin
         whenProvidedMerkleLockupValid
-        whenProvidedAddressContract
+        whenFactoryAdminIsContract
     {
-        address payable noReceiveEth = payable(address(contractWithoutReceiveEth));
+        // Transfer the admin to a contract that does not implement the receive function.
+        resetPrank({ msgSender: users.admin });
+        merkleFactory.transferAdmin(address(contractWithoutReceiveEth));
+
+        // Make the contract the caller.
+        resetPrank({ msgSender: address(contractWithoutReceiveEth) });
+
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleBase_FeeWithdrawFailed.selector, noReceiveEth, address(merkleBase).balance
+                Errors.SablierMerkleBase_FeeTransferFail.selector,
+                address(contractWithoutReceiveEth),
+                address(merkleBase).balance
             )
         );
-        merkleFactory.withdrawFees(noReceiveEth, merkleBase);
+        merkleFactory.withdrawFees(merkleBase);
     }
 
-    function test_WhenProvidedAddressImplementReceiveEth()
+    function test_WhenFactoryAdminImplementsReceiveFunction()
         external
-        whenCallerAdmin
         whenProvidedMerkleLockupValid
-        whenProvidedAddressContract
+        whenFactoryAdminIsContract
     {
-        address payable receiveEth = payable(address(contractWithReceiveEth));
+        // Transfer the admin to a contract that implements the receive function.
+        resetPrank({ msgSender: users.admin });
+        merkleFactory.transferAdmin(address(contractWithReceiveEth));
 
-        // It should emit {WithdrawFees} event.
+        _test_WithdrawFees(address(contractWithReceiveEth));
+    }
+
+    function _test_WithdrawFees(address admin) private {
+        // Load the initial ETH balance of the admin.
+        uint256 initialAdminBalance = admin.balance;
+
+        // It should emit a {WithdrawFees} event.
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.WithdrawFees({
-            admin: users.admin,
+            admin: admin,
             merkleBase: merkleBase,
-            to: receiveEth,
-            fees: defaults.DEFAULT_FEE()
+            feeAmount: defaults.DEFAULT_FEE()
         });
 
-        merkleFactory.withdrawFees(receiveEth, merkleBase);
+        // Make Alice the caller.
+        resetPrank({ msgSender: users.eve });
 
-        // It should set the ETH balance to 0.
-        assertEq(address(merkleBase).balance, 0, "merkle lockup eth balance");
-        // It should transfer fee collected in ETH to the provided address.
-        assertEq(receiveEth.balance, defaults.DEFAULT_FEE(), "eth balance");
+        merkleFactory.withdrawFees(merkleBase);
+
+        // It should decrease merkle contract balance to zero.
+        assertEq(address(merkleBase).balance, 0, "merkle lockup ETH balance");
+
+        // It should transfer fee to the factory admin.
+        assertEq(admin.balance, initialAdminBalance + defaults.DEFAULT_FEE(), "admin ETH balance");
     }
 }

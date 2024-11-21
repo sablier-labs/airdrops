@@ -11,7 +11,6 @@ import { ISablierMerkleFactory } from "./interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleInstant } from "./interfaces/ISablierMerkleInstant.sol";
 import { ISablierMerkleLL } from "./interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
-import { Errors } from "./libraries/Errors.sol";
 import { SablierMerkleInstant } from "./SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "./SablierMerkleLL.sol";
 import { SablierMerkleLT } from "./SablierMerkleLT.sol";
@@ -100,17 +99,12 @@ contract SablierMerkleFactory is
     }
 
     /// @inheritdoc ISablierMerkleFactory
-    function withdrawFees(address payable to, ISablierMerkleBase merkleBase) external override onlyAdmin {
-        // Check: the withdrawal address is not zero.
-        if (to == address(0)) {
-            revert Errors.SablierMerkleFactory_WithdrawToZeroAddress();
-        }
-
+    function withdrawFees(ISablierMerkleBase merkleBase) external override {
         // Effect: call `withdrawFees` on the MerkleBase contract.
-        uint256 fees = merkleBase.withdrawFees(to);
+        uint256 feeAmount = merkleBase.withdrawFees(admin);
 
-        // Log the withdrawal.
-        emit WithdrawFees({ admin: msg.sender, merkleBase: merkleBase, to: to, fees: fees });
+        // Log the fee withdrawal.
+        emit WithdrawFees({ admin: admin, merkleBase: merkleBase, feeAmount: feeAmount });
     }
 
     /*//////////////////////////////////////////////////////////////////////////
