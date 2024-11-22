@@ -5,7 +5,7 @@ import { Errors } from "src/libraries/Errors.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
-abstract contract WithdrawFees_Integration_Test is Integration_Test {
+abstract contract CollectFees_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotFactory() external {
         // Set the caller to anything other than the factory.
         resetPrank(users.admin);
@@ -15,7 +15,7 @@ abstract contract WithdrawFees_Integration_Test is Integration_Test {
                 Errors.SablierMerkleBase_CallerNotFactory.selector, address(merkleFactory), users.admin
             )
         );
-        merkleBase.withdrawFees(users.admin);
+        merkleBase.collectFees(users.admin);
     }
 
     modifier whenCallerFactory() {
@@ -27,7 +27,7 @@ abstract contract WithdrawFees_Integration_Test is Integration_Test {
     }
 
     function test_WhenFactoryAdminIsNotContract() external whenCallerFactory {
-        _test_WithdrawFees(users.admin);
+        _test_CollectFees(users.admin);
     }
 
     function test_RevertWhen_FactoryAdminDoesNotImplementReceiveFunction()
@@ -48,7 +48,7 @@ abstract contract WithdrawFees_Integration_Test is Integration_Test {
         );
 
         resetPrank(address(merkleFactory));
-        merkleBase.withdrawFees(address(contractWithoutReceiveEth));
+        merkleBase.collectFees(address(contractWithoutReceiveEth));
     }
 
     function test_WhenFactoryAdminImplementsReceiveFunction() external whenCallerFactory whenFactoryAdminIsContract {
@@ -56,19 +56,19 @@ abstract contract WithdrawFees_Integration_Test is Integration_Test {
         resetPrank({ msgSender: users.admin });
         merkleFactory.transferAdmin(address(contractWithoutReceiveEth));
 
-        _test_WithdrawFees(address(contractWithReceiveEth));
+        _test_CollectFees(address(contractWithReceiveEth));
     }
 
-    function _test_WithdrawFees(address admin) private {
+    function _test_CollectFees(address admin) private {
         // Load the initial ETH balance of the admin.
         uint256 initialAdminBalance = admin.balance;
 
         resetPrank(address(merkleFactory));
-        merkleBase.withdrawFees(admin);
+        merkleBase.collectFees(admin);
 
         // It should set the ETH balance to 0.
         assertEq(address(merkleBase).balance, 0, "merkle lockup ETH balance");
         // It should transfer fee collected in ETH to the factory admin.
-        assertEq(admin.balance, initialAdminBalance + defaults.DEFAULT_FEE(), "admin ETH balance");
+        assertEq(admin.balance, initialAdminBalance + defaults.FEE(), "admin ETH balance");
     }
 }

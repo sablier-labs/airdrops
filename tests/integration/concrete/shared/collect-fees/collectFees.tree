@@ -1,4 +1,4 @@
-WithdrawFees_Integration_Test
+CollectFees_Integration_Test
 ├── when caller not factory
 │  └── it should revert
 └── when caller factory

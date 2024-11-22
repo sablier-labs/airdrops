@@ -104,7 +104,7 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        uint256 fee = defaults.DEFAULT_FEE();
+        uint256 fee = defaults.FEE();
 
         vars.expectedLL = computeMerkleLLAddress(
             params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration, fee
@@ -244,12 +244,12 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
         }
 
         /*//////////////////////////////////////////////////////////////////////////
-                                        WITHDRAW-FEE
+                                        COLLECT-FEES
         //////////////////////////////////////////////////////////////////////////*/
 
         vm.expectEmit({ emitter: address(merkleFactory) });
-        emit ISablierMerkleFactory.WithdrawFees({ admin: users.admin, merkleBase: vars.merkleLL, feeAmount: fee });
-        merkleFactory.withdrawFees({ merkleBase: vars.merkleLL });
+        emit ISablierMerkleFactory.CollectFees({ admin: users.admin, merkleBase: vars.merkleLL, feeAmount: fee });
+        merkleFactory.collectFees({ merkleBase: vars.merkleLL });
 
         assertEq(address(vars.merkleLL).balance, 0, "merkleLL ETH balance");
         assertEq(users.admin.balance, fee, "admin ETH balance");
