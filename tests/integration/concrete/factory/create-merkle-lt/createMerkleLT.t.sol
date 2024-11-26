@@ -62,7 +62,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         );
     }
 
-    function test_WhenShapeNameExceeds32Bytes() external whenNameNotTooLong givenCampaignNotExists {
+    function test_WhenShapeExceeds32Bytes() external whenNameNotTooLong givenCampaignNotExists {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
         baseParams.shape = "this string is longer than 32 bytes";
 
@@ -77,10 +77,10 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             recipientCount: defaults.RECIPIENT_COUNT()
         });
 
-        // It should create the campaign with shape name truncated to 32 bytes.
-        string memory expectedShapeName = "this string is longer than 32 by";
-        string memory actualShapeName = actualLT.shape();
-        assertEq(actualShapeName, expectedShapeName, "shape");
+        // It should create the campaign with shape truncated to 32 bytes.
+        string memory actualShape = actualLT.shape();
+        string memory expectedShape = "this string is longer than 32 by";
+        assertEq(actualShape, expectedShape, "shape");
     }
 
     function test_GivenCustomFeeSet(
@@ -91,7 +91,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         external
         whenNameNotTooLong
         givenCampaignNotExists
-        whenShapeNameNotExceed32Bytes
+        whenShapeNotExceed32Bytes
     {
         // Set the custom fee to 0 for this test.
         resetPrank(users.admin);
@@ -140,7 +140,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         external
         whenNameNotTooLong
         givenCampaignNotExists
-        whenShapeNameNotExceed32Bytes
+        whenShapeNotExceed32Bytes
     {
         address expectedLT = computeMerkleLTAddress(campaignOwner, expiration);
 
@@ -170,8 +170,8 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         assertGt(address(actualLT).code.length, 0, "MerkleLT contract not created");
         assertEq(address(actualLT), expectedLT, "MerkleLT contract does not match computed address");
 
-        // It should set the correct shape name.
-        assertEq(actualLT.shape(), defaults.SHAPE_NAME(), "shape");
+        // It should set the correct shape.
+        assertEq(actualLT.shape(), defaults.SHAPE(), "shape");
 
         // It should create the campaign with custom fee.
         assertEq(actualLT.FEE(), defaults.FEE(), "default fee");

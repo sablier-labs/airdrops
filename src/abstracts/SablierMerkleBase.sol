@@ -73,8 +73,7 @@ abstract contract SablierMerkleBase is
         MERKLE_ROOT = params.merkleRoot;
         NAME = bytes32(abi.encodePacked(params.name));
 
-        // If the shape name exceeds 32 bytes, truncate it so that `claim` does not revert through
-        // `createWithTimestampsLL` and `createWithTimestampsLT` calls.
+        // If the shape string exceeds 32 bytes, truncate it to prevent `claim` from reverting.
         if (bytes(params.shape).length > 32) {
             shape = string(abi.encodePacked(bytes32(abi.encodePacked(params.shape))));
         } else {

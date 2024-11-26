@@ -97,7 +97,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedName = defaults.CAMPAIGN_NAME_BYTES32();
         assertEq(bytes32(abi.encodePacked(vars.actualName)), vars.expectedName, "name");
 
-        assertEq(constructedLT.shape(), defaults.SHAPE_NAME(), "shape");
+        assertEq(constructedLT.shape(), defaults.SHAPE(), "shape");
 
         vars.actualStreamStartTime = constructedLT.STREAM_START_TIME();
         vars.expectedStreamStartTime = defaults.STREAM_START_TIME_ZERO();

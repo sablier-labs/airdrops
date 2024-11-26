@@ -95,8 +95,8 @@ contract SablierMerkleLL is
                 cancelable: CANCELABLE,
                 transferable: TRANSFERABLE,
                 timestamps: timestamps,
-                broker: Broker({ account: address(0), fee: ZERO }),
-                shape: shape
+                shape: shape,
+                broker: Broker({ account: address(0), fee: ZERO })
             }),
             LockupLinear.UnlockAmounts({ start: schedule.startAmount, cliff: schedule.cliffAmount }),
             cliffTime

@@ -48,7 +48,7 @@ contract Defaults is Constants, Merkle {
     uint256[] public LEAVES = new uint256[](RECIPIENT_COUNT);
     uint256 public constant RECIPIENT_COUNT = 4;
     bytes32 public MERKLE_ROOT;
-    string public constant SHAPE_NAME = "A custom stream shape";
+    string public constant SHAPE = "A custom stream shape";
     uint40 public immutable STREAM_START_TIME_NON_ZERO = JULY_1_2024 - 2 days;
     uint40 public immutable STREAM_START_TIME_ZERO = 0;
     uint64 public constant TOTAL_PERCENTAGE = uUNIT;
@@ -118,7 +118,7 @@ contract Defaults is Constants, Merkle {
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
             name: CAMPAIGN_NAME,
-            shape: SHAPE_NAME
+            shape: SHAPE
         });
     }
 

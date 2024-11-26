@@ -106,7 +106,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         assertEq(vars.actualSchedule.cliffAmount, vars.expectedSchedule.cliffAmount, "schedule.cliffAmount");
         assertEq(vars.actualSchedule.totalDuration, vars.expectedSchedule.totalDuration, "schedule.totalDuration");
 
-        assertEq(constructedLL.shape(), defaults.SHAPE_NAME(), "shape");
+        assertEq(constructedLL.shape(), defaults.SHAPE(), "shape");
 
         vars.actualToken = address(constructedLL.TOKEN());
         vars.expectedToken = address(dai);

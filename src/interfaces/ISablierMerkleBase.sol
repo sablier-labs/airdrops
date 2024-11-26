@@ -53,7 +53,7 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice Retrieves the name of the campaign.
     function name() external returns (string memory);
 
-    /// @notice Retrieves the shape of the stream that the campaign produces after claiming.
+    /// @notice Retrieves the shape of the lockup stream that the campaign produces upon claiming.
     function shape() external view returns (string memory);
 
     /*//////////////////////////////////////////////////////////////////////////

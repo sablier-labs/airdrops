@@ -107,7 +107,7 @@ abstract contract Modifiers is Utils {
         _;
     }
 
-    modifier whenShapeNameNotExceed32Bytes() {
+    modifier whenShapeNotExceed32Bytes() {
         _;
     }
 
