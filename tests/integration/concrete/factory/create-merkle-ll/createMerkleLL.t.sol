@@ -58,6 +58,26 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         });
     }
 
+    function test_WhenShapeNameExceeds32Bytes() external whenNameNotTooLong givenCampaignNotExists {
+        MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
+        baseParams.shape = "this string is longer than 32 bytes";
+
+        ISablierMerkleLL actualLL = merkleFactory.createMerkleLL({
+            baseParams: baseParams,
+            lockup: lockup,
+            cancelable: defaults.CANCELABLE(),
+            transferable: defaults.TRANSFERABLE(),
+            schedule: defaults.schedule(),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT()
+        });
+
+        // It should create the campaign with shape name truncated to 32 bytes.
+        string memory expectedShapeName = "this string is longer than 32 by";
+        string memory actualShapeName = actualLL.shape();
+        assertEq(actualShapeName, expectedShapeName, "shape");
+    }
+
     function test_GivenCustomFeeSet(
         address campaignOwner,
         uint40 expiration,
@@ -66,6 +86,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         external
         whenNameNotTooLong
         givenCampaignNotExists
+        whenShapeNameNotExceed32Bytes
     {
         // Set the custom fee to 0 for this test.
         resetPrank(users.admin);
@@ -113,6 +134,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         external
         whenNameNotTooLong
         givenCampaignNotExists
+        whenShapeNameNotExceed32Bytes
     {
         address expectedLL = computeMerkleLLAddress(campaignOwner, expiration);
 
@@ -140,6 +162,9 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         ISablierMerkleLL actualLL = createMerkleLL(campaignOwner, expiration);
         assertGt(address(actualLL).code.length, 0, "MerkleLL contract not created");
         assertEq(address(actualLL), expectedLL, "MerkleLL contract does not match computed address");
+
+        // It should set the correct shape name.
+        assertEq(bytes32(abi.encodePacked(actualLL.shape())), bytes32(abi.encodePacked(defaults.SHAPE_NAME())), "shape");
 
         // It should create the campaign with custom fee.
         assertEq(actualLL.FEE(), defaults.FEE(), "default fee");

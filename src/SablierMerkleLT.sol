@@ -115,11 +115,12 @@ contract SablierMerkleLT is
                 sender: admin,
                 recipient: recipient,
                 totalAmount: amount,
-                asset: TOKEN,
+                token: TOKEN,
                 cancelable: CANCELABLE,
                 transferable: TRANSFERABLE,
                 timestamps: Lockup.Timestamps({ start: startTime, end: endTime }),
-                broker: Broker({ account: address(0), fee: ZERO })
+                broker: Broker({ account: address(0), fee: ZERO }),
+                shape: string(abi.encodePacked(SHAPE))
             }),
             tranches
         );

@@ -107,6 +107,10 @@ abstract contract Modifiers is Utils {
         _;
     }
 
+    modifier whenShapeNameNotExceed32Bytes() {
+        _;
+    }
+
     modifier whenTotalPercentage100() {
         _;
     }

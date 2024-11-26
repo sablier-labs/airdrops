@@ -19,6 +19,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         bytes32 actualMerkleRoot;
         string actualName;
         uint256 actualFee;
+        bytes32 actualShapeName;
         uint40 actualStreamStartTime;
         address actualToken;
         uint64 actualTotalPercentage;
@@ -34,6 +35,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         bytes32 expectedMerkleRoot;
         bytes32 expectedName;
         uint256 expectedFee;
+        bytes32 expectedShapeName;
         uint40 expectedStreamStartTime;
         address expectedToken;
         uint64 expectedTotalPercentage;
@@ -65,10 +67,6 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedAllowance = MAX_UINT256;
         assertEq(vars.actualAllowance, vars.expectedAllowance, "allowance");
 
-        vars.actualToken = address(constructedLT.TOKEN());
-        vars.expectedToken = address(dai);
-        assertEq(vars.actualToken, vars.expectedToken, "token");
-
         vars.actualCancelable = constructedLT.CANCELABLE();
         vars.expectedCancelable = defaults.CANCELABLE();
         assertEq(vars.actualCancelable, vars.expectedCancelable, "cancelable");
@@ -80,6 +78,10 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.actualFactory = constructedLT.FACTORY();
         vars.expectedFactory = address(merkleFactory);
         assertEq(vars.actualFactory, vars.expectedFactory, "factory");
+
+        vars.actualFee = constructedLT.FEE();
+        vars.expectedFee = defaults.FEE();
+        assertEq(vars.actualFee, vars.expectedFee, "fee");
 
         vars.actualIpfsCID = constructedLT.ipfsCID();
         vars.expectedIpfsCID = defaults.IPFS_CID();
@@ -97,13 +99,17 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedName = defaults.NAME_BYTES32();
         assertEq(bytes32(abi.encodePacked(vars.actualName)), vars.expectedName, "name");
 
-        vars.actualFee = constructedLT.FEE();
-        vars.expectedFee = defaults.FEE();
-        assertEq(vars.actualFee, vars.expectedFee, "fee");
+        vars.actualShapeName = bytes32(abi.encodePacked(constructedLT.shape()));
+        vars.expectedShapeName = bytes32(abi.encodePacked(defaults.SHAPE_NAME()));
+        assertEq(vars.actualShapeName, vars.expectedShapeName, "shape");
 
         vars.actualStreamStartTime = constructedLT.STREAM_START_TIME();
         vars.expectedStreamStartTime = defaults.STREAM_START_TIME_ZERO();
         assertEq(vars.actualStreamStartTime, vars.expectedStreamStartTime, "streamStartTime");
+
+        vars.actualToken = address(constructedLT.TOKEN());
+        vars.expectedToken = address(dai);
+        assertEq(vars.actualToken, vars.expectedToken, "token");
 
         vars.actualTotalPercentage = constructedLT.TOTAL_PERCENTAGE();
         vars.expectedTotalPercentage = defaults.TOTAL_PERCENTAGE();

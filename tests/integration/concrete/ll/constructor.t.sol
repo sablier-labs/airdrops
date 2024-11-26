@@ -20,6 +20,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         string actualName;
         uint256 actualFee;
         MerkleLL.Schedule actualSchedule;
+        bytes32 actualShapeName;
         address actualToken;
         bool actualTransferable;
         address expectedAdmin;
@@ -33,6 +34,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         bytes32 expectedName;
         uint256 expectedFee;
         MerkleLL.Schedule expectedSchedule;
+        bytes32 expectedShapeName;
         address expectedToken;
         bool expectedTransferable;
     }
@@ -60,10 +62,6 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.expectedAllowance = MAX_UINT256;
         assertEq(vars.actualAllowance, vars.expectedAllowance, "allowance");
 
-        vars.actualToken = address(constructedLL.TOKEN());
-        vars.expectedToken = address(dai);
-        assertEq(vars.actualToken, vars.expectedToken, "token");
-
         vars.actualCancelable = constructedLL.CANCELABLE();
         vars.expectedCancelable = defaults.CANCELABLE();
         assertEq(vars.actualCancelable, vars.expectedCancelable, "cancelable");
@@ -75,6 +73,10 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.actualFactory = constructedLL.FACTORY();
         vars.expectedFactory = address(merkleFactory);
         assertEq(vars.actualFactory, vars.expectedFactory, "factory");
+
+        vars.actualFee = constructedLL.FEE();
+        vars.expectedFee = defaults.FEE();
+        assertEq(vars.actualFee, vars.expectedFee, "fee");
 
         vars.actualIpfsCID = constructedLL.ipfsCID();
         vars.expectedIpfsCID = defaults.IPFS_CID();
@@ -106,12 +108,16 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         assertEq(vars.actualSchedule.cliffAmount, vars.expectedSchedule.cliffAmount, "schedule.cliffAmount");
         assertEq(vars.actualSchedule.totalDuration, vars.expectedSchedule.totalDuration, "schedule.totalDuration");
 
+        vars.actualShapeName = bytes32(abi.encodePacked(constructedLL.shape()));
+        vars.expectedShapeName = bytes32(abi.encodePacked(defaults.SHAPE_NAME()));
+        assertEq(vars.actualShapeName, vars.expectedShapeName, "shape");
+
+        vars.actualToken = address(constructedLL.TOKEN());
+        vars.expectedToken = address(dai);
+        assertEq(vars.actualToken, vars.expectedToken, "token");
+
         vars.actualTransferable = constructedLL.TRANSFERABLE();
         vars.expectedTransferable = defaults.TRANSFERABLE();
         assertEq(vars.actualTransferable, vars.expectedTransferable, "transferable");
-
-        vars.actualFee = constructedLL.FEE();
-        vars.expectedFee = defaults.FEE();
-        assertEq(vars.actualFee, vars.expectedFee, "fee");
     }
 }

@@ -39,6 +39,9 @@ abstract contract SablierMerkleBase is
     /// @dev The name of the campaign stored as bytes32.
     bytes32 internal immutable NAME;
 
+    /// @dev The shape of the stream that the campaign produces after claiming, stored as bytes32.
+    bytes32 internal immutable SHAPE;
+
     /// @inheritdoc ISablierMerkleBase
     IERC20 public immutable override TOKEN;
 
@@ -69,6 +72,10 @@ abstract contract SablierMerkleBase is
         ipfsCID = params.ipfsCID;
         MERKLE_ROOT = params.merkleRoot;
         NAME = bytes32(abi.encodePacked(params.name));
+
+        // Since `createWithTimestampsLL` and `createWithTimestampsLT` requires shape name to be within 32 bytes. by
+        // storing it as 32 bytes, the check on its length is skipped.
+        SHAPE = bytes32(abi.encodePacked(params.shape));
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -93,6 +100,11 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     function name() external view override returns (string memory) {
         return string(abi.encodePacked(NAME));
+    }
+
+    /// @inheritdoc ISablierMerkleBase
+    function shape() external view override returns (string memory) {
+        return string(abi.encodePacked(SHAPE));
     }
 
     /*//////////////////////////////////////////////////////////////////////////
