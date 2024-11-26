@@ -164,7 +164,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         assertEq(address(actualLL), expectedLL, "MerkleLL contract does not match computed address");
 
         // It should set the correct shape name.
-        assertEq(bytes32(abi.encodePacked(actualLL.shape())), bytes32(abi.encodePacked(defaults.SHAPE_NAME())), "shape");
+        assertEq(actualLL.shape(), defaults.SHAPE_NAME(), "shape");
 
         // It should create the campaign with custom fee.
         assertEq(actualLL.FEE(), defaults.FEE(), "default fee");

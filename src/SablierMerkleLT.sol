@@ -120,7 +120,7 @@ contract SablierMerkleLT is
                 transferable: TRANSFERABLE,
                 timestamps: Lockup.Timestamps({ start: startTime, end: endTime }),
                 broker: Broker({ account: address(0), fee: ZERO }),
-                shape: string(abi.encodePacked(SHAPE))
+                shape: shape
             }),
             tranches
         );

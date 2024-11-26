@@ -96,7 +96,7 @@ contract SablierMerkleLL is
                 transferable: TRANSFERABLE,
                 timestamps: timestamps,
                 broker: Broker({ account: address(0), fee: ZERO }),
-                shape: string(abi.encodePacked(SHAPE))
+                shape: shape
             }),
             LockupLinear.UnlockAmounts({ start: schedule.startAmount, cliff: schedule.cliffAmount }),
             cliffTime

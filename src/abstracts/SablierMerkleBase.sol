@@ -39,14 +39,14 @@ abstract contract SablierMerkleBase is
     /// @dev The name of the campaign stored as bytes32.
     bytes32 internal immutable NAME;
 
-    /// @dev The shape of the stream that the campaign produces after claiming, stored as bytes32.
-    bytes32 internal immutable SHAPE;
-
     /// @inheritdoc ISablierMerkleBase
     IERC20 public immutable override TOKEN;
 
     /// @inheritdoc ISablierMerkleBase
     string public override ipfsCID;
+
+    /// @inheritdoc ISablierMerkleBase
+    string public override shape;
 
     /// @dev Packed booleans that record the history of claims.
     BitMaps.BitMap internal _claimedBitMap;
@@ -73,9 +73,13 @@ abstract contract SablierMerkleBase is
         MERKLE_ROOT = params.merkleRoot;
         NAME = bytes32(abi.encodePacked(params.name));
 
-        // Since `createWithTimestampsLL` and `createWithTimestampsLT` requires shape name to be within 32 bytes. by
-        // storing it as 32 bytes, the check on its length is skipped.
-        SHAPE = bytes32(abi.encodePacked(params.shape));
+        // If the shape name exceeds 32 bytes, truncate it so that `claim` does not revert through
+        // `createWithTimestampsLL` and `createWithTimestampsLT` calls.
+        if (bytes(params.shape).length > 32) {
+            shape = string(abi.encodePacked(bytes32(abi.encodePacked(params.shape))));
+        } else {
+            shape = params.shape;
+        }
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -100,11 +104,6 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     function name() external view override returns (string memory) {
         return string(abi.encodePacked(NAME));
-    }
-
-    /// @inheritdoc ISablierMerkleBase
-    function shape() external view override returns (string memory) {
-        return string(abi.encodePacked(SHAPE));
     }
 
     /*//////////////////////////////////////////////////////////////////////////
