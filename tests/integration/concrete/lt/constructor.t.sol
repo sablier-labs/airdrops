@@ -19,11 +19,12 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         address actualLockup;
         bytes32 actualMerkleRoot;
         uint256 actualFee;
+        bool actualStreamCancelable;
         uint40 actualStreamStartTime;
+        bool actualStreamTransferable;
         address actualToken;
         uint64 actualTotalPercentage;
         MerkleLT.TrancheWithPercentage[] actualTranchesWithPercentages;
-        bool actualTransferable;
         address expectedAdmin;
         uint256 expectedAllowance;
         string expectedCampaignName;
@@ -34,11 +35,12 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         address expectedLockup;
         bytes32 expectedMerkleRoot;
         uint256 expectedFee;
+        bool expectedStreamCancelable;
         uint40 expectedStreamStartTime;
+        bool expectedStreamTransferable;
         address expectedToken;
         uint64 expectedTotalPercentage;
         MerkleLT.TrancheWithPercentage[] expectedTranchesWithPercentages;
-        bool expectedTransferable;
     }
 
     function test_Constructor() external {
@@ -69,9 +71,9 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
         assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 
-        vars.actualCancelable = constructedLT.CANCELABLE();
-        vars.expectedCancelable = defaults.CANCELABLE();
-        assertEq(vars.actualCancelable, vars.expectedCancelable, "cancelable");
+        vars.actualStreamCancelable = constructedLT.STREAM_CANCELABLE();
+        vars.expectedStreamCancelable = defaults.CANCELABLE();
+        assertEq(vars.actualStreamCancelable, vars.expectedStreamCancelable, "cancelable");
 
         vars.actualExpiration = constructedLT.EXPIRATION();
         vars.expectedExpiration = defaults.EXPIRATION();
@@ -111,9 +113,9 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedTotalPercentage = defaults.TOTAL_PERCENTAGE();
         assertEq(vars.actualTotalPercentage, vars.expectedTotalPercentage, "totalPercentage");
 
-        vars.actualTransferable = constructedLT.TRANSFERABLE();
-        vars.expectedTransferable = defaults.TRANSFERABLE();
-        assertEq(vars.actualTransferable, vars.expectedTransferable, "transferable");
+        vars.actualStreamTransferable = constructedLT.STREAM_TRANSFERABLE();
+        vars.expectedStreamTransferable = defaults.TRANSFERABLE();
+        assertEq(vars.actualStreamTransferable, vars.expectedStreamTransferable, "transferable");
 
         vars.actualTranchesWithPercentages = constructedLT.getTranchesWithPercentages();
         vars.expectedTranchesWithPercentages = defaults.tranchesWithPercentages();

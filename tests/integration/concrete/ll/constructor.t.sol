@@ -12,29 +12,29 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         address actualAdmin;
         uint256 actualAllowance;
         string actualCampaignName;
-        bool actualCancelable;
+        bool actualStreamCancelable;
         uint40 actualExpiration;
         address actualFactory;
+        uint256 actualFee;
         string actualIpfsCID;
         address actualLockup;
         bytes32 actualMerkleRoot;
-        uint256 actualFee;
         MerkleLL.Schedule actualSchedule;
+        bool actualStreamTransferable;
         address actualToken;
-        bool actualTransferable;
         address expectedAdmin;
         uint256 expectedAllowance;
         string expectedCampaignName;
-        bool expectedCancelable;
+        bool expectedStreamCancelable;
         uint40 expectedExpiration;
         address expectedFactory;
+        uint256 expectedFee;
         string expectedIpfsCID;
         address expectedLockup;
         bytes32 expectedMerkleRoot;
-        uint256 expectedFee;
         MerkleLL.Schedule expectedSchedule;
+        bool expectedStreamTransferable;
         address expectedToken;
-        bool expectedTransferable;
     }
 
     function test_Constructor() external {
@@ -64,9 +64,9 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
         assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 
-        vars.actualCancelable = constructedLL.CANCELABLE();
-        vars.expectedCancelable = defaults.CANCELABLE();
-        assertEq(vars.actualCancelable, vars.expectedCancelable, "cancelable");
+        vars.actualStreamCancelable = constructedLL.STREAM_CANCELABLE();
+        vars.expectedStreamCancelable = defaults.CANCELABLE();
+        assertEq(vars.actualStreamCancelable, vars.expectedStreamCancelable, "cancelable");
 
         vars.actualExpiration = constructedLL.EXPIRATION();
         vars.expectedExpiration = defaults.EXPIRATION();
@@ -92,13 +92,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.expectedMerkleRoot = defaults.MERKLE_ROOT();
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
 
-        (
-            vars.actualSchedule.startTime,
-            vars.actualSchedule.startAmount,
-            vars.actualSchedule.cliffDuration,
-            vars.actualSchedule.cliffAmount,
-            vars.actualSchedule.totalDuration
-        ) = constructedLL.schedule();
+        vars.actualSchedule = constructedLL.getSchedule();
         vars.expectedSchedule = defaults.schedule();
         assertEq(vars.actualSchedule.startTime, vars.expectedSchedule.startTime, "schedule.startTime");
         assertEq(vars.actualSchedule.startAmount, vars.expectedSchedule.startAmount, "schedule.startAmount");
@@ -112,8 +106,8 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.expectedToken = address(dai);
         assertEq(vars.actualToken, vars.expectedToken, "token");
 
-        vars.actualTransferable = constructedLL.TRANSFERABLE();
-        vars.expectedTransferable = defaults.TRANSFERABLE();
-        assertEq(vars.actualTransferable, vars.expectedTransferable, "transferable");
+        vars.actualStreamTransferable = constructedLL.STREAM_TRANSFERABLE();
+        vars.expectedStreamTransferable = defaults.TRANSFERABLE();
+        assertEq(vars.actualStreamTransferable, vars.expectedStreamTransferable, "transferable");
     }
 }
