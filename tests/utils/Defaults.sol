@@ -33,6 +33,8 @@ contract Defaults is Constants, Merkle {
     //////////////////////////////////////////////////////////////////////////*/
 
     uint256 public constant AGGREGATE_AMOUNT = CLAIM_AMOUNT * RECIPIENT_COUNT;
+    string public constant CAMPAIGN_NAME = "Airdrop Campaign";
+    bytes32 public constant CAMPAIGN_NAME_BYTES32 = bytes32(abi.encodePacked("Airdrop Campaign"));
     bool public constant CANCELABLE = false;
     uint128 public constant CLAIM_AMOUNT = 10_000e18;
     uint40 public immutable EXPIRATION;
@@ -46,8 +48,6 @@ contract Defaults is Constants, Merkle {
     uint256[] public LEAVES = new uint256[](RECIPIENT_COUNT);
     uint256 public constant RECIPIENT_COUNT = 4;
     bytes32 public MERKLE_ROOT;
-    string public constant NAME = "Airdrop Campaign";
-    bytes32 public constant NAME_BYTES32 = bytes32(abi.encodePacked("Airdrop Campaign"));
     string public constant SHAPE_NAME = "A custom stream shape";
     uint40 public immutable STREAM_START_TIME_NON_ZERO = JULY_1_2024 - 2 days;
     uint40 public immutable STREAM_START_TIME_ZERO = 0;
@@ -117,7 +117,7 @@ contract Defaults is Constants, Merkle {
             initialAdmin: campaignOwner,
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
-            name: NAME,
+            name: CAMPAIGN_NAME,
             shape: SHAPE_NAME
         });
     }

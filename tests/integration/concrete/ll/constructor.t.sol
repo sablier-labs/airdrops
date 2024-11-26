@@ -20,7 +20,6 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         string actualName;
         uint256 actualFee;
         MerkleLL.Schedule actualSchedule;
-        bytes32 actualShapeName;
         address actualToken;
         bool actualTransferable;
         address expectedAdmin;
@@ -34,7 +33,6 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         bytes32 expectedName;
         uint256 expectedFee;
         MerkleLL.Schedule expectedSchedule;
-        bytes32 expectedShapeName;
         address expectedToken;
         bool expectedTransferable;
     }
@@ -91,7 +89,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
 
         vars.actualName = constructedLL.name();
-        vars.expectedName = defaults.NAME_BYTES32();
+        vars.expectedName = defaults.CAMPAIGN_NAME_BYTES32();
         assertEq(bytes32(abi.encodePacked(vars.actualName)), vars.expectedName, "name");
 
         (
@@ -108,9 +106,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         assertEq(vars.actualSchedule.cliffAmount, vars.expectedSchedule.cliffAmount, "schedule.cliffAmount");
         assertEq(vars.actualSchedule.totalDuration, vars.expectedSchedule.totalDuration, "schedule.totalDuration");
 
-        vars.actualShapeName = bytes32(abi.encodePacked(constructedLL.shape()));
-        vars.expectedShapeName = bytes32(abi.encodePacked(defaults.SHAPE_NAME()));
-        assertEq(vars.actualShapeName, vars.expectedShapeName, "shape");
+        assertEq(constructedLL.shape(), defaults.SHAPE_NAME(), "shape");
 
         vars.actualToken = address(constructedLL.TOKEN());
         vars.expectedToken = address(dai);

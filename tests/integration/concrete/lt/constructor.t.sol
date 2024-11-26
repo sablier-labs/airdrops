@@ -19,7 +19,6 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         bytes32 actualMerkleRoot;
         string actualName;
         uint256 actualFee;
-        bytes32 actualShapeName;
         uint40 actualStreamStartTime;
         address actualToken;
         uint64 actualTotalPercentage;
@@ -35,7 +34,6 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         bytes32 expectedMerkleRoot;
         bytes32 expectedName;
         uint256 expectedFee;
-        bytes32 expectedShapeName;
         uint40 expectedStreamStartTime;
         address expectedToken;
         uint64 expectedTotalPercentage;
@@ -96,12 +94,10 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
 
         vars.actualName = constructedLT.name();
-        vars.expectedName = defaults.NAME_BYTES32();
+        vars.expectedName = defaults.CAMPAIGN_NAME_BYTES32();
         assertEq(bytes32(abi.encodePacked(vars.actualName)), vars.expectedName, "name");
 
-        vars.actualShapeName = bytes32(abi.encodePacked(constructedLT.shape()));
-        vars.expectedShapeName = bytes32(abi.encodePacked(defaults.SHAPE_NAME()));
-        assertEq(vars.actualShapeName, vars.expectedShapeName, "shape");
+        assertEq(constructedLT.shape(), defaults.SHAPE_NAME(), "shape");
 
         vars.actualStreamStartTime = constructedLT.STREAM_START_TIME();
         vars.expectedStreamStartTime = defaults.STREAM_START_TIME_ZERO();

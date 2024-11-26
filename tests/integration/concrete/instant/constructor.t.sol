@@ -59,7 +59,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
 
         vars.actualName = constructedInstant.name();
-        vars.expectedName = defaults.NAME_BYTES32();
+        vars.expectedName = defaults.CAMPAIGN_NAME_BYTES32();
         assertEq(bytes32(abi.encodePacked(vars.actualName)), vars.expectedName, "name");
 
         vars.actualFee = constructedInstant.FEE();
