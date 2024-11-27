@@ -12,7 +12,6 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         address actualAdmin;
         uint256 actualAllowance;
         string actualCampaignName;
-        bool actualStreamCancelable;
         uint40 actualExpiration;
         address actualFactory;
         uint256 actualFee;
@@ -20,12 +19,12 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         address actualLockup;
         bytes32 actualMerkleRoot;
         MerkleLL.Schedule actualSchedule;
+        bool actualStreamCancelable;
         bool actualStreamTransferable;
         address actualToken;
         address expectedAdmin;
         uint256 expectedAllowance;
         string expectedCampaignName;
-        bool expectedStreamCancelable;
         uint40 expectedExpiration;
         address expectedFactory;
         uint256 expectedFee;
@@ -33,6 +32,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         address expectedLockup;
         bytes32 expectedMerkleRoot;
         MerkleLL.Schedule expectedSchedule;
+        bool expectedStreamCancelable;
         bool expectedStreamTransferable;
         address expectedToken;
     }
@@ -63,10 +63,6 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.actualCampaignName = constructedLL.campaignName();
         vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
         assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
-
-        vars.actualStreamCancelable = constructedLL.STREAM_CANCELABLE();
-        vars.expectedStreamCancelable = defaults.CANCELABLE();
-        assertEq(vars.actualStreamCancelable, vars.expectedStreamCancelable, "cancelable");
 
         vars.actualExpiration = constructedLL.EXPIRATION();
         vars.expectedExpiration = defaults.EXPIRATION();
@@ -102,12 +98,16 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
 
         assertEq(constructedLL.shape(), defaults.SHAPE(), "shape");
 
-        vars.actualToken = address(constructedLL.TOKEN());
-        vars.expectedToken = address(dai);
-        assertEq(vars.actualToken, vars.expectedToken, "token");
+        vars.actualStreamCancelable = constructedLL.STREAM_CANCELABLE();
+        vars.expectedStreamCancelable = defaults.CANCELABLE();
+        assertEq(vars.actualStreamCancelable, vars.expectedStreamCancelable, "stream cancelable");
 
         vars.actualStreamTransferable = constructedLL.STREAM_TRANSFERABLE();
         vars.expectedStreamTransferable = defaults.TRANSFERABLE();
-        assertEq(vars.actualStreamTransferable, vars.expectedStreamTransferable, "transferable");
+        assertEq(vars.actualStreamTransferable, vars.expectedStreamTransferable, "stream transferable");
+
+        vars.actualToken = address(constructedLL.TOKEN());
+        vars.expectedToken = address(dai);
+        assertEq(vars.actualToken, vars.expectedToken, "token");
     }
 }
