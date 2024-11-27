@@ -34,7 +34,6 @@ contract Defaults is Constants, Merkle {
 
     uint256 public constant AGGREGATE_AMOUNT = CLAIM_AMOUNT * RECIPIENT_COUNT;
     string public constant CAMPAIGN_NAME = "Airdrop Campaign";
-    bytes32 public constant CAMPAIGN_NAME_BYTES32 = bytes32(abi.encodePacked("Airdrop Campaign"));
     bool public constant CANCELABLE = false;
     uint128 public constant CLAIM_AMOUNT = 10_000e18;
     uint40 public immutable EXPIRATION;
@@ -117,7 +116,7 @@ contract Defaults is Constants, Merkle {
             initialAdmin: campaignOwner,
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
-            name: CAMPAIGN_NAME,
+            campaignName: CAMPAIGN_NAME,
             shape: SHAPE
         });
     }

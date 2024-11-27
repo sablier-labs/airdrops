@@ -3,41 +3,13 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
-import { Errors } from "src/libraries/Errors.sol";
 import { MerkleBase, MerkleLL } from "src/types/DataTypes.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
 contract CreateMerkleLL_Integration_Test is Integration_Test {
-    function test_RevertWhen_NameTooLong() external {
-        MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
-        bool cancelable = defaults.CANCELABLE();
-        bool transferable = defaults.TRANSFERABLE();
-        MerkleLL.Schedule memory schedule = defaults.schedule();
-        uint256 aggregateAmount = defaults.AGGREGATE_AMOUNT();
-        uint256 recipientCount = defaults.RECIPIENT_COUNT();
-
-        baseParams.name = "this string is longer than 32 characters";
-
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                Errors.SablierMerkleBase_CampaignNameTooLong.selector, bytes(baseParams.name).length, 32
-            )
-        );
-
-        merkleFactory.createMerkleLL({
-            baseParams: baseParams,
-            lockup: lockup,
-            cancelable: cancelable,
-            transferable: transferable,
-            schedule: schedule,
-            aggregateAmount: aggregateAmount,
-            recipientCount: recipientCount
-        });
-    }
-
     /// @dev This test works because a default MerkleLL contract is deployed in {Integration_Test.setUp}
-    function test_RevertGiven_CampaignAlreadyExists() external whenNameNotTooLong {
+    function test_RevertGiven_CampaignAlreadyExists() external {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
         bool cancelable = defaults.CANCELABLE();
         bool transferable = defaults.TRANSFERABLE();
@@ -58,7 +30,27 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         });
     }
 
-    function test_WhenShapeExceeds32Bytes() external whenNameNotTooLong givenCampaignNotExists {
+    function test_WhenCampaignNameExceeds32Bytes() external givenCampaignNotExists {
+        MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
+        baseParams.campaignName = "this string is longer than 32 bytes";
+
+        ISablierMerkleLL actualLL = merkleFactory.createMerkleLL({
+            baseParams: baseParams,
+            lockup: lockup,
+            cancelable: defaults.CANCELABLE(),
+            transferable: defaults.TRANSFERABLE(),
+            schedule: defaults.schedule(),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT()
+        });
+
+        // It should create the campaign with shape truncated to 32 bytes.
+        string memory actualCampaignName = actualLL.campaignName();
+        string memory expectedCampaignName = "this string is longer than 32 by";
+        assertEq(actualCampaignName, expectedCampaignName, "shape");
+    }
+
+    function test_WhenShapeExceeds32Bytes() external givenCampaignNotExists whenCampaignNameNotExceed32Bytes {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
         baseParams.shape = "this string is longer than 32 bytes";
 
@@ -84,8 +76,8 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         uint256 customFee
     )
         external
-        whenNameNotTooLong
         givenCampaignNotExists
+        whenCampaignNameNotExceed32Bytes
         whenShapeNotExceed32Bytes
     {
         // Set the custom fee to 0 for this test.
@@ -132,8 +124,8 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         uint40 expiration
     )
         external
-        whenNameNotTooLong
         givenCampaignNotExists
+        whenCampaignNameNotExceed32Bytes
         whenShapeNotExceed32Bytes
     {
         address expectedLL = computeMerkleLLAddress(campaignOwner, expiration);

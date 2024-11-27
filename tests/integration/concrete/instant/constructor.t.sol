@@ -13,7 +13,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         address actualFactory;
         string actualIpfsCID;
         bytes32 actualMerkleRoot;
-        string actualName;
+        string actualCampaignName;
         uint256 actualFee;
         address actualToken;
         address expectedAdmin;
@@ -21,7 +21,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         address expectedFactory;
         string expectedIpfsCID;
         bytes32 expectedMerkleRoot;
-        bytes32 expectedName;
+        string expectedCampaignName;
         uint256 expectedFee;
         address expectedToken;
     }
@@ -58,9 +58,9 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         vars.expectedMerkleRoot = defaults.MERKLE_ROOT();
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
 
-        vars.actualName = constructedInstant.name();
-        vars.expectedName = defaults.CAMPAIGN_NAME_BYTES32();
-        assertEq(bytes32(abi.encodePacked(vars.actualName)), vars.expectedName, "name");
+        vars.actualCampaignName = constructedInstant.campaignName();
+        vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
+        assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 
         vars.actualFee = constructedInstant.FEE();
         vars.expectedFee = defaults.FEE();

@@ -17,7 +17,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         string actualIpfsCID;
         address actualLockup;
         bytes32 actualMerkleRoot;
-        string actualName;
+        string actualCampaignName;
         uint256 actualFee;
         uint40 actualStreamStartTime;
         address actualToken;
@@ -32,7 +32,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         string expectedIpfsCID;
         address expectedLockup;
         bytes32 expectedMerkleRoot;
-        bytes32 expectedName;
+        string expectedCampaignName;
         uint256 expectedFee;
         uint40 expectedStreamStartTime;
         address expectedToken;
@@ -93,9 +93,9 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedMerkleRoot = defaults.MERKLE_ROOT();
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
 
-        vars.actualName = constructedLT.name();
-        vars.expectedName = defaults.CAMPAIGN_NAME_BYTES32();
-        assertEq(bytes32(abi.encodePacked(vars.actualName)), vars.expectedName, "name");
+        vars.actualCampaignName = constructedLT.campaignName();
+        vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
+        assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 
         assertEq(constructedLT.shape(), defaults.SHAPE(), "shape");
 
