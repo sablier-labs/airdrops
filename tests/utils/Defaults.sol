@@ -6,11 +6,11 @@ import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ud2x18, uUNIT } from "@prb/math/src/UD2x18.sol";
 import { ud } from "@prb/math/src/UD60x18.sol";
 import { LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol";
+import { Constants } from "@sablier/lockup/tests/utils/Constants.sol";
 import { Merkle } from "murky/src/Merkle.sol";
 
 import { MerkleBase, MerkleLL, MerkleLT } from "../../src/types/DataTypes.sol";
 
-import { Constants } from "./Constants.sol";
 import { MerkleBuilder } from "./MerkleBuilder.sol";
 import { Users } from "./Types.sol";
 
@@ -37,7 +37,6 @@ contract Defaults is Constants, Merkle {
     bool public constant CANCELABLE = false;
     uint128 public constant CLAIM_AMOUNT = 10_000e18;
     uint40 public immutable EXPIRATION;
-    uint256 public constant FEE = 0.005e18;
     uint40 public constant FIRST_CLAIM_TIME = JULY_1_2024;
     uint256 public constant INDEX1 = 1;
     uint256 public constant INDEX2 = 2;

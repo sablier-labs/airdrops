@@ -62,7 +62,6 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
     /// @dev Helper function to test claim.
     function _test_Claim(uint40 startTime, uint40 cliffTime) private {
-        uint256 fee = defaults.FEE();
         deal({ token: address(dai), to: address(merkleLL), give: defaults.AGGREGATE_AMOUNT() });
 
         uint256 expectedStreamId = lockup.nextStreamId();
@@ -73,10 +72,10 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         emit ISablierMerkleLL.Claim(defaults.INDEX1(), users.recipient1, defaults.CLAIM_AMOUNT(), expectedStreamId);
 
         expectCallToTransferFrom({ from: address(merkleLL), to: address(lockup), value: defaults.CLAIM_AMOUNT() });
-        expectCallToClaimWithMsgValue(address(merkleLL), fee);
+        expectCallToClaimWithMsgValue(address(merkleLL), FEE);
 
         // Claim the airstream.
-        merkleLL.claim{ value: fee }(
+        merkleLL.claim{ value: FEE }(
             defaults.INDEX1(), users.recipient1, defaults.CLAIM_AMOUNT(), defaults.index1Proof()
         );
 
@@ -100,6 +99,6 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
         assertTrue(merkleLL.hasClaimed(defaults.INDEX1()), "not claimed");
 
-        assertEq(address(merkleLL).balance, previousFeeAccrued + defaults.FEE(), "fee collected");
+        assertEq(address(merkleLL).balance, previousFeeAccrued + FEE, "fee collected");
     }
 }

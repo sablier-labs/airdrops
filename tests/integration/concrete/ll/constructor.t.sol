@@ -42,12 +42,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         resetPrank(address(merkleFactory));
 
         SablierMerkleLL constructedLL = new SablierMerkleLL(
-            defaults.baseParams(),
-            lockup,
-            defaults.CANCELABLE(),
-            defaults.TRANSFERABLE(),
-            defaults.schedule(),
-            defaults.FEE()
+            defaults.baseParams(), lockup, defaults.CANCELABLE(), defaults.TRANSFERABLE(), defaults.schedule(), FEE
         );
 
         Vars memory vars;
@@ -73,7 +68,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         assertEq(vars.actualFactory, vars.expectedFactory, "factory");
 
         vars.actualFee = constructedLL.FEE();
-        vars.expectedFee = defaults.FEE();
+        vars.expectedFee = FEE;
         assertEq(vars.actualFee, vars.expectedFee, "fee");
 
         vars.actualIpfsCID = constructedLL.ipfsCID();

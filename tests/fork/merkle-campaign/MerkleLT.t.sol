@@ -100,10 +100,8 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        uint256 fee = defaults.FEE();
-
         vars.expectedLT = computeMerkleLTAddress(
-            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration, fee
+            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration, FEE
         );
 
         vars.baseParams = defaults.baseParams({
@@ -125,7 +123,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
             totalDuration: defaults.TOTAL_DURATION(),
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount,
-            fee: fee
+            fee: FEE
         });
 
         vars.merkleLT = merkleFactory.createMerkleLT({
@@ -181,14 +179,14 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
 
         expectCallToClaimWithData({
             merkleLockup: address(vars.merkleLT),
-            fee: fee,
+            fee: FEE,
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
             merkleProof: vars.merkleProof
         });
 
-        vars.merkleLT.claim{ value: fee }({
+        vars.merkleLT.claim{ value: FEE }({
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -210,8 +208,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
             defaults.tranchesMerkleLT({
                 streamStartTime: defaults.STREAM_START_TIME_ZERO(),
                 totalAmount: vars.amounts[params.posBeforeSort]
-            }),
-            "tranches"
+            })
         );
         assertEq(lockup.getUnderlyingToken(vars.expectedStreamId), FORK_TOKEN, "token");
         assertEq(lockup.getWithdrawnAmount(vars.expectedStreamId), 0, "withdrawn amount");
@@ -250,10 +247,10 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         //////////////////////////////////////////////////////////////////////////*/
 
         vm.expectEmit({ emitter: address(merkleFactory) });
-        emit ISablierMerkleFactory.CollectFees({ admin: users.admin, merkleBase: vars.merkleLT, feeAmount: fee });
+        emit ISablierMerkleFactory.CollectFees({ admin: users.admin, merkleBase: vars.merkleLT, feeAmount: FEE });
         merkleFactory.collectFees({ merkleBase: vars.merkleLT });
 
         assertEq(address(vars.merkleLT).balance, 0, "merkleLT ETH balance");
-        assertEq(users.admin.balance, fee, "admin ETH balance");
+        assertEq(users.admin.balance, FEE, "admin ETH balance");
     }
 }

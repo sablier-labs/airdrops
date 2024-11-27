@@ -5,6 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 import { LockupNFTDescriptor } from "@sablier/lockup/src/LockupNFTDescriptor.sol";
 import { SablierLockup } from "@sablier/lockup/src/SablierLockup.sol";
+import { Constants } from "@sablier/lockup/tests/utils/Constants.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
@@ -17,7 +18,6 @@ import { SablierMerkleLT } from "src/SablierMerkleLT.sol";
 import { MerkleBase } from "src/types/DataTypes.sol";
 import { ERC20Mock } from "./mocks/erc20/ERC20Mock.sol";
 import { Assertions } from "./utils/Assertions.sol";
-import { Constants } from "./utils/Constants.sol";
 import { Defaults } from "./utils/Defaults.sol";
 import { DeployOptimized } from "./utils/DeployOptimized.sol";
 import { Modifiers } from "./utils/Modifiers.sol";
@@ -70,7 +70,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         deployMerkleFactoryConditionally();
 
         // Set the default fee on the Merkle factory.
-        merkleFactory.setDefaultFee(defaults.FEE());
+        merkleFactory.setDefaultFee(FEE);
 
         // Create users for testing.
         users.campaignOwner = createUser("CampaignOwner");

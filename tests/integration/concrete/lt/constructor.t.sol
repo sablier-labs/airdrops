@@ -52,7 +52,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
             defaults.TRANSFERABLE(),
             defaults.STREAM_START_TIME_ZERO(),
             defaults.tranchesWithPercentages(),
-            defaults.FEE()
+            FEE
         );
 
         Vars memory vars;
@@ -78,7 +78,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         assertEq(vars.actualFactory, vars.expectedFactory, "factory");
 
         vars.actualFee = constructedLT.FEE();
-        vars.expectedFee = defaults.FEE();
+        vars.expectedFee = FEE;
         assertEq(vars.actualFee, vars.expectedFee, "fee");
 
         vars.actualIpfsCID = constructedLT.ipfsCID();
@@ -117,6 +117,6 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
 
         vars.actualTranchesWithPercentages = constructedLT.getTranchesWithPercentages();
         vars.expectedTranchesWithPercentages = defaults.tranchesWithPercentages();
-        assertEq(vars.actualTranchesWithPercentages, vars.expectedTranchesWithPercentages, "tranchesWithPercentages");
+        assertEq(vars.actualTranchesWithPercentages, vars.expectedTranchesWithPercentages);
     }
 }

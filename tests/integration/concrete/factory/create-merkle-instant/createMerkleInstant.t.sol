@@ -109,7 +109,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             baseParams: baseParams,
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: defaults.FEE()
+            fee: FEE
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
@@ -119,7 +119,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         );
 
         // It should create the campaign with custom fee.
-        assertEq(actualInstant.FEE(), defaults.FEE(), "default fee");
+        assertEq(actualInstant.FEE(), FEE, "default fee");
 
         // It should set the current factory address.
         assertEq(actualInstant.FACTORY(), address(merkleFactory), "factory");

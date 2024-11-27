@@ -16,8 +16,6 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
     }
 
     function test_RevertWhen_TotalPercentageLessThan100() external whenMerkleProofValid whenTotalPercentageNot100 {
-        uint256 fee = defaults.FEE();
-
         // Create a MerkleLT campaign with a total percentage less than 100.
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages = defaults.tranchesWithPercentages();
         tranchesWithPercentages[0].unlockPercentage = ud2x18(0.05e18);
@@ -44,7 +42,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
             abi.encodeWithSelector(Errors.SablierMerkleLT_TotalPercentageNotOneHundred.selector, totalPercentage)
         );
 
-        merkleLT.claim{ value: fee }({
+        merkleLT.claim{ value: FEE }({
             index: 1,
             recipient: users.recipient1,
             amount: 10_000e18,
@@ -53,7 +51,6 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
     }
 
     function test_RevertWhen_TotalPercentageGreaterThan100() external whenMerkleProofValid whenTotalPercentageNot100 {
-        uint256 fee = defaults.FEE();
         // Create a MerkleLT campaign with a total percentage less than 100.
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages = defaults.tranchesWithPercentages();
         tranchesWithPercentages[0].unlockPercentage = ud2x18(0.75e18);
@@ -80,7 +77,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
             abi.encodeWithSelector(Errors.SablierMerkleLT_TotalPercentageNotOneHundred.selector, totalPercentage)
         );
 
-        merkleLT.claim{ value: fee }({
+        merkleLT.claim{ value: FEE }({
             index: 1,
             recipient: users.recipient1,
             amount: 10_000e18,
@@ -114,8 +111,6 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
     /// @dev Helper function to test claim.
     function _test_Claim(uint40 streamStartTime, uint40 startTime) private {
-        uint256 fee = defaults.FEE();
-
         deal({ token: address(dai), to: address(merkleLT), give: defaults.AGGREGATE_AMOUNT() });
 
         uint256 expectedStreamId = lockup.nextStreamId();
@@ -126,10 +121,10 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         emit ISablierMerkleLT.Claim(defaults.INDEX1(), users.recipient1, defaults.CLAIM_AMOUNT(), expectedStreamId);
 
         expectCallToTransferFrom({ from: address(merkleLT), to: address(lockup), value: defaults.CLAIM_AMOUNT() });
-        expectCallToClaimWithMsgValue(address(merkleLT), fee);
+        expectCallToClaimWithMsgValue(address(merkleLT), FEE);
 
         // Claim the airstream.
-        merkleLT.claim{ value: fee }(
+        merkleLT.claim{ value: FEE }(
             defaults.INDEX1(), users.recipient1, defaults.CLAIM_AMOUNT(), defaults.index1Proof()
         );
 
@@ -142,8 +137,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         // It should create a stream with `STREAM_START_TIME` as start time.
         assertEq(
             lockup.getTranches(expectedStreamId),
-            defaults.tranchesMerkleLT({ streamStartTime: streamStartTime, totalAmount: defaults.CLAIM_AMOUNT() }),
-            "tranches"
+            defaults.tranchesMerkleLT({ streamStartTime: streamStartTime, totalAmount: defaults.CLAIM_AMOUNT() })
         );
         assertEq(lockup.getUnderlyingToken(expectedStreamId), dai, "token");
         assertEq(lockup.isCancelable(expectedStreamId), defaults.CANCELABLE(), "is cancelable");
@@ -154,6 +148,6 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
         assertTrue(merkleLT.hasClaimed(defaults.INDEX1()), "not claimed");
 
-        assertEq(address(merkleLT).balance, previousFeeAccrued + defaults.FEE(), "fee collected");
+        assertEq(address(merkleLT).balance, previousFeeAccrued + FEE, "fee collected");
     }
 }
