@@ -40,7 +40,7 @@ abstract contract SablierMerkleBase is
     IERC20 public immutable override TOKEN;
 
     /// @inheritdoc ISablierMerkleBase
-    string public campaignName;
+    string public override campaignName;
 
     /// @inheritdoc ISablierMerkleBase
     string public override ipfsCID;

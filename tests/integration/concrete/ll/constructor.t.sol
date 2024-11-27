@@ -11,26 +11,26 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
     struct Vars {
         address actualAdmin;
         uint256 actualAllowance;
+        string actualCampaignName;
         bool actualCancelable;
         uint40 actualExpiration;
         address actualFactory;
         string actualIpfsCID;
         address actualLockup;
         bytes32 actualMerkleRoot;
-        string actualCampaignName;
         uint256 actualFee;
         MerkleLL.Schedule actualSchedule;
         address actualToken;
         bool actualTransferable;
         address expectedAdmin;
         uint256 expectedAllowance;
+        string expectedCampaignName;
         bool expectedCancelable;
         uint40 expectedExpiration;
         address expectedFactory;
         string expectedIpfsCID;
         address expectedLockup;
         bytes32 expectedMerkleRoot;
-        string expectedCampaignName;
         uint256 expectedFee;
         MerkleLL.Schedule expectedSchedule;
         address expectedToken;
@@ -60,6 +60,10 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.expectedAllowance = MAX_UINT256;
         assertEq(vars.actualAllowance, vars.expectedAllowance, "allowance");
 
+        vars.actualCampaignName = constructedLL.campaignName();
+        vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
+        assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
+
         vars.actualCancelable = constructedLL.CANCELABLE();
         vars.expectedCancelable = defaults.CANCELABLE();
         assertEq(vars.actualCancelable, vars.expectedCancelable, "cancelable");
@@ -87,10 +91,6 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.actualMerkleRoot = constructedLL.MERKLE_ROOT();
         vars.expectedMerkleRoot = defaults.MERKLE_ROOT();
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
-
-        vars.actualCampaignName = constructedLL.campaignName();
-        vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
-        assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 
         (
             vars.actualSchedule.startTime,

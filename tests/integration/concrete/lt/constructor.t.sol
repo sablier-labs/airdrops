@@ -11,13 +11,13 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
     struct Vars {
         address actualAdmin;
         uint256 actualAllowance;
+        string actualCampaignName;
         bool actualCancelable;
         uint40 actualExpiration;
         address actualFactory;
         string actualIpfsCID;
         address actualLockup;
         bytes32 actualMerkleRoot;
-        string actualCampaignName;
         uint256 actualFee;
         uint40 actualStreamStartTime;
         address actualToken;
@@ -26,13 +26,13 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         bool actualTransferable;
         address expectedAdmin;
         uint256 expectedAllowance;
+        string expectedCampaignName;
         bool expectedCancelable;
         uint40 expectedExpiration;
         address expectedFactory;
         string expectedIpfsCID;
         address expectedLockup;
         bytes32 expectedMerkleRoot;
-        string expectedCampaignName;
         uint256 expectedFee;
         uint40 expectedStreamStartTime;
         address expectedToken;
@@ -65,6 +65,10 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedAllowance = MAX_UINT256;
         assertEq(vars.actualAllowance, vars.expectedAllowance, "allowance");
 
+        vars.actualCampaignName = constructedLT.campaignName();
+        vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
+        assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
+
         vars.actualCancelable = constructedLT.CANCELABLE();
         vars.expectedCancelable = defaults.CANCELABLE();
         assertEq(vars.actualCancelable, vars.expectedCancelable, "cancelable");
@@ -92,10 +96,6 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.actualMerkleRoot = constructedLT.MERKLE_ROOT();
         vars.expectedMerkleRoot = defaults.MERKLE_ROOT();
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
-
-        vars.actualCampaignName = constructedLT.campaignName();
-        vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
-        assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 
         assertEq(constructedLT.shape(), defaults.SHAPE(), "shape");
 
