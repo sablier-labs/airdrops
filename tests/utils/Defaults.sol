@@ -51,6 +51,7 @@ contract Defaults is Constants, Merkle {
     uint40 public immutable STREAM_START_TIME_NON_ZERO = JULY_1_2024 - 2 days;
     uint40 public immutable STREAM_START_TIME_ZERO = 0;
     uint64 public constant TOTAL_PERCENTAGE = uUNIT;
+
     bool public constant TRANSFERABLE = false;
 
     /*//////////////////////////////////////////////////////////////////////////
