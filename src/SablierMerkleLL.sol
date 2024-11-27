@@ -51,7 +51,7 @@ contract SablierMerkleLL is
     bool public immutable override STREAM_TRANSFERABLE;
 
     /// @dev See the documentation in {ISablierMerkleLL.getSchedule}.
-    MerkleLL.Schedule internal _schedule;
+    MerkleLL.Schedule private _schedule;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
