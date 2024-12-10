@@ -225,6 +225,6 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
         merkleFactory.collectFees({ merkleBase: vars.merkleInstant });
 
         assertEq(address(vars.merkleInstant).balance, 0, "merkleInstant ETH balance");
-        assertEq(users.admin.balance - initialAdminBalance, fee, "admin ETH balance");
+        assertEq(users.admin.balance, initialAdminBalance + fee, "admin ETH balance");
     }
 }
