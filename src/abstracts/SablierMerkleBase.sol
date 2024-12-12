@@ -24,7 +24,7 @@ abstract contract SablierMerkleBase is
                                   STATE VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
 
-    // The name of the campaign stored as bytes32.
+    /// @dev The name of the campaign stored as bytes32.
     bytes32 internal immutable CAMPAIGN_NAME;
 
     /// @inheritdoc ISablierMerkleBase
@@ -39,7 +39,7 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     bytes32 public immutable override MERKLE_ROOT;
 
-    // The shape of Lockup stream stored as bytes32.
+    /// @dev The shape of Lockup stream stored as bytes32.
     bytes32 internal immutable SHAPE;
 
     /// @inheritdoc ISablierMerkleBase
