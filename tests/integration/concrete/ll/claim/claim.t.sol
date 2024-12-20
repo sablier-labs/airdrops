@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
+import { ud2x18 } from "@prb/math/src/UD2x18.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
 import { MerkleLL } from "src/types/DataTypes.sol";
 
@@ -17,7 +18,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
     function test_WhenScheduledCliffDurationZero() external whenMerkleProofValid whenScheduledStartTimeZero {
         schedule.cliffDuration = 0;
-        schedule.cliffAmount = 0;
+        schedule.cliffPercentage = ud2x18(0);
 
         merkleLL = merkleFactory.createMerkleLL({
             baseParams: defaults.baseParams(),

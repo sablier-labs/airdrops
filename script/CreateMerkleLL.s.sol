@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.22 <0.9.0;
 
+import { ud2x18 } from "@prb/math/src/UD2x18.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 
@@ -43,9 +44,9 @@ contract CreateMerkleLL is BaseScript {
             transferable: true,
             schedule: MerkleLL.Schedule({
                 startTime: 0, // i.e. block.timestamp
-                startAmount: 10e18,
+                startPercentage: ud2x18(0.01e18),
                 cliffDuration: 30 days,
-                cliffAmount: 10e18,
+                cliffPercentage: ud2x18(0.01e18),
                 totalDuration: 90 days
             }),
             aggregateAmount: 10_000e18,
