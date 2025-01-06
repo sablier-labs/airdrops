@@ -53,7 +53,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         merkleFactory.setCustomFee(users.campaignOwner, customFee);
 
         resetPrank(users.campaignOwner);
-        address expectedMerkleInstant = computeMerkleInstantAddress(campaignOwner, expiration, customFee);
+        address expectedMerkleInstant = computeMerkleInstantAddress(campaignOwner, expiration);
 
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams({
             campaignOwner: campaignOwner,
@@ -68,8 +68,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             baseParams: baseParams,
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: customFee
+            recipientCount: defaults.RECIPIENT_COUNT()
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
@@ -108,8 +107,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             baseParams: baseParams,
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: defaults.FEE()
+            recipientCount: defaults.RECIPIENT_COUNT()
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);

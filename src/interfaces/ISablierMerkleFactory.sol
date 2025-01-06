@@ -30,8 +30,7 @@ interface ISablierMerkleFactory is IAdminable {
         ISablierMerkleInstant indexed merkleInstant,
         MerkleBase.ConstructorParams baseParams,
         uint256 aggregateAmount,
-        uint256 recipientCount,
-        uint256 fee
+        uint256 recipientCount
     );
 
     /// @notice Emitted when a {SablierMerkleLL} campaign is created.
@@ -43,8 +42,7 @@ interface ISablierMerkleFactory is IAdminable {
         bool transferable,
         MerkleLL.Schedule schedule,
         uint256 aggregateAmount,
-        uint256 recipientCount,
-        uint256 fee
+        uint256 recipientCount
     );
 
     /// @notice Emitted when a {SablierMerkleLT} campaign is created.
@@ -58,8 +56,7 @@ interface ISablierMerkleFactory is IAdminable {
         MerkleLT.TrancheWithPercentage[] tranchesWithPercentages,
         uint256 totalDuration,
         uint256 aggregateAmount,
-        uint256 recipientCount,
-        uint256 fee
+        uint256 recipientCount
     );
 
     /// @notice Emitted when the admin resets the custom fee for the provided campaign creator to the default fee.
@@ -74,6 +71,10 @@ interface ISablierMerkleFactory is IAdminable {
     /*//////////////////////////////////////////////////////////////////////////
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Retrieves the fee for the provided campaign creator, using the default fee if no custom fee is set.
+    /// @param campaignCreator The address of the user for whom the fee is being computed.
+    function computeFee(address campaignCreator) external view returns (uint256);
 
     /// @notice Retrieves the custom fee struct for the provided campaign creator.
     /// @param campaignCreator The address of the user for whom the details are being retrieved.

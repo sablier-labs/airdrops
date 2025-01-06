@@ -103,10 +103,8 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        uint256 fee = defaults.FEE();
-
         vars.expectedLT = computeMerkleLTAddress(
-            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration, fee
+            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration
         );
 
         vars.baseParams = defaults.baseParams({
@@ -127,8 +125,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
             tranchesWithPercentages: defaults.tranchesWithPercentages(),
             totalDuration: defaults.TOTAL_DURATION(),
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount,
-            fee: fee
+            recipientCount: vars.recipientCount
         });
 
         vars.merkleLT = merkleFactory.createMerkleLT({
@@ -183,6 +180,8 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         } else {
             vars.merkleProof = getProof(leaves.toBytes32(), vars.leafPos);
         }
+
+        uint256 fee = defaults.FEE();
 
         expectCallToClaimWithData({
             merkleLockup: address(vars.merkleLT),

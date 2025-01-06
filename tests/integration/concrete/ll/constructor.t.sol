@@ -42,12 +42,12 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         resetPrank(address(merkleFactory));
 
         SablierMerkleLL constructedLL = new SablierMerkleLL(
+            users.campaignOwner,
             defaults.baseParams(),
             lockup,
             defaults.CANCELABLE(),
             defaults.TRANSFERABLE(),
-            defaults.schedule(),
-            defaults.FEE()
+            defaults.schedule()
         );
 
         Vars memory vars;

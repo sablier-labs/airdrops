@@ -89,7 +89,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         merkleFactory.setCustomFee(users.campaignOwner, customFee);
 
         resetPrank(users.campaignOwner);
-        address expectedLT = computeMerkleLTAddress(campaignOwner, expiration, customFee);
+        address expectedLT = computeMerkleLTAddress(campaignOwner, expiration);
 
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams({
             campaignOwner: campaignOwner,
@@ -110,8 +110,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             tranchesWithPercentages: defaults.tranchesWithPercentages(),
             totalDuration: defaults.TOTAL_DURATION(),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: customFee
+            recipientCount: defaults.RECIPIENT_COUNT()
         });
 
         ISablierMerkleLT actualLT = createMerkleLT(campaignOwner, expiration);
@@ -153,8 +152,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             tranchesWithPercentages: defaults.tranchesWithPercentages(),
             totalDuration: defaults.TOTAL_DURATION(),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: defaults.FEE()
+            recipientCount: defaults.RECIPIENT_COUNT()
         });
 
         ISablierMerkleLT actualLT = createMerkleLT(campaignOwner, expiration);

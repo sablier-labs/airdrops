@@ -85,7 +85,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         merkleFactory.setCustomFee(users.campaignOwner, customFee);
 
         resetPrank(users.campaignOwner);
-        address expectedLL = computeMerkleLLAddress(campaignOwner, expiration, customFee);
+        address expectedLL = computeMerkleLLAddress(campaignOwner, expiration);
 
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams({
             campaignOwner: campaignOwner,
@@ -104,8 +104,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
             transferable: defaults.TRANSFERABLE(),
             schedule: defaults.schedule(),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: customFee
+            recipientCount: defaults.RECIPIENT_COUNT()
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(campaignOwner, expiration);
@@ -147,8 +146,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
             transferable: defaults.TRANSFERABLE(),
             schedule: defaults.schedule(),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: defaults.FEE()
+            recipientCount: defaults.RECIPIENT_COUNT()
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(campaignOwner, expiration);

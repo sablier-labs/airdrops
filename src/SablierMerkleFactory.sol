@@ -16,9 +16,9 @@ import { SablierMerkleLL } from "./SablierMerkleLL.sol";
 import { SablierMerkleLT } from "./SablierMerkleLT.sol";
 import { MerkleBase, MerkleFactory, MerkleLL, MerkleLT } from "./types/DataTypes.sol";
 
-/* 
+/*
 
-███████╗ █████╗ ██████╗ ██╗     ██╗███████╗██████╗ 
+███████╗ █████╗ ██████╗ ██╗     ██╗███████╗██████╗
 ██╔════╝██╔══██╗██╔══██╗██║     ██║██╔════╝██╔══██╗
 ███████╗███████║██████╔╝██║     ██║█████╗  ██████╔╝
 ╚════██║██╔══██║██╔══██╗██║     ██║██╔══╝  ██╔══██╗
@@ -27,10 +27,10 @@ import { MerkleBase, MerkleFactory, MerkleLL, MerkleLT } from "./types/DataTypes
 
 ███╗   ███╗███████╗██████╗ ██╗  ██╗██╗     ███████╗    ███████╗ █████╗  ██████╗████████╗ ██████╗ ██████╗ ██╗   ██╗
 ████╗ ████║██╔════╝██╔══██╗██║ ██╔╝██║     ██╔════╝    ██╔════╝██╔══██╗██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗╚██╗ ██╔╝
-██╔████╔██║█████╗  ██████╔╝█████╔╝ ██║     █████╗      █████╗  ███████║██║        ██║   ██║   ██║██████╔╝ ╚████╔╝ 
-██║╚██╔╝██║██╔══╝  ██╔══██╗██╔═██╗ ██║     ██╔══╝      ██╔══╝  ██╔══██║██║        ██║   ██║   ██║██╔══██╗  ╚██╔╝  
-██║ ╚═╝ ██║███████╗██║  ██║██║  ██╗███████╗███████╗    ██║     ██║  ██║╚██████╗   ██║   ╚██████╔╝██║  ██║   ██║   
-╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝     ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝   
+██╔████╔██║█████╗  ██████╔╝█████╔╝ ██║     █████╗      █████╗  ███████║██║        ██║   ██║   ██║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══╝  ██╔══██╗██╔═██╗ ██║     ██╔══╝      ██╔══╝  ██╔══██║██║        ██║   ██║   ██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║███████╗██║  ██║██║  ██╗███████╗███████╗    ██║     ██║  ██║╚██████╗   ██║   ╚██████╔╝██║  ██║   ██║
+╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝     ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 
 */
 
@@ -76,6 +76,11 @@ contract SablierMerkleFactory is
     }
 
     /// @inheritdoc ISablierMerkleFactory
+    function computeFee(address campaignCreator) external view returns (uint256) {
+        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : defaultFee;
+    }
+
+    /// @inheritdoc ISablierMerkleFactory
     function customFee(address campaignCreator) external view override returns (MerkleFactory.CustomFee memory) {
         return _customFees[campaignCreator];
     }
@@ -106,14 +111,11 @@ contract SablierMerkleFactory is
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(baseParams)));
 
-        // Compute the fee for the user.
-        uint256 fee = _computeFeeForUser(msg.sender);
-
         // Deploy the MerkleInstant contract with CREATE2.
-        merkleInstant = new SablierMerkleInstant{ salt: salt }(baseParams, fee);
+        merkleInstant = new SablierMerkleInstant{ salt: salt }(msg.sender, baseParams);
 
         // Log the creation of the MerkleInstant contract, including some metadata that is not stored on-chain.
-        emit CreateMerkleInstant(merkleInstant, baseParams, aggregateAmount, recipientCount, fee);
+        emit CreateMerkleInstant(merkleInstant, baseParams, aggregateAmount, recipientCount);
     }
 
     /// @inheritdoc ISablierMerkleFactory
@@ -135,15 +137,12 @@ contract SablierMerkleFactory is
             abi.encodePacked(msg.sender, abi.encode(baseParams), lockup, cancelable, transferable, abi.encode(schedule))
         );
 
-        // Compute the fee for the user.
-        uint256 fee = _computeFeeForUser(msg.sender);
-
         // Deploy the MerkleLL contract with CREATE2.
-        merkleLL = new SablierMerkleLL{ salt: salt }(baseParams, lockup, cancelable, transferable, schedule, fee);
+        merkleLL = new SablierMerkleLL{ salt: salt }(msg.sender, baseParams, lockup, cancelable, transferable, schedule);
 
         // Log the creation of the MerkleLL contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLL(
-            merkleLL, baseParams, lockup, cancelable, transferable, schedule, aggregateAmount, recipientCount, fee
+            merkleLL, baseParams, lockup, cancelable, transferable, schedule, aggregateAmount, recipientCount
         );
     }
 
@@ -172,12 +171,9 @@ contract SablierMerkleFactory is
             }
         }
 
-        // Compute the fee for the user.
-        uint256 fee = _computeFeeForUser(msg.sender);
-
         // Deploy the MerkleLT contract.
         merkleLT =
-            _deployMerkleLT(baseParams, lockup, cancelable, transferable, streamStartTime, tranchesWithPercentages, fee);
+            _deployMerkleLT(baseParams, lockup, cancelable, transferable, streamStartTime, tranchesWithPercentages);
 
         // Log the creation of the MerkleLT contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLT(
@@ -190,8 +186,7 @@ contract SablierMerkleFactory is
             tranchesWithPercentages,
             totalDuration,
             aggregateAmount,
-            recipientCount,
-            fee
+            recipientCount
         );
     }
 
@@ -231,11 +226,6 @@ contract SablierMerkleFactory is
                            PRIVATE NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev Computes the fee for the user, using the default fee if no custom fee is set.
-    function _computeFeeForUser(address user) private view returns (uint256) {
-        return _customFees[user].enabled ? _customFees[user].fee : defaultFee;
-    }
-
     /// @notice Deploys a new MerkleLT contract with CREATE2.
     /// @dev We need a separate function to prevent the stack too deep error.
     function _deployMerkleLT(
@@ -244,8 +234,7 @@ contract SablierMerkleFactory is
         bool cancelable,
         bool transferable,
         uint40 streamStartTime,
-        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages,
-        uint256 fee
+        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages
     )
         private
         returns (ISablierMerkleLT merkleLT)
@@ -265,7 +254,7 @@ contract SablierMerkleFactory is
 
         // Deploy the MerkleLT contract with CREATE2.
         merkleLT = new SablierMerkleLT{ salt: salt }(
-            baseParams, lockup, cancelable, transferable, streamStartTime, tranchesWithPercentages, fee
+            msg.sender, baseParams, lockup, cancelable, transferable, streamStartTime, tranchesWithPercentages
         );
     }
 }

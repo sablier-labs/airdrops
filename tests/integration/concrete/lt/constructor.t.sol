@@ -46,13 +46,13 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         resetPrank(address(merkleFactory));
 
         SablierMerkleLT constructedLT = new SablierMerkleLT(
+            users.campaignOwner,
             defaults.baseParams(),
             lockup,
             defaults.CANCELABLE(),
             defaults.TRANSFERABLE(),
             defaults.STREAM_START_TIME_ZERO(),
-            defaults.tranchesWithPercentages(),
-            defaults.FEE()
+            defaults.tranchesWithPercentages()
         );
 
         Vars memory vars;

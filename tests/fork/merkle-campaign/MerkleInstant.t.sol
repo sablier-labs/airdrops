@@ -102,10 +102,8 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        uint256 fee = defaults.FEE();
-
         vars.expectedMerkleInstant = computeMerkleInstantAddress(
-            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration, fee
+            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration
         );
 
         vars.baseParams = defaults.baseParams({
@@ -120,8 +118,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             merkleInstant: ISablierMerkleInstant(vars.expectedMerkleInstant),
             baseParams: vars.baseParams,
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount,
-            fee: fee
+            recipientCount: vars.recipientCount
         });
 
         vars.merkleInstant = merkleFactory.createMerkleInstant({
@@ -173,6 +170,8 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
         } else {
             vars.merkleProof = getProof(leaves.toBytes32(), vars.leafPos);
         }
+
+        uint256 fee = defaults.FEE();
 
         expectCallToClaimWithData({
             merkleLockup: address(vars.merkleInstant),
