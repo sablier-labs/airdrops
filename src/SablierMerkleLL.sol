@@ -103,14 +103,10 @@ contract SablierMerkleLL is
 
         uint40 cliffTime;
 
-        // It is safe to use unchecked arithmetic because the `createWithTimestamps` function in the Lockup contract
-        // will nonetheless make the relevant checks.
-        unchecked {
-            if (_schedule.cliffDuration > 0) {
-                cliffTime = timestamps.start + _schedule.cliffDuration;
-            }
-            timestamps.end = timestamps.start + _schedule.totalDuration;
+        if (_schedule.cliffDuration > 0) {
+            cliffTime = timestamps.start + _schedule.cliffDuration;
         }
+        timestamps.end = timestamps.start + _schedule.totalDuration;
 
         // Calculate the unlock amounts based on the percentages.
         LockupLinear.UnlockAmounts memory unlockAmounts;
