@@ -5,10 +5,12 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ud60x18, ZERO } from "@prb/math/src/UD60x18.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
+import { VestingMath } from "@sablier/lockup/src/libraries/VestingMath.sol";
 import { Broker, Lockup, LockupLinear } from "@sablier/lockup/src/types/DataTypes.sol";
 
 import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
 import { ISablierMerkleLL } from "./interfaces/ISablierMerkleLL.sol";
+import { Errors } from "./libraries/Errors.sol";
 import { MerkleBase, MerkleLL } from "./types/DataTypes.sol";
 
 /*
@@ -49,6 +51,9 @@ contract SablierMerkleLL is
 
     /// @inheritdoc ISablierMerkleLL
     bool public immutable override STREAM_TRANSFERABLE;
+
+    /// @inheritdoc ISablierMerkleLL
+    mapping(address recipient => uint40 time) public abortTimes;
 
     /// @dev See the documentation in {ISablierMerkleLL.getSchedule}.
     MerkleLL.Schedule private _schedule;
@@ -91,6 +96,33 @@ contract SablierMerkleLL is
                          USER-FACING NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @inheritdoc ISablierMerkleLL
+    function abort(address[] memory recipients) external override onlyAdmin {
+        // Check: the campaign has not expired.
+        if (hasExpired()) {
+            revert Errors.SablierMerkleBase_CampaignExpired({ blockTimestamp: block.timestamp, expiration: EXPIRATION });
+        }
+
+        // Check: the campaign is cancelable.
+        if (!STREAM_CANCELABLE) {
+            revert Errors.SablierMerkleLL_NotCancelableCampaign();
+        }
+
+        uint256 count = recipients.length;
+
+        // Set the abort time for each recipient.
+        for (uint256 i = 0; i < count; ++i) {
+            abortTimes[recipients[i]] = uint40(block.timestamp);
+        }
+
+        // Log the abort.
+        emit Abort(recipients);
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                          INTERNAL NON-CONSTANT FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
     /// @inheritdoc SablierMerkleBase
     function _claim(uint256 index, address recipient, uint128 amount) internal override {
         // Calculate the timestamps for the stream.
@@ -117,22 +149,37 @@ contract SablierMerkleLL is
         unlockAmounts.start = ud60x18(amount).mul(_schedule.startPercentage.intoUD60x18()).intoUint128();
         unlockAmounts.cliff = ud60x18(amount).mul(_schedule.cliffPercentage.intoUD60x18()).intoUint128();
 
-        // Interaction: create the stream via {SablierLockup}.
-        uint256 streamId = LOCKUP.createWithTimestampsLL(
-            Lockup.CreateWithTimestamps({
-                sender: admin,
-                recipient: recipient,
-                totalAmount: amount,
-                token: TOKEN,
-                cancelable: STREAM_CANCELABLE,
-                transferable: STREAM_TRANSFERABLE,
+        uint256 streamId;
+
+        if (abortTimes[recipient] > 0) {
+            uint128 claimableAmount = VestingMath.calculateLockupLinearStreamedAmount({
+                depositedAmount: amount,
+                blockTimestamp: abortTimes[recipient],
                 timestamps: timestamps,
-                shape: string(abi.encodePacked(SHAPE)),
-                broker: Broker({ account: address(0), fee: ZERO })
-            }),
-            unlockAmounts,
-            cliffTime
-        );
+                cliffTime: cliffTime,
+                unlockAmounts: unlockAmounts,
+                withdrawnAmount: 0
+            });
+
+            amount = claimableAmount;
+        } else {
+            // Interaction: create the stream via {SablierLockup}.
+            streamId = LOCKUP.createWithTimestampsLL(
+                Lockup.CreateWithTimestamps({
+                    sender: admin,
+                    recipient: recipient,
+                    totalAmount: amount,
+                    token: TOKEN,
+                    cancelable: STREAM_CANCELABLE,
+                    transferable: STREAM_TRANSFERABLE,
+                    timestamps: timestamps,
+                    shape: string(abi.encodePacked(SHAPE)),
+                    broker: Broker({ account: address(0), fee: ZERO })
+                }),
+                unlockAmounts,
+                cliffTime
+            );
+        }
 
         // Log the claim.
         emit Claim(index, recipient, amount, streamId);

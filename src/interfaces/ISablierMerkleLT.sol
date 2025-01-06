@@ -13,6 +13,9 @@ interface ISablierMerkleLT is ISablierMerkleBase {
                                        EVENTS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Emitted when the admin aborts the recipients.
+    event Abort(address[] recipients);
+
     /// @notice Emitted when a recipient claims a stream.
     event Claim(uint256 index, address indexed recipient, uint128 amount, uint256 indexed streamId);
 
@@ -38,6 +41,25 @@ interface ISablierMerkleLT is ISablierMerkleBase {
     /// @notice The total percentage of the tranches.
     function TOTAL_PERCENTAGE() external view returns (uint64);
 
+    /// @notice Retrieves the timestamp when the recipient has been aborted by the admin.
+    /// @dev A timestamp of zero means the recipient has not been aborted.
+    function abortTimes(address recipient) external view returns (uint40);
+
     /// @notice Retrieves the tranches with their respective unlock percentages and durations.
     function getTranchesWithPercentages() external view returns (MerkleLT.TrancheWithPercentage[] memory);
+
+    /*//////////////////////////////////////////////////////////////////////////
+                         USER-FACING NON-CONSTANT FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Aborts the airdrops for the specified recipients.
+    /// @dev Emits an {Abort} event.
+    ///
+    /// Requirements:
+    /// - `msg.sender` must be the admin.
+    /// - The campaign must not have expired.
+    /// - The campaign must be cancelable.
+    ///
+    /// @param recipients The recipients to abort.
+    function abort(address[] memory recipients) external;
 }

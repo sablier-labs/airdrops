@@ -12,6 +12,9 @@ interface ISablierMerkleLL is ISablierMerkleBase {
                                        EVENTS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Emitted when the admin aborts the recipients.
+    event Abort(address[] recipients);
+
     /// @notice Emitted when a recipient claims a stream.
     event Claim(uint256 index, address indexed recipient, uint128 amount, uint256 indexed streamId);
 
@@ -30,8 +33,27 @@ interface ISablierMerkleLL is ISablierMerkleBase {
     /// @dev This is an immutable state variable.
     function STREAM_TRANSFERABLE() external returns (bool);
 
+    /// @notice Retrieves the timestamp when the recipient has been aborted by the admin.
+    /// @dev A timestamp of zero means the recipient has not been aborted.
+    function abortTimes(address recipient) external view returns (uint40);
+
     /// @notice A tuple containing the start time, start unlock percentage, cliff duration, cliff unlock percentage, and
     /// end duration. These values are used to calculate the vesting schedule in `Lockup.CreateWithTimestampsLL`.
     /// @dev A start time value of zero will be considered as `block.timestamp`.
     function getSchedule() external view returns (MerkleLL.Schedule memory);
+
+    /*//////////////////////////////////////////////////////////////////////////
+                         USER-FACING NON-CONSTANT FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Aborts the airdrops for the specified recipients.
+    /// @dev Emits an {Abort} event.
+    ///
+    /// Requirements:
+    /// - `msg.sender` must be the admin.
+    /// - The campaign must not have expired.
+    /// - The campaign must be cancelable.
+    ///
+    /// @param recipients The recipients to abort.
+    function abort(address[] memory recipients) external;
 }

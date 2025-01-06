@@ -37,8 +37,18 @@ library Errors {
     error SablierMerkleBase_StreamClaimed(uint256 index);
 
     /*//////////////////////////////////////////////////////////////////////////
+                                 SABLIER-MERKLE-LL
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Thrown when trying to abort when the campaign is not cancelable.
+    error SablierMerkleLL_NotCancelableCampaign();
+
+    /*//////////////////////////////////////////////////////////////////////////
                                  SABLIER-MERKLE-LT
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Thrown when trying to abort when the campaign is not cancelable.
+    error SablierMerkleLT_NotCancelableCampaign();
 
     /// @notice Thrown when trying to claim from an LT campaign with tranches' unlock percentages not adding up to 100%.
     error SablierMerkleLT_TotalPercentageNotOneHundred(uint64 totalPercentage);
