@@ -25,7 +25,8 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice Retrieves the address of the factory contract.
     function FACTORY() external view returns (address);
 
-    /// @notice Retrieves the minimum fee required to claim an Airstream, paid in native tokens.
+    /// @notice Retrieves the minimum fee required to claim the airdrop, which is paid in the native token of the chain,
+    /// e.g. ETH for Ethereum Mainnet.
     function FEE() external view returns (uint256);
 
     /// @notice The root of the Merkle tree used to validate the proofs of inclusion.
@@ -97,6 +98,6 @@ interface ISablierMerkleBase is IAdminable {
     /// - msg.sender must be the `FACTORY` contract.
     ///
     /// @param factoryAdmin The address of the `FACTORY` admin.
-    /// @return feeAmount The amount of native tokens withdrawn.
+    /// @return feeAmount The amount of native tokens (e.g., ETH) collected as fees.
     function collectFees(address factoryAdmin) external returns (uint256 feeAmount);
 }

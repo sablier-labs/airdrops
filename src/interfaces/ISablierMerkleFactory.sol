@@ -88,8 +88,9 @@ interface ISablierMerkleFactory is IAdminable {
         pure
         returns (bool result);
 
-    /// @notice Retrieves the default fee required to claim an airdrop.
-    /// @dev A minimum of this fee must be paid in native tokens during {SablierMerkleBase.claim}.
+    /// @notice Retrieves the default fee required to claim an airdrop. The fee is denominated in the native token of
+    /// the chain, e.g., ETH for Ethereum Mainnet.
+    /// @dev This fee must when claiming airdrops.
     function defaultFee() external view returns (uint256);
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -100,7 +101,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @dev Emits a {CollectFees} event.
     ///
     /// Notes:
-    /// - If the admin is a contract, it must be able to receive native tokens.
+    /// - If the admin is a contract, it must be able to receive native token payments, e.g., ETH for Ethereum Mainnet.
     ///
     /// @param merkleBase The address of the Merkle contract where the fees are collected from.
     function collectFees(ISablierMerkleBase merkleBase) external;
