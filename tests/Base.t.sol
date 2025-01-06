@@ -290,7 +290,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         returns (bytes memory)
     {
         bytes memory constructorArgs =
-            abi.encode(campaignCreator, defaults.baseParams(campaignOwner, token_, expiration, merkleRoot));
+            abi.encode(defaults.baseParams(campaignOwner, token_, expiration, merkleRoot), campaignCreator);
         if (!isTestOptimizedProfile()) {
             return bytes.concat(type(SablierMerkleInstant).creationCode, constructorArgs);
         } else {
@@ -312,8 +312,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         returns (bytes memory)
     {
         bytes memory constructorArgs = abi.encode(
-            campaignCreator,
             defaults.baseParams(campaignOwner, token_, expiration, merkleRoot),
+            campaignCreator,
             lockup,
             defaults.CANCELABLE(),
             defaults.TRANSFERABLE(),
@@ -338,8 +338,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         returns (bytes memory)
     {
         bytes memory constructorArgs = abi.encode(
-            campaignCreator,
             defaults.baseParams(campaignOwner, token_, expiration, merkleRoot),
+            campaignCreator,
             lockup,
             defaults.CANCELABLE(),
             defaults.TRANSFERABLE(),

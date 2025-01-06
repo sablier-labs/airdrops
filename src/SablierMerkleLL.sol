@@ -60,14 +60,14 @@ contract SablierMerkleLL is
     /// @dev Constructs the contract by initializing the immutable state variables, and max approving the Lockup
     /// contract.
     constructor(
-        address campaignCreator,
         MerkleBase.ConstructorParams memory baseParams,
+        address campaignCreator,
         ISablierLockup lockup,
         bool cancelable,
         bool transferable,
         MerkleLL.Schedule memory schedule
     )
-        SablierMerkleBase(campaignCreator, baseParams)
+        SablierMerkleBase(baseParams, campaignCreator)
     {
         LOCKUP = lockup;
         STREAM_CANCELABLE = cancelable;

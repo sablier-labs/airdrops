@@ -42,8 +42,8 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         resetPrank(address(merkleFactory));
 
         SablierMerkleLL constructedLL = new SablierMerkleLL(
-            users.campaignOwner,
             defaults.baseParams(),
+            users.campaignOwner,
             lockup,
             defaults.CANCELABLE(),
             defaults.TRANSFERABLE(),

@@ -62,6 +62,16 @@ contract SablierMerkleFactory is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactory
+    function getCustomFee(address campaignCreator) external view override returns (MerkleFactory.CustomFee memory) {
+        return _customFees[campaignCreator];
+    }
+
+    /// @inheritdoc ISablierMerkleFactory
+    function getFee(address campaignCreator) external view returns (uint256) {
+        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : defaultFee;
+    }
+
+    /// @inheritdoc ISablierMerkleFactory
     function isPercentagesSum100(MerkleLT.TrancheWithPercentage[] calldata tranches)
         external
         pure
@@ -73,16 +83,6 @@ contract SablierMerkleFactory is
             totalPercentage += tranches[i].unlockPercentage.unwrap();
         }
         return totalPercentage == uUNIT;
-    }
-
-    /// @inheritdoc ISablierMerkleFactory
-    function computeFee(address campaignCreator) external view returns (uint256) {
-        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : defaultFee;
-    }
-
-    /// @inheritdoc ISablierMerkleFactory
-    function customFee(address campaignCreator) external view override returns (MerkleFactory.CustomFee memory) {
-        return _customFees[campaignCreator];
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ contract SablierMerkleFactory is
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(baseParams)));
 
         // Deploy the MerkleInstant contract with CREATE2.
-        merkleInstant = new SablierMerkleInstant{ salt: salt }(msg.sender, baseParams);
+        merkleInstant = new SablierMerkleInstant{ salt: salt }({ baseParams: baseParams, campaignCreator: msg.sender });
 
         // Log the creation of the MerkleInstant contract, including some metadata that is not stored on-chain.
         emit CreateMerkleInstant(merkleInstant, baseParams, aggregateAmount, recipientCount);
@@ -138,7 +138,14 @@ contract SablierMerkleFactory is
         );
 
         // Deploy the MerkleLL contract with CREATE2.
-        merkleLL = new SablierMerkleLL{ salt: salt }(msg.sender, baseParams, lockup, cancelable, transferable, schedule);
+        merkleLL = new SablierMerkleLL{ salt: salt }({
+            baseParams: baseParams,
+            campaignCreator: msg.sender,
+            lockup: lockup,
+            cancelable: cancelable,
+            transferable: transferable,
+            schedule: schedule
+        });
 
         // Log the creation of the MerkleLL contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLL(
@@ -253,8 +260,14 @@ contract SablierMerkleFactory is
         );
 
         // Deploy the MerkleLT contract with CREATE2.
-        merkleLT = new SablierMerkleLT{ salt: salt }(
-            msg.sender, baseParams, lockup, cancelable, transferable, streamStartTime, tranchesWithPercentages
-        );
+        merkleLT = new SablierMerkleLT{ salt: salt }({
+            baseParams: baseParams,
+            campaignCreator: msg.sender,
+            lockup: lockup,
+            cancelable: cancelable,
+            transferable: transferable,
+            streamStartTime: streamStartTime,
+            tranchesWithPercentages: tranchesWithPercentages
+        });
     }
 }

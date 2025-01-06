@@ -68,15 +68,15 @@ contract SablierMerkleLT is
     /// @dev Constructs the contract by initializing the immutable state variables, and max approving the Lockup
     /// contract.
     constructor(
-        address campaignCreator,
         MerkleBase.ConstructorParams memory baseParams,
+        address campaignCreator,
         ISablierLockup lockup,
         bool cancelable,
         bool transferable,
         uint40 streamStartTime,
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages
     )
-        SablierMerkleBase(campaignCreator, baseParams)
+        SablierMerkleBase(baseParams, campaignCreator)
     {
         STREAM_CANCELABLE = cancelable;
         LOCKUP = lockup;
