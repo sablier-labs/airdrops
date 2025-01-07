@@ -81,15 +81,16 @@ interface ISablierMerkleFactory is IAdminable {
 
     /// @notice Retrieves the custom fee struct for the provided campaign creator.
     /// @dev The fee is denominated in the native token of the chain, e.g., ETH for Ethereum Mainnet.
-    /// @param campaignCreator The address of the user.
+    /// @param campaignCreator The address of the campaign creator.
     function getCustomFee(address campaignCreator) external view returns (MerkleFactory.CustomFee memory);
 
     /// @notice Retrieves the fee for the provided campaign creator, using the default fee if no custom fee is set.
     /// @dev The fee is denominated in the native token of the chain, e.g., ETH for Ethereum Mainnet.
-    /// @param campaignCreator The address of the user.
+    /// @param campaignCreator The address of the campaign creator.
     function getFee(address campaignCreator) external view returns (uint256);
 
-    /// @notice Returns a bool indicating whether the sum of percentages in `tranches` equals 100%, i.e., 1e18.
+    /// @notice Verifies if the sum of percentages in `tranches` equals 100%, i.e., 1e18.
+    /// @dev This is a helper function for the frontend. It is not used anywhere in the contracts.
     /// @param tranches The tranches with their respective unlock percentages.
     /// @return result True if the sum of percentages equals 100%, otherwise false.
     function isPercentagesSum100(MerkleLT.TrancheWithPercentage[] calldata tranches)
