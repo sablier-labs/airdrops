@@ -83,7 +83,7 @@ interface ISablierMerkleBase is IAdminable {
     /// @dev Emits a {Clawback} event.
     ///
     /// Requirements:
-    /// - msg.sender must be the admin.
+    /// - `msg.sender` must be the admin.
     /// - No claim must be made, OR
     ///   The current timestamp must not exceed 7 days after the first claim, OR
     ///   The campaign must be expired.
@@ -95,7 +95,7 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice Collects the accrued fees by transferring them to `FACTORY` admin.
     ///
     /// Requirements:
-    /// - msg.sender must be the `FACTORY` contract.
+    /// - `msg.sender` must be the `FACTORY` contract.
     ///
     /// @param factoryAdmin The address of the `FACTORY` admin.
     /// @return feeAmount The amount of native tokens (e.g., ETH) collected as fees.
