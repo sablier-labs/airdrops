@@ -181,7 +181,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     //////////////////////////////////////////////////////////////////////////*/
 
     function computeMerkleInstantAddress(
-        address caller,
+        address campaignCreator,
         address campaignOwner,
         IERC20 token_,
         bytes32 merkleRoot,
@@ -197,9 +197,9 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         baseParams.initialAdmin = campaignOwner;
         baseParams.merkleRoot = merkleRoot;
 
-        bytes32 salt = keccak256(abi.encodePacked(caller, abi.encode(baseParams)));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(baseParams)));
         bytes32 creationBytecodeHash =
-            keccak256(getMerkleInstantBytecode(caller, campaignOwner, token_, merkleRoot, expiration));
+            keccak256(getMerkleInstantBytecode(campaignCreator, campaignOwner, token_, merkleRoot, expiration));
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -208,7 +208,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     }
 
     function computeMerkleLLAddress(
-        address caller,
+        address campaignCreator,
         address campaignOwner,
         IERC20 token_,
         bytes32 merkleRoot,
@@ -225,7 +225,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         baseParams.merkleRoot = merkleRoot;
         bytes32 salt = keccak256(
             abi.encodePacked(
-                caller,
+                campaignCreator,
                 abi.encode(baseParams),
                 lockup,
                 defaults.CANCELABLE(),
@@ -234,7 +234,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             )
         );
         bytes32 creationBytecodeHash =
-            keccak256(getMerkleLLBytecode(caller, campaignOwner, token_, merkleRoot, expiration));
+            keccak256(getMerkleLLBytecode(campaignCreator, campaignOwner, token_, merkleRoot, expiration));
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -243,7 +243,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     }
 
     function computeMerkleLTAddress(
-        address caller,
+        address campaignCreator,
         address campaignOwner,
         IERC20 token_,
         bytes32 merkleRoot,
@@ -260,7 +260,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         baseParams.merkleRoot = merkleRoot;
         bytes32 salt = keccak256(
             abi.encodePacked(
-                caller,
+                campaignCreator,
                 abi.encode(baseParams),
                 lockup,
                 defaults.CANCELABLE(),
@@ -270,7 +270,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             )
         );
         bytes32 creationBytecodeHash =
-            keccak256(getMerkleLTBytecode(caller, campaignOwner, token_, merkleRoot, expiration));
+            keccak256(getMerkleLTBytecode(campaignCreator, campaignOwner, token_, merkleRoot, expiration));
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,

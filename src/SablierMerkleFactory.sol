@@ -193,8 +193,14 @@ contract SablierMerkleFactory is
         }
 
         // Deploy the MerkleLT contract.
-        merkleLT =
-            _deployMerkleLT(baseParams, lockup, cancelable, transferable, streamStartTime, tranchesWithPercentages);
+        merkleLT = _deployMerkleLT({
+            baseParams: baseParams,
+            lockup: lockup,
+            cancelable: cancelable,
+            transferable: transferable,
+            streamStartTime: streamStartTime,
+            tranchesWithPercentages: tranchesWithPercentages
+        });
 
         // Log the creation of the MerkleLT contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLT({

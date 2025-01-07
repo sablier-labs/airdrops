@@ -66,7 +66,7 @@ contract Integration_Test is Base_Test {
 
     function computeMerkleInstantAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleInstantAddress({
-            caller: users.campaignOwner,
+            campaignCreator: users.campaignOwner,
             campaignOwner: campaignOwner,
             token_: dai,
             merkleRoot: defaults.MERKLE_ROOT(),
@@ -100,7 +100,7 @@ contract Integration_Test is Base_Test {
 
     function computeMerkleLLAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleLLAddress({
-            caller: users.campaignOwner,
+            campaignCreator: users.campaignOwner,
             campaignOwner: campaignOwner,
             token_: dai,
             merkleRoot: defaults.MERKLE_ROOT(),
@@ -138,7 +138,7 @@ contract Integration_Test is Base_Test {
 
     function computeMerkleLTAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleLTAddress({
-            caller: users.campaignOwner,
+            campaignCreator: users.campaignOwner,
             campaignOwner: campaignOwner,
             token_: dai,
             merkleRoot: defaults.MERKLE_ROOT(),

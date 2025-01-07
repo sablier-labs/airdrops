@@ -61,14 +61,14 @@ abstract contract SablierMerkleBase is
 
     /// @notice Constructs the contract by initializing the immutable state variables.
     constructor(MerkleBase.ConstructorParams memory params, address campaignCreator) Adminable(params.initialAdmin) {
+        CAMPAIGN_NAME = bytes32(abi.encodePacked(params.campaignName));
         EXPIRATION = params.expiration;
         FACTORY = msg.sender;
         FEE = ISablierMerkleFactory(FACTORY).getFee(campaignCreator);
         MERKLE_ROOT = params.merkleRoot;
-        TOKEN = params.token;
-        CAMPAIGN_NAME = bytes32(abi.encodePacked(params.campaignName));
-        ipfsCID = params.ipfsCID;
         SHAPE = bytes32(abi.encodePacked(params.shape));
+        TOKEN = params.token;
+        ipfsCID = params.ipfsCID;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
