@@ -125,7 +125,8 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
             tranchesWithPercentages: defaults.tranchesWithPercentages(),
             totalDuration: defaults.TOTAL_DURATION(),
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount
+            recipientCount: vars.recipientCount,
+            fee: defaults.FEE()
         });
 
         vars.merkleLT = merkleFactory.createMerkleLT({
@@ -181,18 +182,16 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
             vars.merkleProof = getProof(leaves.toBytes32(), vars.leafPos);
         }
 
-        uint256 fee = defaults.FEE();
-
         expectCallToClaimWithData({
             merkleLockup: address(vars.merkleLT),
-            fee: fee,
+            fee: defaults.FEE(),
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
             merkleProof: vars.merkleProof
         });
 
-        vars.merkleLT.claim{ value: fee }({
+        vars.merkleLT.claim{ value: defaults.FEE() }({
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -253,10 +252,14 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         //////////////////////////////////////////////////////////////////////////*/
 
         vm.expectEmit({ emitter: address(merkleFactory) });
-        emit ISablierMerkleFactory.CollectFees({ admin: users.admin, merkleBase: vars.merkleLT, feeAmount: fee });
+        emit ISablierMerkleFactory.CollectFees({
+            admin: users.admin,
+            merkleBase: vars.merkleLT,
+            feeAmount: defaults.FEE()
+        });
         merkleFactory.collectFees({ merkleBase: vars.merkleLT });
 
         assertEq(address(vars.merkleLT).balance, 0, "merkleLT ETH balance");
-        assertEq(users.admin.balance, initialAdminBalance + fee, "admin ETH balance");
+        assertEq(users.admin.balance, initialAdminBalance + defaults.FEE(), "admin ETH balance");
     }
 }

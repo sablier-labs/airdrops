@@ -68,7 +68,7 @@ contract SablierMerkleFactory is
 
     /// @inheritdoc ISablierMerkleFactory
     function getFee(address campaignCreator) external view returns (uint256) {
-        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : defaultFee;
+        return _getFee(campaignCreator);
     }
 
     /// @inheritdoc ISablierMerkleFactory
@@ -78,7 +78,7 @@ contract SablierMerkleFactory is
         override
         returns (bool result)
     {
-        uint64 totalPercentage;
+        uint256 totalPercentage;
         for (uint256 i = 0; i < tranches.length; ++i) {
             totalPercentage += tranches[i].unlockPercentage.unwrap();
         }
@@ -115,7 +115,13 @@ contract SablierMerkleFactory is
         merkleInstant = new SablierMerkleInstant{ salt: salt }({ baseParams: baseParams, campaignCreator: msg.sender });
 
         // Log the creation of the MerkleInstant contract, including some metadata that is not stored on-chain.
-        emit CreateMerkleInstant(merkleInstant, baseParams, aggregateAmount, recipientCount);
+        emit CreateMerkleInstant({
+            merkleInstant: merkleInstant,
+            baseParams: baseParams,
+            aggregateAmount: aggregateAmount,
+            recipientCount: recipientCount,
+            fee: _getFee(msg.sender)
+        });
     }
 
     /// @inheritdoc ISablierMerkleFactory
@@ -148,9 +154,17 @@ contract SablierMerkleFactory is
         });
 
         // Log the creation of the MerkleLL contract, including some metadata that is not stored on-chain.
-        emit CreateMerkleLL(
-            merkleLL, baseParams, lockup, cancelable, transferable, schedule, aggregateAmount, recipientCount
-        );
+        emit CreateMerkleLL({
+            merkleLL: merkleLL,
+            baseParams: baseParams,
+            lockup: lockup,
+            cancelable: cancelable,
+            transferable: transferable,
+            schedule: schedule,
+            aggregateAmount: aggregateAmount,
+            recipientCount: recipientCount,
+            fee: _getFee(msg.sender)
+        });
     }
 
     /// @inheritdoc ISablierMerkleFactory
@@ -183,18 +197,19 @@ contract SablierMerkleFactory is
             _deployMerkleLT(baseParams, lockup, cancelable, transferable, streamStartTime, tranchesWithPercentages);
 
         // Log the creation of the MerkleLT contract, including some metadata that is not stored on-chain.
-        emit CreateMerkleLT(
-            merkleLT,
-            baseParams,
-            lockup,
-            cancelable,
-            transferable,
-            streamStartTime,
-            tranchesWithPercentages,
-            totalDuration,
-            aggregateAmount,
-            recipientCount
-        );
+        emit CreateMerkleLT({
+            merkleLT: merkleLT,
+            baseParams: baseParams,
+            lockup: lockup,
+            cancelable: cancelable,
+            transferable: transferable,
+            streamStartTime: streamStartTime,
+            tranchesWithPercentages: tranchesWithPercentages,
+            totalDuration: totalDuration,
+            aggregateAmount: aggregateAmount,
+            recipientCount: recipientCount,
+            fee: _getFee(msg.sender)
+        });
     }
 
     /// @inheritdoc ISablierMerkleFactory
@@ -227,6 +242,15 @@ contract SablierMerkleFactory is
         defaultFee = defaultFee_;
 
         emit SetDefaultFee(msg.sender, defaultFee_);
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                            PRIVATE CONSTANT FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Retrieves the fee for the provided campaign creator, using the default fee if no custom fee is set.
+    function _getFee(address campaignCreator) private view returns (uint256) {
+        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : defaultFee;
     }
 
     /*//////////////////////////////////////////////////////////////////////////

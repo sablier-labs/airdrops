@@ -30,7 +30,8 @@ interface ISablierMerkleFactory is IAdminable {
         ISablierMerkleInstant indexed merkleInstant,
         MerkleBase.ConstructorParams baseParams,
         uint256 aggregateAmount,
-        uint256 recipientCount
+        uint256 recipientCount,
+        uint256 fee
     );
 
     /// @notice Emitted when a {SablierMerkleLL} campaign is created.
@@ -42,7 +43,8 @@ interface ISablierMerkleFactory is IAdminable {
         bool transferable,
         MerkleLL.Schedule schedule,
         uint256 aggregateAmount,
-        uint256 recipientCount
+        uint256 recipientCount,
+        uint256 fee
     );
 
     /// @notice Emitted when a {SablierMerkleLT} campaign is created.
@@ -56,7 +58,8 @@ interface ISablierMerkleFactory is IAdminable {
         MerkleLT.TrancheWithPercentage[] tranchesWithPercentages,
         uint256 totalDuration,
         uint256 aggregateAmount,
-        uint256 recipientCount
+        uint256 recipientCount,
+        uint256 fee
     );
 
     /// @notice Emitted when the admin resets the custom fee for the provided campaign creator to the default fee.
@@ -86,8 +89,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @param campaignCreator The address of the user.
     function getFee(address campaignCreator) external view returns (uint256);
 
-    /// @notice Verifies if the sum of percentages in `tranches` equals 100%, i.e. 1e18.
-    /// @dev This is a helper function for the frontend. It is not used anywhere in the contracts.
+    /// @notice Returns a bool indicating whether the sum of percentages in `tranches` equals 100%, i.e., 1e18.
     /// @param tranches The tranches with their respective unlock percentages.
     /// @return result True if the sum of percentages equals 100%, otherwise false.
     function isPercentagesSum100(MerkleLT.TrancheWithPercentage[] calldata tranches)

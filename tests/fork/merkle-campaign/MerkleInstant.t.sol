@@ -118,7 +118,8 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             merkleInstant: ISablierMerkleInstant(vars.expectedMerkleInstant),
             baseParams: vars.baseParams,
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount
+            recipientCount: vars.recipientCount,
+            fee: defaults.FEE()
         });
 
         vars.merkleInstant = merkleFactory.createMerkleInstant({
@@ -171,11 +172,9 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             vars.merkleProof = getProof(leaves.toBytes32(), vars.leafPos);
         }
 
-        uint256 fee = defaults.FEE();
-
         expectCallToClaimWithData({
             merkleLockup: address(vars.merkleInstant),
-            fee: fee,
+            fee: defaults.FEE(),
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -188,7 +187,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             value: vars.amounts[params.posBeforeSort]
         });
 
-        vars.merkleInstant.claim{ value: fee }({
+        vars.merkleInstant.claim{ value: defaults.FEE() }({
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -223,10 +222,14 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
         //////////////////////////////////////////////////////////////////////////*/
 
         vm.expectEmit({ emitter: address(merkleFactory) });
-        emit ISablierMerkleFactory.CollectFees({ admin: users.admin, merkleBase: vars.merkleInstant, feeAmount: fee });
+        emit ISablierMerkleFactory.CollectFees({
+            admin: users.admin,
+            merkleBase: vars.merkleInstant,
+            feeAmount: defaults.FEE()
+        });
         merkleFactory.collectFees({ merkleBase: vars.merkleInstant });
 
         assertEq(address(vars.merkleInstant).balance, 0, "merkleInstant ETH balance");
-        assertEq(users.admin.balance, initialAdminBalance + fee, "admin ETH balance");
+        assertEq(users.admin.balance, initialAdminBalance + defaults.FEE(), "admin ETH balance");
     }
 }

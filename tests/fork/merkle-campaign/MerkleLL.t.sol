@@ -125,7 +125,8 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
             transferable: defaults.TRANSFERABLE(),
             schedule: defaults.schedule(),
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount
+            recipientCount: vars.recipientCount,
+            fee: defaults.FEE()
         });
 
         vars.merkleLL = merkleFactory.createMerkleLL({
@@ -181,18 +182,16 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
             vars.merkleProof = getProof(leaves.toBytes32(), vars.leafPos);
         }
 
-        uint256 fee = defaults.FEE();
-
         expectCallToClaimWithData({
             merkleLockup: address(vars.merkleLL),
-            fee: fee,
+            fee: defaults.FEE(),
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
             merkleProof: vars.merkleProof
         });
 
-        vars.merkleLL.claim{ value: fee }({
+        vars.merkleLL.claim{ value: defaults.FEE() }({
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -263,10 +262,14 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
         //////////////////////////////////////////////////////////////////////////*/
 
         vm.expectEmit({ emitter: address(merkleFactory) });
-        emit ISablierMerkleFactory.CollectFees({ admin: users.admin, merkleBase: vars.merkleLL, feeAmount: fee });
+        emit ISablierMerkleFactory.CollectFees({
+            admin: users.admin,
+            merkleBase: vars.merkleLL,
+            feeAmount: defaults.FEE()
+        });
         merkleFactory.collectFees({ merkleBase: vars.merkleLL });
 
         assertEq(address(vars.merkleLL).balance, 0, "merkleLL ETH balance");
-        assertEq(users.admin.balance, initialAdminBalance + fee, "admin ETH balance");
+        assertEq(users.admin.balance, initialAdminBalance + defaults.FEE(), "admin ETH balance");
     }
 }

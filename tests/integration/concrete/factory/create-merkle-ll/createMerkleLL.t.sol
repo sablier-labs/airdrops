@@ -104,7 +104,8 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
             transferable: defaults.TRANSFERABLE(),
             schedule: defaults.schedule(),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            fee: customFee
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(campaignOwner, expiration);
@@ -146,7 +147,8 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
             transferable: defaults.TRANSFERABLE(),
             schedule: defaults.schedule(),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            fee: defaults.FEE()
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(campaignOwner, expiration);

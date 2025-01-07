@@ -68,7 +68,8 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             baseParams: baseParams,
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            fee: customFee
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
@@ -107,7 +108,8 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             baseParams: baseParams,
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            fee: defaults.FEE()
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
