@@ -59,6 +59,43 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         });
     }
 
+    modifier givenRecipientAborted() {
+        _;
+    }
+
+    function test_RevertGiven_AbortTimeNotGreaterThanStartTime()
+        external
+        whenMerkleProofValid
+        whenTotalPercentageNotGreaterThan100
+        givenRecipientAborted
+    {
+        address[] memory recipients = new address[](1);
+        recipients[0] = users.recipient1;
+
+        vm.warp({ newTimestamp: defaults.STREAM_START_TIME_NON_ZERO() - 1 days });
+        merkleLL.abort({ recipients: recipients });
+
+        merkleLL.claim({
+            index: 1,
+            recipient: users.recipient1,
+            amount: defaults.CLAIM_AMOUNT(),
+            merkleProof: defaults.index1Proof()
+        });
+    }
+
+    function test_GivenAbortTimeGreaterThanStartTime()
+        external
+        whenMerkleProofValid
+        whenTotalPercentageNotGreaterThan100
+        givenRecipientAborted
+    {
+        // it should create a stream with abort time as end time
+    }
+
+    modifier givenRecipientNotAborted() {
+        _;
+    }
+
     function test_WhenScheduledCliffDurationZero()
         external
         whenMerkleProofValid
@@ -107,9 +144,14 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
             recipientCount: defaults.RECIPIENT_COUNT()
         });
 
+        uint40 startTime = defaults.STREAM_START_TIME_NON_ZERO();
+
+        // Warp before the stream end time.
+        vm.warp({ newTimestamp: startTime + defaults.TOTAL_DURATION() - 1 });
+
         // It should create a stream with scheduled start time as start time.
         _test_Claim({
-            startTime: defaults.STREAM_START_TIME_NON_ZERO(),
+            startTime: startTime,
             cliffTime: defaults.STREAM_START_TIME_NON_ZERO() + defaults.CLIFF_DURATION()
         });
     }

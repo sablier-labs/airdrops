@@ -35,7 +35,7 @@ contract Defaults is Constants, Merkle {
     uint256 public constant AGGREGATE_AMOUNT = CLAIM_AMOUNT * RECIPIENT_COUNT;
     // Since Factory stores campaign name as bytes32, extra spaces are padded to it.
     string public constant CAMPAIGN_NAME = "Airdrop Campaign                ";
-    bool public constant CANCELABLE = false;
+    bool public constant CANCELABLE = true;
     uint128 public constant CLAIM_AMOUNT = 10_000e18;
     UD2x18 public constant CLIFF_PERCENTAGE = UD2x18.wrap(0.25e18); // 25% of the claim amount
     uint40 public immutable EXPIRATION;

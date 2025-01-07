@@ -1,0 +1,12 @@
+Abort_MerkleLL_Integration_Test
+├── given campaign expired
+│  └── it should revert
+└── given campaign not expired
+    ├── given campaign not cancelable
+    │  └── it should revert
+    └── given campaign cancelable
+        ├── when array empty
+        │  └── it should do nothing
+        └── when array not empty
+           ├── it should set the abort timestamps
+           └── it should emit an {Abort} event

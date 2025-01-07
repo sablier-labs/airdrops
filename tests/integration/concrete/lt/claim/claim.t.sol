@@ -105,11 +105,13 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
             recipientCount: defaults.RECIPIENT_COUNT()
         });
 
+        uint40 startTime = defaults.STREAM_START_TIME_NON_ZERO();
+
+        // Warp before the stream end time.
+        vm.warp({ newTimestamp: startTime + defaults.TOTAL_DURATION() - 1 });
+
         // It should create a stream with `STREAM_START_TIME` as start time.
-        _test_Claim({
-            streamStartTime: defaults.STREAM_START_TIME_NON_ZERO(),
-            startTime: defaults.STREAM_START_TIME_NON_ZERO()
-        });
+        _test_Claim({ streamStartTime: startTime, startTime: startTime });
     }
 
     /// @dev Helper function to test claim.
