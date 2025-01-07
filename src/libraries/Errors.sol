@@ -40,8 +40,11 @@ library Errors {
                                  SABLIER-MERKLE-LL
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Thrown when trying to abort when the campaign is not cancelable.
+    /// @notice Thrown when trying to abort a recipient in a campaign that is not cancelable.
     error SablierMerkleLL_NotCancelableCampaign();
+
+    /// @notice Thrown when trying to abort a recipient in a campaign that does not have a fixed start time.
+    error SablierMerkleLL_StreamStartTimeNotFix();
 
     /*//////////////////////////////////////////////////////////////////////////
                                  SABLIER-MERKLE-LT
@@ -49,6 +52,9 @@ library Errors {
 
     /// @notice Thrown when trying to abort when the campaign is not cancelable.
     error SablierMerkleLT_NotCancelableCampaign();
+
+    /// @notice Thrown when trying to abort a recipient in a campaign that does not have a fixed start time.
+    error SablierMerkleLT_StreamStartTimeNotFix();
 
     /// @notice Thrown when trying to claim from an LT campaign with tranches' unlock percentages not adding up to 100%.
     error SablierMerkleLT_TotalPercentageNotOneHundred(uint64 totalPercentage);

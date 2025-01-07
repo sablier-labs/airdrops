@@ -1,4 +1,4 @@
-Abort_MerkleLL_Integration_Test
+Abort_MerkleLT_Integration_Test
 ├── when caller not campaign owner
 │  └── it should revert
 └── when caller campaign owner

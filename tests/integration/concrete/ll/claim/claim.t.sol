@@ -12,16 +12,18 @@ import { Claim_Integration_Test } from "../../shared/claim/claim.t.sol";
 import { MerkleLL_Integration_Shared_Test, Integration_Test } from "../MerkleLL.t.sol";
 
 contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Integration_Shared_Test {
+    uint256 internal fee;
+    address[] internal recipients;
     MerkleLL.Schedule internal schedule;
 
     function setUp() public virtual override(MerkleLL_Integration_Shared_Test, Integration_Test) {
         MerkleLL_Integration_Shared_Test.setUp();
+        fee = defaults.FEE();
+        recipients.push(users.recipient1);
         schedule = defaults.schedule();
     }
 
     function test_RevertWhen_TotalPercentageGreaterThan100() external whenMerkleProofValid {
-        uint256 fee = defaults.FEE();
-
         // Crate a MerkleLL campaign with a total percentage greater than 100.
         schedule.startPercentage = ud2x18(0.5e18);
         schedule.cliffPercentage = ud2x18(0.6e18);
@@ -59,43 +61,6 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         });
     }
 
-    modifier givenRecipientAborted() {
-        _;
-    }
-
-    function test_RevertGiven_AbortTimeNotGreaterThanStartTime()
-        external
-        whenMerkleProofValid
-        whenTotalPercentageNotGreaterThan100
-        givenRecipientAborted
-    {
-        address[] memory recipients = new address[](1);
-        recipients[0] = users.recipient1;
-
-        vm.warp({ newTimestamp: defaults.STREAM_START_TIME_NON_ZERO() - 1 days });
-        merkleLL.abort({ recipients: recipients });
-
-        merkleLL.claim({
-            index: 1,
-            recipient: users.recipient1,
-            amount: defaults.CLAIM_AMOUNT(),
-            merkleProof: defaults.index1Proof()
-        });
-    }
-
-    function test_GivenAbortTimeGreaterThanStartTime()
-        external
-        whenMerkleProofValid
-        whenTotalPercentageNotGreaterThan100
-        givenRecipientAborted
-    {
-        // it should create a stream with abort time as end time
-    }
-
-    modifier givenRecipientNotAborted() {
-        _;
-    }
-
     function test_WhenScheduledCliffDurationZero()
         external
         whenMerkleProofValid
@@ -117,7 +82,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
         // It should create a stream with block.timestamp as start time.
         // It should create a stream with cliff as zero.
-        _test_Claim({ startTime: getBlockTimestamp(), cliffTime: 0 });
+        _test_Claim({ _merkleLL: merkleLL, startTime: getBlockTimestamp(), cliffTime: 0 });
     }
 
     function test_WhenScheduledCliffDurationNotZero()
@@ -128,22 +93,123 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
     {
         // It should create a stream with block.timestamp as start time.
         // It should create a stream with cliff as start time + cliff duration.
-        _test_Claim({ startTime: getBlockTimestamp(), cliffTime: getBlockTimestamp() + defaults.CLIFF_DURATION() });
+        _test_Claim({
+            _merkleLL: merkleLL,
+            startTime: getBlockTimestamp(),
+            cliffTime: getBlockTimestamp() + defaults.CLIFF_DURATION()
+        });
     }
 
-    function test_WhenScheduledStartTimeNotZero() external whenMerkleProofValid whenTotalPercentageNotGreaterThan100 {
-        schedule.startTime = defaults.STREAM_START_TIME_NON_ZERO();
+    modifier whenScheduledStartTimeNotZero() {
+        _;
+    }
 
-        merkleLL = merkleFactory.createMerkleLL({
-            baseParams: defaults.baseParams(),
-            lockup: lockup,
-            cancelable: defaults.CANCELABLE(),
-            transferable: defaults.TRANSFERABLE(),
-            schedule: schedule,
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
-        });
+    modifier givenRecipientAborted() {
+        _;
+    }
 
+    function test_GivenAbortTimeNotGreaterThanStartTime()
+        external
+        whenMerkleProofValid
+        whenTotalPercentageNotGreaterThan100
+        whenScheduledStartTimeNotZero
+        givenRecipientAborted
+    {
+        // It should do nothing
+
+        // Abort the recipient
+        vm.warp({ newTimestamp: defaults.STREAM_START_TIME_NON_ZERO() - 1 seconds });
+        merkleLLFixedStartTime.abort(recipients);
+        vm.warp({ newTimestamp: defaults.STREAM_START_TIME_NON_ZERO() + 1 seconds });
+
+        expectCallToTransfer({ to: recipients[0], value: 0 });
+
+        bytes32[] memory merkleProof = defaults.index1Proof();
+        uint128 amount = defaults.CLAIM_AMOUNT();
+
+        vm.expectEmit({ emitter: address(merkleLLFixedStartTime) });
+        emit ISablierMerkleLL.Claim(1, recipients[0], 0, 0);
+
+        merkleLLFixedStartTime.claim{ value: fee }(1, recipients[0], amount, merkleProof);
+
+        assertTrue(merkleLLFixedStartTime.hasClaimed(defaults.INDEX1()), "not claimed");
+    }
+
+    modifier givenAbortTimeGreaterThanStartTime() {
+        _;
+    }
+
+    function test_GivenAbortTimeNotGreaterThanEndTime()
+        external
+        whenMerkleProofValid
+        whenTotalPercentageNotGreaterThan100
+        whenScheduledStartTimeNotZero
+        givenRecipientAborted
+        givenAbortTimeGreaterThanStartTime
+    {
+        // Declare the abort time half way through.
+        uint40 abortTime = defaults.STREAM_START_TIME_NON_ZERO() + defaults.CLIFF_DURATION() / 2;
+
+        // Abort the recipient
+        vm.warp({ newTimestamp: abortTime });
+        merkleLLFixedStartTime.abort(recipients);
+
+        uint128 amount = defaults.CLAIM_AMOUNT();
+        uint128 claimableAmount = defaults.START_AMOUNT();
+        uint256 index = defaults.INDEX1();
+        bytes32[] memory merkleProof = defaults.index1Proof();
+
+        // It should transfer the claimable amount
+        expectCallToTransfer({ to: recipients[0], value: claimableAmount });
+
+        // It should emit a {Claim} event
+        vm.expectEmit({ emitter: address(merkleLLFixedStartTime) });
+        emit ISablierMerkleLL.Claim(index, recipients[0], claimableAmount, 0);
+
+        // Claim the airstream
+        merkleLLFixedStartTime.claim{ value: fee }(index, recipients[0], amount, merkleProof);
+
+        assertTrue(merkleLLFixedStartTime.hasClaimed(index), "not claimed");
+    }
+
+    function test_GivenAbortTimeGreaterThanEndTime()
+        external
+        whenMerkleProofValid
+        whenTotalPercentageNotGreaterThan100
+        whenScheduledStartTimeNotZero
+        givenRecipientAborted
+        givenAbortTimeGreaterThanStartTime
+    {
+        // Declare the abort time half way through.
+        uint40 abortTime = defaults.STREAM_START_TIME_NON_ZERO() + defaults.TOTAL_DURATION() + 1 seconds;
+
+        // Abort the recipient
+        vm.warp({ newTimestamp: abortTime });
+        merkleLLFixedStartTime.abort(recipients);
+
+        uint128 claimableAmount = defaults.CLAIM_AMOUNT();
+        uint256 index = defaults.INDEX1();
+        bytes32[] memory merkleProof = defaults.index1Proof();
+
+        // It should transfer the claimable amount
+        expectCallToTransfer({ to: recipients[0], value: claimableAmount });
+
+        // // It should emit a {Claim} event
+        vm.expectEmit({ emitter: address(merkleLLFixedStartTime) });
+        emit ISablierMerkleLL.Claim(index, recipients[0], claimableAmount, 0);
+
+        // Claim the airstream
+        merkleLLFixedStartTime.claim{ value: fee }(index, recipients[0], claimableAmount, merkleProof);
+
+        assertTrue(merkleLLFixedStartTime.hasClaimed(index), "not claimed");
+    }
+
+    function test_GivenRecipientNotAborted()
+        external
+        whenMerkleProofValid
+        whenTotalPercentageNotGreaterThan100
+        whenScheduledStartTimeNotZero
+    {
         uint40 startTime = defaults.STREAM_START_TIME_NON_ZERO();
 
         // Warp before the stream end time.
@@ -151,28 +217,28 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
         // It should create a stream with scheduled start time as start time.
         _test_Claim({
+            _merkleLL: merkleLLFixedStartTime,
             startTime: startTime,
             cliffTime: defaults.STREAM_START_TIME_NON_ZERO() + defaults.CLIFF_DURATION()
         });
     }
 
     /// @dev Helper function to test claim.
-    function _test_Claim(uint40 startTime, uint40 cliffTime) private {
-        uint256 fee = defaults.FEE();
-        deal({ token: address(dai), to: address(merkleLL), give: defaults.AGGREGATE_AMOUNT() });
+    function _test_Claim(ISablierMerkleLL _merkleLL, uint40 startTime, uint40 cliffTime) private {
+        deal({ token: address(dai), to: address(_merkleLL), give: defaults.AGGREGATE_AMOUNT() });
 
         uint256 expectedStreamId = lockup.nextStreamId();
-        uint256 previousFeeAccrued = address(merkleLL).balance;
+        uint256 previousFeeAccrued = address(_merkleLL).balance;
 
         // It should emit a {Claim} event.
-        vm.expectEmit({ emitter: address(merkleLL) });
+        vm.expectEmit({ emitter: address(_merkleLL) });
         emit ISablierMerkleLL.Claim(defaults.INDEX1(), users.recipient1, defaults.CLAIM_AMOUNT(), expectedStreamId);
 
-        expectCallToTransferFrom({ from: address(merkleLL), to: address(lockup), value: defaults.CLAIM_AMOUNT() });
-        expectCallToClaimWithMsgValue(address(merkleLL), fee);
+        expectCallToTransferFrom({ from: address(_merkleLL), to: address(lockup), value: defaults.CLAIM_AMOUNT() });
+        expectCallToClaimWithMsgValue(address(_merkleLL), fee);
 
         // Claim the airstream.
-        merkleLL.claim{ value: fee }(
+        _merkleLL.claim{ value: fee }(
             defaults.INDEX1(), users.recipient1, defaults.CLAIM_AMOUNT(), defaults.index1Proof()
         );
 
@@ -194,8 +260,8 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         assertEq(lockup.isTransferable(expectedStreamId), defaults.TRANSFERABLE(), "is transferable");
         assertEq(lockup.wasCanceled(expectedStreamId), false, "was canceled");
 
-        assertTrue(merkleLL.hasClaimed(defaults.INDEX1()), "not claimed");
+        assertTrue(_merkleLL.hasClaimed(defaults.INDEX1()), "not claimed");
 
-        assertEq(address(merkleLL).balance, previousFeeAccrued + defaults.FEE(), "fee collected");
+        assertEq(address(_merkleLL).balance, previousFeeAccrued + defaults.FEE(), "fee collected");
     }
 }

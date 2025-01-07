@@ -41,7 +41,9 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     ISablierMerkleFactory internal merkleFactory;
     ISablierMerkleInstant internal merkleInstant;
     ISablierMerkleLL internal merkleLL;
+    ISablierMerkleLL internal merkleLLFixedStartTime;
     ISablierMerkleLT internal merkleLT;
+    ISablierMerkleLT internal merkleLTFixedStartTime;
 
     /*//////////////////////////////////////////////////////////////////////////
                                   SET-UP FUNCTION

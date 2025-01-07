@@ -17,6 +17,7 @@ interface ISablierMerkleLT is ISablierMerkleBase {
     event Abort(address[] recipients);
 
     /// @notice Emitted when a recipient claims a stream.
+    /// @dev A stream ID of zero means that the recipient has been aborted and no stream was created.
     event Claim(uint256 index, address indexed recipient, uint128 amount, uint256 indexed streamId);
 
     /*//////////////////////////////////////////////////////////////////////////

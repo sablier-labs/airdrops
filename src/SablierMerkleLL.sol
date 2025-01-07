@@ -108,6 +108,11 @@ contract SablierMerkleLL is
             revert Errors.SablierMerkleLL_NotCancelableCampaign();
         }
 
+        // Check: the start time is fixed.
+        if (_schedule.startTime == 0) {
+            revert Errors.SablierMerkleLL_StreamStartTimeNotFix();
+        }
+
         uint256 count = recipients.length;
 
         // Set the abort time for each recipient.
@@ -124,6 +129,8 @@ contract SablierMerkleLL is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc SablierMerkleBase
+    /// @dev If the airdrop for the recipient has been aborted, no stream is created, but the claimable amount is
+    /// calculated based on the abort time and is then simply transferred to the recipient.
     function _claim(uint256 index, address recipient, uint128 amount) internal override {
         // Calculate the timestamps for the stream.
         Lockup.Timestamps memory timestamps;
@@ -151,6 +158,7 @@ contract SablierMerkleLL is
 
         uint256 streamId;
 
+        // An abort time greater than zero means the recipient has been aborted.
         if (abortTimes[recipient] > 0) {
             uint128 claimableAmount = VestingMath.calculateLockupLinearStreamedAmount({
                 depositedAmount: amount,
@@ -161,6 +169,10 @@ contract SablierMerkleLL is
                 withdrawnAmount: 0
             });
 
+            // Interaction: transfer the claimable amount to the recipient.
+            TOKEN.safeTransfer(recipient, claimableAmount);
+
+            // Override the amount with the claimable amount to ensure the claim event logs the correct value.
             amount = claimableAmount;
         } else {
             // Interaction: create the stream via {SablierLockup}.

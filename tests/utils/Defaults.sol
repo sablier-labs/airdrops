@@ -155,6 +155,14 @@ contract Defaults is Constants, Merkle {
         schedule_.totalDuration = TOTAL_DURATION;
     }
 
+    function scheduleWithStartTimeNotZero() public view returns (MerkleLL.Schedule memory schedule_) {
+        schedule_.startTime = STREAM_START_TIME_NON_ZERO;
+        schedule_.startPercentage = START_PERCENTAGE;
+        schedule_.cliffDuration = CLIFF_DURATION;
+        schedule_.cliffPercentage = CLIFF_PERCENTAGE;
+        schedule_.totalDuration = TOTAL_DURATION;
+    }
+
     /// @dev Mirrors the logic from {SablierMerkleLT._calculateStartTimeAndTranches}.
     function tranchesMerkleLT(
         uint40 streamStartTime,

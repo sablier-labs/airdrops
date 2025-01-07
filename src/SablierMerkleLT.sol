@@ -127,6 +127,11 @@ contract SablierMerkleLT is
             revert Errors.SablierMerkleLT_NotCancelableCampaign();
         }
 
+        // Check: the stream start time is fixed.
+        if (STREAM_START_TIME == 0) {
+            revert Errors.SablierMerkleLT_StreamStartTimeNotFix();
+        }
+
         uint256 count = recipients.length;
 
         // Set the abort time for each recipient.
@@ -143,6 +148,8 @@ contract SablierMerkleLT is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc SablierMerkleBase
+    /// @dev If the airdrop for the recipient has been aborted, the claimable amount is calculated based on the abort
+    /// time and is then simply transferred to the recipient.
     function _claim(uint256 index, address recipient, uint128 amount) internal override {
         // Check: the sum of percentages equals 100%.
         if (TOTAL_PERCENTAGE != uUNIT) {
@@ -161,6 +168,7 @@ contract SablierMerkleLT is
 
         uint256 streamId;
 
+        // An abort time greater than zero means the recipient has been aborted.
         if (abortTimes[recipient] > 0) {
             uint128 claimableAmount = VestingMath.calculateLockupTranchedStreamedAmount({
                 depositedAmount: amount,
@@ -169,6 +177,10 @@ contract SablierMerkleLT is
                 tranches: tranches
             });
 
+            // Interaction: transfer the claimable amount to the recipient.
+            TOKEN.safeTransfer(recipient, claimableAmount);
+
+            // Override the amount with the claimable amount to ensure the claim event logs the correct value.
             amount = claimableAmount;
         } else {
             // Interaction: create the stream via {SablierLockup-createWithTimestampsLT}.

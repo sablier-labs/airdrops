@@ -39,12 +39,33 @@ contract Integration_Test is Base_Test {
         // Create the default Merkle contracts.
         merkleInstant = createMerkleInstant();
         merkleLL = createMerkleLL();
+        merkleLLFixedStartTime = merkleFactory.createMerkleLL({
+            baseParams: defaults.baseParams(),
+            lockup: lockup,
+            cancelable: defaults.CANCELABLE(),
+            transferable: defaults.TRANSFERABLE(),
+            schedule: defaults.scheduleWithStartTimeNotZero(),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT()
+        });
         merkleLT = createMerkleLT();
+        merkleLTFixedStartTime = merkleFactory.createMerkleLT({
+            baseParams: defaults.baseParams(),
+            lockup: lockup,
+            cancelable: defaults.CANCELABLE(),
+            transferable: defaults.TRANSFERABLE(),
+            streamStartTime: defaults.STREAM_START_TIME_NON_ZERO(),
+            tranchesWithPercentages: defaults.tranchesWithPercentages(),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT()
+        });
 
         // Fund the contracts.
         deal({ token: address(dai), to: address(merkleInstant), give: defaults.AGGREGATE_AMOUNT() });
         deal({ token: address(dai), to: address(merkleLL), give: defaults.AGGREGATE_AMOUNT() });
+        deal({ token: address(dai), to: address(merkleLLFixedStartTime), give: defaults.AGGREGATE_AMOUNT() });
         deal({ token: address(dai), to: address(merkleLT), give: defaults.AGGREGATE_AMOUNT() });
+        deal({ token: address(dai), to: address(merkleLTFixedStartTime), give: defaults.AGGREGATE_AMOUNT() });
     }
 
     /*//////////////////////////////////////////////////////////////////////////
