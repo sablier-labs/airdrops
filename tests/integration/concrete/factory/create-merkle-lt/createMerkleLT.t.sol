@@ -36,7 +36,7 @@ contract CreateMerkleLT_Integration_Concrete_Test is Integration_Test {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
         baseParams.campaignName = "this string is longer than 32 bytes";
 
-        ISablierMerkleLT actualLL = merkleFactory.createMerkleLT({
+        ISablierMerkleLT actualMerkleLL = merkleFactory.createMerkleLT({
             baseParams: baseParams,
             lockup: lockup,
             cancelable: defaults.CANCELABLE(),
@@ -48,7 +48,7 @@ contract CreateMerkleLT_Integration_Concrete_Test is Integration_Test {
         });
 
         // It should create the campaign with shape truncated to 32 bytes.
-        string memory actualCampaignName = actualLL.campaignName();
+        string memory actualCampaignName = actualMerkleLL.campaignName();
         string memory expectedCampaignName = "this string is longer than 32 by";
         assertEq(actualCampaignName, expectedCampaignName, "shape");
     }
@@ -57,7 +57,7 @@ contract CreateMerkleLT_Integration_Concrete_Test is Integration_Test {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
         baseParams.shape = "this string is longer than 32 bytes";
 
-        ISablierMerkleLT actualLT = merkleFactory.createMerkleLT({
+        ISablierMerkleLT actualMerkleLT = merkleFactory.createMerkleLT({
             baseParams: baseParams,
             lockup: lockup,
             cancelable: defaults.CANCELABLE(),
@@ -69,7 +69,7 @@ contract CreateMerkleLT_Integration_Concrete_Test is Integration_Test {
         });
 
         // It should create the campaign with shape truncated to 32 bytes.
-        string memory actualShape = actualLT.shape();
+        string memory actualShape = actualMerkleLT.shape();
         string memory expectedShape = "this string is longer than 32 by";
         assertEq(actualShape, expectedShape, "shape");
     }
@@ -114,14 +114,14 @@ contract CreateMerkleLT_Integration_Concrete_Test is Integration_Test {
             fee: customFee
         });
 
-        ISablierMerkleLT actualLT = createMerkleLT(campaignOwner, expiration);
-        assertGt(address(actualLT).code.length, 0, "MerkleLT contract not created");
-        assertEq(address(actualLT), expectedLT, "MerkleLT contract does not match computed address");
+        ISablierMerkleLT actualMerkleLT = createMerkleLT(campaignOwner, expiration);
+        assertGt(address(actualMerkleLT).code.length, 0, "MerkleLT contract not created");
+        assertEq(address(actualMerkleLT), expectedLT, "MerkleLT contract does not match computed address");
 
         // It should create the campaign with custom fee.
-        assertEq(actualLT.FEE(), customFee, "fee");
+        assertEq(actualMerkleLT.FEE(), customFee, "fee");
         // It should set the current factory address.
-        assertEq(actualLT.FACTORY(), address(merkleFactory), "factory");
+        assertEq(actualMerkleLT.FACTORY(), address(merkleFactory), "factory");
     }
 
     function test_GivenCustomFeeNotSet(
@@ -157,16 +157,16 @@ contract CreateMerkleLT_Integration_Concrete_Test is Integration_Test {
             fee: defaults.FEE()
         });
 
-        ISablierMerkleLT actualLT = createMerkleLT(campaignOwner, expiration);
-        assertGt(address(actualLT).code.length, 0, "MerkleLT contract not created");
-        assertEq(address(actualLT), expectedLT, "MerkleLT contract does not match computed address");
+        ISablierMerkleLT actualMerkleLT = createMerkleLT(campaignOwner, expiration);
+        assertGt(address(actualMerkleLT).code.length, 0, "MerkleLT contract not created");
+        assertEq(address(actualMerkleLT), expectedLT, "MerkleLT contract does not match computed address");
 
         // It should set the correct shape.
-        assertEq(actualLT.shape(), defaults.SHAPE(), "shape");
+        assertEq(actualMerkleLT.shape(), defaults.SHAPE(), "shape");
 
-        // It should create the campaign with custom fee.
-        assertEq(actualLT.FEE(), defaults.FEE(), "default fee");
+        // It should create the campaign with default fee.
+        assertEq(actualMerkleLT.FEE(), defaults.FEE(), "default fee");
         // It should set the current factory address.
-        assertEq(actualLT.FACTORY(), address(merkleFactory), "factory");
+        assertEq(actualMerkleLT.FACTORY(), address(merkleFactory), "factory");
     }
 }

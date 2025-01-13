@@ -27,14 +27,14 @@ contract CreateMerkleInstant_Integration_Concrete_Test is Integration_Test {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
         baseParams.campaignName = "this string is longer than 32 bytes";
 
-        ISablierMerkleInstant actualInstant = merkleFactory.createMerkleInstant({
+        ISablierMerkleInstant actualMerkleInstant = merkleFactory.createMerkleInstant({
             baseParams: baseParams,
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT()
         });
 
         // It should create the campaign with shape truncated to 32 bytes.
-        string memory actualCampaignName = actualInstant.campaignName();
+        string memory actualCampaignName = actualMerkleInstant.campaignName();
         string memory expectedCampaignName = "this string is longer than 32 by";
         assertEq(actualCampaignName, expectedCampaignName, "shape");
     }
@@ -72,17 +72,19 @@ contract CreateMerkleInstant_Integration_Concrete_Test is Integration_Test {
             fee: customFee
         });
 
-        ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
-        assertGt(address(actualInstant).code.length, 0, "MerkleInstant contract not created");
+        ISablierMerkleInstant actualMerkleInstant = createMerkleInstant(campaignOwner, expiration);
+        assertGt(address(actualMerkleInstant).code.length, 0, "MerkleInstant contract not created");
         assertEq(
-            address(actualInstant), expectedMerkleInstant, "MerkleInstant contract does not match computed address"
+            address(actualMerkleInstant),
+            expectedMerkleInstant,
+            "MerkleInstant contract does not match computed address"
         );
 
         // It should create the campaign with custom fee.
-        assertEq(actualInstant.FEE(), customFee, "fee");
+        assertEq(actualMerkleInstant.FEE(), customFee, "fee");
 
         // It should set the current factory address.
-        assertEq(actualInstant.FACTORY(), address(merkleFactory), "factory");
+        assertEq(actualMerkleInstant.FACTORY(), address(merkleFactory), "factory");
     }
 
     function test_GivenCustomFeeNotSet(
@@ -112,16 +114,18 @@ contract CreateMerkleInstant_Integration_Concrete_Test is Integration_Test {
             fee: defaults.FEE()
         });
 
-        ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
-        assertGt(address(actualInstant).code.length, 0, "MerkleInstant contract not created");
+        ISablierMerkleInstant actualMerkleInstant = createMerkleInstant(campaignOwner, expiration);
+        assertGt(address(actualMerkleInstant).code.length, 0, "MerkleInstant contract not created");
         assertEq(
-            address(actualInstant), expectedMerkleInstant, "MerkleInstant contract does not match computed address"
+            address(actualMerkleInstant),
+            expectedMerkleInstant,
+            "MerkleInstant contract does not match computed address"
         );
 
-        // It should create the campaign with custom fee.
-        assertEq(actualInstant.FEE(), defaults.FEE(), "default fee");
+        // It should create the campaign with default fee.
+        assertEq(actualMerkleInstant.FEE(), defaults.FEE(), "default fee");
 
         // It should set the current factory address.
-        assertEq(actualInstant.FACTORY(), address(merkleFactory), "factory");
+        assertEq(actualMerkleInstant.FACTORY(), address(merkleFactory), "factory");
     }
 }
