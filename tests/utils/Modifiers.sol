@@ -23,7 +23,7 @@ abstract contract Modifiers is Utils {
                                        GIVEN
     //////////////////////////////////////////////////////////////////////////*/
 
-    modifier givenCampaignNotExists() {
+    modifier givenCampaignNotExist() {
         _;
     }
 

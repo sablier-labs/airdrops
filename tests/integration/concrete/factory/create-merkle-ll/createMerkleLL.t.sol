@@ -30,7 +30,7 @@ contract CreateMerkleLL_Integration_Concrete_Test is Integration_Test {
         });
     }
 
-    function test_WhenCampaignNameExceeds32Bytes() external givenCampaignNotExists {
+    function test_WhenCampaignNameExceeds32Bytes() external givenCampaignNotExist {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
         baseParams.campaignName = "this string is longer than 32 bytes";
 
@@ -50,7 +50,7 @@ contract CreateMerkleLL_Integration_Concrete_Test is Integration_Test {
         assertEq(actualCampaignName, expectedCampaignName, "shape");
     }
 
-    function test_WhenShapeExceeds32Bytes() external givenCampaignNotExists whenCampaignNameNotExceed32Bytes {
+    function test_WhenShapeExceeds32Bytes() external givenCampaignNotExist whenCampaignNameNotExceed32Bytes {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
         baseParams.shape = "this string is longer than 32 bytes";
 
@@ -76,7 +76,7 @@ contract CreateMerkleLL_Integration_Concrete_Test is Integration_Test {
         uint256 customFee
     )
         external
-        givenCampaignNotExists
+        givenCampaignNotExist
         whenCampaignNameNotExceed32Bytes
         whenShapeNotExceed32Bytes
     {
@@ -124,7 +124,7 @@ contract CreateMerkleLL_Integration_Concrete_Test is Integration_Test {
         uint40 expiration
     )
         external
-        givenCampaignNotExists
+        givenCampaignNotExist
         whenCampaignNameNotExceed32Bytes
         whenShapeNotExceed32Bytes
     {

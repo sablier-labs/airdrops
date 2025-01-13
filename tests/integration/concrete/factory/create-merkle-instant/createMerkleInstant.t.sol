@@ -23,7 +23,7 @@ contract CreateMerkleInstant_Integration_Concrete_Test is Integration_Test {
         });
     }
 
-    function test_WhenCampaignNameExceeds32Bytes() external givenCampaignNotExists {
+    function test_WhenCampaignNameExceeds32Bytes() external givenCampaignNotExist {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();
         baseParams.campaignName = "this string is longer than 32 bytes";
 
@@ -45,7 +45,7 @@ contract CreateMerkleInstant_Integration_Concrete_Test is Integration_Test {
         uint256 customFee
     )
         external
-        givenCampaignNotExists
+        givenCampaignNotExist
         whenCampaignNameNotExceed32Bytes
     {
         // Set the custom fee to 0 for this test.
@@ -90,7 +90,7 @@ contract CreateMerkleInstant_Integration_Concrete_Test is Integration_Test {
         uint40 expiration
     )
         external
-        givenCampaignNotExists
+        givenCampaignNotExist
         whenCampaignNameNotExceed32Bytes
     {
         address expectedMerkleInstant = computeMerkleInstantAddress(campaignOwner, expiration);
