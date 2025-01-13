@@ -6,7 +6,7 @@ import { Errors } from "src/libraries/Errors.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
-abstract contract Clawback_Integration_Test is Integration_Test {
+abstract contract Clawback_Integration_Concrete_Test is Integration_Test {
     function test_RevertWhen_CallerNotCampaignOwner() external {
         resetPrank({ msgSender: users.eve });
         vm.expectRevert(abi.encodeWithSelector(Errors.CallerNotAdmin.selector, users.campaignOwner, users.eve));

@@ -3,7 +3,7 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
-abstract contract GetFirstClaimTime_Integration_Test is Integration_Test {
+abstract contract GetFirstClaimTime_Integration_Concrete_Test is Integration_Test {
     function test_WhenFirstClaimNotMade() external view {
         // It should return 0.
         uint256 firstClaimTime = merkleBase.getFirstClaimTime();

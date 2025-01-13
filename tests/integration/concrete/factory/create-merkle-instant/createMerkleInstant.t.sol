@@ -7,7 +7,7 @@ import { MerkleBase } from "src/types/DataTypes.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
-contract CreateMerkleInstant_Integration_Test is Integration_Test {
+contract CreateMerkleInstant_Integration_Concrete_Test is Integration_Test {
     /// @dev This test works because a default MerkleInstant contract is deployed in {Integration_Test.setUp}
     function test_RevertGiven_CampaignAlreadyExists() external {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();

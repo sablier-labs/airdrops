@@ -5,7 +5,7 @@ import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
-abstract contract HasExpired_Integration_Test is Integration_Test {
+abstract contract HasExpired_Integration_Concrete_Test is Integration_Test {
     function test_WhenExpirationZero() external {
         ISablierMerkleBase campaignWithZeroExpiry = ISablierMerkleBase(createMerkleLT({ expiration: 0 }));
         assertFalse(campaignWithZeroExpiry.hasExpired(), "campaign expired");

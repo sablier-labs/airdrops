@@ -6,7 +6,7 @@ import { MerkleLT } from "src/types/DataTypes.sol";
 
 import { Integration_Test } from "../../Integration.t.sol";
 
-contract Constructor_MerkleLT_Integration_Test is Integration_Test {
+contract Constructor_MerkleLT_Integration_Concrete_Test is Integration_Test {
     /// @dev Needed to prevent "Stack too deep" error
     struct Vars {
         address actualAdmin;

@@ -7,7 +7,7 @@ import { MerkleBase, MerkleLL } from "src/types/DataTypes.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
-contract CreateMerkleLL_Integration_Test is Integration_Test {
+contract CreateMerkleLL_Integration_Concrete_Test is Integration_Test {
     /// @dev This test works because a default MerkleLL contract is deployed in {Integration_Test.setUp}
     function test_RevertGiven_CampaignAlreadyExists() external {
         MerkleBase.ConstructorParams memory baseParams = defaults.baseParams();

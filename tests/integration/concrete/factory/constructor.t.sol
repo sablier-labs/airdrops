@@ -5,7 +5,7 @@ import { SablierMerkleFactory } from "src/SablierMerkleFactory.sol";
 
 import { Integration_Test } from "../../Integration.t.sol";
 
-contract Constructor_MerkleFactory_Integration_Test is Integration_Test {
+contract Constructor_MerkleFactory_Integration_Concrete_Test is Integration_Test {
     function test_Constructor() external {
         SablierMerkleFactory constructedFactory = new SablierMerkleFactory(users.admin);
 

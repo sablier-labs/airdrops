@@ -7,7 +7,7 @@ import { Errors } from "src/libraries/Errors.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
-contract CollectFees_Integration_Test is Integration_Test {
+contract CollectFees_Integration_Concrete_Test is Integration_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 

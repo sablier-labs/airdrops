@@ -5,7 +5,7 @@ import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol"
 import { Errors } from "src/libraries/Errors.sol";
 import { Integration_Test } from "./../../../Integration.t.sol";
 
-contract SetDefaultFee_Integration_Test is Integration_Test {
+contract SetDefaultFee_Integration_Concrete_Test is Integration_Test {
     function test_RevertWhen_CallerNotAdmin() external {
         uint256 fee = defaults.FEE();
         resetPrank({ msgSender: users.eve });

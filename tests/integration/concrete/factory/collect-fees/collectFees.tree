@@ -1,4 +1,4 @@
-CollectFees_Integration_Test
+CollectFees_Integration_Concrete_Test
 ├── when provided merkle lockup not valid
 │  └── it should revert
 └── when provided merkle lockup valid

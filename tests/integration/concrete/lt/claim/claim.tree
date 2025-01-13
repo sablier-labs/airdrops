@@ -1,4 +1,4 @@
-Claim_MerkleLT_Integration_Test
+Claim_MerkleLT_Integration_Concrete_Test
 └── when Merkle proof valid
    ├── when total percentage not 100
    │  ├── when total percentage less than 100

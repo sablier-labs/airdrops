@@ -3,7 +3,7 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
-contract GetFee_Integration_Test is Integration_Test {
+contract GetFee_Integration_Concrete_Test is Integration_Test {
     function test_GivenCustomFeeNotSet() external view {
         // It should return default fee.
         assertEq(merkleFactory.getFee(users.campaignOwner), defaults.FEE(), "default fee");
