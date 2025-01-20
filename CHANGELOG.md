@@ -13,7 +13,7 @@ The format is based on [Common Changelog](https://common-changelog.org/).
 ### Changed
 
 - Replace `createWithDurations` with `createWithTimestamps` in both `MerkleLL` and `MerkleLT` claims
-  ([#1024](https://github.com/sablier-labs/v2-core/pull/1024))
+  ([#1024](https://github.com/sablier-labs/v2-core/pull/1024), [#28](https://github.com/sablier-labs/airdrops/pull/28))
 
 ### Added
 
@@ -23,8 +23,6 @@ The format is based on [Common Changelog](https://common-changelog.org/).
   on the new campaigns, and cannot be changed on campaigns once they are created
   ([#1038](https://github.com/sablier-labs/v2-core/pull/1038),
   [#1040](https://github.com/sablier-labs/v2-core/issues/1040))
-- Allow specifying start and cliff unlocked amounts for `MerkleLL` campaigns through `Schedule` struct
-  ([#1075](https://github.com/sablier-labs/v2-core/pull/1075), [#28](https://github.com/sablier-labs/airdrops/pull/28))
 
 ### Removed
 
