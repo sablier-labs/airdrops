@@ -3,7 +3,7 @@ import hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync";
 import { Wallet, Provider } from "zksync-ethers";
 
-// Then deploy the rest of the contracts: `npx hardhat deploy-zksync --script deploy.ts --network zkSyncMainnet/zkSyncTestnet`
+// Then deploy the rest of the contracts: `npx hardhat deploy-zksync --script deploy.ts --network abstractMainnet`
 export default async function () {
   const network = await hre.network.config;
   const networkName = await hre.network.name;
@@ -29,14 +29,14 @@ export default async function () {
 
   const artifactMerkleFactory = await deployer.loadArtifact("SablierMerkleFactory");
 
-  const safeMultisig = "0xaFeA787Ef04E280ad5Bb907363f214E4BAB9e288";
+  const admin = "0xb1bEF51ebCA01EB12001a639bDBbFF6eEcA12B9F";
 
   // Deploy the SablierMerkleFactory contract
-  const merkleFactory = await deployer.deploy(artifactMerkleFactory, [safeMultisig]);
+  const merkleFactory = await deployer.deploy(artifactMerkleFactory, [admin]);
   const merkleFactoryAddress =
     typeof merkleFactory.target === "string" ? merkleFactory.target : merkleFactory.target.toString();
   console.log("SablierMerkleFactory deployed to:", merkleFactoryAddress);
-  await verifyContract(merkleFactoryAddress, [safeMultisig]);
+  await verifyContract(merkleFactoryAddress, [admin]);
 }
 
 const verifyContract = async (contractAddress: string | Addressable, verifyArgs: string[]): Promise<boolean> => {
