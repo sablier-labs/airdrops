@@ -16,13 +16,20 @@
     "@sablier/lockup": "github:sablier-labs/lockup#463278d"
   },
   "devDependencies": {
-    "forge-std": "github:foundry-rs/forge-std#v1.8.2",
-    "husky": "^9.1.4",
-    "lint-staged": "^15.2.8",
-    "murky": "github:dmfxyz/murky#6f67641",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomicfoundation/hardhat-ethers": "^3.0.7",
+    "@nomicfoundation/hardhat-ignition": "^0.15.5",
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.5",
+    "@nomicfoundation/hardhat-verify": "^2.0.9",
+    "@nomiclabs/hardhat-etherscan": "^3.1.8",
+    "@types/node": "^22.10.1",
+    "hardhat": "^2.22.17",
     "prettier": "^3.3.2",
-    "solady": "0.0.208",
-    "solhint": "^5.0.3"
+    "solhint": "^5.0.1",
+    "dotenv": "^16.4.7",
+    "ethers": "^5.7.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
   },
   "files": [
     "artifacts",
@@ -74,7 +81,6 @@
     "lint:sol": "forge fmt --check && bun solhint \"{precompiles,script,src,tests}/**/*.sol\"",
     "lint:sol:fix": "bun solhint \"{precompiles,script,src,tests}/**/*.sol\" --fix --noPrompt",
     "prepack": "bun install && bash ./shell/prepare-artifacts.sh",
-    "prepare": "husky",
     "prettier:check": "prettier --check \"**/*.{json,md,yml}\"",
     "prettier:write": "prettier --write \"**/*.{json,md,yml}\"",
     "test": "forge test",
