@@ -4,7 +4,6 @@ pragma solidity >=0.8.22;
 import { uUNIT } from "@prb/math/src/UD2x18.sol";
 
 import { Adminable } from "@sablier/lockup/src/abstracts/Adminable.sol";
-import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 
 import { ISablierMerkleBase } from "./interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactory } from "./interfaces/ISablierMerkleFactory.sol";
@@ -14,7 +13,7 @@ import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
 import { SablierMerkleInstant } from "./SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "./SablierMerkleLL.sol";
 import { SablierMerkleLT } from "./SablierMerkleLT.sol";
-import { MerkleBase, MerkleFactory, MerkleLL, MerkleLT } from "./types/DataTypes.sol";
+import { MerkleFactory, MerkleInstant, MerkleLL, MerkleLockup, MerkleLT } from "./types/DataTypes.sol";
 
 /*
 
@@ -100,7 +99,7 @@ contract SablierMerkleFactory is
 
     /// @inheritdoc ISablierMerkleFactory
     function createMerkleInstant(
-        MerkleBase.ConstructorParams memory baseParams,
+        MerkleInstant.ConstructorParams memory baseParams,
         uint256 aggregateAmount,
         uint256 recipientCount
     )
@@ -126,10 +125,7 @@ contract SablierMerkleFactory is
 
     /// @inheritdoc ISablierMerkleFactory
     function createMerkleLL(
-        MerkleBase.ConstructorParams memory baseParams,
-        ISablierLockup lockup,
-        bool cancelable,
-        bool transferable,
+        MerkleLockup.ConstructorParams memory baseParams,
         MerkleLL.Schedule memory schedule,
         uint256 aggregateAmount,
         uint256 recipientCount
@@ -139,17 +135,12 @@ contract SablierMerkleFactory is
         returns (ISablierMerkleLL merkleLL)
     {
         // Hash the parameters to generate a salt.
-        bytes32 salt = keccak256(
-            abi.encodePacked(msg.sender, abi.encode(baseParams), lockup, cancelable, transferable, abi.encode(schedule))
-        );
+        bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(baseParams), abi.encode(schedule)));
 
         // Deploy the MerkleLL contract with CREATE2.
         merkleLL = new SablierMerkleLL{ salt: salt }({
             baseParams: baseParams,
             campaignCreator: msg.sender,
-            lockup: lockup,
-            cancelable: cancelable,
-            transferable: transferable,
             schedule: schedule
         });
 
@@ -157,9 +148,6 @@ contract SablierMerkleFactory is
         emit CreateMerkleLL({
             merkleLL: merkleLL,
             baseParams: baseParams,
-            lockup: lockup,
-            cancelable: cancelable,
-            transferable: transferable,
             schedule: schedule,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
@@ -169,10 +157,7 @@ contract SablierMerkleFactory is
 
     /// @inheritdoc ISablierMerkleFactory
     function createMerkleLT(
-        MerkleBase.ConstructorParams memory baseParams,
-        ISablierLockup lockup,
-        bool cancelable,
-        bool transferable,
+        MerkleLockup.ConstructorParams memory baseParams,
         uint40 streamStartTime,
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages,
         uint256 aggregateAmount,
@@ -195,9 +180,6 @@ contract SablierMerkleFactory is
         // Deploy the MerkleLT contract.
         merkleLT = _deployMerkleLT({
             baseParams: baseParams,
-            lockup: lockup,
-            cancelable: cancelable,
-            transferable: transferable,
             streamStartTime: streamStartTime,
             tranchesWithPercentages: tranchesWithPercentages
         });
@@ -206,9 +188,6 @@ contract SablierMerkleFactory is
         emit CreateMerkleLT({
             merkleLT: merkleLT,
             baseParams: baseParams,
-            lockup: lockup,
-            cancelable: cancelable,
-            transferable: transferable,
             streamStartTime: streamStartTime,
             tranchesWithPercentages: tranchesWithPercentages,
             totalDuration: totalDuration,
@@ -266,10 +245,7 @@ contract SablierMerkleFactory is
     /// @notice Deploys a new MerkleLT contract with CREATE2.
     /// @dev We need a separate function to prevent the stack too deep error.
     function _deployMerkleLT(
-        MerkleBase.ConstructorParams memory baseParams,
-        ISablierLockup lockup,
-        bool cancelable,
-        bool transferable,
+        MerkleLockup.ConstructorParams memory baseParams,
         uint40 streamStartTime,
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages
     )
@@ -278,24 +254,13 @@ contract SablierMerkleFactory is
     {
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(
-            abi.encodePacked(
-                msg.sender,
-                abi.encode(baseParams),
-                lockup,
-                cancelable,
-                transferable,
-                streamStartTime,
-                abi.encode(tranchesWithPercentages)
-            )
+            abi.encodePacked(msg.sender, abi.encode(baseParams), streamStartTime, abi.encode(tranchesWithPercentages))
         );
 
         // Deploy the MerkleLT contract with CREATE2.
         merkleLT = new SablierMerkleLT{ salt: salt }({
             baseParams: baseParams,
             campaignCreator: msg.sender,
-            lockup: lockup,
-            cancelable: cancelable,
-            transferable: transferable,
             streamStartTime: streamStartTime,
             tranchesWithPercentages: tranchesWithPercentages
         });

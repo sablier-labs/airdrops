@@ -6,7 +6,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 
 import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
 import { ISablierMerkleInstant } from "./interfaces/ISablierMerkleInstant.sol";
-import { MerkleBase } from "./types/DataTypes.sol";
+import { MerkleInstant } from "./types/DataTypes.sol";
 
 /*
 
@@ -40,10 +40,18 @@ contract SablierMerkleInstant is
 
     /// @dev Constructs the contract by initializing the immutable state variables.
     constructor(
-        MerkleBase.ConstructorParams memory baseParams,
+        MerkleInstant.ConstructorParams memory baseParams,
         address campaignCreator
     )
-        SablierMerkleBase(baseParams, campaignCreator)
+        SablierMerkleBase(
+            campaignCreator,
+            baseParams.campaignName,
+            baseParams.expiration,
+            baseParams.initialAdmin,
+            baseParams.ipfsCID,
+            baseParams.merkleRoot,
+            baseParams.token
+        )
     { }
 
     /*//////////////////////////////////////////////////////////////////////////
