@@ -88,7 +88,7 @@ contract Integration_Test is Base_Test {
 
     function createMerkleInstant(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleInstant) {
         return merkleFactory.createMerkleInstant({
-            baseParams: defaults.baseParams(campaignOwner, dai, expiration, defaults.MERKLE_ROOT()),
+            baseParams: defaults.merkleInstantBaseParams(campaignOwner, dai, expiration, defaults.MERKLE_ROOT()),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT()
         });
@@ -122,10 +122,7 @@ contract Integration_Test is Base_Test {
 
     function createMerkleLL(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleLL) {
         return merkleFactory.createMerkleLL({
-            baseParams: defaults.baseParams(campaignOwner, dai, expiration, defaults.MERKLE_ROOT()),
-            lockup: lockup,
-            cancelable: defaults.CANCELABLE(),
-            transferable: defaults.TRANSFERABLE(),
+            baseParams: defaults.merkleLockupBaseParams(campaignOwner, lockup, dai, expiration, defaults.MERKLE_ROOT()),
             schedule: defaults.schedule(),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT()
@@ -160,10 +157,7 @@ contract Integration_Test is Base_Test {
 
     function createMerkleLT(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleLT) {
         return merkleFactory.createMerkleLT({
-            baseParams: defaults.baseParams(campaignOwner, dai, expiration, defaults.MERKLE_ROOT()),
-            lockup: lockup,
-            cancelable: defaults.CANCELABLE(),
-            transferable: defaults.TRANSFERABLE(),
+            baseParams: defaults.merkleLockupBaseParams(campaignOwner, lockup, dai, expiration, defaults.MERKLE_ROOT()),
             streamStartTime: defaults.STREAM_START_TIME_ZERO(),
             tranchesWithPercentages: defaults.tranchesWithPercentages(),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),

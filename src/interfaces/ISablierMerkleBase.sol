@@ -5,7 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IAdminable } from "@sablier/lockup/src/interfaces/IAdminable.sol";
 
 /// @title ISablierMerkleBase
-/// @dev Common interface between Merkle Lockups and Merkle Instant.
+/// @dev Common interface between Merkle campaigns.
 interface ISablierMerkleBase is IAdminable {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
@@ -17,6 +17,9 @@ interface ISablierMerkleBase is IAdminable {
     /*//////////////////////////////////////////////////////////////////////////
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Retrieves the name of the campaign as bytes32.
+    function CAMPAIGN_NAME() external view returns (bytes32);
 
     /// @notice The cut-off point for the campaign, as a Unix timestamp. A value of zero means there is no expiration.
     /// @dev This is an immutable state variable.
@@ -37,9 +40,6 @@ interface ISablierMerkleBase is IAdminable {
     /// @dev This is an immutable state variable.
     function TOKEN() external returns (IERC20);
 
-    /// @notice Retrieves the name of the campaign.
-    function campaignName() external view returns (string memory);
-
     /// @notice Returns the timestamp when the first claim is made.
     function getFirstClaimTime() external view returns (uint40);
 
@@ -53,9 +53,6 @@ interface ISablierMerkleBase is IAdminable {
 
     /// @notice The content identifier for indexing the campaign on IPFS.
     function ipfsCID() external view returns (string memory);
-
-    /// @notice Retrieves the shape of the lockup stream that the campaign produces upon claiming.
-    function shape() external view returns (string memory);
 
     /*//////////////////////////////////////////////////////////////////////////
                                NON-CONSTANT FUNCTIONS

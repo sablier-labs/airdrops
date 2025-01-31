@@ -3,7 +3,7 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { ud2x18 } from "@prb/math/src/UD2x18.sol";
 
-import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
+import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
 import { Errors } from "src/libraries/Errors.sol";
 import { MerkleLT } from "src/types/DataTypes.sol";
 
@@ -24,10 +24,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         tranchesWithPercentages[1].unlockPercentage = ud2x18(0.2e18);
 
         merkleLT = merkleFactory.createMerkleLT(
-            defaults.baseParams(),
-            lockup,
-            defaults.CANCELABLE(),
-            defaults.TRANSFERABLE(),
+            defaults.merkleLockupBaseParams(lockup),
             defaults.STREAM_START_TIME_ZERO(),
             tranchesWithPercentages,
             defaults.AGGREGATE_AMOUNT(),
@@ -54,16 +51,14 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
     function test_RevertWhen_TotalPercentageGreaterThan100() external whenMerkleProofValid whenTotalPercentageNot100 {
         uint256 fee = defaults.FEE();
+
         // Create a MerkleLT campaign with a total percentage less than 100.
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages = defaults.tranchesWithPercentages();
         tranchesWithPercentages[0].unlockPercentage = ud2x18(0.75e18);
         tranchesWithPercentages[1].unlockPercentage = ud2x18(0.8e18);
 
         merkleLT = merkleFactory.createMerkleLT(
-            defaults.baseParams(),
-            lockup,
-            defaults.CANCELABLE(),
-            defaults.TRANSFERABLE(),
+            defaults.merkleLockupBaseParams(lockup),
             defaults.STREAM_START_TIME_ZERO(),
             tranchesWithPercentages,
             defaults.AGGREGATE_AMOUNT(),
@@ -95,10 +90,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
     function test_WhenStreamStartTimeNotZero() external whenMerkleProofValid whenTotalPercentage100 {
         merkleLT = merkleFactory.createMerkleLT({
-            baseParams: defaults.baseParams(),
-            lockup: lockup,
-            cancelable: defaults.CANCELABLE(),
-            transferable: defaults.TRANSFERABLE(),
+            baseParams: defaults.merkleLockupBaseParams(lockup),
             streamStartTime: defaults.STREAM_START_TIME_NON_ZERO(),
             tranchesWithPercentages: defaults.tranchesWithPercentages(),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
@@ -123,7 +115,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
         // It should emit a {Claim} event.
         vm.expectEmit({ emitter: address(merkleLT) });
-        emit ISablierMerkleLT.Claim(defaults.INDEX1(), users.recipient1, defaults.CLAIM_AMOUNT(), expectedStreamId);
+        emit ISablierMerkleLockup.Claim(defaults.INDEX1(), users.recipient1, defaults.CLAIM_AMOUNT(), expectedStreamId);
 
         expectCallToTransferFrom({ from: address(merkleLT), to: address(lockup), value: defaults.CLAIM_AMOUNT() });
         expectCallToClaimWithMsgValue(address(merkleLT), fee);

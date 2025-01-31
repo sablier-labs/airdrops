@@ -11,7 +11,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
     struct Vars {
         address actualAdmin;
         uint256 actualAllowance;
-        string actualCampaignName;
+        bytes32 actualCampaignName;
         uint40 actualExpiration;
         address actualFactory;
         string actualIpfsCID;
@@ -26,7 +26,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         MerkleLT.TrancheWithPercentage[] actualTranchesWithPercentages;
         address expectedAdmin;
         uint256 expectedAllowance;
-        string expectedCampaignName;
+        bytes32 expectedCampaignName;
         uint40 expectedExpiration;
         address expectedFactory;
         string expectedIpfsCID;
@@ -46,11 +46,8 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         resetPrank(address(merkleFactory));
 
         SablierMerkleLT constructedLT = new SablierMerkleLT(
-            defaults.baseParams(),
+            defaults.merkleLockupBaseParams(lockup),
             users.campaignOwner,
-            lockup,
-            defaults.CANCELABLE(),
-            defaults.TRANSFERABLE(),
             defaults.STREAM_START_TIME_ZERO(),
             defaults.tranchesWithPercentages()
         );
@@ -65,7 +62,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedAllowance = MAX_UINT256;
         assertEq(vars.actualAllowance, vars.expectedAllowance, "allowance");
 
-        vars.actualCampaignName = constructedLT.campaignName();
+        vars.actualCampaignName = constructedLT.CAMPAIGN_NAME();
         vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
         assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 
@@ -93,7 +90,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedMerkleRoot = defaults.MERKLE_ROOT();
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
 
-        assertEq(constructedLT.shape(), defaults.SHAPE(), "shape");
+        assertEq(constructedLT.SHAPE(), defaults.SHAPE(), "shape");
 
         vars.actualStreamCancelable = constructedLT.STREAM_CANCELABLE();
         vars.expectedStreamCancelable = defaults.CANCELABLE();

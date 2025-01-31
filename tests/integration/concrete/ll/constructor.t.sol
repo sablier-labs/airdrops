@@ -11,7 +11,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
     struct Vars {
         address actualAdmin;
         uint256 actualAllowance;
-        string actualCampaignName;
+        bytes32 actualCampaignName;
         uint40 actualExpiration;
         address actualFactory;
         uint256 actualFee;
@@ -24,7 +24,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         address actualToken;
         address expectedAdmin;
         uint256 expectedAllowance;
-        string expectedCampaignName;
+        bytes32 expectedCampaignName;
         uint40 expectedExpiration;
         address expectedFactory;
         uint256 expectedFee;
@@ -41,14 +41,8 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         // Make Factory the caller for the constructor test.
         resetPrank(address(merkleFactory));
 
-        SablierMerkleLL constructedLL = new SablierMerkleLL(
-            defaults.baseParams(),
-            users.campaignOwner,
-            lockup,
-            defaults.CANCELABLE(),
-            defaults.TRANSFERABLE(),
-            defaults.schedule()
-        );
+        SablierMerkleLL constructedLL =
+            new SablierMerkleLL(defaults.merkleLockupBaseParams(lockup), users.campaignOwner, defaults.schedule());
 
         Vars memory vars;
 
@@ -60,7 +54,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         vars.expectedAllowance = MAX_UINT256;
         assertEq(vars.actualAllowance, vars.expectedAllowance, "allowance");
 
-        vars.actualCampaignName = constructedLL.campaignName();
+        vars.actualCampaignName = constructedLL.CAMPAIGN_NAME();
         vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
         assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 
@@ -96,7 +90,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         assertEq(vars.actualSchedule.cliffPercentage, vars.expectedSchedule.cliffPercentage, "schedule.cliffPercentage");
         assertEq(vars.actualSchedule.totalDuration, vars.expectedSchedule.totalDuration, "schedule.totalDuration");
 
-        assertEq(constructedLL.shape(), defaults.SHAPE(), "shape");
+        assertEq(constructedLL.SHAPE(), defaults.SHAPE(), "shape");
 
         vars.actualStreamCancelable = constructedLL.STREAM_CANCELABLE();
         vars.expectedStreamCancelable = defaults.CANCELABLE();

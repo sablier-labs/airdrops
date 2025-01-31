@@ -5,10 +5,11 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ud2x18, UD2x18, uUNIT } from "@prb/math/src/UD2x18.sol";
 import { ud } from "@prb/math/src/UD60x18.sol";
+import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 import { LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol";
 import { Merkle } from "murky/src/Merkle.sol";
 
-import { MerkleBase, MerkleLL, MerkleLT } from "../../src/types/DataTypes.sol";
+import { MerkleInstant, MerkleLL, MerkleLockup, MerkleLT } from "../../src/types/DataTypes.sol";
 
 import { Constants } from "./Constants.sol";
 import { MerkleBuilder } from "./MerkleBuilder.sol";
@@ -33,8 +34,7 @@ contract Defaults is Constants, Merkle {
     //////////////////////////////////////////////////////////////////////////*/
 
     uint256 public constant AGGREGATE_AMOUNT = CLAIM_AMOUNT * RECIPIENT_COUNT;
-    // Since Factory stores campaign name as bytes32, extra spaces are padded to it.
-    string public constant CAMPAIGN_NAME = "Airdrop Campaign                ";
+    bytes32 public immutable CAMPAIGN_NAME = bytes32(abi.encodePacked("Airdrop Campaign"));
     bool public constant CANCELABLE = false;
     uint128 public constant CLAIM_AMOUNT = 10_000e18;
     UD2x18 public constant CLIFF_PERCENTAGE = UD2x18.wrap(0.25e18); // 25% of the claim amount
@@ -49,8 +49,7 @@ contract Defaults is Constants, Merkle {
     uint256[] public LEAVES = new uint256[](RECIPIENT_COUNT);
     uint256 public constant RECIPIENT_COUNT = 4;
     bytes32 public MERKLE_ROOT;
-    // Since Factory stores shape as bytes32, extra spaces are padded to it.
-    string public constant SHAPE = "A custom stream shape           ";
+    bytes32 public immutable SHAPE = bytes32(abi.encodePacked("A custom stream shape"));
     UD2x18 public constant START_PERCENTAGE = UD2x18.wrap(0.01e18); // 1% of the claim amount
     uint40 public immutable STREAM_START_TIME_NON_ZERO = JULY_1_2024 - 2 days;
     uint40 public immutable STREAM_START_TIME_ZERO = 0;
@@ -97,31 +96,67 @@ contract Defaults is Constants, Merkle {
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                                  MERKLE-LOCKUP
+                                  MERKLE-INSTANT
     //////////////////////////////////////////////////////////////////////////*/
 
-    function baseParams() public view returns (MerkleBase.ConstructorParams memory) {
-        return baseParams(users.campaignOwner, token, EXPIRATION, MERKLE_ROOT);
+    function merkleInstantBaseParams() public view returns (MerkleInstant.ConstructorParams memory) {
+        return merkleInstantBaseParams(users.campaignOwner, token, EXPIRATION, MERKLE_ROOT);
     }
 
-    function baseParams(
+    function merkleInstantBaseParams(
         address campaignOwner,
         IERC20 token_,
         uint40 expiration,
         bytes32 merkleRoot
     )
         public
-        pure
-        returns (MerkleBase.ConstructorParams memory)
+        view
+        returns (MerkleInstant.ConstructorParams memory)
     {
-        return MerkleBase.ConstructorParams({
-            token: token_,
+        return MerkleInstant.ConstructorParams({
+            campaignName: CAMPAIGN_NAME,
             expiration: expiration,
             initialAdmin: campaignOwner,
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
+            token: token_
+        });
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                  MERKLE-LOCKUP
+    //////////////////////////////////////////////////////////////////////////*/
+
+    function merkleLockupBaseParams(ISablierLockup lockup)
+        public
+        view
+        returns (MerkleLockup.ConstructorParams memory)
+    {
+        return merkleLockupBaseParams(users.campaignOwner, lockup, token, EXPIRATION, MERKLE_ROOT);
+    }
+
+    function merkleLockupBaseParams(
+        address campaignOwner,
+        ISablierLockup lockup,
+        IERC20 token_,
+        uint40 expiration,
+        bytes32 merkleRoot
+    )
+        public
+        view
+        returns (MerkleLockup.ConstructorParams memory)
+    {
+        return MerkleLockup.ConstructorParams({
             campaignName: CAMPAIGN_NAME,
-            shape: SHAPE
+            cancelable: CANCELABLE,
+            expiration: expiration,
+            initialAdmin: campaignOwner,
+            ipfsCID: IPFS_CID,
+            lockup: lockup,
+            merkleRoot: merkleRoot,
+            shape: SHAPE,
+            token: token_,
+            transferable: TRANSFERABLE
         });
     }
 

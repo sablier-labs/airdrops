@@ -7,7 +7,7 @@ import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.so
 
 import { ISablierMerkleFactory } from "../src/interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleLL } from "../src/interfaces/ISablierMerkleLL.sol";
-import { MerkleBase, MerkleLL } from "../src/types/DataTypes.sol";
+import { MerkleLockup, MerkleLL } from "../src/types/DataTypes.sol";
 
 import { BaseScript } from "./Base.s.sol";
 
@@ -18,28 +18,21 @@ contract CreateMerkleLL is BaseScript {
         ISablierMerkleFactory merkleFactory = ISablierMerkleFactory(0x71DD3Ca88E7564416E5C2E350090C12Bf8F6144a);
 
         // Prepare the constructor parameters.
-        MerkleBase.ConstructorParams memory baseParams;
-
-        // The token to distribute through the campaign.
-        baseParams.token = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
-
-        // The campaign will expire in 30 days.
-        baseParams.expiration = uint40(block.timestamp + 30 days);
-
-        // The admin of the campaign.
-        baseParams.initialAdmin = 0x79Fb3e81aAc012c08501f41296CCC145a1E15844;
-
-        // Dummy values for the campaign name, IPFS CID, and the Merkle root hash.
+        MerkleLockup.ConstructorParams memory baseParams;
         baseParams.campaignName = "The Boys LL";
+        baseParams.cancelable = true;
+        baseParams.expiration = uint40(block.timestamp + 30 days);
+        baseParams.initialAdmin = 0x79Fb3e81aAc012c08501f41296CCC145a1E15844;
         baseParams.ipfsCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
+        baseParams.lockup = ISablierLockup(0x7C01AA3783577E15fD7e272443D44B92d5b21056);
         baseParams.merkleRoot = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        baseParams.shape = "LL";
+        baseParams.token = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
+        baseParams.transferable = true;
 
         // Deploy the MerkleLL contract.
         merkleLL = merkleFactory.createMerkleLL({
             baseParams: baseParams,
-            lockup: ISablierLockup(0x7C01AA3783577E15fD7e272443D44B92d5b21056),
-            cancelable: true,
-            transferable: true,
             schedule: MerkleLL.Schedule({
                 startTime: 0, // i.e. block.timestamp
                 startPercentage: ud2x18(0.01e18),

@@ -9,7 +9,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
     /// @dev Needed to prevent "Stack too deep" error
     struct Vars {
         address actualAdmin;
-        string actualCampaignName;
+        bytes32 actualCampaignName;
         uint40 actualExpiration;
         address actualFactory;
         string actualIpfsCID;
@@ -17,7 +17,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         uint256 actualFee;
         address actualToken;
         address expectedAdmin;
-        string expectedCampaignName;
+        bytes32 expectedCampaignName;
         uint40 expectedExpiration;
         address expectedFactory;
         string expectedIpfsCID;
@@ -30,7 +30,8 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         // Make Factory the caller for the constructor test.
         resetPrank(address(merkleFactory));
 
-        SablierMerkleInstant constructedInstant = new SablierMerkleInstant(defaults.baseParams(), users.campaignOwner);
+        SablierMerkleInstant constructedInstant =
+            new SablierMerkleInstant(defaults.merkleInstantBaseParams(), users.campaignOwner);
 
         Vars memory vars;
 
@@ -38,7 +39,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         vars.expectedAdmin = users.campaignOwner;
         assertEq(vars.actualAdmin, vars.expectedAdmin, "admin");
 
-        vars.actualCampaignName = constructedInstant.campaignName();
+        vars.actualCampaignName = constructedInstant.CAMPAIGN_NAME();
         vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
         assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 

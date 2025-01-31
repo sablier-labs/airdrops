@@ -6,9 +6,11 @@ import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ud60x18 } from "@prb/math/src/UD60x18.sol";
 import { Lockup, LockupLinear } from "@sablier/lockup/src/types/DataTypes.sol";
 
+import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
-import { ISablierMerkleBase, ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
-import { MerkleBase } from "src/types/DataTypes.sol";
+import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
+import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
+import { MerkleLockup } from "src/types/DataTypes.sol";
 
 import { MerkleBuilder } from "./../../utils/MerkleBuilder.sol";
 import { Fork_Test } from "./../Fork.t.sol";
@@ -35,7 +37,7 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
     struct Vars {
         uint256 aggregateAmount;
         uint128[] amounts;
-        MerkleBase.ConstructorParams baseParams;
+        MerkleLockup.ConstructorParams baseParams;
         uint128 clawbackAmount;
         address expectedLL;
         uint256 expectedStreamId;
@@ -109,8 +111,9 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
             params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration
         );
 
-        vars.baseParams = defaults.baseParams({
+        vars.baseParams = defaults.merkleLockupBaseParams({
             campaignOwner: params.campaignOwner,
+            lockup: lockup,
             token_: FORK_TOKEN,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot
@@ -120,9 +123,6 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
         emit ISablierMerkleFactory.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(vars.expectedLL),
             baseParams: vars.baseParams,
-            lockup: lockup,
-            cancelable: defaults.CANCELABLE(),
-            transferable: defaults.TRANSFERABLE(),
             schedule: defaults.schedule(),
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount,
@@ -131,9 +131,6 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
 
         vars.merkleLL = merkleFactory.createMerkleLL({
             baseParams: vars.baseParams,
-            lockup: lockup,
-            cancelable: defaults.CANCELABLE(),
-            transferable: defaults.TRANSFERABLE(),
             schedule: defaults.schedule(),
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount
@@ -167,7 +164,7 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
         vars.expectedStreamId = lockup.nextStreamId();
 
         vm.expectEmit({ emitter: address(vars.merkleLL) });
-        emit ISablierMerkleLL.Claim(
+        emit ISablierMerkleLockup.Claim(
             vars.indexes[params.posBeforeSort],
             vars.recipients[params.posBeforeSort],
             vars.amounts[params.posBeforeSort],

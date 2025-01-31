@@ -7,7 +7,7 @@ import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleBase, ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
 
-import { MerkleBase } from "src/types/DataTypes.sol";
+import { MerkleInstant } from "src/types/DataTypes.sol";
 
 import { MerkleBuilder } from "./../../utils/MerkleBuilder.sol";
 import { Fork_Test } from "./../Fork.t.sol";
@@ -34,7 +34,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
     struct Vars {
         uint256 aggregateAmount;
         uint128[] amounts;
-        MerkleBase.ConstructorParams baseParams;
+        MerkleInstant.ConstructorParams baseParams;
         uint128 clawbackAmount;
         address expectedMerkleInstant;
         uint256[] indexes;
@@ -106,7 +106,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration
         );
 
-        vars.baseParams = defaults.baseParams({
+        vars.baseParams = defaults.merkleInstantBaseParams({
             campaignOwner: params.campaignOwner,
             token_: FORK_TOKEN,
             expiration: params.expiration,
