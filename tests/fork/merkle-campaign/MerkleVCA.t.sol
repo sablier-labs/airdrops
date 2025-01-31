@@ -3,17 +3,16 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
-import { LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol";
-import { Lockup } from "@sablier/lockup/src/types/DataTypes.sol";
-import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
+
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
-import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
-import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
-import { MerkleLT } from "src/types/DataTypes.sol";
+import { ISablierMerkleBase, ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
+
+import { MerkleVCA } from "src/types/DataTypes.sol";
+
 import { MerkleBuilder } from "./../../utils/MerkleBuilder.sol";
 import { Fork_Test } from "./../Fork.t.sol";
 
-abstract contract MerkleLT_Fork_Test is Fork_Test {
+abstract contract MerkleVCA_Fork_Test is Fork_Test {
     using MerkleBuilder for uint256[];
 
     constructor(IERC20 token_) Fork_Test(token_) { }
@@ -30,38 +29,48 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         uint40 expiration;
         LeafData[] leafData;
         uint256 posBeforeSort;
+        MerkleVCA.Timestamps vesting;
     }
 
     struct Vars {
         uint256 aggregateAmount;
-        LockupTranched.Tranche[] actualTranches;
         uint128[] amounts;
-        MerkleLT.ConstructorParams params;
+        MerkleVCA.ConstructorParams params;
+        uint128 claimableAmount;
         uint128 clawbackAmount;
-        address expectedLT;
-        uint256 expectedStreamId;
+        address expectedMerkleVCA;
         uint256[] indexes;
         uint256 leafPos;
         uint256 leafToClaim;
-        ISablierMerkleLT merkleLT;
+        ISablierMerkleVCA merkleVCA;
         bytes32[] merkleProof;
         bytes32 merkleRoot;
-        uint256 recipientCount;
         address[] recipients;
+        uint256 recipientCount;
     }
 
     // We need the leaves as a storage variable so that we can use OpenZeppelin's {Arrays.findUpperBound}.
     uint256[] public leaves;
 
-    function testForkFuzz_MerkleLT(Params memory params) external {
+    function testForkFuzz_MerkleVCA(Params memory params) external {
         vm.assume(params.campaignOwner != address(0));
         vm.assume(params.leafData.length > 0);
+        vm.assume(params.vesting.end > 0 && params.vesting.start > 0);
         assumeNoBlacklisted({ token: address(FORK_TOKEN), addr: params.campaignOwner });
         params.posBeforeSort = _bound(params.posBeforeSort, 0, params.leafData.length - 1);
 
-        // The expiration must be either zero or greater than the block timestamp.
+        // Bound vesting start and end times.
+        params.vesting.start = boundUint40(params.vesting.start, 1, getBlockTimestamp() - 1);
+        params.vesting.end = boundUint40(params.vesting.end, params.vesting.start, MAX_UNIX_TIMESTAMP - 2 weeks);
+
+        // The expiration must be either zero or exceed the vesting end time by at least 1 week.
         if (params.expiration != 0) {
-            params.expiration = boundUint40(params.expiration, getBlockTimestamp() + 1 seconds, MAX_UNIX_TIMESTAMP);
+            if (params.vesting.end > getBlockTimestamp() - 1 weeks) {
+                params.expiration = boundUint40(params.expiration, params.vesting.end + 1 weeks, MAX_UNIX_TIMESTAMP);
+            } else {
+                // If vesting end time is in the past, set expiration into the future to allow claiming.
+                params.expiration = boundUint40(params.expiration, getBlockTimestamp(), MAX_UNIX_TIMESTAMP);
+            }
         }
 
         /*//////////////////////////////////////////////////////////////////////////
@@ -106,39 +115,39 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        vars.expectedLT = computeMerkleLTAddress({
+        vars.expectedMerkleVCA = computeMerkleVCAAddress({
             campaignCreator: params.campaignOwner,
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            token_: FORK_TOKEN
+            token_: FORK_TOKEN,
+            vesting: params.vesting
         });
 
-        vars.params = defaults.merkleLTConstructorParams({
+        vars.params = defaults.merkleVCAConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
-            lockup: lockup,
             merkleRoot: vars.merkleRoot,
-            token_: FORK_TOKEN
+            token_: FORK_TOKEN,
+            vesting: params.vesting
         });
 
         vm.expectEmit({ emitter: address(merkleFactory) });
-        emit ISablierMerkleFactory.CreateMerkleLT({
-            merkleLT: ISablierMerkleLT(vars.expectedLT),
+        emit ISablierMerkleFactory.CreateMerkleVCA({
+            merkleVCA: ISablierMerkleVCA(vars.expectedMerkleVCA),
             params: vars.params,
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount,
-            totalDuration: defaults.TOTAL_DURATION(),
-            fee: defaults.MINIMUM_FEE()
+            fee: defaults.FEE()
         });
 
-        vars.merkleLT = merkleFactory.createMerkleLT(vars.params, vars.aggregateAmount, vars.recipientCount);
+        vars.merkleVCA = merkleFactory.createMerkleVCA(vars.params, vars.aggregateAmount, vars.recipientCount);
 
-        // Fund the MerkleLT contract.
-        deal({ token: address(FORK_TOKEN), to: address(vars.merkleLT), give: vars.aggregateAmount });
+        // Fund the MerkleVCA contract.
+        deal({ token: address(FORK_TOKEN), to: address(vars.merkleVCA), give: vars.aggregateAmount });
 
-        assertGt(address(vars.merkleLT).code.length, 0, "MerkleLT contract not created");
-        assertEq(address(vars.merkleLT), vars.expectedLT, "MerkleLT contract does not match computed address");
+        assertGt(address(vars.merkleVCA).code.length, 0, "MerkleVCA contract not created");
+        assertEq(address(vars.merkleVCA), vars.expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
         /*//////////////////////////////////////////////////////////////////////////
                                           CLAIM
@@ -150,7 +159,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
 
         uint256 initialAdminBalance = factoryAdmin.balance;
 
-        assertFalse(vars.merkleLT.hasClaimed(vars.indexes[params.posBeforeSort]));
+        assertFalse(vars.merkleVCA.hasClaimed(vars.indexes[params.posBeforeSort]));
 
         vars.leafToClaim = MerkleBuilder.computeLeaf(
             vars.indexes[params.posBeforeSort],
@@ -159,13 +168,21 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         );
         vars.leafPos = Arrays.findUpperBound(leaves, vars.leafToClaim);
 
-        vars.expectedStreamId = lockup.nextStreamId();
-        vm.expectEmit({ emitter: address(vars.merkleLT) });
-        emit ISablierMerkleLockup.Claim(
+        if (getBlockTimestamp() >= params.vesting.end) {
+            vars.claimableAmount = vars.amounts[params.posBeforeSort];
+        } else {
+            // Calculate the claimable amount based on the elapsed time.
+            uint40 elapsedTime = getBlockTimestamp() - params.vesting.start;
+            uint40 totalDuration = params.vesting.end - params.vesting.start;
+            vars.claimableAmount = uint128((uint256(vars.amounts[params.posBeforeSort]) * elapsedTime) / totalDuration);
+        }
+
+        vm.expectEmit({ emitter: address(vars.merkleVCA) });
+        emit ISablierMerkleVCA.Claim(
             vars.indexes[params.posBeforeSort],
             vars.recipients[params.posBeforeSort],
-            vars.amounts[params.posBeforeSort],
-            vars.expectedStreamId
+            vars.claimableAmount,
+            vars.amounts[params.posBeforeSort]
         );
 
         // Compute the Merkle proof.
@@ -177,44 +194,28 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         }
 
         expectCallToClaimWithData({
-            merkleLockup: address(vars.merkleLT),
-            fee: defaults.MINIMUM_FEE(),
+            merkleLockup: address(vars.merkleVCA),
+            fee: defaults.FEE(),
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
             merkleProof: vars.merkleProof
         });
 
-        vars.merkleLT.claim{ value: defaults.MINIMUM_FEE() }({
+        expectCallToTransfer({
+            token: FORK_TOKEN,
+            to: vars.recipients[params.posBeforeSort],
+            value: vars.claimableAmount
+        });
+
+        vars.merkleVCA.claim{ value: defaults.FEE() }({
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
             merkleProof: vars.merkleProof
         });
 
-        // Assert that the stream has been creatUSDT_MerkleLL_Fork_Tested successfully.
-        assertEq(
-            lockup.getDepositedAmount(vars.expectedStreamId), vars.amounts[params.posBeforeSort], "deposited amount"
-        );
-        assertEq(lockup.getEndTime(vars.expectedStreamId), getBlockTimestamp() + defaults.TOTAL_DURATION(), "end time");
-        assertEq(lockup.getLockupModel(vars.expectedStreamId), Lockup.Model.LOCKUP_TRANCHED);
-        assertEq(lockup.getRecipient(vars.expectedStreamId), vars.recipients[params.posBeforeSort], "recipient");
-        assertEq(lockup.getRefundedAmount(vars.expectedStreamId), 0, "refunded amount");
-        assertEq(lockup.getSender(vars.expectedStreamId), params.campaignOwner, "sender");
-        assertEq(lockup.getStartTime(vars.expectedStreamId), getBlockTimestamp(), "start time");
-        assertEq(
-            lockup.getTranches(vars.expectedStreamId),
-            defaults.tranchesMerkleLT({ streamStartTime: ZERO, totalAmount: vars.amounts[params.posBeforeSort] })
-        );
-        assertEq(lockup.getUnderlyingToken(vars.expectedStreamId), FORK_TOKEN, "token");
-        assertEq(lockup.getWithdrawnAmount(vars.expectedStreamId), 0, "withdrawn amount");
-        assertEq(lockup.isCancelable(vars.expectedStreamId), defaults.CANCELABLE(), "is cancelable");
-        assertEq(lockup.isDepleted(vars.expectedStreamId), false, "is depleted");
-        assertEq(lockup.isStream(vars.expectedStreamId), true, "is stream");
-        assertEq(lockup.isTransferable(vars.expectedStreamId), defaults.TRANSFERABLE(), "is transferable");
-        assertEq(lockup.wasCanceled(vars.expectedStreamId), false, "was canceled");
-
-        assertTrue(vars.merkleLT.hasClaimed(vars.indexes[params.posBeforeSort]));
+        assertTrue(vars.merkleVCA.hasClaimed(vars.indexes[params.posBeforeSort]));
 
         /*//////////////////////////////////////////////////////////////////////////
                                         CLAWBACK
@@ -224,18 +225,17 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         resetPrank({ msgSender: params.campaignOwner });
 
         if (params.expiration > 0) {
-            vars.clawbackAmount = uint128(FORK_TOKEN.balanceOf(address(vars.merkleLT)));
+            vars.clawbackAmount = uint128(FORK_TOKEN.balanceOf(address(vars.merkleVCA)));
             vm.warp({ newTimestamp: uint256(params.expiration) + 1 seconds });
 
-            resetPrank({ msgSender: params.campaignOwner });
             expectCallToTransfer({ token: FORK_TOKEN, to: params.campaignOwner, value: vars.clawbackAmount });
-            vm.expectEmit({ emitter: address(vars.merkleLT) });
+            vm.expectEmit({ emitter: address(vars.merkleVCA) });
             emit ISablierMerkleBase.Clawback({
                 to: params.campaignOwner,
                 admin: params.campaignOwner,
                 amount: vars.clawbackAmount
             });
-            vars.merkleLT.clawback({ to: params.campaignOwner, amount: vars.clawbackAmount });
+            vars.merkleVCA.clawback({ to: params.campaignOwner, amount: vars.clawbackAmount });
         }
 
         /*//////////////////////////////////////////////////////////////////////////
@@ -245,12 +245,12 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CollectFees({
             admin: factoryAdmin,
-            merkleBase: vars.merkleLT,
-            feeAmount: defaults.MINIMUM_FEE()
+            merkleBase: vars.merkleVCA,
+            feeAmount: defaults.FEE()
         });
-        merkleFactory.collectFees({ merkleBase: vars.merkleLT });
+        merkleFactory.collectFees({ merkleBase: vars.merkleVCA });
 
-        assertEq(address(vars.merkleLT).balance, 0, "merkleLT ETH balance");
-        assertEq(factoryAdmin.balance, initialAdminBalance + defaults.MINIMUM_FEE(), "admin ETH balance");
+        assertEq(address(vars.merkleVCA).balance, 0, "merkleVCA ETH balance");
+        assertEq(factoryAdmin.balance, initialAdminBalance + defaults.FEE(), "admin ETH balance");
     }
 }

@@ -63,6 +63,10 @@ abstract contract Modifiers is Utils {
         _;
     }
 
+    modifier whenClaimNotExpireWithinOneWeek() {
+        _;
+    }
+
     modifier whenExpirationNotZero() {
         _;
     }
@@ -80,6 +84,10 @@ abstract contract Modifiers is Utils {
     }
 
     modifier whenMerkleProofValid() {
+        _;
+    }
+
+    modifier whenNotZeroExpiry() {
         _;
     }
 
@@ -108,6 +116,22 @@ abstract contract Modifiers is Utils {
     }
 
     modifier whenTotalPercentageNotGreaterThan100() {
+        _;
+    }
+
+    modifier whenVestingEndTimeNotLessThanStartTime() {
+        _;
+    }
+
+    modifier whenVestingEndTimeNotZero() {
+        _;
+    }
+
+    modifier whenVestingStartTimeNotInFuture() {
+        _;
+    }
+
+    modifier whenVestingStartTimeNotZero() {
         _;
     }
 

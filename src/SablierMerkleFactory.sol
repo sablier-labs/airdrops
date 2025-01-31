@@ -10,10 +10,13 @@ import { ISablierMerkleFactory } from "./interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleInstant } from "./interfaces/ISablierMerkleInstant.sol";
 import { ISablierMerkleLL } from "./interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
+import { ISablierMerkleVCA } from "./interfaces/ISablierMerkleVCA.sol";
+import { Errors } from "./libraries/Errors.sol";
 import { SablierMerkleInstant } from "./SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "./SablierMerkleLL.sol";
 import { SablierMerkleLT } from "./SablierMerkleLT.sol";
-import { MerkleFactory, MerkleInstant, MerkleLL, MerkleLT } from "./types/DataTypes.sol";
+import { SablierMerkleVCA } from "./SablierMerkleVCA.sol";
+import { MerkleFactory, MerkleInstant, MerkleLL, MerkleLT, MerkleVCA } from "./types/DataTypes.sol";
 
 /*
 
@@ -182,6 +185,55 @@ contract SablierMerkleFactory is
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
             totalDuration: totalDuration,
+            fee: _getFee(msg.sender)
+        });
+    }
+
+    /// @inheritdoc ISablierMerkleFactory
+    function createMerkleVCA(
+        MerkleVCA.ConstructorParams memory params,
+        uint256 aggregateAmount,
+        uint256 recipientCount
+    )
+        external
+        returns (ISablierMerkleVCA merkleVCA)
+    {
+        // Check: neither vesting start time nor vesting end time is zero.
+        if (params.vesting.end == 0 || params.vesting.start == 0) {
+            revert Errors.SablierMerkleFactory_VestingTimeZero({
+                startTime: params.vesting.start,
+                endTime: params.vesting.end
+            });
+        }
+
+        // Check: vesting end time is not less than the start time.
+        if (params.vesting.end < params.vesting.start) {
+            revert Errors.SablierMerkleFactory_VestingStartTimeExceedsEndTime({
+                startTime: params.vesting.start,
+                endTime: params.vesting.end
+            });
+        }
+
+        // Check: campaign expiration, if non-zero, exceeds the vesting end time by at least 1 week.
+        if (params.expiration > 0 && params.expiration < params.vesting.end + 1 weeks) {
+            revert Errors.SablierMerkleFactory_ExpiryWithinOneWeekOfVestingEnd({
+                endTime: params.vesting.end,
+                expiration: params.expiration
+            });
+        }
+
+        // Hash the parameters to generate a salt.
+        bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
+
+        // Deploy the MerkleVCA contract with CREATE2.
+        merkleVCA = new SablierMerkleVCA{ salt: salt }({ params: params, campaignCreator: msg.sender });
+
+        // Log the creation of the MerkleVCA contract, including some metadata that is not stored on-chain.
+        emit CreateMerkleVCA({
+            merkleVCA: merkleVCA,
+            params: params,
+            aggregateAmount: aggregateAmount,
+            recipientCount: recipientCount,
             fee: _getFee(msg.sender)
         });
     }
