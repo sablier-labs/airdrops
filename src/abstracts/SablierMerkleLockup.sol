@@ -13,7 +13,7 @@ import { SablierMerkleBase } from "./SablierMerkleBase.sol";
 /// @notice See the documentation in {ISablierMerkleLockup}.
 abstract contract SablierMerkleLockup is
     ISablierMerkleLockup, // 2 inherited components,
-    SablierMerkleBase // 4 inherited components
+    SablierMerkleBase // 3 inherited components
 {
     using SafeERC20 for IERC20;
 

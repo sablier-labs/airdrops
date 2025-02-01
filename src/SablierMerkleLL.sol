@@ -32,8 +32,8 @@ import { MerkleLockup, MerkleLL } from "./types/DataTypes.sol";
 /// @title SablierMerkleLL
 /// @notice See the documentation in {ISablierMerkleLL}.
 contract SablierMerkleLL is
-    ISablierMerkleLL, // 2 inherited components
-    SablierMerkleLockup // 4 inherited components
+    ISablierMerkleLL, // 3 inherited components
+    SablierMerkleLockup // 5 inherited components
 {
     using SafeERC20 for IERC20;
 
