@@ -14,7 +14,7 @@ import { Errors } from "./../libraries/Errors.sol";
 /// @title SablierMerkleBase
 /// @notice See the documentation in {ISablierMerkleBase}.
 abstract contract SablierMerkleBase is
-    ISablierMerkleBase, // 2 inherited component
+    ISablierMerkleBase, // 1 inherited component
     Adminable // 1 inherited component
 {
     using BitMaps for BitMaps.BitMap;

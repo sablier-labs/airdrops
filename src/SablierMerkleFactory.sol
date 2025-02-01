@@ -36,7 +36,7 @@ import { MerkleFactory, MerkleInstant, MerkleLL, MerkleLockup, MerkleLT } from "
 /// @title SablierMerkleFactory
 /// @notice See the documentation in {ISablierMerkleFactory}.
 contract SablierMerkleFactory is
-    ISablierMerkleFactory, // 2 inherited components
+    ISablierMerkleFactory, // 1 inherited components
     Adminable // 1 inherited component
 {
     /*//////////////////////////////////////////////////////////////////////////

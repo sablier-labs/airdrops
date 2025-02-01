@@ -30,7 +30,7 @@ import { MerkleInstant } from "./types/DataTypes.sol";
 /// @notice See the documentation in {ISablierMerkleInstant}.
 contract SablierMerkleInstant is
     ISablierMerkleInstant, // 2 inherited components
-    SablierMerkleBase // 4 inherited components
+    SablierMerkleBase // 3 inherited components
 {
     using SafeERC20 for IERC20;
 
