@@ -7,6 +7,7 @@ import { Merkle } from "murky/src/Merkle.sol";
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
 
 import { Base_Test } from "../Base.t.sol";
+import { Defaults } from "../utils/Defaults.sol";
 
 /// @notice Common logic needed by all fork tests.
 abstract contract Fork_Test is Base_Test, Merkle {
@@ -35,5 +36,12 @@ abstract contract Fork_Test is Base_Test, Merkle {
         // Load deployed addresses from Ethereum mainnet.
         merkleFactory = ISablierMerkleFactory(0x71DD3Ca88E7564416E5C2E350090C12Bf8F6144a);
         lockup = ISablierLockup(0x7C01AA3783577E15fD7e272443D44B92d5b21056);
+
+        // Initialize the defaults contract.
+        defaults = new Defaults();
+
+        // Set the default fee for campaign.
+        resetPrank({ msgSender: merkleFactory.admin() });
+        merkleFactory.setDefaultFee(defaults.FEE());
     }
 }
