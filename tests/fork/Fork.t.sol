@@ -16,6 +16,7 @@ abstract contract Fork_Test is Base_Test, Merkle {
     //////////////////////////////////////////////////////////////////////////*/
 
     IERC20 internal immutable FORK_TOKEN;
+    address internal factoryAdmin;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
@@ -37,11 +38,14 @@ abstract contract Fork_Test is Base_Test, Merkle {
         merkleFactory = ISablierMerkleFactory(0x71DD3Ca88E7564416E5C2E350090C12Bf8F6144a);
         lockup = ISablierLockup(0x7C01AA3783577E15fD7e272443D44B92d5b21056);
 
+        // Load the factory admin from mainnet.
+        factoryAdmin = merkleFactory.admin();
+
         // Initialize the defaults contract.
         defaults = new Defaults();
 
         // Set the default fee for campaign.
-        resetPrank({ msgSender: merkleFactory.admin() });
+        resetPrank({ msgSender: factoryAdmin });
         merkleFactory.setDefaultFee(defaults.FEE());
     }
 }
