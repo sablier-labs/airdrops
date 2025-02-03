@@ -14,7 +14,7 @@ import { SablierMerkleFactory } from "src/SablierMerkleFactory.sol";
 import { SablierMerkleInstant } from "src/SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "src/SablierMerkleLL.sol";
 import { SablierMerkleLT } from "src/SablierMerkleLT.sol";
-import { MerkleBase } from "src/types/DataTypes.sol";
+import { MerkleInstant, MerkleLockup } from "src/types/DataTypes.sol";
 import { ERC20Mock } from "./mocks/erc20/ERC20Mock.sol";
 import { Assertions } from "./utils/Assertions.sol";
 import { Constants } from "./utils/Constants.sol";
@@ -191,7 +191,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         view
         returns (address)
     {
-        MerkleBase.ConstructorParams memory baseParams = defaults.baseParams({
+        MerkleInstant.ConstructorParams memory baseParams = defaults.merkleInstantBaseParams({
             campaignOwner: campaignOwner,
             token_: token_,
             expiration: expiration,
@@ -219,22 +219,15 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         view
         returns (address)
     {
-        MerkleBase.ConstructorParams memory baseParams = defaults.baseParams({
+        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams({
             campaignOwner: campaignOwner,
+            lockup: lockup,
             token_: token_,
             expiration: expiration,
             merkleRoot: merkleRoot
         });
-        bytes32 salt = keccak256(
-            abi.encodePacked(
-                campaignCreator,
-                abi.encode(baseParams),
-                lockup,
-                defaults.CANCELABLE(),
-                defaults.TRANSFERABLE(),
-                abi.encode(defaults.schedule())
-            )
-        );
+        bytes32 salt =
+            keccak256(abi.encodePacked(campaignCreator, abi.encode(baseParams), abi.encode(defaults.schedule())));
         bytes32 creationBytecodeHash =
             keccak256(getMerkleLLBytecode(campaignCreator, campaignOwner, token_, merkleRoot, expiration));
         return vm.computeCreate2Address({
@@ -255,8 +248,9 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         view
         returns (address)
     {
-        MerkleBase.ConstructorParams memory baseParams = defaults.baseParams({
+        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams({
             campaignOwner: campaignOwner,
+            lockup: lockup,
             token_: token_,
             expiration: expiration,
             merkleRoot: merkleRoot
@@ -265,9 +259,6 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             abi.encodePacked(
                 campaignCreator,
                 abi.encode(baseParams),
-                lockup,
-                defaults.CANCELABLE(),
-                defaults.TRANSFERABLE(),
                 defaults.STREAM_START_TIME_ZERO(),
                 abi.encode(defaults.tranchesWithPercentages())
             )
@@ -293,7 +284,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         returns (bytes memory)
     {
         bytes memory constructorArgs =
-            abi.encode(defaults.baseParams(campaignOwner, token_, expiration, merkleRoot), campaignCreator);
+            abi.encode(defaults.merkleInstantBaseParams(campaignOwner, token_, expiration, merkleRoot), campaignCreator);
         if (!isTestOptimizedProfile()) {
             return bytes.concat(type(SablierMerkleInstant).creationCode, constructorArgs);
         } else {
@@ -315,11 +306,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         returns (bytes memory)
     {
         bytes memory constructorArgs = abi.encode(
-            defaults.baseParams(campaignOwner, token_, expiration, merkleRoot),
+            defaults.merkleLockupBaseParams(campaignOwner, lockup, token_, expiration, merkleRoot),
             campaignCreator,
-            lockup,
-            defaults.CANCELABLE(),
-            defaults.TRANSFERABLE(),
             defaults.schedule()
         );
         if (!isTestOptimizedProfile()) {
@@ -341,11 +329,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         returns (bytes memory)
     {
         bytes memory constructorArgs = abi.encode(
-            defaults.baseParams(campaignOwner, token_, expiration, merkleRoot),
+            defaults.merkleLockupBaseParams(campaignOwner, lockup, token_, expiration, merkleRoot),
             campaignCreator,
-            lockup,
-            defaults.CANCELABLE(),
-            defaults.TRANSFERABLE(),
             defaults.STREAM_START_TIME_ZERO(),
             defaults.tranchesWithPercentages()
         );

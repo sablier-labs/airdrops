@@ -2,10 +2,9 @@
 pragma solidity >=0.8.22;
 
 import { IAdminable } from "@sablier/lockup/src/interfaces/IAdminable.sol";
-import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 
 import { ISablierMerkleBase } from "../interfaces/ISablierMerkleBase.sol";
-import { MerkleBase, MerkleFactory, MerkleLL, MerkleLT } from "../types/DataTypes.sol";
+import { MerkleFactory, MerkleInstant, MerkleLL, MerkleLockup, MerkleLT } from "../types/DataTypes.sol";
 import { ISablierMerkleInstant } from "./ISablierMerkleInstant.sol";
 import { ISablierMerkleLL } from "./ISablierMerkleLL.sol";
 import { ISablierMerkleLT } from "./ISablierMerkleLT.sol";
@@ -28,7 +27,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @notice Emitted when a {SablierMerkleInstant} campaign is created.
     event CreateMerkleInstant(
         ISablierMerkleInstant indexed merkleInstant,
-        MerkleBase.ConstructorParams baseParams,
+        MerkleInstant.ConstructorParams baseParams,
         uint256 aggregateAmount,
         uint256 recipientCount,
         uint256 fee
@@ -37,10 +36,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @notice Emitted when a {SablierMerkleLL} campaign is created.
     event CreateMerkleLL(
         ISablierMerkleLL indexed merkleLL,
-        MerkleBase.ConstructorParams baseParams,
-        ISablierLockup lockup,
-        bool cancelable,
-        bool transferable,
+        MerkleLockup.ConstructorParams baseParams,
         MerkleLL.Schedule schedule,
         uint256 aggregateAmount,
         uint256 recipientCount,
@@ -50,10 +46,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @notice Emitted when a {SablierMerkleLT} campaign is created.
     event CreateMerkleLT(
         ISablierMerkleLT indexed merkleLT,
-        MerkleBase.ConstructorParams baseParams,
-        ISablierLockup lockup,
-        bool cancelable,
-        bool transferable,
+        MerkleLockup.ConstructorParams baseParams,
         uint40 streamStartTime,
         MerkleLT.TrancheWithPercentage[] tranchesWithPercentages,
         uint256 totalDuration,
@@ -119,13 +112,13 @@ interface ISablierMerkleFactory is IAdminable {
     /// - The MerkleInstant contract is created with CREATE2.
     /// - The immutable fee will be set to the default value unless a custom fee is set.
     ///
-    /// @param baseParams Struct encapsulating the {SablierMerkleBase} parameters, which are documented in
+    /// @param baseParams Struct encapsulating the {SablierMerkleInstant} parameters, which are documented in
     /// {DataTypes}.
     /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
     /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @return merkleInstant The address of the newly created MerkleInstant contract.
     function createMerkleInstant(
-        MerkleBase.ConstructorParams memory baseParams,
+        MerkleInstant.ConstructorParams memory baseParams,
         uint256 aggregateAmount,
         uint256 recipientCount
     )
@@ -140,20 +133,14 @@ interface ISablierMerkleFactory is IAdminable {
     /// - The MerkleLL contract is created with CREATE2.
     /// - The immutable fee will be set to the default value unless a custom fee is set.
     ///
-    /// @param baseParams Struct encapsulating the {SablierMerkleBase} parameters, which are documented in
+    /// @param baseParams Struct encapsulating the {SablierMerkleLockup} parameters, which are documented in
     /// {DataTypes}.
-    /// @param lockup The address of the {SablierLockup} contract.
-    /// @param cancelable Indicates if the stream will be cancelable after claiming.
-    /// @param transferable Indicates if the stream will be transferable after claiming.
     /// @param schedule Struct encapsulating the unlocks schedule, which are documented in {DataTypes}.
     /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
     /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @return merkleLL The address of the newly created Merkle Lockup contract.
     function createMerkleLL(
-        MerkleBase.ConstructorParams memory baseParams,
-        ISablierLockup lockup,
-        bool cancelable,
-        bool transferable,
+        MerkleLockup.ConstructorParams memory baseParams,
         MerkleLL.Schedule memory schedule,
         uint256 aggregateAmount,
         uint256 recipientCount
@@ -169,21 +156,15 @@ interface ISablierMerkleFactory is IAdminable {
     /// - The MerkleLT contract is created with CREATE2.
     /// - The immutable fee will be set to the default value unless a custom fee is set.
     ///
-    /// @param baseParams Struct encapsulating the {SablierMerkleBase} parameters, which are documented in
+    /// @param baseParams Struct encapsulating the {SablierMerkleLockup} parameters, which are documented in
     /// {DataTypes}.
-    /// @param lockup The address of the {SablierLockup} contract.
-    /// @param cancelable Indicates if the stream will be cancelable after claiming.
-    /// @param transferable Indicates if the stream will be transferable after claiming.
     /// @param streamStartTime The start time of the streams created through {SablierMerkleBase.claim}.
     /// @param tranchesWithPercentages The tranches with their respective unlock percentages.
     /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
     /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @return merkleLT The address of the newly created Merkle Lockup contract.
     function createMerkleLT(
-        MerkleBase.ConstructorParams memory baseParams,
-        ISablierLockup lockup,
-        bool cancelable,
-        bool transferable,
+        MerkleLockup.ConstructorParams memory baseParams,
         uint40 streamStartTime,
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages,
         uint256 aggregateAmount,
