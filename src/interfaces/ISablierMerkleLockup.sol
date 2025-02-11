@@ -21,9 +21,6 @@ interface ISablierMerkleLockup is ISablierMerkleBase {
     /// @notice The address of the {SablierLockup} contract.
     function LOCKUP() external view returns (ISablierLockup);
 
-    /// @notice Retrieves the shape of the lockup stream that the campaign produces upon claiming, as bytes32.
-    function SHAPE() external view returns (bytes32);
-
     /// @notice A flag indicating whether the streams can be canceled.
     /// @dev This is an immutable state variable.
     function STREAM_CANCELABLE() external returns (bool);
@@ -31,4 +28,7 @@ interface ISablierMerkleLockup is ISablierMerkleBase {
     /// @notice A flag indicating whether the stream NFTs are transferable.
     /// @dev This is an immutable state variable.
     function STREAM_TRANSFERABLE() external returns (bool);
+
+    /// @notice Retrieves the shape of the lockup stream that the campaign produces upon claiming.
+    function shape() external view returns (string memory);
 }

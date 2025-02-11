@@ -13,7 +13,7 @@ import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
 import { SablierMerkleInstant } from "./SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "./SablierMerkleLL.sol";
 import { SablierMerkleLT } from "./SablierMerkleLT.sol";
-import { MerkleFactory, MerkleInstant, MerkleLL, MerkleLockup, MerkleLT } from "./types/DataTypes.sol";
+import { MerkleFactory, MerkleInstant, MerkleLL, MerkleLT } from "./types/DataTypes.sol";
 
 /*
 
@@ -98,101 +98,64 @@ contract SablierMerkleFactory is
     }
 
     /// @inheritdoc ISablierMerkleFactory
-    function createMerkleInstant(
-        MerkleInstant.ConstructorParams memory baseParams,
-        uint256 aggregateAmount,
-        uint256 recipientCount
-    )
+    function createMerkleInstant(MerkleInstant.CreateParams memory params)
         external
         override
         returns (ISablierMerkleInstant merkleInstant)
     {
         // Hash the parameters to generate a salt.
-        bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(baseParams)));
+        bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
 
         // Deploy the MerkleInstant contract with CREATE2.
-        merkleInstant = new SablierMerkleInstant{ salt: salt }({ baseParams: baseParams, campaignCreator: msg.sender });
+        merkleInstant = new SablierMerkleInstant{ salt: salt }({ params: params, campaignCreator: msg.sender });
 
         // Log the creation of the MerkleInstant contract, including some metadata that is not stored on-chain.
-        emit CreateMerkleInstant({
-            merkleInstant: merkleInstant,
-            baseParams: baseParams,
-            aggregateAmount: aggregateAmount,
-            recipientCount: recipientCount,
-            fee: _getFee(msg.sender)
-        });
+        emit CreateMerkleInstant({ merkleInstant: merkleInstant, createParams: params, fee: _getFee(msg.sender) });
     }
 
     /// @inheritdoc ISablierMerkleFactory
-    function createMerkleLL(
-        MerkleLockup.ConstructorParams memory baseParams,
-        MerkleLL.Schedule memory schedule,
-        uint256 aggregateAmount,
-        uint256 recipientCount
-    )
+    function createMerkleLL(MerkleLL.CreateParams memory params)
         external
         override
         returns (ISablierMerkleLL merkleLL)
     {
         // Hash the parameters to generate a salt.
-        bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(baseParams), abi.encode(schedule)));
+        bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
 
         // Deploy the MerkleLL contract with CREATE2.
-        merkleLL = new SablierMerkleLL{ salt: salt }({
-            baseParams: baseParams,
-            campaignCreator: msg.sender,
-            schedule: schedule
-        });
+        merkleLL = new SablierMerkleLL{ salt: salt }({ params: params, campaignCreator: msg.sender });
 
         // Log the creation of the MerkleLL contract, including some metadata that is not stored on-chain.
-        emit CreateMerkleLL({
-            merkleLL: merkleLL,
-            baseParams: baseParams,
-            schedule: schedule,
-            aggregateAmount: aggregateAmount,
-            recipientCount: recipientCount,
-            fee: _getFee(msg.sender)
-        });
+        emit CreateMerkleLL({ merkleLL: merkleLL, createParams: params, fee: _getFee(msg.sender) });
     }
 
     /// @inheritdoc ISablierMerkleFactory
-    function createMerkleLT(
-        MerkleLockup.ConstructorParams memory baseParams,
-        uint40 streamStartTime,
-        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages,
-        uint256 aggregateAmount,
-        uint256 recipientCount
-    )
+    function createMerkleLT(MerkleLT.CreateParams memory params)
         external
         override
         returns (ISablierMerkleLT merkleLT)
     {
         // Calculate the sum of percentages and durations across all tranches.
-        uint256 count = tranchesWithPercentages.length;
+        uint256 count = params.tranchesWithPercentages.length;
         uint256 totalDuration;
         for (uint256 i = 0; i < count; ++i) {
             unchecked {
                 // Safe to use `unchecked` because its only used in the event.
-                totalDuration += tranchesWithPercentages[i].duration;
+                totalDuration += params.tranchesWithPercentages[i].duration;
             }
         }
 
-        // Deploy the MerkleLT contract.
-        merkleLT = _deployMerkleLT({
-            baseParams: baseParams,
-            streamStartTime: streamStartTime,
-            tranchesWithPercentages: tranchesWithPercentages
-        });
+        // Hash the parameters to generate a salt.
+        bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
+
+        // Deploy the MerkleLT contract with CREATE2.
+        merkleLT = new SablierMerkleLT{ salt: salt }({ params: params, campaignCreator: msg.sender });
 
         // Log the creation of the MerkleLT contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLT({
             merkleLT: merkleLT,
-            baseParams: baseParams,
-            streamStartTime: streamStartTime,
-            tranchesWithPercentages: tranchesWithPercentages,
+            createParams: params,
             totalDuration: totalDuration,
-            aggregateAmount: aggregateAmount,
-            recipientCount: recipientCount,
             fee: _getFee(msg.sender)
         });
     }
@@ -236,33 +199,5 @@ contract SablierMerkleFactory is
     /// @notice Retrieves the fee for the provided campaign creator, using the default fee if no custom fee is set.
     function _getFee(address campaignCreator) private view returns (uint256) {
         return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : defaultFee;
-    }
-
-    /*//////////////////////////////////////////////////////////////////////////
-                           PRIVATE NON-CONSTANT FUNCTIONS
-    //////////////////////////////////////////////////////////////////////////*/
-
-    /// @notice Deploys a new MerkleLT contract with CREATE2.
-    /// @dev We need a separate function to prevent the stack too deep error.
-    function _deployMerkleLT(
-        MerkleLockup.ConstructorParams memory baseParams,
-        uint40 streamStartTime,
-        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages
-    )
-        private
-        returns (ISablierMerkleLT merkleLT)
-    {
-        // Hash the parameters to generate a salt.
-        bytes32 salt = keccak256(
-            abi.encodePacked(msg.sender, abi.encode(baseParams), streamStartTime, abi.encode(tranchesWithPercentages))
-        );
-
-        // Deploy the MerkleLT contract with CREATE2.
-        merkleLT = new SablierMerkleLT{ salt: salt }({
-            baseParams: baseParams,
-            campaignCreator: msg.sender,
-            streamStartTime: streamStartTime,
-            tranchesWithPercentages: tranchesWithPercentages
-        });
     }
 }

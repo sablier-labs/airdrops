@@ -9,7 +9,7 @@ import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.so
 import { LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol";
 import { Merkle } from "murky/src/Merkle.sol";
 
-import { MerkleInstant, MerkleLL, MerkleLockup, MerkleLT } from "../../src/types/DataTypes.sol";
+import { MerkleInstant, MerkleLL, MerkleLT } from "../../src/types/DataTypes.sol";
 
 import { Constants } from "./Constants.sol";
 import { MerkleBuilder } from "./MerkleBuilder.sol";
@@ -34,7 +34,7 @@ contract Defaults is Constants, Merkle {
     //////////////////////////////////////////////////////////////////////////*/
 
     uint256 public constant AGGREGATE_AMOUNT = CLAIM_AMOUNT * RECIPIENT_COUNT;
-    bytes32 public immutable CAMPAIGN_NAME = bytes32(abi.encodePacked("Airdrop Campaign"));
+    string public CAMPAIGN_NAME = "Airdrop Campaign";
     bool public constant CANCELABLE = false;
     uint128 public constant CLAIM_AMOUNT = 10_000e18;
     UD2x18 public constant CLIFF_PERCENTAGE = UD2x18.wrap(0.25e18); // 25% of the claim amount
@@ -49,7 +49,7 @@ contract Defaults is Constants, Merkle {
     uint256[] public LEAVES = new uint256[](RECIPIENT_COUNT);
     uint256 public constant RECIPIENT_COUNT = 4;
     bytes32 public MERKLE_ROOT;
-    bytes32 public immutable SHAPE = bytes32(abi.encodePacked("A custom stream shape"));
+    string public SHAPE = "A custom stream shape";
     UD2x18 public constant START_PERCENTAGE = UD2x18.wrap(0.01e18); // 1% of the claim amount
     uint40 public immutable STREAM_START_TIME_NON_ZERO = JULY_1_2024 - 2 days;
     uint40 public immutable STREAM_START_TIME_ZERO = 0;
@@ -76,90 +76,6 @@ contract Defaults is Constants, Merkle {
                                       HELPERS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev We need a separate function to initialize the Merkle tree because, at the construction time, the users are
-    /// not yet set.
-    function initMerkleTree() public {
-        LEAVES[0] = MerkleBuilder.computeLeaf(INDEX1, users.recipient1, CLAIM_AMOUNT);
-        LEAVES[1] = MerkleBuilder.computeLeaf(INDEX2, users.recipient2, CLAIM_AMOUNT);
-        LEAVES[2] = MerkleBuilder.computeLeaf(INDEX3, users.recipient3, CLAIM_AMOUNT);
-        LEAVES[3] = MerkleBuilder.computeLeaf(INDEX4, users.recipient4, CLAIM_AMOUNT);
-        MerkleBuilder.sortLeaves(LEAVES);
-        MERKLE_ROOT = getRoot(LEAVES.toBytes32());
-    }
-
-    function setToken(IERC20 token_) public {
-        token = token_;
-    }
-
-    function setUsers(Users memory users_) public {
-        users = users_;
-    }
-
-    /*//////////////////////////////////////////////////////////////////////////
-                                  MERKLE-INSTANT
-    //////////////////////////////////////////////////////////////////////////*/
-
-    function merkleInstantBaseParams() public view returns (MerkleInstant.ConstructorParams memory) {
-        return merkleInstantBaseParams(users.campaignOwner, token, EXPIRATION, MERKLE_ROOT);
-    }
-
-    function merkleInstantBaseParams(
-        address campaignOwner,
-        IERC20 token_,
-        uint40 expiration,
-        bytes32 merkleRoot
-    )
-        public
-        view
-        returns (MerkleInstant.ConstructorParams memory)
-    {
-        return MerkleInstant.ConstructorParams({
-            campaignName: CAMPAIGN_NAME,
-            expiration: expiration,
-            initialAdmin: campaignOwner,
-            ipfsCID: IPFS_CID,
-            merkleRoot: merkleRoot,
-            token: token_
-        });
-    }
-
-    /*//////////////////////////////////////////////////////////////////////////
-                                  MERKLE-LOCKUP
-    //////////////////////////////////////////////////////////////////////////*/
-
-    function merkleLockupBaseParams(ISablierLockup lockup)
-        public
-        view
-        returns (MerkleLockup.ConstructorParams memory)
-    {
-        return merkleLockupBaseParams(users.campaignOwner, lockup, token, EXPIRATION, MERKLE_ROOT);
-    }
-
-    function merkleLockupBaseParams(
-        address campaignOwner,
-        ISablierLockup lockup,
-        IERC20 token_,
-        uint40 expiration,
-        bytes32 merkleRoot
-    )
-        public
-        view
-        returns (MerkleLockup.ConstructorParams memory)
-    {
-        return MerkleLockup.ConstructorParams({
-            campaignName: CAMPAIGN_NAME,
-            cancelable: CANCELABLE,
-            expiration: expiration,
-            initialAdmin: campaignOwner,
-            ipfsCID: IPFS_CID,
-            lockup: lockup,
-            merkleRoot: merkleRoot,
-            shape: SHAPE,
-            token: token_,
-            transferable: TRANSFERABLE
-        });
-    }
-
     function index1Proof() public view returns (bytes32[] memory) {
         return indexProof(INDEX1, users.recipient1);
     }
@@ -182,12 +98,128 @@ contract Defaults is Constants, Merkle {
         return getProof(LEAVES.toBytes32(), pos);
     }
 
-    function schedule() public pure returns (MerkleLL.Schedule memory schedule_) {
-        schedule_.startTime = STREAM_START_TIME_ZERO;
-        schedule_.startPercentage = START_PERCENTAGE;
-        schedule_.cliffDuration = CLIFF_DURATION;
-        schedule_.cliffPercentage = CLIFF_PERCENTAGE;
-        schedule_.totalDuration = TOTAL_DURATION;
+    /// @dev We need a separate function to initialize the Merkle tree because, at the construction time, the users are
+    /// not yet set.
+    function initMerkleTree() public {
+        LEAVES[0] = MerkleBuilder.computeLeaf(INDEX1, users.recipient1, CLAIM_AMOUNT);
+        LEAVES[1] = MerkleBuilder.computeLeaf(INDEX2, users.recipient2, CLAIM_AMOUNT);
+        LEAVES[2] = MerkleBuilder.computeLeaf(INDEX3, users.recipient3, CLAIM_AMOUNT);
+        LEAVES[3] = MerkleBuilder.computeLeaf(INDEX4, users.recipient4, CLAIM_AMOUNT);
+        MerkleBuilder.sortLeaves(LEAVES);
+        MERKLE_ROOT = getRoot(LEAVES.toBytes32());
+    }
+
+    function setUsers(Users memory users_) public {
+        users = users_;
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                  MERKLE-INSTANT
+    //////////////////////////////////////////////////////////////////////////*/
+
+    function merkleInstantCreateParams(
+        uint256 aggregateAmount,
+        address campaignOwner,
+        uint40 expiration,
+        bytes32 merkleRoot,
+        uint256 recipientCount,
+        IERC20 token_
+    )
+        public
+        view
+        returns (MerkleInstant.CreateParams memory)
+    {
+        return MerkleInstant.CreateParams({
+            aggregateAmount: aggregateAmount,
+            campaignName: CAMPAIGN_NAME,
+            expiration: expiration,
+            initialAdmin: campaignOwner,
+            ipfsCID: IPFS_CID,
+            merkleRoot: merkleRoot,
+            recipientCount: recipientCount,
+            token: token_
+        });
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                    MERKLE-LL
+    //////////////////////////////////////////////////////////////////////////*/
+
+    function merkleLLCreateParams(
+        uint256 aggregateAmount,
+        address campaignOwner,
+        uint40 expiration,
+        ISablierLockup lockup,
+        bytes32 merkleRoot,
+        uint256 recipientCount,
+        IERC20 token_
+    )
+        public
+        view
+        returns (MerkleLL.CreateParams memory)
+    {
+        return MerkleLL.CreateParams({
+            aggregateAmount: aggregateAmount,
+            campaignName: CAMPAIGN_NAME,
+            cancelable: CANCELABLE,
+            expiration: expiration,
+            initialAdmin: campaignOwner,
+            ipfsCID: IPFS_CID,
+            lockup: lockup,
+            merkleRoot: merkleRoot,
+            recipientCount: recipientCount,
+            schedule: MerkleLL.Schedule({
+                startTime: STREAM_START_TIME_ZERO,
+                startPercentage: START_PERCENTAGE,
+                cliffDuration: CLIFF_DURATION,
+                cliffPercentage: CLIFF_PERCENTAGE,
+                totalDuration: TOTAL_DURATION
+            }),
+            shape: SHAPE,
+            token: token_,
+            transferable: TRANSFERABLE
+        });
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                    MERKLE-LT
+    //////////////////////////////////////////////////////////////////////////*/
+
+    function merkleLTCreateParams(
+        uint256 aggregateAmount,
+        address campaignOwner,
+        uint40 expiration,
+        ISablierLockup lockup,
+        bytes32 merkleRoot,
+        uint256 recipientCount,
+        IERC20 token_
+    )
+        public
+        view
+        returns (MerkleLT.CreateParams memory)
+    {
+        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages_ = new MerkleLT.TrancheWithPercentage[](2);
+        tranchesWithPercentages_[0] =
+            MerkleLT.TrancheWithPercentage({ unlockPercentage: ud2x18(0.25e18), duration: 2500 seconds });
+        tranchesWithPercentages_[1] =
+            MerkleLT.TrancheWithPercentage({ unlockPercentage: ud2x18(0.75e18), duration: 7500 seconds });
+
+        return MerkleLT.CreateParams({
+            aggregateAmount: aggregateAmount,
+            campaignName: CAMPAIGN_NAME,
+            cancelable: CANCELABLE,
+            expiration: expiration,
+            initialAdmin: campaignOwner,
+            ipfsCID: IPFS_CID,
+            lockup: lockup,
+            merkleRoot: merkleRoot,
+            recipientCount: recipientCount,
+            shape: SHAPE,
+            streamStartTime: STREAM_START_TIME_ZERO,
+            token: token_,
+            tranchesWithPercentages: tranchesWithPercentages_,
+            transferable: TRANSFERABLE
+        });
     }
 
     /// @dev Mirrors the logic from {SablierMerkleLT._calculateStartTimeAndTranches}.
@@ -208,8 +240,8 @@ contract Defaults is Constants, Merkle {
             tranches_[1].timestamp = streamStartTime + TOTAL_DURATION;
         }
 
-        uint128 amount0 = ud(totalAmount).mul(tranchesWithPercentages()[0].unlockPercentage.intoUD60x18()).intoUint128();
-        uint128 amount1 = ud(totalAmount).mul(tranchesWithPercentages()[1].unlockPercentage.intoUD60x18()).intoUint128();
+        uint128 amount0 = ud(totalAmount).mul(ud(0.25e18)).intoUint128();
+        uint128 amount1 = ud(totalAmount).mul(ud(0.75e18)).intoUint128();
 
         tranches_[0].amount = amount0;
         tranches_[1].amount = amount1;
@@ -219,17 +251,5 @@ contract Defaults is Constants, Merkle {
         if (amountsSum != totalAmount) {
             tranches_[1].amount += totalAmount - amountsSum;
         }
-    }
-
-    function tranchesWithPercentages()
-        public
-        pure
-        returns (MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages_)
-    {
-        tranchesWithPercentages_ = new MerkleLT.TrancheWithPercentage[](2);
-        tranchesWithPercentages_[0] =
-            MerkleLT.TrancheWithPercentage({ unlockPercentage: ud2x18(0.25e18), duration: 2500 seconds });
-        tranchesWithPercentages_[1] =
-            MerkleLT.TrancheWithPercentage({ unlockPercentage: ud2x18(0.75e18), duration: 7500 seconds });
     }
 }

@@ -11,7 +11,7 @@ import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
 import { SablierMerkleLockup } from "./abstracts/SablierMerkleLockup.sol";
 import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
 import { Errors } from "./libraries/Errors.sol";
-import { MerkleLockup, MerkleLT } from "./types/DataTypes.sol";
+import { MerkleLT } from "./types/DataTypes.sol";
 
 /*
 
@@ -59,23 +59,33 @@ contract SablierMerkleLT is
     /// @dev Constructs the contract by initializing the immutable state variables, and max approving the Lockup
     /// contract.
     constructor(
-        MerkleLockup.ConstructorParams memory baseParams,
-        address campaignCreator,
-        uint40 streamStartTime,
-        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages
+        MerkleLT.CreateParams memory params,
+        address campaignCreator
     )
-        SablierMerkleLockup(baseParams, campaignCreator)
+        SablierMerkleLockup(
+            campaignCreator,
+            params.campaignName,
+            params.cancelable,
+            params.lockup,
+            params.expiration,
+            params.initialAdmin,
+            params.ipfsCID,
+            params.merkleRoot,
+            params.shape,
+            params.token,
+            params.transferable
+        )
     {
-        STREAM_START_TIME = streamStartTime;
+        STREAM_START_TIME = params.streamStartTime;
 
-        uint256 count = tranchesWithPercentages.length;
+        uint256 count = params.tranchesWithPercentages.length;
 
         // Calculate the total percentage of the tranches and save them in the contract state.
         uint64 totalPercentage;
         for (uint256 i = 0; i < count; ++i) {
-            uint64 percentage = tranchesWithPercentages[i].unlockPercentage.unwrap();
+            uint64 percentage = params.tranchesWithPercentages[i].unlockPercentage.unwrap();
             totalPercentage += percentage;
-            _tranchesWithPercentages.push(tranchesWithPercentages[i]);
+            _tranchesWithPercentages.push(params.tranchesWithPercentages[i]);
         }
         TOTAL_PERCENTAGE = totalPercentage;
     }
@@ -119,7 +129,7 @@ contract SablierMerkleLT is
                 cancelable: STREAM_CANCELABLE,
                 transferable: STREAM_TRANSFERABLE,
                 timestamps: Lockup.Timestamps({ start: startTime, end: endTime }),
-                shape: string(abi.encodePacked(SHAPE)),
+                shape: shape,
                 broker: Broker({ account: address(0), fee: ZERO })
             }),
             tranches

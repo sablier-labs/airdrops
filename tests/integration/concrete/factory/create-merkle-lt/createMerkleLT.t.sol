@@ -3,24 +3,18 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
-import { MerkleLockup, MerkleLT } from "src/types/DataTypes.sol";
+import { MerkleLT } from "src/types/DataTypes.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
 contract CreateMerkleLT_Integration_Test is Integration_Test {
     /// @dev This test works because a default MerkleLT contract is deployed in {Integration_Test.setUp}
     function test_RevertGiven_CampaignAlreadyExists() external {
-        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams(lockup);
-        uint40 streamStartTime = defaults.STREAM_START_TIME_ZERO();
-        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages = defaults.tranchesWithPercentages();
-        uint256 aggregateAmount = defaults.AGGREGATE_AMOUNT();
-        uint256 recipientCount = defaults.RECIPIENT_COUNT();
+        MerkleLT.CreateParams memory createParams = merkleLTCreateParams();
 
         // Expect a revert due to CREATE2.
         vm.expectRevert();
-        merkleFactory.createMerkleLT(
-            baseParams, streamStartTime, tranchesWithPercentages, aggregateAmount, recipientCount
-        );
+        merkleFactory.createMerkleLT(createParams);
     }
 
     function test_GivenCustomFeeSet(
@@ -38,24 +32,12 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         resetPrank(users.campaignOwner);
         address expectedLT = computeMerkleLTAddress(campaignOwner, expiration);
 
-        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams({
-            campaignOwner: campaignOwner,
-            lockup: lockup,
-            token_: dai,
-            merkleRoot: defaults.MERKLE_ROOT(),
-            expiration: expiration
-        });
-
         // It should emit a {CreateMerkleLT} event.
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedLT),
-            baseParams: baseParams,
-            streamStartTime: defaults.STREAM_START_TIME_ZERO(),
-            tranchesWithPercentages: defaults.tranchesWithPercentages(),
+            createParams: merkleLTCreateParams(campaignOwner, expiration),
             totalDuration: defaults.TOTAL_DURATION(),
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
             fee: customFee
         });
 
@@ -72,23 +54,11 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
     function test_GivenCustomFeeNotSet(address campaignOwner, uint40 expiration) external givenCampaignNotExists {
         address expectedLT = computeMerkleLTAddress(campaignOwner, expiration);
 
-        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams({
-            campaignOwner: campaignOwner,
-            lockup: lockup,
-            token_: dai,
-            merkleRoot: defaults.MERKLE_ROOT(),
-            expiration: expiration
-        });
-
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedLT),
-            baseParams: baseParams,
-            streamStartTime: defaults.STREAM_START_TIME_ZERO(),
-            tranchesWithPercentages: defaults.tranchesWithPercentages(),
+            createParams: merkleLTCreateParams(campaignOwner, expiration),
             totalDuration: defaults.TOTAL_DURATION(),
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
             fee: defaults.FEE()
         });
 
@@ -97,7 +67,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         assertEq(address(actualLT), expectedLT, "MerkleLT contract does not match computed address");
 
         // It should set the correct shape.
-        assertEq(actualLT.SHAPE(), defaults.SHAPE(), "shape");
+        assertEq(actualLT.shape(), defaults.SHAPE(), "shape");
 
         // It should create the campaign with custom fee.
         assertEq(actualLT.FEE(), defaults.FEE(), "default fee");

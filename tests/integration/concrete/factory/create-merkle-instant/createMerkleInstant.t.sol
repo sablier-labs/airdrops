@@ -10,17 +10,11 @@ import { Integration_Test } from "../../../Integration.t.sol";
 contract CreateMerkleInstant_Integration_Test is Integration_Test {
     /// @dev This test works because a default MerkleInstant contract is deployed in {Integration_Test.setUp}
     function test_RevertGiven_CampaignAlreadyExists() external {
-        MerkleInstant.ConstructorParams memory baseParams = defaults.merkleInstantBaseParams();
-        uint256 aggregateAmount = defaults.AGGREGATE_AMOUNT();
-        uint256 recipientCount = defaults.RECIPIENT_COUNT();
+        MerkleInstant.CreateParams memory createParams = merkleInstantCreateParams();
 
         // Expect a revert due to CREATE2.
         vm.expectRevert();
-        merkleFactory.createMerkleInstant({
-            baseParams: baseParams,
-            aggregateAmount: aggregateAmount,
-            recipientCount: recipientCount
-        });
+        merkleFactory.createMerkleInstant(createParams);
     }
 
     function test_GivenCustomFeeSet(
@@ -38,20 +32,11 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         resetPrank(users.campaignOwner);
         address expectedMerkleInstant = computeMerkleInstantAddress(campaignOwner, expiration);
 
-        MerkleInstant.ConstructorParams memory baseParams = defaults.merkleInstantBaseParams({
-            campaignOwner: campaignOwner,
-            token_: dai,
-            merkleRoot: defaults.MERKLE_ROOT(),
-            expiration: expiration
-        });
-
         // It should emit a {CreateMerkleInstant} event.
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
-            baseParams: baseParams,
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
+            createParams: merkleInstantCreateParams(campaignOwner, expiration),
             fee: customFee
         });
 
@@ -71,20 +56,11 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
     function test_GivenCustomFeeNotSet(address campaignOwner, uint40 expiration) external givenCampaignNotExists {
         address expectedMerkleInstant = computeMerkleInstantAddress(campaignOwner, expiration);
 
-        MerkleInstant.ConstructorParams memory baseParams = defaults.merkleInstantBaseParams({
-            campaignOwner: campaignOwner,
-            token_: dai,
-            merkleRoot: defaults.MERKLE_ROOT(),
-            expiration: expiration
-        });
-
         // It should emit a {CreateMerkleInstant} event.
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
-            baseParams: baseParams,
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
+            createParams: merkleInstantCreateParams(campaignOwner, expiration),
             fee: defaults.FEE()
         });
 

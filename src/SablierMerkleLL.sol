@@ -9,7 +9,7 @@ import { Broker, Lockup, LockupLinear } from "@sablier/lockup/src/types/DataType
 import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
 import { SablierMerkleLockup } from "./abstracts/SablierMerkleLockup.sol";
 import { ISablierMerkleLL } from "./interfaces/ISablierMerkleLL.sol";
-import { MerkleLockup, MerkleLL } from "./types/DataTypes.sol";
+import { MerkleLL } from "./types/DataTypes.sol";
 
 /*
 
@@ -51,13 +51,24 @@ contract SablierMerkleLL is
     /// @dev Constructs the contract by initializing the immutable state variables, and max approving the Lockup
     /// contract.
     constructor(
-        MerkleLockup.ConstructorParams memory baseParams,
-        address campaignCreator,
-        MerkleLL.Schedule memory schedule
+        MerkleLL.CreateParams memory params,
+        address campaignCreator
     )
-        SablierMerkleLockup(baseParams, campaignCreator)
+        SablierMerkleLockup(
+            campaignCreator,
+            params.campaignName,
+            params.cancelable,
+            params.lockup,
+            params.expiration,
+            params.initialAdmin,
+            params.ipfsCID,
+            params.merkleRoot,
+            params.shape,
+            params.token,
+            params.transferable
+        )
     {
-        _schedule = schedule;
+        _schedule = params.schedule;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -105,7 +116,7 @@ contract SablierMerkleLL is
                 cancelable: STREAM_CANCELABLE,
                 transferable: STREAM_TRANSFERABLE,
                 timestamps: timestamps,
-                shape: string(abi.encodePacked(SHAPE)),
+                shape: shape,
                 broker: Broker({ account: address(0), fee: ZERO })
             }),
             unlockAmounts,

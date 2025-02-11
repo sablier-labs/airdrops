@@ -25,9 +25,6 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleBase
-    bytes32 public immutable override CAMPAIGN_NAME;
-
-    /// @inheritdoc ISablierMerkleBase
     uint40 public immutable override EXPIRATION;
 
     /// @inheritdoc ISablierMerkleBase
@@ -41,6 +38,9 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     IERC20 public immutable override TOKEN;
+
+    /// @inheritdoc ISablierMerkleBase
+    string public override campaignName;
 
     /// @inheritdoc ISablierMerkleBase
     string public override ipfsCID;
@@ -58,7 +58,7 @@ abstract contract SablierMerkleBase is
     /// @notice Constructs the contract by initializing the immutable state variables.
     constructor(
         address campaignCreator,
-        bytes32 _campaignName,
+        string memory _campaignName,
         uint40 expiration,
         address initialAdmin,
         string memory _ipfsCID,
@@ -67,7 +67,7 @@ abstract contract SablierMerkleBase is
     )
         Adminable(initialAdmin)
     {
-        CAMPAIGN_NAME = _campaignName;
+        campaignName = _campaignName;
         EXPIRATION = expiration;
         FACTORY = msg.sender;
         FEE = ISablierMerkleFactory(FACTORY).getFee(campaignCreator);

@@ -6,7 +6,6 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 
 import { ISablierMerkleLockup } from "../interfaces/ISablierMerkleLL.sol";
-import { MerkleLockup } from "../types/DataTypes.sol";
 import { SablierMerkleBase } from "./SablierMerkleBase.sol";
 
 /// @title SablierMerkleLockup
@@ -25,13 +24,13 @@ abstract contract SablierMerkleLockup is
     ISablierLockup public immutable override LOCKUP;
 
     /// @inheritdoc ISablierMerkleLockup
-    bytes32 public immutable override SHAPE;
-
-    /// @inheritdoc ISablierMerkleLockup
     bool public immutable override STREAM_CANCELABLE;
 
     /// @inheritdoc ISablierMerkleLockup
     bool public immutable override STREAM_TRANSFERABLE;
+
+    /// @inheritdoc ISablierMerkleLockup
+    string public override shape;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
@@ -40,23 +39,24 @@ abstract contract SablierMerkleLockup is
     /// @dev Constructs the contract by initializing the immutable state variables, and max approving the Lockup
     /// contract.
     constructor(
-        MerkleLockup.ConstructorParams memory baseParams,
-        address campaignCreator
+        address campaignCreator,
+        string memory campaignName,
+        bool cancelable,
+        ISablierLockup lockup,
+        uint40 expiration,
+        address initialAdmin,
+        string memory ipfsCID,
+        bytes32 merkleRoot,
+        string memory _shape,
+        IERC20 token,
+        bool transferable
     )
-        SablierMerkleBase(
-            campaignCreator,
-            baseParams.campaignName,
-            baseParams.expiration,
-            baseParams.initialAdmin,
-            baseParams.ipfsCID,
-            baseParams.merkleRoot,
-            baseParams.token
-        )
+        SablierMerkleBase(campaignCreator, campaignName, expiration, initialAdmin, ipfsCID, merkleRoot, token)
     {
-        LOCKUP = baseParams.lockup;
-        SHAPE = baseParams.shape;
-        STREAM_CANCELABLE = baseParams.cancelable;
-        STREAM_TRANSFERABLE = baseParams.transferable;
+        LOCKUP = lockup;
+        shape = _shape;
+        STREAM_CANCELABLE = cancelable;
+        STREAM_TRANSFERABLE = transferable;
 
         // Max approve the Lockup contract to spend funds from the Merkle Lockup campaigns.
         TOKEN.forceApprove(address(LOCKUP), type(uint256).max);

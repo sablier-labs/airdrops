@@ -3,26 +3,18 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
-import { MerkleLockup, MerkleLL } from "src/types/DataTypes.sol";
+import { MerkleLL } from "src/types/DataTypes.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
 contract CreateMerkleLL_Integration_Test is Integration_Test {
     /// @dev This test works because a default MerkleLL contract is deployed in {Integration_Test.setUp}
     function test_RevertGiven_CampaignAlreadyExists() external {
-        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams(lockup);
-        MerkleLL.Schedule memory schedule = defaults.schedule();
-        uint256 aggregateAmount = defaults.AGGREGATE_AMOUNT();
-        uint256 recipientCount = defaults.RECIPIENT_COUNT();
+        MerkleLL.CreateParams memory createParams = merkleLLCreateParams();
 
         // Expect a revert due to CREATE2.
         vm.expectRevert();
-        merkleFactory.createMerkleLL({
-            baseParams: baseParams,
-            schedule: schedule,
-            aggregateAmount: aggregateAmount,
-            recipientCount: recipientCount
-        });
+        merkleFactory.createMerkleLL(createParams);
     }
 
     function test_GivenCustomFeeSet(
@@ -40,22 +32,11 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         resetPrank(users.campaignOwner);
         address expectedLL = computeMerkleLLAddress(campaignOwner, expiration);
 
-        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams({
-            campaignOwner: campaignOwner,
-            lockup: lockup,
-            token_: dai,
-            merkleRoot: defaults.MERKLE_ROOT(),
-            expiration: expiration
-        });
-
         // It should emit a {CreateMerkleLL} event.
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedLL),
-            baseParams: baseParams,
-            schedule: defaults.schedule(),
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
+            createParams: merkleLLCreateParams(campaignOwner, expiration),
             fee: customFee
         });
 
@@ -73,22 +54,11 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
     function test_GivenCustomFeeNotSet(address campaignOwner, uint40 expiration) external givenCampaignNotExists {
         address expectedLL = computeMerkleLLAddress(campaignOwner, expiration);
 
-        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams({
-            campaignOwner: campaignOwner,
-            lockup: lockup,
-            token_: dai,
-            merkleRoot: defaults.MERKLE_ROOT(),
-            expiration: expiration
-        });
-
         // It should emit a {CreateMerkleInstant} event.
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedLL),
-            baseParams: baseParams,
-            schedule: defaults.schedule(),
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
+            createParams: merkleLLCreateParams(campaignOwner, expiration),
             fee: defaults.FEE()
         });
 
@@ -97,7 +67,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         assertEq(address(actualLL), expectedLL, "MerkleLL contract does not match computed address");
 
         // It should set the correct shape.
-        assertEq(actualLL.SHAPE(), defaults.SHAPE(), "shape");
+        assertEq(actualLL.shape(), defaults.SHAPE(), "shape");
 
         // It should create the campaign with custom fee.
         assertEq(actualLL.FEE(), defaults.FEE(), "default fee");

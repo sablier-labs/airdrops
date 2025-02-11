@@ -12,30 +12,24 @@ import { Claim_Integration_Test } from "../../shared/claim/claim.t.sol";
 import { MerkleLL_Integration_Shared_Test, Integration_Test } from "../MerkleLL.t.sol";
 
 contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Integration_Shared_Test {
-    MerkleLL.Schedule internal schedule;
-
     function setUp() public virtual override(MerkleLL_Integration_Shared_Test, Integration_Test) {
         MerkleLL_Integration_Shared_Test.setUp();
-        schedule = defaults.schedule();
     }
 
     function test_RevertWhen_TotalPercentageGreaterThan100() external whenMerkleProofValid {
         uint256 fee = defaults.FEE();
 
-        // Crate a MerkleLL campaign with a total percentage greater than 100.
-        schedule.startPercentage = ud2x18(0.5e18);
-        schedule.cliffPercentage = ud2x18(0.6e18);
+        MerkleLL.CreateParams memory createParams = merkleLLCreateParams();
 
-        merkleLL = merkleFactory.createMerkleLL({
-            baseParams: defaults.merkleLockupBaseParams(lockup),
-            schedule: schedule,
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
-        });
+        // Crate a MerkleLL campaign with a total percentage greater than 100.
+        createParams.schedule.startPercentage = ud2x18(0.5e18);
+        createParams.schedule.cliffPercentage = ud2x18(0.6e18);
+
+        merkleLL = merkleFactory.createMerkleLL(createParams);
 
         uint128 depositAmount = defaults.CLAIM_AMOUNT();
-        uint128 startUnlockAmount = ud60x18(depositAmount).mul(schedule.startPercentage.intoUD60x18()).intoUint128();
-        uint128 cliffUnlockAmount = ud60x18(depositAmount).mul(schedule.cliffPercentage.intoUD60x18()).intoUint128();
+        uint128 startUnlockAmount = ud60x18(depositAmount).mul(ud60x18(0.5e18)).intoUint128();
+        uint128 cliffUnlockAmount = ud60x18(depositAmount).mul(ud60x18(0.6e18)).intoUint128();
         bytes32[] memory merkleProof = defaults.index1Proof();
 
         vm.expectRevert(
@@ -62,15 +56,11 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         whenTotalPercentageNotGreaterThan100
         whenScheduledStartTimeZero
     {
-        schedule.cliffDuration = 0;
-        schedule.cliffPercentage = ud2x18(0);
+        MerkleLL.CreateParams memory createParams = merkleLLCreateParams();
+        createParams.schedule.cliffDuration = 0;
+        createParams.schedule.cliffPercentage = ud2x18(0);
 
-        merkleLL = merkleFactory.createMerkleLL({
-            baseParams: defaults.merkleLockupBaseParams(lockup),
-            schedule: schedule,
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
-        });
+        merkleLL = merkleFactory.createMerkleLL(createParams);
 
         // It should create a stream with block.timestamp as start time.
         // It should create a stream with cliff as zero.
@@ -89,14 +79,10 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
     }
 
     function test_WhenScheduledStartTimeNotZero() external whenMerkleProofValid whenTotalPercentageNotGreaterThan100 {
-        schedule.startTime = defaults.STREAM_START_TIME_NON_ZERO();
+        MerkleLL.CreateParams memory createParams = merkleLLCreateParams();
+        createParams.schedule.startTime = defaults.STREAM_START_TIME_NON_ZERO();
 
-        merkleLL = merkleFactory.createMerkleLL({
-            baseParams: defaults.merkleLockupBaseParams(lockup),
-            schedule: schedule,
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
-        });
+        merkleLL = merkleFactory.createMerkleLL(createParams);
 
         // It should create a stream with scheduled start time as start time.
         _test_Claim({

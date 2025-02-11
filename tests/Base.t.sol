@@ -14,7 +14,7 @@ import { SablierMerkleFactory } from "src/SablierMerkleFactory.sol";
 import { SablierMerkleInstant } from "src/SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "src/SablierMerkleLL.sol";
 import { SablierMerkleLT } from "src/SablierMerkleLT.sol";
-import { MerkleInstant, MerkleLockup } from "src/types/DataTypes.sol";
+import { MerkleInstant, MerkleLL, MerkleLT } from "src/types/DataTypes.sol";
 import { ERC20Mock } from "./mocks/erc20/ERC20Mock.sol";
 import { Assertions } from "./utils/Assertions.sol";
 import { Constants } from "./utils/Constants.sol";
@@ -60,7 +60,6 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
 
         // Deploy the defaults contract.
         defaults = new Defaults();
-        defaults.setToken(dai);
 
         // Deploy the Lockup contract.
         LockupNFTDescriptor nftDescriptor = new LockupNFTDescriptor();
@@ -181,26 +180,43 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     //////////////////////////////////////////////////////////////////////////*/
 
     function computeMerkleInstantAddress(
+        uint256 aggregateAmount,
         address campaignCreator,
         address campaignOwner,
-        IERC20 token_,
+        uint40 expiration,
         bytes32 merkleRoot,
-        uint40 expiration
+        uint256 recipientCount,
+        IERC20 token_
     )
         internal
         view
         returns (address)
     {
-        MerkleInstant.ConstructorParams memory baseParams = defaults.merkleInstantBaseParams({
+        MerkleInstant.CreateParams memory createParams = defaults.merkleInstantCreateParams({
+            aggregateAmount: aggregateAmount,
             campaignOwner: campaignOwner,
-            token_: token_,
             expiration: expiration,
-            merkleRoot: merkleRoot
+            merkleRoot: merkleRoot,
+            recipientCount: recipientCount,
+            token_: token_
         });
 
-        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(baseParams)));
-        bytes32 creationBytecodeHash =
-            keccak256(getMerkleInstantBytecode(campaignCreator, campaignOwner, token_, merkleRoot, expiration));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(createParams)));
+        bytes32 creationBytecodeHash;
+
+        if (!isTestOptimizedProfile()) {
+            creationBytecodeHash = keccak256(
+                bytes.concat(type(SablierMerkleInstant).creationCode, abi.encode(createParams, campaignCreator))
+            );
+        } else {
+            creationBytecodeHash = keccak256(
+                bytes.concat(
+                    vm.getCode("out-optimized/SablierMerkleInstant.sol/SablierMerkleInstant.json"),
+                    abi.encode(createParams, campaignCreator)
+                )
+            );
+        }
+
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -209,27 +225,41 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     }
 
     function computeMerkleLLAddress(
+        uint256 aggregateAmount,
         address campaignCreator,
         address campaignOwner,
-        IERC20 token_,
+        uint40 expiration,
         bytes32 merkleRoot,
-        uint40 expiration
+        uint256 recipientCount,
+        IERC20 token_
     )
         internal
         view
         returns (address)
     {
-        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams({
+        MerkleLL.CreateParams memory createParams = defaults.merkleLLCreateParams({
+            aggregateAmount: aggregateAmount,
             campaignOwner: campaignOwner,
             lockup: lockup,
-            token_: token_,
             expiration: expiration,
-            merkleRoot: merkleRoot
+            merkleRoot: merkleRoot,
+            recipientCount: recipientCount,
+            token_: token_
         });
-        bytes32 salt =
-            keccak256(abi.encodePacked(campaignCreator, abi.encode(baseParams), abi.encode(defaults.schedule())));
-        bytes32 creationBytecodeHash =
-            keccak256(getMerkleLLBytecode(campaignCreator, campaignOwner, token_, merkleRoot, expiration));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(createParams)));
+
+        bytes32 creationBytecodeHash;
+        if (!isTestOptimizedProfile()) {
+            creationBytecodeHash =
+                keccak256(bytes.concat(type(SablierMerkleLL).creationCode, abi.encode(createParams, campaignCreator)));
+        } else {
+            creationBytecodeHash = keccak256(
+                bytes.concat(
+                    vm.getCode("out-optimized/SablierMerkleLL.sol/SablierMerkleLL.json"),
+                    abi.encode(createParams, campaignCreator)
+                )
+            );
+        }
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
@@ -238,106 +268,46 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     }
 
     function computeMerkleLTAddress(
+        uint256 aggregateAmount,
         address campaignCreator,
         address campaignOwner,
-        IERC20 token_,
+        uint40 expiration,
         bytes32 merkleRoot,
-        uint40 expiration
+        uint256 recipientCount,
+        IERC20 token_
     )
         internal
         view
         returns (address)
     {
-        MerkleLockup.ConstructorParams memory baseParams = defaults.merkleLockupBaseParams({
+        MerkleLT.CreateParams memory createParams = defaults.merkleLTCreateParams({
+            aggregateAmount: aggregateAmount,
             campaignOwner: campaignOwner,
             lockup: lockup,
-            token_: token_,
             expiration: expiration,
-            merkleRoot: merkleRoot
+            merkleRoot: merkleRoot,
+            recipientCount: recipientCount,
+            token_: token_
         });
-        bytes32 salt = keccak256(
-            abi.encodePacked(
-                campaignCreator,
-                abi.encode(baseParams),
-                defaults.STREAM_START_TIME_ZERO(),
-                abi.encode(defaults.tranchesWithPercentages())
-            )
-        );
-        bytes32 creationBytecodeHash =
-            keccak256(getMerkleLTBytecode(campaignCreator, campaignOwner, token_, merkleRoot, expiration));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(createParams)));
+
+        bytes32 creationBytecodeHash;
+        if (!isTestOptimizedProfile()) {
+            creationBytecodeHash =
+                keccak256(bytes.concat(type(SablierMerkleLT).creationCode, abi.encode(createParams, campaignCreator)));
+        } else {
+            creationBytecodeHash = keccak256(
+                bytes.concat(
+                    vm.getCode("out-optimized/SablierMerkleLT.sol/SablierMerkleLT.json"),
+                    abi.encode(createParams, campaignCreator)
+                )
+            );
+        }
+
         return vm.computeCreate2Address({
             salt: salt,
             initCodeHash: creationBytecodeHash,
             deployer: address(merkleFactory)
         });
-    }
-
-    function getMerkleInstantBytecode(
-        address campaignCreator,
-        address campaignOwner,
-        IERC20 token_,
-        bytes32 merkleRoot,
-        uint40 expiration
-    )
-        internal
-        view
-        returns (bytes memory)
-    {
-        bytes memory constructorArgs =
-            abi.encode(defaults.merkleInstantBaseParams(campaignOwner, token_, expiration, merkleRoot), campaignCreator);
-        if (!isTestOptimizedProfile()) {
-            return bytes.concat(type(SablierMerkleInstant).creationCode, constructorArgs);
-        } else {
-            return bytes.concat(
-                vm.getCode("out-optimized/SablierMerkleInstant.sol/SablierMerkleInstant.json"), constructorArgs
-            );
-        }
-    }
-
-    function getMerkleLLBytecode(
-        address campaignCreator,
-        address campaignOwner,
-        IERC20 token_,
-        bytes32 merkleRoot,
-        uint40 expiration
-    )
-        internal
-        view
-        returns (bytes memory)
-    {
-        bytes memory constructorArgs = abi.encode(
-            defaults.merkleLockupBaseParams(campaignOwner, lockup, token_, expiration, merkleRoot),
-            campaignCreator,
-            defaults.schedule()
-        );
-        if (!isTestOptimizedProfile()) {
-            return bytes.concat(type(SablierMerkleLL).creationCode, constructorArgs);
-        } else {
-            return bytes.concat(vm.getCode("out-optimized/SablierMerkleLL.sol/SablierMerkleLL.json"), constructorArgs);
-        }
-    }
-
-    function getMerkleLTBytecode(
-        address campaignCreator,
-        address campaignOwner,
-        IERC20 token_,
-        bytes32 merkleRoot,
-        uint40 expiration
-    )
-        internal
-        view
-        returns (bytes memory)
-    {
-        bytes memory constructorArgs = abi.encode(
-            defaults.merkleLockupBaseParams(campaignOwner, lockup, token_, expiration, merkleRoot),
-            campaignCreator,
-            defaults.STREAM_START_TIME_ZERO(),
-            defaults.tranchesWithPercentages()
-        );
-        if (!isTestOptimizedProfile()) {
-            return bytes.concat(type(SablierMerkleLT).creationCode, constructorArgs);
-        } else {
-            return bytes.concat(vm.getCode("out-optimized/SablierMerkleLT.sol/SablierMerkleLT.json"), constructorArgs);
-        }
     }
 }

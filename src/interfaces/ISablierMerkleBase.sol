@@ -18,9 +18,6 @@ interface ISablierMerkleBase is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Retrieves the name of the campaign as bytes32.
-    function CAMPAIGN_NAME() external view returns (bytes32);
-
     /// @notice The cut-off point for the campaign, as a Unix timestamp. A value of zero means there is no expiration.
     /// @dev This is an immutable state variable.
     function EXPIRATION() external returns (uint40);
@@ -39,6 +36,9 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice The ERC-20 token to distribute.
     /// @dev This is an immutable state variable.
     function TOKEN() external returns (IERC20);
+
+    /// @notice Retrieves the name of the campaign.
+    function campaignName() external view returns (string memory);
 
     /// @notice Returns the timestamp when the first claim is made.
     function getFirstClaimTime() external view returns (uint40);

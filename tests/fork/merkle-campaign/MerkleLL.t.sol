@@ -10,7 +10,7 @@ import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
-import { MerkleLockup } from "src/types/DataTypes.sol";
+import { MerkleLL } from "src/types/DataTypes.sol";
 
 import { MerkleBuilder } from "./../../utils/MerkleBuilder.sol";
 import { Fork_Test } from "./../Fork.t.sol";
@@ -37,7 +37,7 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
     struct Vars {
         uint256 aggregateAmount;
         uint128[] amounts;
-        MerkleLockup.ConstructorParams baseParams;
+        MerkleLL.CreateParams createParams;
         uint128 clawbackAmount;
         address expectedLL;
         uint256 expectedStreamId;
@@ -47,8 +47,8 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
         ISablierMerkleLL merkleLL;
         bytes32[] merkleProof;
         bytes32 merkleRoot;
-        address[] recipients;
         uint256 recipientCount;
+        address[] recipients;
         LockupLinear.UnlockAmounts expectedUnlockAmounts;
     }
 
@@ -71,6 +71,7 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
         //////////////////////////////////////////////////////////////////////////*/
 
         Vars memory vars;
+
         vars.recipientCount = params.leafData.length;
         vars.amounts = new uint128[](vars.recipientCount);
         vars.indexes = new uint256[](vars.recipientCount);
@@ -107,34 +108,34 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        vars.expectedLL = computeMerkleLLAddress(
-            params.campaignOwner, params.campaignOwner, FORK_TOKEN, vars.merkleRoot, params.expiration
-        );
-
-        vars.baseParams = defaults.merkleLockupBaseParams({
+        vars.expectedLL = computeMerkleLLAddress({
+            aggregateAmount: vars.aggregateAmount,
+            campaignCreator: params.campaignOwner,
             campaignOwner: params.campaignOwner,
-            lockup: lockup,
-            token_: FORK_TOKEN,
             expiration: params.expiration,
-            merkleRoot: vars.merkleRoot
+            merkleRoot: vars.merkleRoot,
+            recipientCount: vars.recipientCount,
+            token_: FORK_TOKEN
+        });
+
+        vars.createParams = defaults.merkleLLCreateParams({
+            aggregateAmount: vars.aggregateAmount,
+            campaignOwner: params.campaignOwner,
+            expiration: params.expiration,
+            lockup: lockup,
+            merkleRoot: vars.merkleRoot,
+            recipientCount: vars.recipientCount,
+            token_: FORK_TOKEN
         });
 
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(vars.expectedLL),
-            baseParams: vars.baseParams,
-            schedule: defaults.schedule(),
-            aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount,
+            createParams: vars.createParams,
             fee: defaults.FEE()
         });
 
-        vars.merkleLL = merkleFactory.createMerkleLL({
-            baseParams: vars.baseParams,
-            schedule: defaults.schedule(),
-            aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount
-        });
+        vars.merkleLL = merkleFactory.createMerkleLL(vars.createParams);
 
         // Fund the MerkleLL contract.
         deal({ token: address(FORK_TOKEN), to: address(vars.merkleLL), give: vars.aggregateAmount });

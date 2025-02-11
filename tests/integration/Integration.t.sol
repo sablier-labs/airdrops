@@ -5,6 +5,7 @@ import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
+import { MerkleInstant, MerkleLL, MerkleLT } from "src/types/DataTypes.sol";
 
 import { Base_Test } from "../Base.t.sol";
 import { ContractWithoutReceiveEth, ContractWithReceiveEth } from "../mocks/ReceiveEth.sol";
@@ -66,11 +67,13 @@ contract Integration_Test is Base_Test {
 
     function computeMerkleInstantAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleInstantAddress({
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             campaignCreator: users.campaignOwner,
             campaignOwner: campaignOwner,
-            token_: dai,
+            expiration: expiration,
             merkleRoot: defaults.MERKLE_ROOT(),
-            expiration: expiration
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            token_: dai
         });
     }
 
@@ -87,10 +90,37 @@ contract Integration_Test is Base_Test {
     }
 
     function createMerkleInstant(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleInstant) {
-        return merkleFactory.createMerkleInstant({
-            baseParams: defaults.merkleInstantBaseParams(campaignOwner, dai, expiration, defaults.MERKLE_ROOT()),
+        return merkleFactory.createMerkleInstant(
+            defaults.merkleInstantCreateParams({
+                aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+                campaignOwner: campaignOwner,
+                expiration: expiration,
+                merkleRoot: defaults.MERKLE_ROOT(),
+                recipientCount: defaults.RECIPIENT_COUNT(),
+                token_: dai
+            })
+        );
+    }
+
+    function merkleInstantCreateParams() public view returns (MerkleInstant.CreateParams memory) {
+        return merkleInstantCreateParams(users.campaignOwner, defaults.EXPIRATION());
+    }
+
+    function merkleInstantCreateParams(
+        address campaignOwner,
+        uint40 expiration
+    )
+        public
+        view
+        returns (MerkleInstant.CreateParams memory)
+    {
+        return defaults.merkleInstantCreateParams({
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
+            campaignOwner: campaignOwner,
+            expiration: expiration,
+            merkleRoot: defaults.MERKLE_ROOT(),
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            token_: dai
         });
     }
 
@@ -100,11 +130,13 @@ contract Integration_Test is Base_Test {
 
     function computeMerkleLLAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleLLAddress({
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             campaignCreator: users.campaignOwner,
             campaignOwner: campaignOwner,
-            token_: dai,
+            expiration: expiration,
             merkleRoot: defaults.MERKLE_ROOT(),
-            expiration: expiration
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            token_: dai
         });
     }
 
@@ -121,11 +153,39 @@ contract Integration_Test is Base_Test {
     }
 
     function createMerkleLL(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleLL) {
-        return merkleFactory.createMerkleLL({
-            baseParams: defaults.merkleLockupBaseParams(campaignOwner, lockup, dai, expiration, defaults.MERKLE_ROOT()),
-            schedule: defaults.schedule(),
+        return merkleFactory.createMerkleLL(
+            defaults.merkleLLCreateParams({
+                aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+                campaignOwner: campaignOwner,
+                expiration: expiration,
+                lockup: lockup,
+                merkleRoot: defaults.MERKLE_ROOT(),
+                recipientCount: defaults.RECIPIENT_COUNT(),
+                token_: dai
+            })
+        );
+    }
+
+    function merkleLLCreateParams() public view returns (MerkleLL.CreateParams memory) {
+        return merkleLLCreateParams(users.campaignOwner, defaults.EXPIRATION());
+    }
+
+    function merkleLLCreateParams(
+        address campaignOwner,
+        uint40 expiration
+    )
+        public
+        view
+        returns (MerkleLL.CreateParams memory)
+    {
+        return defaults.merkleLLCreateParams({
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
+            campaignOwner: campaignOwner,
+            expiration: expiration,
+            lockup: lockup,
+            merkleRoot: defaults.MERKLE_ROOT(),
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            token_: dai
         });
     }
 
@@ -135,11 +195,13 @@ contract Integration_Test is Base_Test {
 
     function computeMerkleLTAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleLTAddress({
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             campaignCreator: users.campaignOwner,
             campaignOwner: campaignOwner,
-            token_: dai,
+            expiration: expiration,
             merkleRoot: defaults.MERKLE_ROOT(),
-            expiration: expiration
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            token_: dai
         });
     }
 
@@ -156,12 +218,39 @@ contract Integration_Test is Base_Test {
     }
 
     function createMerkleLT(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleLT) {
-        return merkleFactory.createMerkleLT({
-            baseParams: defaults.merkleLockupBaseParams(campaignOwner, lockup, dai, expiration, defaults.MERKLE_ROOT()),
-            streamStartTime: defaults.STREAM_START_TIME_ZERO(),
-            tranchesWithPercentages: defaults.tranchesWithPercentages(),
+        return merkleFactory.createMerkleLT(
+            defaults.merkleLTCreateParams({
+                aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+                campaignOwner: campaignOwner,
+                expiration: expiration,
+                lockup: lockup,
+                merkleRoot: defaults.MERKLE_ROOT(),
+                recipientCount: defaults.RECIPIENT_COUNT(),
+                token_: dai
+            })
+        );
+    }
+
+    function merkleLTCreateParams() public view returns (MerkleLT.CreateParams memory) {
+        return merkleLTCreateParams(users.campaignOwner, defaults.EXPIRATION());
+    }
+
+    function merkleLTCreateParams(
+        address campaignOwner,
+        uint40 expiration
+    )
+        public
+        view
+        returns (MerkleLT.CreateParams memory)
+    {
+        return defaults.merkleLTCreateParams({
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT()
+            campaignOwner: campaignOwner,
+            expiration: expiration,
+            lockup: lockup,
+            merkleRoot: defaults.MERKLE_ROOT(),
+            recipientCount: defaults.RECIPIENT_COUNT(),
+            token_: dai
         });
     }
 }

@@ -11,7 +11,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
     struct Vars {
         address actualAdmin;
         uint256 actualAllowance;
-        bytes32 actualCampaignName;
+        string actualCampaignName;
         uint40 actualExpiration;
         address actualFactory;
         string actualIpfsCID;
@@ -26,7 +26,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         MerkleLT.TrancheWithPercentage[] actualTranchesWithPercentages;
         address expectedAdmin;
         uint256 expectedAllowance;
-        bytes32 expectedCampaignName;
+        string expectedCampaignName;
         uint40 expectedExpiration;
         address expectedFactory;
         string expectedIpfsCID;
@@ -45,12 +45,9 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         // Make Factory the caller for the constructor test.
         resetPrank(address(merkleFactory));
 
-        SablierMerkleLT constructedLT = new SablierMerkleLT(
-            defaults.merkleLockupBaseParams(lockup),
-            users.campaignOwner,
-            defaults.STREAM_START_TIME_ZERO(),
-            defaults.tranchesWithPercentages()
-        );
+        MerkleLT.CreateParams memory createParams = merkleLTCreateParams();
+
+        SablierMerkleLT constructedLT = new SablierMerkleLT(createParams, users.campaignOwner);
 
         Vars memory vars;
 
@@ -62,7 +59,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedAllowance = MAX_UINT256;
         assertEq(vars.actualAllowance, vars.expectedAllowance, "allowance");
 
-        vars.actualCampaignName = constructedLT.CAMPAIGN_NAME();
+        vars.actualCampaignName = constructedLT.campaignName();
         vars.expectedCampaignName = defaults.CAMPAIGN_NAME();
         assertEq(vars.actualCampaignName, vars.expectedCampaignName, "campaign name");
 
@@ -90,7 +87,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         vars.expectedMerkleRoot = defaults.MERKLE_ROOT();
         assertEq(vars.actualMerkleRoot, vars.expectedMerkleRoot, "merkleRoot");
 
-        assertEq(constructedLT.SHAPE(), defaults.SHAPE(), "shape");
+        assertEq(constructedLT.shape(), defaults.SHAPE(), "shape");
 
         vars.actualStreamCancelable = constructedLT.STREAM_CANCELABLE();
         vars.expectedStreamCancelable = defaults.CANCELABLE();
@@ -113,7 +110,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         assertEq(vars.actualTotalPercentage, vars.expectedTotalPercentage, "totalPercentage");
 
         vars.actualTranchesWithPercentages = constructedLT.getTranchesWithPercentages();
-        vars.expectedTranchesWithPercentages = defaults.tranchesWithPercentages();
+        vars.expectedTranchesWithPercentages = createParams.tranchesWithPercentages;
         assertEq(vars.actualTranchesWithPercentages, vars.expectedTranchesWithPercentages);
     }
 }
