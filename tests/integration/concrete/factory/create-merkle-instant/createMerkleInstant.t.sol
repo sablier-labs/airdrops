@@ -39,7 +39,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
-            constructorParams: merkleInstantConstructorParams(campaignOwner, expiration),
+            params: merkleInstantConstructorParams(campaignOwner, expiration),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT(),
             fee: customFee
@@ -65,7 +65,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
-            constructorParams: merkleInstantConstructorParams(campaignOwner, expiration),
+            params: merkleInstantConstructorParams(campaignOwner, expiration),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT(),
             fee: defaults.FEE()

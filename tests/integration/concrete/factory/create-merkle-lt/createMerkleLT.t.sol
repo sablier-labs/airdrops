@@ -38,7 +38,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedLT),
-            constructorParams: merkleLTConstructorParams(campaignOwner, expiration),
+            params: merkleLTConstructorParams(campaignOwner, expiration),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT(),
             totalDuration: defaults.TOTAL_DURATION(),
@@ -61,7 +61,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedLT),
-            constructorParams: merkleLTConstructorParams(campaignOwner, expiration),
+            params: merkleLTConstructorParams(campaignOwner, expiration),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT(),
             totalDuration: defaults.TOTAL_DURATION(),

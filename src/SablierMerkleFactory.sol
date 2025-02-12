@@ -116,7 +116,7 @@ contract SablierMerkleFactory is
         // Log the creation of the MerkleInstant contract, including some metadata that is not stored on-chain.
         emit CreateMerkleInstant({
             merkleInstant: merkleInstant,
-            constructorParams: params,
+            params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
             fee: _getFee(msg.sender)
@@ -142,7 +142,7 @@ contract SablierMerkleFactory is
         // Log the creation of the MerkleLL contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLL({
             merkleLL: merkleLL,
-            constructorParams: params,
+            params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
             fee: _getFee(msg.sender)
@@ -178,7 +178,7 @@ contract SablierMerkleFactory is
         // Log the creation of the MerkleLT contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLT({
             merkleLT: merkleLT,
-            constructorParams: params,
+            params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
             totalDuration: totalDuration,

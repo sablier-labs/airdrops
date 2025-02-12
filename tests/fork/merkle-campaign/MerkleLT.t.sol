@@ -125,7 +125,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(vars.expectedLT),
-            constructorParams: vars.params,
+            params: vars.params,
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount,
             totalDuration: defaults.TOTAL_DURATION(),

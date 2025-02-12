@@ -27,7 +27,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @notice Emitted when a {SablierMerkleInstant} campaign is created.
     event CreateMerkleInstant(
         ISablierMerkleInstant indexed merkleInstant,
-        MerkleInstant.ConstructorParams constructorParams,
+        MerkleInstant.ConstructorParams params,
         uint256 aggregateAmount,
         uint256 recipientCount,
         uint256 fee
@@ -36,7 +36,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @notice Emitted when a {SablierMerkleLL} campaign is created.
     event CreateMerkleLL(
         ISablierMerkleLL indexed merkleLL,
-        MerkleLL.ConstructorParams constructorParams,
+        MerkleLL.ConstructorParams params,
         uint256 aggregateAmount,
         uint256 recipientCount,
         uint256 fee
@@ -45,7 +45,7 @@ interface ISablierMerkleFactory is IAdminable {
     /// @notice Emitted when a {SablierMerkleLT} campaign is created.
     event CreateMerkleLT(
         ISablierMerkleLT indexed merkleLT,
-        MerkleLT.ConstructorParams constructorParams,
+        MerkleLT.ConstructorParams params,
         uint256 aggregateAmount,
         uint256 recipientCount,
         uint256 totalDuration,
@@ -110,6 +110,8 @@ interface ISablierMerkleFactory is IAdminable {
     /// - The immutable fee will be set to the default value unless a custom fee is set.
     ///
     /// @param params Struct encapsulating the input parameters, which are documented in {DataTypes}.
+    /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
+    /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @return merkleInstant The address of the newly created MerkleInstant contract.
     function createMerkleInstant(
         MerkleInstant.ConstructorParams memory params,
@@ -128,6 +130,8 @@ interface ISablierMerkleFactory is IAdminable {
     /// - The immutable fee will be set to the default value unless a custom fee is set.
     ///
     /// @param params Struct encapsulating the input parameters, which are documented in {DataTypes}.
+    /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
+    /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @return merkleLL The address of the newly created Merkle Lockup contract.
     function createMerkleLL(
         MerkleLL.ConstructorParams memory params,
@@ -146,6 +150,8 @@ interface ISablierMerkleFactory is IAdminable {
     /// - The immutable fee will be set to the default value unless a custom fee is set.
     ///
     /// @param params Struct encapsulating the input parameters, which are documented in {DataTypes}.
+    /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
+    /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @return merkleLT The address of the newly created Merkle Lockup contract.
     function createMerkleLT(
         MerkleLT.ConstructorParams memory params,
