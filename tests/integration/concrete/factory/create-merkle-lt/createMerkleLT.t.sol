@@ -10,11 +10,13 @@ import { Integration_Test } from "../../../Integration.t.sol";
 contract CreateMerkleLT_Integration_Test is Integration_Test {
     /// @dev This test works because a default MerkleLT contract is deployed in {Integration_Test.setUp}
     function test_RevertGiven_CampaignAlreadyExists() external {
-        MerkleLT.CreateParams memory createParams = merkleLTCreateParams();
+        MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
+        uint256 aggregateAmount = defaults.AGGREGATE_AMOUNT();
+        uint256 recipientCount = defaults.RECIPIENT_COUNT();
 
         // Expect a revert due to CREATE2.
         vm.expectRevert();
-        merkleFactory.createMerkleLT(createParams);
+        merkleFactory.createMerkleLT(params, aggregateAmount, recipientCount);
     }
 
     function test_GivenCustomFeeSet(
@@ -36,7 +38,9 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedLT),
-            createParams: merkleLTCreateParams(campaignOwner, expiration),
+            constructorParams: merkleLTConstructorParams(campaignOwner, expiration),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT(),
             totalDuration: defaults.TOTAL_DURATION(),
             fee: customFee
         });
@@ -57,7 +61,9 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedLT),
-            createParams: merkleLTCreateParams(campaignOwner, expiration),
+            constructorParams: merkleLTConstructorParams(campaignOwner, expiration),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT(),
             totalDuration: defaults.TOTAL_DURATION(),
             fee: defaults.FEE()
         });

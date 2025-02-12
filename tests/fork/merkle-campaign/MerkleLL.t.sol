@@ -37,7 +37,7 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
     struct Vars {
         uint256 aggregateAmount;
         uint128[] amounts;
-        MerkleLL.CreateParams createParams;
+        MerkleLL.ConstructorParams params;
         uint128 clawbackAmount;
         address expectedLL;
         uint256 expectedStreamId;
@@ -109,33 +109,31 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
         resetPrank({ msgSender: params.campaignOwner });
 
         vars.expectedLL = computeMerkleLLAddress({
-            aggregateAmount: vars.aggregateAmount,
             campaignCreator: params.campaignOwner,
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            recipientCount: vars.recipientCount,
             token_: FORK_TOKEN
         });
 
-        vars.createParams = defaults.merkleLLCreateParams({
-            aggregateAmount: vars.aggregateAmount,
+        vars.params = defaults.merkleLLConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             lockup: lockup,
             merkleRoot: vars.merkleRoot,
-            recipientCount: vars.recipientCount,
             token_: FORK_TOKEN
         });
 
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(vars.expectedLL),
-            createParams: vars.createParams,
+            constructorParams: vars.params,
+            aggregateAmount: vars.aggregateAmount,
+            recipientCount: vars.recipientCount,
             fee: defaults.FEE()
         });
 
-        vars.merkleLL = merkleFactory.createMerkleLL(vars.createParams);
+        vars.merkleLL = merkleFactory.createMerkleLL(vars.params, vars.aggregateAmount, vars.recipientCount);
 
         // Fund the MerkleLL contract.
         deal({ token: address(FORK_TOKEN), to: address(vars.merkleLL), give: vars.aggregateAmount });

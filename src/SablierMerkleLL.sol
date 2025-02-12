@@ -51,7 +51,7 @@ contract SablierMerkleLL is
     /// @dev Constructs the contract by initializing the immutable state variables, and max approving the Lockup
     /// contract.
     constructor(
-        MerkleLL.CreateParams memory params,
+        MerkleLL.ConstructorParams memory params,
         address campaignCreator
     )
         SablierMerkleLockup(

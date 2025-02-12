@@ -40,7 +40,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         // Make Factory the caller for the constructor test.
         resetPrank(address(merkleFactory));
 
-        SablierMerkleLL constructedLL = new SablierMerkleLL(merkleLLCreateParams(), users.campaignOwner);
+        SablierMerkleLL constructedLL = new SablierMerkleLL(merkleLLConstructorParams(), users.campaignOwner);
 
         Vars memory vars;
 

@@ -98,7 +98,11 @@ contract SablierMerkleFactory is
     }
 
     /// @inheritdoc ISablierMerkleFactory
-    function createMerkleInstant(MerkleInstant.CreateParams memory params)
+    function createMerkleInstant(
+        MerkleInstant.ConstructorParams memory params,
+        uint256 aggregateAmount,
+        uint256 recipientCount
+    )
         external
         override
         returns (ISablierMerkleInstant merkleInstant)
@@ -110,11 +114,21 @@ contract SablierMerkleFactory is
         merkleInstant = new SablierMerkleInstant{ salt: salt }({ params: params, campaignCreator: msg.sender });
 
         // Log the creation of the MerkleInstant contract, including some metadata that is not stored on-chain.
-        emit CreateMerkleInstant({ merkleInstant: merkleInstant, createParams: params, fee: _getFee(msg.sender) });
+        emit CreateMerkleInstant({
+            merkleInstant: merkleInstant,
+            constructorParams: params,
+            aggregateAmount: aggregateAmount,
+            recipientCount: recipientCount,
+            fee: _getFee(msg.sender)
+        });
     }
 
     /// @inheritdoc ISablierMerkleFactory
-    function createMerkleLL(MerkleLL.CreateParams memory params)
+    function createMerkleLL(
+        MerkleLL.ConstructorParams memory params,
+        uint256 aggregateAmount,
+        uint256 recipientCount
+    )
         external
         override
         returns (ISablierMerkleLL merkleLL)
@@ -126,11 +140,21 @@ contract SablierMerkleFactory is
         merkleLL = new SablierMerkleLL{ salt: salt }({ params: params, campaignCreator: msg.sender });
 
         // Log the creation of the MerkleLL contract, including some metadata that is not stored on-chain.
-        emit CreateMerkleLL({ merkleLL: merkleLL, createParams: params, fee: _getFee(msg.sender) });
+        emit CreateMerkleLL({
+            merkleLL: merkleLL,
+            constructorParams: params,
+            aggregateAmount: aggregateAmount,
+            recipientCount: recipientCount,
+            fee: _getFee(msg.sender)
+        });
     }
 
     /// @inheritdoc ISablierMerkleFactory
-    function createMerkleLT(MerkleLT.CreateParams memory params)
+    function createMerkleLT(
+        MerkleLT.ConstructorParams memory params,
+        uint256 aggregateAmount,
+        uint256 recipientCount
+    )
         external
         override
         returns (ISablierMerkleLT merkleLT)
@@ -154,7 +178,9 @@ contract SablierMerkleFactory is
         // Log the creation of the MerkleLT contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLT({
             merkleLT: merkleLT,
-            createParams: params,
+            constructorParams: params,
+            aggregateAmount: aggregateAmount,
+            recipientCount: recipientCount,
             totalDuration: totalDuration,
             fee: _getFee(msg.sender)
         });

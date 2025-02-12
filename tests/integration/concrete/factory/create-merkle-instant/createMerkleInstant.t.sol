@@ -10,11 +10,14 @@ import { Integration_Test } from "../../../Integration.t.sol";
 contract CreateMerkleInstant_Integration_Test is Integration_Test {
     /// @dev This test works because a default MerkleInstant contract is deployed in {Integration_Test.setUp}
     function test_RevertGiven_CampaignAlreadyExists() external {
-        MerkleInstant.CreateParams memory createParams = merkleInstantCreateParams();
+        MerkleInstant.ConstructorParams memory params = merkleInstantConstructorParams();
+
+        uint256 aggregateAmount = defaults.AGGREGATE_AMOUNT();
+        uint256 recipientCount = defaults.RECIPIENT_COUNT();
 
         // Expect a revert due to CREATE2.
         vm.expectRevert();
-        merkleFactory.createMerkleInstant(createParams);
+        merkleFactory.createMerkleInstant(params, aggregateAmount, recipientCount);
     }
 
     function test_GivenCustomFeeSet(
@@ -36,7 +39,9 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
-            createParams: merkleInstantCreateParams(campaignOwner, expiration),
+            constructorParams: merkleInstantConstructorParams(campaignOwner, expiration),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT(),
             fee: customFee
         });
 
@@ -60,7 +65,9 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
-            createParams: merkleInstantCreateParams(campaignOwner, expiration),
+            constructorParams: merkleInstantConstructorParams(campaignOwner, expiration),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT(),
             fee: defaults.FEE()
         });
 

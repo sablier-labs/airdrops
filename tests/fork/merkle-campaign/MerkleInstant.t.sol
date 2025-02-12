@@ -34,7 +34,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
     struct Vars {
         uint256 aggregateAmount;
         uint128[] amounts;
-        MerkleInstant.CreateParams createParams;
+        MerkleInstant.ConstructorParams params;
         uint128 clawbackAmount;
         address expectedMerkleInstant;
         uint256[] indexes;
@@ -104,32 +104,30 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
         resetPrank({ msgSender: params.campaignOwner });
 
         vars.expectedMerkleInstant = computeMerkleInstantAddress({
-            aggregateAmount: vars.aggregateAmount,
             campaignCreator: params.campaignOwner,
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            recipientCount: vars.recipientCount,
             token_: FORK_TOKEN
         });
 
-        vars.createParams = defaults.merkleInstantCreateParams({
-            aggregateAmount: vars.aggregateAmount,
+        vars.params = defaults.merkleInstantConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            recipientCount: vars.recipientCount,
             token_: FORK_TOKEN
         });
 
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(vars.expectedMerkleInstant),
-            createParams: vars.createParams,
+            constructorParams: vars.params,
+            aggregateAmount: vars.aggregateAmount,
+            recipientCount: vars.recipientCount,
             fee: defaults.FEE()
         });
 
-        vars.merkleInstant = merkleFactory.createMerkleInstant(vars.createParams);
+        vars.merkleInstant = merkleFactory.createMerkleInstant(vars.params, vars.aggregateAmount, vars.recipientCount);
 
         // Fund the MerkleInstant contract.
         deal({ token: address(FORK_TOKEN), to: address(vars.merkleInstant), give: vars.aggregateAmount });

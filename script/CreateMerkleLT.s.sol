@@ -18,29 +18,29 @@ contract CreateMerkleLT is BaseScript {
         ISablierMerkleFactory merkleFactory = ISablierMerkleFactory(0x71DD3Ca88E7564416E5C2E350090C12Bf8F6144a);
 
         // Prepare the constructor parameters.
-        MerkleLT.CreateParams memory createParams;
-        createParams.campaignName = "The Boys LT";
-        createParams.cancelable = true;
-        createParams.expiration = uint40(block.timestamp + 30 days);
-        createParams.lockup = ISablierLockup(0x7C01AA3783577E15fD7e272443D44B92d5b21056);
-        createParams.initialAdmin = 0x79Fb3e81aAc012c08501f41296CCC145a1E15844;
-        createParams.ipfsCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
-        createParams.merkleRoot = 0x0000000000000000000000000000000000000000000000000000000000000000;
-        createParams.token = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
-        createParams.transferable = true;
+        MerkleLT.ConstructorParams memory params;
+        params.campaignName = "The Boys LT";
+        params.cancelable = true;
+        params.expiration = uint40(block.timestamp + 30 days);
+        params.lockup = ISablierLockup(0x7C01AA3783577E15fD7e272443D44B92d5b21056);
+        params.initialAdmin = 0x79Fb3e81aAc012c08501f41296CCC145a1E15844;
+        params.ipfsCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
+        params.merkleRoot = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        params.token = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
+        params.transferable = true;
 
         // The tranches with their unlock percentages and durations.
-        createParams.tranchesWithPercentages = new MerkleLT.TrancheWithPercentage[](2);
-        createParams.tranchesWithPercentages[0] =
+        params.tranchesWithPercentages = new MerkleLT.TrancheWithPercentage[](2);
+        params.tranchesWithPercentages[0] =
             MerkleLT.TrancheWithPercentage({ unlockPercentage: ud2x18(0.5e18), duration: 3600 });
-        createParams.tranchesWithPercentages[1] =
+        params.tranchesWithPercentages[1] =
             MerkleLT.TrancheWithPercentage({ unlockPercentage: ud2x18(0.5e18), duration: 7200 });
 
-        createParams.streamStartTime = 0; // i.e. block.timestamp
-        createParams.aggregateAmount = 10_000e18;
-        createParams.recipientCount = 100;
+        params.streamStartTime = 0; // i.e. block.timestamp
+        uint256 aggregateAmount = 10_000e18;
+        uint256 recipientCount = 100;
 
         // Deploy the MerkleLT contract.
-        merkleLT = merkleFactory.createMerkleLT(createParams);
+        merkleLT = merkleFactory.createMerkleLT(params, aggregateAmount, recipientCount);
     }
 }

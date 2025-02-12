@@ -26,15 +26,30 @@ interface ISablierMerkleFactory is IAdminable {
 
     /// @notice Emitted when a {SablierMerkleInstant} campaign is created.
     event CreateMerkleInstant(
-        ISablierMerkleInstant indexed merkleInstant, MerkleInstant.CreateParams createParams, uint256 fee
+        ISablierMerkleInstant indexed merkleInstant,
+        MerkleInstant.ConstructorParams constructorParams,
+        uint256 aggregateAmount,
+        uint256 recipientCount,
+        uint256 fee
     );
 
     /// @notice Emitted when a {SablierMerkleLL} campaign is created.
-    event CreateMerkleLL(ISablierMerkleLL indexed merkleLL, MerkleLL.CreateParams createParams, uint256 fee);
+    event CreateMerkleLL(
+        ISablierMerkleLL indexed merkleLL,
+        MerkleLL.ConstructorParams constructorParams,
+        uint256 aggregateAmount,
+        uint256 recipientCount,
+        uint256 fee
+    );
 
     /// @notice Emitted when a {SablierMerkleLT} campaign is created.
     event CreateMerkleLT(
-        ISablierMerkleLT indexed merkleLT, MerkleLT.CreateParams createParams, uint256 totalDuration, uint256 fee
+        ISablierMerkleLT indexed merkleLT,
+        MerkleLT.ConstructorParams constructorParams,
+        uint256 aggregateAmount,
+        uint256 recipientCount,
+        uint256 totalDuration,
+        uint256 fee
     );
 
     /// @notice Emitted when the admin resets the custom fee for the provided campaign creator to the default fee.
@@ -96,7 +111,11 @@ interface ISablierMerkleFactory is IAdminable {
     ///
     /// @param params Struct encapsulating the input parameters, which are documented in {DataTypes}.
     /// @return merkleInstant The address of the newly created MerkleInstant contract.
-    function createMerkleInstant(MerkleInstant.CreateParams memory params)
+    function createMerkleInstant(
+        MerkleInstant.ConstructorParams memory params,
+        uint256 aggregateAmount,
+        uint256 recipientCount
+    )
         external
         returns (ISablierMerkleInstant merkleInstant);
 
@@ -110,7 +129,13 @@ interface ISablierMerkleFactory is IAdminable {
     ///
     /// @param params Struct encapsulating the input parameters, which are documented in {DataTypes}.
     /// @return merkleLL The address of the newly created Merkle Lockup contract.
-    function createMerkleLL(MerkleLL.CreateParams memory params) external returns (ISablierMerkleLL merkleLL);
+    function createMerkleLL(
+        MerkleLL.ConstructorParams memory params,
+        uint256 aggregateAmount,
+        uint256 recipientCount
+    )
+        external
+        returns (ISablierMerkleLL merkleLL);
 
     /// @notice Creates a new Merkle Lockup campaign with a Lockup Tranched distribution.
     ///
@@ -122,7 +147,13 @@ interface ISablierMerkleFactory is IAdminable {
     ///
     /// @param params Struct encapsulating the input parameters, which are documented in {DataTypes}.
     /// @return merkleLT The address of the newly created Merkle Lockup contract.
-    function createMerkleLT(MerkleLT.CreateParams memory params) external returns (ISablierMerkleLT merkleLT);
+    function createMerkleLT(
+        MerkleLT.ConstructorParams memory params,
+        uint256 aggregateAmount,
+        uint256 recipientCount
+    )
+        external
+        returns (ISablierMerkleLT merkleLT);
 
     /// @notice Resets the custom fee for the provided campaign creator to the default fee.
     /// @dev Emits a {ResetCustomFee} event.

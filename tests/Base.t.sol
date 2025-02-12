@@ -180,39 +180,34 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     //////////////////////////////////////////////////////////////////////////*/
 
     function computeMerkleInstantAddress(
-        uint256 aggregateAmount,
         address campaignCreator,
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        uint256 recipientCount,
         IERC20 token_
     )
         internal
         view
         returns (address)
     {
-        MerkleInstant.CreateParams memory createParams = defaults.merkleInstantCreateParams({
-            aggregateAmount: aggregateAmount,
+        MerkleInstant.ConstructorParams memory params = defaults.merkleInstantConstructorParams({
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: merkleRoot,
-            recipientCount: recipientCount,
             token_: token_
         });
 
-        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(createParams)));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
         bytes32 creationBytecodeHash;
 
         if (!isTestOptimizedProfile()) {
-            creationBytecodeHash = keccak256(
-                bytes.concat(type(SablierMerkleInstant).creationCode, abi.encode(createParams, campaignCreator))
-            );
+            creationBytecodeHash =
+                keccak256(bytes.concat(type(SablierMerkleInstant).creationCode, abi.encode(params, campaignCreator)));
         } else {
             creationBytecodeHash = keccak256(
                 bytes.concat(
                     vm.getCode("out-optimized/SablierMerkleInstant.sol/SablierMerkleInstant.json"),
-                    abi.encode(createParams, campaignCreator)
+                    abi.encode(params, campaignCreator)
                 )
             );
         }
@@ -225,38 +220,34 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     }
 
     function computeMerkleLLAddress(
-        uint256 aggregateAmount,
         address campaignCreator,
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        uint256 recipientCount,
         IERC20 token_
     )
         internal
         view
         returns (address)
     {
-        MerkleLL.CreateParams memory createParams = defaults.merkleLLCreateParams({
-            aggregateAmount: aggregateAmount,
+        MerkleLL.ConstructorParams memory params = defaults.merkleLLConstructorParams({
             campaignOwner: campaignOwner,
             lockup: lockup,
             expiration: expiration,
             merkleRoot: merkleRoot,
-            recipientCount: recipientCount,
             token_: token_
         });
-        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(createParams)));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
 
         bytes32 creationBytecodeHash;
         if (!isTestOptimizedProfile()) {
             creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleLL).creationCode, abi.encode(createParams, campaignCreator)));
+                keccak256(bytes.concat(type(SablierMerkleLL).creationCode, abi.encode(params, campaignCreator)));
         } else {
             creationBytecodeHash = keccak256(
                 bytes.concat(
                     vm.getCode("out-optimized/SablierMerkleLL.sol/SablierMerkleLL.json"),
-                    abi.encode(createParams, campaignCreator)
+                    abi.encode(params, campaignCreator)
                 )
             );
         }
@@ -268,38 +259,34 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
     }
 
     function computeMerkleLTAddress(
-        uint256 aggregateAmount,
         address campaignCreator,
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        uint256 recipientCount,
         IERC20 token_
     )
         internal
         view
         returns (address)
     {
-        MerkleLT.CreateParams memory createParams = defaults.merkleLTCreateParams({
-            aggregateAmount: aggregateAmount,
+        MerkleLT.ConstructorParams memory params = defaults.merkleLTConstructorParams({
             campaignOwner: campaignOwner,
             lockup: lockup,
             expiration: expiration,
             merkleRoot: merkleRoot,
-            recipientCount: recipientCount,
             token_: token_
         });
-        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(createParams)));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
 
         bytes32 creationBytecodeHash;
         if (!isTestOptimizedProfile()) {
             creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleLT).creationCode, abi.encode(createParams, campaignCreator)));
+                keccak256(bytes.concat(type(SablierMerkleLT).creationCode, abi.encode(params, campaignCreator)));
         } else {
             creationBytecodeHash = keccak256(
                 bytes.concat(
                     vm.getCode("out-optimized/SablierMerkleLT.sol/SablierMerkleLT.json"),
-                    abi.encode(createParams, campaignCreator)
+                    abi.encode(params, campaignCreator)
                 )
             );
         }

@@ -18,30 +18,25 @@ library MerkleFactory {
 
 library MerkleInstant {
     /// @notice Struct encapsulating the constructor parameters of Merkle Instant campaigns.
-    /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
     /// @param campaignName The name of the campaign.
     /// @param expiration The expiration of the campaign, as a Unix timestamp. A value of zero means the campaign does
     /// not expire.
     /// @param initialAdmin The initial admin of the campaign.
     /// @param ipfsCID The content identifier for indexing the contract on IPFS.
     /// @param merkleRoot The Merkle root of the claim data.
-    /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @param token The contract address of the ERC-20 token to be distributed.
-    struct CreateParams {
-        uint256 aggregateAmount;
+    struct ConstructorParams {
         string campaignName;
         uint40 expiration;
         address initialAdmin;
         string ipfsCID;
         bytes32 merkleRoot;
-        uint256 recipientCount;
         IERC20 token;
     }
 }
 
 library MerkleLL {
     /// @notice Struct encapsulating the constructor parameters of Merkle Lockup Linear campaigns.
-    /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
     /// @param campaignName The name of the campaign.
     /// @param cancelable Indicates if the Lockup stream will be cancelable after claiming.
     /// @param expiration The expiration of the campaign, as a Unix timestamp. A value of zero means the campaign does
@@ -50,13 +45,11 @@ library MerkleLL {
     /// @param ipfsCID The content identifier for indexing the contract on IPFS.
     /// @param lockup The address of the {SablierLockup} contract.
     /// @param merkleRoot The Merkle root of the claim data.
-    /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @param schedule Struct encapsulating the unlocks schedule, which are documented in {MerkleLL.Schedule}.
     /// @param shape The shape of Lockup stream, used for differentiating between streams in the  UI.
     /// @param token The contract address of the ERC-20 token to be distributed.
     /// @param transferable Indicates if the Lockup stream will be transferable after claiming.
-    struct CreateParams {
-        uint256 aggregateAmount;
+    struct ConstructorParams {
         string campaignName;
         bool cancelable;
         uint40 expiration;
@@ -64,7 +57,6 @@ library MerkleLL {
         string ipfsCID;
         ISablierLockup lockup;
         bytes32 merkleRoot;
-        uint256 recipientCount;
         MerkleLL.Schedule schedule;
         string shape;
         IERC20 token;
@@ -90,7 +82,6 @@ library MerkleLL {
 
 library MerkleLT {
     /// @notice Struct encapsulating the constructor parameters of Merkle Lockup Tranched campaigns.
-    /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
     /// @param campaignName The name of the campaign.
     /// @param cancelable Indicates if the Lockup stream will be cancelable after claiming.
     /// @param expiration The expiration of the campaign, as a Unix timestamp. A value of zero means the campaign does
@@ -99,15 +90,13 @@ library MerkleLT {
     /// @param ipfsCID The content identifier for indexing the contract on IPFS.
     /// @param lockup The address of the {SablierLockup} contract.
     /// @param merkleRoot The Merkle root of the claim data.
-    /// @param recipientCount The total number of recipients who are eligible to claim.
     /// @param shape The shape of Lockup stream, used for differentiating between streams in the  UI.
     /// @param streamStartTime The start time of the streams created through {SablierMerkleLT._claim}.
     /// @param token The contract address of the ERC-20 token to be distributed.
     /// @param tranchesWithPercentages The tranches with their respective unlock percentages, which are documented in
     /// {MerkleLT.TrancheWithPercentage}.
     /// @param transferable Indicates if the Lockup stream will be transferable after claiming.
-    struct CreateParams {
-        uint256 aggregateAmount;
+    struct ConstructorParams {
         string campaignName;
         bool cancelable;
         uint40 expiration;
@@ -115,7 +104,6 @@ library MerkleLT {
         string ipfsCID;
         ISablierLockup lockup;
         bytes32 merkleRoot;
-        uint256 recipientCount;
         string shape;
         uint40 streamStartTime;
         IERC20 token;

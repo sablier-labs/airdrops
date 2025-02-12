@@ -19,13 +19,13 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
     function test_RevertWhen_TotalPercentageGreaterThan100() external whenMerkleProofValid {
         uint256 fee = defaults.FEE();
 
-        MerkleLL.CreateParams memory createParams = merkleLLCreateParams();
+        MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
 
         // Crate a MerkleLL campaign with a total percentage greater than 100.
-        createParams.schedule.startPercentage = ud2x18(0.5e18);
-        createParams.schedule.cliffPercentage = ud2x18(0.6e18);
+        params.schedule.startPercentage = ud2x18(0.5e18);
+        params.schedule.cliffPercentage = ud2x18(0.6e18);
 
-        merkleLL = merkleFactory.createMerkleLL(createParams);
+        merkleLL = merkleFactory.createMerkleLL(params, defaults.AGGREGATE_AMOUNT(), defaults.RECIPIENT_COUNT());
 
         uint128 depositAmount = defaults.CLAIM_AMOUNT();
         uint128 startUnlockAmount = ud60x18(depositAmount).mul(ud60x18(0.5e18)).intoUint128();
@@ -56,11 +56,11 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         whenTotalPercentageNotGreaterThan100
         whenScheduledStartTimeZero
     {
-        MerkleLL.CreateParams memory createParams = merkleLLCreateParams();
-        createParams.schedule.cliffDuration = 0;
-        createParams.schedule.cliffPercentage = ud2x18(0);
+        MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
+        params.schedule.cliffDuration = 0;
+        params.schedule.cliffPercentage = ud2x18(0);
 
-        merkleLL = merkleFactory.createMerkleLL(createParams);
+        merkleLL = merkleFactory.createMerkleLL(params, defaults.AGGREGATE_AMOUNT(), defaults.RECIPIENT_COUNT());
 
         // It should create a stream with block.timestamp as start time.
         // It should create a stream with cliff as zero.
@@ -79,10 +79,10 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
     }
 
     function test_WhenScheduledStartTimeNotZero() external whenMerkleProofValid whenTotalPercentageNotGreaterThan100 {
-        MerkleLL.CreateParams memory createParams = merkleLLCreateParams();
-        createParams.schedule.startTime = defaults.STREAM_START_TIME_NON_ZERO();
+        MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
+        params.schedule.startTime = defaults.STREAM_START_TIME_NON_ZERO();
 
-        merkleLL = merkleFactory.createMerkleLL(createParams);
+        merkleLL = merkleFactory.createMerkleLL(params, defaults.AGGREGATE_AMOUNT(), defaults.RECIPIENT_COUNT());
 
         // It should create a stream with scheduled start time as start time.
         _test_Claim({

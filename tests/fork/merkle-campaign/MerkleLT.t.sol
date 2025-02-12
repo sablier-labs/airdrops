@@ -36,7 +36,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         uint256 aggregateAmount;
         LockupTranched.Tranche[] actualTranches;
         uint128[] amounts;
-        MerkleLT.CreateParams createParams;
+        MerkleLT.ConstructorParams params;
         uint128 clawbackAmount;
         address expectedLT;
         uint256 expectedStreamId;
@@ -107,34 +107,32 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         resetPrank({ msgSender: params.campaignOwner });
 
         vars.expectedLT = computeMerkleLTAddress({
-            aggregateAmount: vars.aggregateAmount,
             campaignCreator: params.campaignOwner,
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            recipientCount: vars.recipientCount,
             token_: FORK_TOKEN
         });
 
-        vars.createParams = defaults.merkleLTCreateParams({
-            aggregateAmount: vars.aggregateAmount,
+        vars.params = defaults.merkleLTConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             lockup: lockup,
             merkleRoot: vars.merkleRoot,
-            recipientCount: vars.recipientCount,
             token_: FORK_TOKEN
         });
 
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(vars.expectedLT),
-            createParams: vars.createParams,
+            constructorParams: vars.params,
+            aggregateAmount: vars.aggregateAmount,
+            recipientCount: vars.recipientCount,
             totalDuration: defaults.TOTAL_DURATION(),
             fee: defaults.FEE()
         });
 
-        vars.merkleLT = merkleFactory.createMerkleLT(vars.createParams);
+        vars.merkleLT = merkleFactory.createMerkleLT(vars.params, vars.aggregateAmount, vars.recipientCount);
 
         // Fund the MerkleLT contract.
         deal({ token: address(FORK_TOKEN), to: address(vars.merkleLT), give: vars.aggregateAmount });

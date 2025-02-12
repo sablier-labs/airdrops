@@ -117,26 +117,22 @@ contract Defaults is Constants, Merkle {
                                   MERKLE-INSTANT
     //////////////////////////////////////////////////////////////////////////*/
 
-    function merkleInstantCreateParams(
-        uint256 aggregateAmount,
+    function merkleInstantConstructorParams(
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        uint256 recipientCount,
         IERC20 token_
     )
         public
         view
-        returns (MerkleInstant.CreateParams memory)
+        returns (MerkleInstant.ConstructorParams memory)
     {
-        return MerkleInstant.CreateParams({
-            aggregateAmount: aggregateAmount,
+        return MerkleInstant.ConstructorParams({
             campaignName: CAMPAIGN_NAME,
             expiration: expiration,
             initialAdmin: campaignOwner,
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
-            recipientCount: recipientCount,
             token: token_
         });
     }
@@ -145,21 +141,18 @@ contract Defaults is Constants, Merkle {
                                     MERKLE-LL
     //////////////////////////////////////////////////////////////////////////*/
 
-    function merkleLLCreateParams(
-        uint256 aggregateAmount,
+    function merkleLLConstructorParams(
         address campaignOwner,
         uint40 expiration,
         ISablierLockup lockup,
         bytes32 merkleRoot,
-        uint256 recipientCount,
         IERC20 token_
     )
         public
         view
-        returns (MerkleLL.CreateParams memory)
+        returns (MerkleLL.ConstructorParams memory)
     {
-        return MerkleLL.CreateParams({
-            aggregateAmount: aggregateAmount,
+        return MerkleLL.ConstructorParams({
             campaignName: CAMPAIGN_NAME,
             cancelable: CANCELABLE,
             expiration: expiration,
@@ -167,7 +160,6 @@ contract Defaults is Constants, Merkle {
             ipfsCID: IPFS_CID,
             lockup: lockup,
             merkleRoot: merkleRoot,
-            recipientCount: recipientCount,
             schedule: MerkleLL.Schedule({
                 startTime: STREAM_START_TIME_ZERO,
                 startPercentage: START_PERCENTAGE,
@@ -185,18 +177,16 @@ contract Defaults is Constants, Merkle {
                                     MERKLE-LT
     //////////////////////////////////////////////////////////////////////////*/
 
-    function merkleLTCreateParams(
-        uint256 aggregateAmount,
+    function merkleLTConstructorParams(
         address campaignOwner,
         uint40 expiration,
         ISablierLockup lockup,
         bytes32 merkleRoot,
-        uint256 recipientCount,
         IERC20 token_
     )
         public
         view
-        returns (MerkleLT.CreateParams memory)
+        returns (MerkleLT.ConstructorParams memory)
     {
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages_ = new MerkleLT.TrancheWithPercentage[](2);
         tranchesWithPercentages_[0] =
@@ -204,8 +194,7 @@ contract Defaults is Constants, Merkle {
         tranchesWithPercentages_[1] =
             MerkleLT.TrancheWithPercentage({ unlockPercentage: ud2x18(0.75e18), duration: 7500 seconds });
 
-        return MerkleLT.CreateParams({
-            aggregateAmount: aggregateAmount,
+        return MerkleLT.ConstructorParams({
             campaignName: CAMPAIGN_NAME,
             cancelable: CANCELABLE,
             expiration: expiration,
@@ -213,7 +202,6 @@ contract Defaults is Constants, Merkle {
             ipfsCID: IPFS_CID,
             lockup: lockup,
             merkleRoot: merkleRoot,
-            recipientCount: recipientCount,
             shape: SHAPE,
             streamStartTime: STREAM_START_TIME_ZERO,
             token: token_,

@@ -10,11 +10,14 @@ import { Integration_Test } from "../../../Integration.t.sol";
 contract CreateMerkleLL_Integration_Test is Integration_Test {
     /// @dev This test works because a default MerkleLL contract is deployed in {Integration_Test.setUp}
     function test_RevertGiven_CampaignAlreadyExists() external {
-        MerkleLL.CreateParams memory createParams = merkleLLCreateParams();
+        MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
+
+        uint256 aggregateAmount = defaults.AGGREGATE_AMOUNT();
+        uint256 recipientCount = defaults.RECIPIENT_COUNT();
 
         // Expect a revert due to CREATE2.
         vm.expectRevert();
-        merkleFactory.createMerkleLL(createParams);
+        merkleFactory.createMerkleLL(params, aggregateAmount, recipientCount);
     }
 
     function test_GivenCustomFeeSet(
@@ -36,7 +39,9 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedLL),
-            createParams: merkleLLCreateParams(campaignOwner, expiration),
+            constructorParams: merkleLLConstructorParams(campaignOwner, expiration),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT(),
             fee: customFee
         });
 
@@ -58,7 +63,9 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         vm.expectEmit({ emitter: address(merkleFactory) });
         emit ISablierMerkleFactory.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedLL),
-            createParams: merkleLLCreateParams(campaignOwner, expiration),
+            constructorParams: merkleLLConstructorParams(campaignOwner, expiration),
+            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
+            recipientCount: defaults.RECIPIENT_COUNT(),
             fee: defaults.FEE()
         });
 

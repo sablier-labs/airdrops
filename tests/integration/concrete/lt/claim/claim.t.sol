@@ -18,13 +18,13 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
     function test_RevertWhen_TotalPercentageLessThan100() external whenMerkleProofValid whenTotalPercentageNot100 {
         uint256 fee = defaults.FEE();
 
-        MerkleLT.CreateParams memory createParams = merkleLTCreateParams();
+        MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
 
         // Create a MerkleLT campaign with a total percentage less than 100.
-        createParams.tranchesWithPercentages[0].unlockPercentage = ud2x18(0.05e18);
-        createParams.tranchesWithPercentages[1].unlockPercentage = ud2x18(0.2e18);
+        params.tranchesWithPercentages[0].unlockPercentage = ud2x18(0.05e18);
+        params.tranchesWithPercentages[1].unlockPercentage = ud2x18(0.2e18);
 
-        merkleLT = merkleFactory.createMerkleLT(createParams);
+        merkleLT = merkleFactory.createMerkleLT(params, defaults.AGGREGATE_AMOUNT(), defaults.RECIPIENT_COUNT());
 
         // Claim the airdrop.
         bytes32[] memory merkleProof = defaults.index1Proof();
@@ -42,13 +42,13 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
     function test_RevertWhen_TotalPercentageGreaterThan100() external whenMerkleProofValid whenTotalPercentageNot100 {
         uint256 fee = defaults.FEE();
 
-        MerkleLT.CreateParams memory createParams = merkleLTCreateParams();
+        MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
 
         // Create a MerkleLT campaign with a total percentage less than 100.
-        createParams.tranchesWithPercentages[0].unlockPercentage = ud2x18(0.75e18);
-        createParams.tranchesWithPercentages[1].unlockPercentage = ud2x18(0.8e18);
+        params.tranchesWithPercentages[0].unlockPercentage = ud2x18(0.75e18);
+        params.tranchesWithPercentages[1].unlockPercentage = ud2x18(0.8e18);
 
-        merkleLT = merkleFactory.createMerkleLT(createParams);
+        merkleLT = merkleFactory.createMerkleLT(params, defaults.AGGREGATE_AMOUNT(), defaults.RECIPIENT_COUNT());
 
         // Claim the airdrop.
         bytes32[] memory merkleProof = defaults.index1Proof();
@@ -69,10 +69,10 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
     }
 
     function test_WhenStreamStartTimeNotZero() external whenMerkleProofValid whenTotalPercentage100 {
-        MerkleLT.CreateParams memory createParams = merkleLTCreateParams();
-        createParams.streamStartTime = defaults.STREAM_START_TIME_NON_ZERO();
+        MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
+        params.streamStartTime = defaults.STREAM_START_TIME_NON_ZERO();
 
-        merkleLT = merkleFactory.createMerkleLT(createParams);
+        merkleLT = merkleFactory.createMerkleLT(params, defaults.AGGREGATE_AMOUNT(), defaults.RECIPIENT_COUNT());
 
         // It should create a stream with `STREAM_START_TIME` as start time.
         _test_Claim({
