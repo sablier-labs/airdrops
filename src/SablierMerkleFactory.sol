@@ -215,7 +215,7 @@ contract SablierMerkleFactory is
         // Effect: update the minimum fee.
         minimumFee = newFee;
 
-        emit SetMinimumFee(msg.sender, newFee);
+        emit SetMinimumFee({ admin: msg.sender, minimumFee: newFee });
     }
 
     /*//////////////////////////////////////////////////////////////////////////

@@ -50,7 +50,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         assertEq(address(actualLT), expectedLT, "MerkleLT contract does not match computed address");
 
         // It should create the campaign with custom fee.
-        assertEq(actualLT.MINIMUM_FEE(), customFee, "fee");
+        assertEq(actualLT.MINIMUM_FEE(), customFee, "custom fee");
         // It should set the current factory address.
         assertEq(actualLT.FACTORY(), address(merkleFactory), "factory");
     }

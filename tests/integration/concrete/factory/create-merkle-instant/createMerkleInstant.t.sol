@@ -52,7 +52,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         );
 
         // It should create the campaign with custom fee.
-        assertEq(actualInstant.MINIMUM_FEE(), customFee, "fee");
+        assertEq(actualInstant.MINIMUM_FEE(), customFee, "custom fee");
 
         // It should set the current factory address.
         assertEq(actualInstant.FACTORY(), address(merkleFactory), "factory");
