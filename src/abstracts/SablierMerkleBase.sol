@@ -158,7 +158,7 @@ abstract contract SablierMerkleBase is
         }
 
         // Effect: transfer the tokens to the provided address.
-        TOKEN.safeTransfer(to, amount);
+        TOKEN.safeTransfer({ to: to, value: amount });
 
         // Log the clawback.
         emit Clawback(admin, to, amount);

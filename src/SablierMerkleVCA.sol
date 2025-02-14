@@ -108,20 +108,22 @@ contract SablierMerkleVCA is
 
     /// @inheritdoc SablierMerkleBase
     function _claim(uint256 index, address recipient, uint128 amount) internal override {
+        uint40 blockTimestamp = uint40(block.timestamp);
+
         // Check: vesting start time is not in the future.
-        if (_vestingSchedule.start >= block.timestamp) {
+        if (_vestingSchedule.start >= blockTimestamp) {
             revert Errors.SablierMerkleVCA_ClaimNotStarted();
         }
 
         uint128 claimableAmount;
 
         // Calculate the claimable amount.
-        if (_vestingSchedule.end <= block.timestamp) {
+        if (_vestingSchedule.end <= blockTimestamp) {
             // If the vesting period has ended, the recipient can claim the full amount.
             claimableAmount = amount;
         } else {
             // Otherwise, calculate the claimable amount based on the elapsed time.
-            uint40 elapsedTime = uint40(block.timestamp) - _vestingSchedule.start;
+            uint40 elapsedTime = blockTimestamp - _vestingSchedule.start;
             uint40 totalDuration = _vestingSchedule.end - _vestingSchedule.start;
 
             claimableAmount = ((uint256(amount) * elapsedTime) / totalDuration).toUint128();
@@ -130,8 +132,8 @@ contract SablierMerkleVCA is
             forgoneAmount += (amount - claimableAmount);
         }
 
-        // Interaction: withdraw the tokens to the recipient.
-        TOKEN.safeTransfer(recipient, claimableAmount);
+        // Interaction: transfer the tokens to the recipient.
+        TOKEN.safeTransfer({ to: recipient, value: claimableAmount });
 
         // Log the claim.
         emit Claim(index, recipient, claimableAmount, amount);
