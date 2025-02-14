@@ -35,17 +35,12 @@ abstract contract Fork_Test is Base_Test, Merkle {
 
         // TODO: Load deployed addresses from Ethereum mainnet.
         // merkleFactory = ISablierMerkleFactory(0x71DD3Ca88E7564416E5C2E350090C12Bf8F6144a);
+        // lockup = ISablierLockup(0x7C01AA3783577E15fD7e272443D44B92d5b21056);
+
         Base_Test.setUp();
-        lockup = ISablierLockup(0x7C01AA3783577E15fD7e272443D44B92d5b21056);
-
-        // Load the factory admin from mainnet.
-        factoryAdmin = merkleFactory.admin();
-
-        // Initialize the defaults contract.
-        defaults = new Defaults();
+        factoryAdmin = users.admin;
 
         // Set the minimum fee for campaign.
         resetPrank({ msgSender: factoryAdmin });
-        merkleFactory.setMinimumFee(defaults.MINIMUM_FEE());
     }
 }

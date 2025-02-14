@@ -4,18 +4,17 @@ pragma solidity >=0.8.22 <0.9.0;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ud2x18 } from "@prb/math/src/UD2x18.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
-
-import { ISablierMerkleFactory } from "../src/interfaces/ISablierMerkleFactory.sol";
-import { ISablierMerkleLL } from "../src/interfaces/ISablierMerkleLL.sol";
-import { MerkleLL } from "../src/types/DataTypes.sol";
-
+import { ISablierMerkleLL } from "./../src/interfaces/ISablierMerkleLL.sol";
+import { SablierMerkleFactoryLL } from "./../src/SablierMerkleFactoryLL.sol";
+import { MerkleLL } from "./../src/types/DataTypes.sol";
 import { BaseScript } from "./Base.s.sol";
 
 /// @dev Creates a dummy campaign to airdrop tokens through Lockup Linear.
 contract CreateMerkleLL is BaseScript {
     /// @dev Deploy via Forge.
     function run() public broadcast returns (ISablierMerkleLL merkleLL) {
-        ISablierMerkleFactory merkleFactory = ISablierMerkleFactory(0x71DD3Ca88E7564416E5C2E350090C12Bf8F6144a);
+        // TODO: Load deployed addresses from Ethereum mainnet.
+        SablierMerkleFactoryLL merkleFactory = new SablierMerkleFactoryLL(DEFAULT_SABLIER_ADMIN, 0);
 
         // Prepare the constructor parameters.
         MerkleLL.ConstructorParams memory params;
