@@ -42,4 +42,20 @@ library Errors {
 
     /// @notice Thrown when trying to claim from an LT campaign with tranches' unlock percentages not adding up to 100%.
     error SablierMerkleLT_TotalPercentageNotOneHundred(uint64 totalPercentage);
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                 SABLIER-MERKLE-VCA
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Thrown while claiming if vesting start time is in the future.
+    error SablierMerkleVCA_ClaimNotStarted();
+
+    /// @notice Thrown if expiry of a VCA campaign is within 1 week from the vesting end time.
+    error SablierMerkleVCA_ExpiryWithinOneWeekOfVestingEnd(uint40 endTime, uint40 expiration);
+
+    /// @notice Thrown if end time of the vesting schedule is less than the start time.
+    error SablierMerkleVCA_VestingStartTimeExceedsEndTime(uint40 startTime, uint40 endTime);
+
+    /// @notice Thrown if either vesting start time or end time is zero.
+    error SablierMerkleVCA_VestingTimeZero(uint40 startTime, uint40 endTime);
 }

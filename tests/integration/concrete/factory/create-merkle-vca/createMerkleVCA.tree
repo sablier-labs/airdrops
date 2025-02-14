@@ -1,0 +1,33 @@
+CreateMerkleVCA_Integration_Test
+├── given campaign already exists
+│  └── it should revert
+└── given campaign not exists
+   ├── when vesting start time zero
+   │  └── it should revert
+   └── when vesting start time not zero
+      ├── when vesting end time zero
+      │  └── it should revert
+      └── when vesting end time not zero
+         ├── when vesting end time less than start time
+         │  └── it should revert
+         └── when vesting end time not less than start time
+            ├── when zero expiry
+            │  ├── it should create the campaign with minimum fee
+            │  ├── it should set the current factory address
+            │  ├── it should set return the correct vesting schedule
+            │  ├── it should set the expiry to 0
+            │  └── it should emit a {CreateMerkleVCA} event
+            └── when not zero expiry
+               ├── when expiry not exceed one week from end time
+               │  └── it should revert
+               └── when expiry exceeds one week from end time
+                  ├── given custom fee set
+                  │  ├── it should create the campaign with custom fee
+                  │  ├── it should set the current factory address
+                  │  ├── it should set return the correct vesting schedule
+                  │  └── it should emit a {CreateMerkleVCA} event
+                  └── given custom fee not set
+                     ├── it should create the campaign with minimum fee
+                     ├── it should set the current factory address
+                     ├── it should set return the correct vesting schedule
+                     └── it should emit a {CreateMerkleVCA} event
