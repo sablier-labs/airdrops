@@ -138,7 +138,7 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
             params: vars.params,
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount,
-            fee: defaults.FEE()
+            fee: defaults.MINIMUM_FEE()
         });
 
         vars.merkleVCA = merkleFactory.createMerkleVCA(vars.params, vars.aggregateAmount, vars.recipientCount);
@@ -195,7 +195,7 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
 
         expectCallToClaimWithData({
             merkleLockup: address(vars.merkleVCA),
-            fee: defaults.FEE(),
+            fee: defaults.MINIMUM_FEE(),
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -208,7 +208,7 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
             value: vars.claimableAmount
         });
 
-        vars.merkleVCA.claim{ value: defaults.FEE() }({
+        vars.merkleVCA.claim{ value: defaults.MINIMUM_FEE() }({
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -246,11 +246,11 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
         emit ISablierMerkleFactory.CollectFees({
             admin: factoryAdmin,
             merkleBase: vars.merkleVCA,
-            feeAmount: defaults.FEE()
+            feeAmount: defaults.MINIMUM_FEE()
         });
         merkleFactory.collectFees({ merkleBase: vars.merkleVCA });
 
         assertEq(address(vars.merkleVCA).balance, 0, "merkleVCA ETH balance");
-        assertEq(factoryAdmin.balance, initialAdminBalance + defaults.FEE(), "admin ETH balance");
+        assertEq(factoryAdmin.balance, initialAdminBalance + defaults.MINIMUM_FEE(), "admin ETH balance");
     }
 }

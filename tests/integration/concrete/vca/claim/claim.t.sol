@@ -13,7 +13,7 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
     }
 
     function test_RevertWhen_VestingStartTimeInFuture() external whenMerkleProofValid {
-        uint256 fee = defaults.FEE();
+        uint256 fee = defaults.MINIMUM_FEE();
         uint128 claimAmount = defaults.CLAIM_AMOUNT();
         bytes32[] memory merkleProof = defaults.index1Proof();
 
@@ -44,9 +44,9 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
 
         // It should transfer the full amount.
         expectCallToTransfer({ to: users.recipient1, value: defaults.CLAIM_AMOUNT() });
-        expectCallToClaimWithMsgValue(address(merkleVCA), defaults.FEE());
+        expectCallToClaimWithMsgValue(address(merkleVCA), defaults.MINIMUM_FEE());
 
-        merkleVCA.claim{ value: defaults.FEE() }({
+        merkleVCA.claim{ value: defaults.MINIMUM_FEE() }({
             index: 1,
             recipient: users.recipient1,
             amount: defaults.CLAIM_AMOUNT(),
@@ -66,9 +66,9 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
 
         // It should transfer a portion of the amount.
         expectCallToTransfer({ to: users.recipient1, value: claimableAmount });
-        expectCallToClaimWithMsgValue(address(merkleVCA), defaults.FEE());
+        expectCallToClaimWithMsgValue(address(merkleVCA), defaults.MINIMUM_FEE());
 
-        merkleVCA.claim{ value: defaults.FEE() }({
+        merkleVCA.claim{ value: defaults.MINIMUM_FEE() }({
             index: 1,
             recipient: users.recipient1,
             amount: defaults.CLAIM_AMOUNT(),

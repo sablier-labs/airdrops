@@ -11,7 +11,6 @@ import { ISablierMerkleInstant } from "./interfaces/ISablierMerkleInstant.sol";
 import { ISablierMerkleLL } from "./interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
 import { ISablierMerkleVCA } from "./interfaces/ISablierMerkleVCA.sol";
-import { Errors } from "./libraries/Errors.sol";
 import { SablierMerkleInstant } from "./SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "./SablierMerkleLL.sol";
 import { SablierMerkleLT } from "./SablierMerkleLT.sol";
@@ -198,30 +197,6 @@ contract SablierMerkleFactory is
         external
         returns (ISablierMerkleVCA merkleVCA)
     {
-        // Check: neither vesting start time nor vesting end time is zero.
-        if (params.vesting.end == 0 || params.vesting.start == 0) {
-            revert Errors.SablierMerkleFactory_VestingTimeZero({
-                startTime: params.vesting.start,
-                endTime: params.vesting.end
-            });
-        }
-
-        // Check: vesting end time is not less than the start time.
-        if (params.vesting.end < params.vesting.start) {
-            revert Errors.SablierMerkleFactory_VestingStartTimeExceedsEndTime({
-                startTime: params.vesting.start,
-                endTime: params.vesting.end
-            });
-        }
-
-        // Check: campaign expiration, if non-zero, exceeds the vesting end time by at least 1 week.
-        if (params.expiration > 0 && params.expiration < params.vesting.end + 1 weeks) {
-            revert Errors.SablierMerkleFactory_ExpiryWithinOneWeekOfVestingEnd({
-                endTime: params.vesting.end,
-                expiration: params.expiration
-            });
-        }
-
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
 

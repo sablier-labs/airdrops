@@ -63,11 +63,11 @@ abstract contract Modifiers is Utils {
         _;
     }
 
-    modifier whenClaimNotExpireWithinOneWeek() {
+    modifier whenExpirationNotZero() {
         _;
     }
 
-    modifier whenExpirationNotZero() {
+    modifier whenExpiryNotExceedOneWeekFromEndTime() {
         _;
     }
 

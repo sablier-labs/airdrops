@@ -14,19 +14,20 @@ CreateMerkleVCA_Integration_Test
             ├── when zero expiry
             │  ├── it should create the campaign with minimum fee
             │  ├── it should set the current factory address
-            │  ├── it should emit a {CreateMerkleVCA} event
-            │  └── it should set return the correct vesting schedule
+            │  ├── it should set return the correct vesting schedule
+            │  ├── it should set the expiry to 0
+            │  └── it should emit a {CreateMerkleVCA} event
             └── when not zero expiry
-               ├── when claim expires within one week
+               ├── when expiry not exceed one week from end time
                │  └── it should revert
-               └── when claim not expire within one week
+               └── when expiry exceeds one week from end time
                   ├── given custom fee set
                   │  ├── it should create the campaign with custom fee
                   │  ├── it should set the current factory address
-                  │  ├── it should emit a {CreateMerkleVCA} event
-                  │  └── it should set return the correct vesting schedule
+                  │  ├── it should set return the correct vesting schedule
+                  │  └── it should emit a {CreateMerkleVCA} event
                   └── given custom fee not set
                      ├── it should create the campaign with minimum fee
                      ├── it should set the current factory address
-                     ├── it should emit a {CreateMerkleVCA} event
-                     └── it should set return the correct vesting schedule
+                     ├── it should set return the correct vesting schedule
+                     └── it should emit a {CreateMerkleVCA} event

@@ -40,9 +40,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         params.vesting.start = 0;
 
         // It should revert.
-        vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactory_VestingTimeZero.selector, 0, params.vesting.end)
-        );
+        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleVCA_VestingTimeZero.selector, 0, params.vesting.end));
         merkleFactory.createMerkleVCA({
             params: params,
             aggregateAmount: aggregateAmount,
@@ -56,7 +54,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
         // It should revert.
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactory_VestingTimeZero.selector, params.vesting.start, 0)
+            abi.encodeWithSelector(Errors.SablierMerkleVCA_VestingTimeZero.selector, params.vesting.start, 0)
         );
         merkleFactory.createMerkleVCA({
             params: params,
@@ -78,7 +76,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // It should revert.
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleFactory_VestingStartTimeExceedsEndTime.selector,
+                Errors.SablierMerkleVCA_VestingStartTimeExceedsEndTime.selector,
                 params.vesting.start,
                 params.vesting.end
             )
@@ -117,12 +115,15 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactory), "factory");
 
+        // It should set the expiry to 0.
+        assertEq(actualVCA.EXPIRATION(), 0, "expiration");
+
         // It should set return the correct vesting schedule.
         assertEq(actualVCA.vestingSchedule().start, defaults.RANGED_STREAM_START_TIME(), "vesting start");
         assertEq(actualVCA.vestingSchedule().end, defaults.RANGED_STREAM_END_TIME(), "vesting end");
     }
 
-    function test_RevertWhen_ClaimExpiresWithinOneWeek()
+    function test_RevertWhen_ExpiryNotExceedOneWeekFromEndTime()
         external
         givenCampaignNotExists
         whenVestingStartTimeNotZero
@@ -136,9 +137,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // It should revert.
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleFactory_ExpiryWithinOneWeekOfVestingEnd.selector,
-                params.vesting.end,
-                params.expiration
+                Errors.SablierMerkleVCA_ExpiryWithinOneWeekOfVestingEnd.selector, params.vesting.end, params.expiration
             )
         );
         merkleFactory.createMerkleVCA(params, aggregateAmount, recipientCount);
@@ -151,7 +150,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         whenVestingEndTimeNotZero
         whenVestingEndTimeNotLessThanStartTime
         whenNotZeroExpiry
-        whenClaimNotExpireWithinOneWeek
+        whenExpiryNotExceedOneWeekFromEndTime
     {
         // Set the custom fee to 0 for this test.
         resetPrank(users.admin);
@@ -194,7 +193,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         whenVestingEndTimeNotZero
         whenVestingEndTimeNotLessThanStartTime
         whenNotZeroExpiry
-        whenClaimNotExpireWithinOneWeek
+        whenExpiryNotExceedOneWeekFromEndTime
     {
         address expectedMerkleVCA =
             computeMerkleVCAAddress({ campaignOwner: users.sender, expiration: defaults.EXPIRATION() });

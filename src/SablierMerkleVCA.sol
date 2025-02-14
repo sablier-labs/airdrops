@@ -66,6 +66,30 @@ contract SablierMerkleVCA is
             params.token
         )
     {
+        // Check: neither vesting start time nor vesting end time is zero.
+        if (params.vesting.end == 0 || params.vesting.start == 0) {
+            revert Errors.SablierMerkleVCA_VestingTimeZero({
+                startTime: params.vesting.start,
+                endTime: params.vesting.end
+            });
+        }
+
+        // Check: vesting end time is not less than the start time.
+        if (params.vesting.end < params.vesting.start) {
+            revert Errors.SablierMerkleVCA_VestingStartTimeExceedsEndTime({
+                startTime: params.vesting.start,
+                endTime: params.vesting.end
+            });
+        }
+
+        // Check: campaign expiration, if non-zero, exceeds the vesting end time by at least 1 week.
+        if (params.expiration > 0 && params.expiration < params.vesting.end + 1 weeks) {
+            revert Errors.SablierMerkleVCA_ExpiryWithinOneWeekOfVestingEnd({
+                endTime: params.vesting.end,
+                expiration: params.expiration
+            });
+        }
+
         _vestingSchedule = params.vesting;
     }
 
