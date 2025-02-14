@@ -12,7 +12,7 @@ CreateMerkleVCA_Integration_Test
          │  └── it should revert
          └── when vesting end time not less than start time
             ├── when zero expiry
-            │  ├── it should create the campaign with default fee
+            │  ├── it should create the campaign with minimum fee
             │  ├── it should set the current factory address
             │  ├── it should emit a {CreateMerkleVCA} event
             │  └── it should set return the correct vesting schedule
@@ -26,7 +26,7 @@ CreateMerkleVCA_Integration_Test
                   │  ├── it should emit a {CreateMerkleVCA} event
                   │  └── it should set return the correct vesting schedule
                   └── given custom fee not set
-                     ├── it should create the campaign with default fee
+                     ├── it should create the campaign with minimum fee
                      ├── it should set the current factory address
                      ├── it should emit a {CreateMerkleVCA} event
                      └── it should set return the correct vesting schedule

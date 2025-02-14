@@ -106,13 +106,13 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             params: merkleVCAConstructorParams({ campaignOwner: users.sender, expiration: 0 }),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: defaults.FEE()
+            fee: defaults.MINIMUM_FEE()
         });
 
         ISablierMerkleVCA actualVCA = createMerkleVCA({ campaignOwner: users.sender, expiration: 0 });
 
-        // It should create the campaign with default fee.
-        assertEq(actualVCA.FEE(), defaults.FEE(), "default fee");
+        // It should create the campaign with custom fee.
+        assertEq(actualVCA.MINIMUM_FEE(), defaults.MINIMUM_FEE(), "minimum fee");
 
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactory), "factory");
@@ -177,7 +177,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
         // It should create the campaign with 0 custom fee.
-        assertEq(actualVCA.FEE(), 0, "custom fee");
+        assertEq(actualVCA.MINIMUM_FEE(), 0, "custom fee");
 
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactory), "factory");
@@ -206,7 +206,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             params: merkleVCAConstructorParams({ campaignOwner: users.sender, expiration: defaults.EXPIRATION() }),
             aggregateAmount: defaults.AGGREGATE_AMOUNT(),
             recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: defaults.FEE()
+            fee: defaults.MINIMUM_FEE()
         });
 
         ISablierMerkleVCA actualVCA =
@@ -214,8 +214,8 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         assertGt(address(actualVCA).code.length, 0, "MerkleVCA contract not created");
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
-        // It should create the campaign with default fee.
-        assertEq(actualVCA.FEE(), defaults.FEE(), "default fee");
+        // It should create the campaign with custom fee.
+        assertEq(actualVCA.MINIMUM_FEE(), defaults.MINIMUM_FEE(), "minimum fee");
 
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactory), "factory");
