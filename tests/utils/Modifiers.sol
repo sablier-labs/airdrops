@@ -63,7 +63,19 @@ abstract contract Modifiers is Utils {
         _;
     }
 
+    modifier whenEndTimeGreaterThanStartTime() {
+        _;
+    }
+
+    modifier whenEndTimeNotZero() {
+        _;
+    }
+
     modifier whenExpirationNotZero() {
+        _;
+    }
+
+    modifier whenExpiryNotExceedOneWeekFromEndTime() {
         _;
     }
 
@@ -83,6 +95,10 @@ abstract contract Modifiers is Utils {
         _;
     }
 
+    modifier whenNotZeroExpiry() {
+        _;
+    }
+
     modifier whenPercentagesSumNot100Pct() {
         _;
     }
@@ -96,6 +112,14 @@ abstract contract Modifiers is Utils {
     }
 
     modifier whenScheduledStartTimeZero() {
+        _;
+    }
+
+    modifier whenStartTimeNotInFuture() {
+        _;
+    }
+
+    modifier whenStartTimeNotZero() {
         _;
     }
 
