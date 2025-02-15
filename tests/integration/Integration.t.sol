@@ -254,8 +254,8 @@ contract Integration_Test is Base_Test {
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: defaults.MERKLE_ROOT(),
-            token_: dai,
-            vesting: defaults.merkleVCAVesting()
+            timestamps: defaults.merkleVCATimestamps(),
+            token_: dai
         });
     }
 
@@ -277,8 +277,8 @@ contract Integration_Test is Base_Test {
                 campaignOwner: campaignOwner,
                 expiration: expiration,
                 merkleRoot: defaults.MERKLE_ROOT(),
-                token_: dai,
-                vesting: defaults.merkleVCAVesting()
+                timestamps: defaults.merkleVCATimestamps(),
+                token_: dai
             }),
             defaults.AGGREGATE_AMOUNT(),
             defaults.RECIPIENT_COUNT()
@@ -301,8 +301,8 @@ contract Integration_Test is Base_Test {
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: defaults.MERKLE_ROOT(),
-            token_: dai,
-            vesting: defaults.merkleVCAVesting()
+            timestamps: defaults.merkleVCATimestamps(),
+            token_: dai
         });
     }
 }

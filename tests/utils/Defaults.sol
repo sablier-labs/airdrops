@@ -251,8 +251,8 @@ contract Defaults is Constants, Merkle {
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        IERC20 token_,
-        MerkleVCA.Timestamps memory vesting
+        MerkleVCA.Timestamps memory timestamps,
+        IERC20 token_
     )
         public
         view
@@ -264,12 +264,12 @@ contract Defaults is Constants, Merkle {
             initialAdmin: campaignOwner,
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
-            token: token_,
-            vesting: vesting
+            timestamps: timestamps,
+            token: token_
         });
     }
 
-    function merkleVCAVesting() public view returns (MerkleVCA.Timestamps memory) {
+    function merkleVCATimestamps() public view returns (MerkleVCA.Timestamps memory) {
         return MerkleVCA.Timestamps({ start: RANGED_STREAM_START_TIME, end: RANGED_STREAM_END_TIME });
     }
 }

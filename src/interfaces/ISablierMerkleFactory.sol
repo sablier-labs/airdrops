@@ -189,8 +189,8 @@ interface ISablierMerkleFactory is IAdminable {
     /// Requirements:
     /// - If set, the `params.expiration` must be at least 1 week beyond the unlock end time to ensure loyal
     /// recipients have enough time to claim.
-    /// - `params.vesting.end` must be greater than or equal to `params.vesting.start`.
-    /// - Both `params.vesting.start` and `params.vesting.end` must be non-zero.
+    /// - `params.timestamps.end` must be greater than `params.timestamps.start`.
+    /// - Both `params.timestamps.start` and `params.timestamps.end` must be non-zero.
     ///
     /// @param params Struct encapsulating the {SablierMerkleVCA} parameters, which are documented in {DataTypes}.
     /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.

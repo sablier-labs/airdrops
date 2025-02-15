@@ -29,7 +29,7 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
         uint40 expiration;
         LeafData[] leafData;
         uint256 posBeforeSort;
-        MerkleVCA.Timestamps vesting;
+        MerkleVCA.Timestamps timestamps;
     }
 
     struct Vars {
@@ -55,20 +55,21 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
     function testForkFuzz_MerkleVCA(Params memory params) external {
         vm.assume(params.campaignOwner != address(0));
         vm.assume(params.leafData.length > 0);
-        vm.assume(params.vesting.end > 0 && params.vesting.start > 0);
+        vm.assume(params.timestamps.end > 0 && params.timestamps.start > 0);
         assumeNoBlacklisted({ token: address(FORK_TOKEN), addr: params.campaignOwner });
         params.posBeforeSort = _bound(params.posBeforeSort, 0, params.leafData.length - 1);
 
-        // Bound vesting start and end times.
-        params.vesting.start = boundUint40(params.vesting.start, 1, getBlockTimestamp() - 1);
-        params.vesting.end = boundUint40(params.vesting.end, params.vesting.start, MAX_UNIX_TIMESTAMP - 2 weeks);
+        // Bound unlock start and end times.
+        params.timestamps.start = boundUint40(params.timestamps.start, 1, getBlockTimestamp() - 1);
+        params.timestamps.end =
+            boundUint40(params.timestamps.end, params.timestamps.start, MAX_UNIX_TIMESTAMP - 2 weeks);
 
-        // The expiration must be either zero or exceed the vesting end time by at least 1 week.
+        // The expiration must be either zero or exceed the unlock end time by at least 1 week.
         if (params.expiration != 0) {
-            if (params.vesting.end > getBlockTimestamp() - 1 weeks) {
-                params.expiration = boundUint40(params.expiration, params.vesting.end + 1 weeks, MAX_UNIX_TIMESTAMP);
+            if (params.timestamps.end > getBlockTimestamp() - 1 weeks) {
+                params.expiration = boundUint40(params.expiration, params.timestamps.end + 1 weeks, MAX_UNIX_TIMESTAMP);
             } else {
-                // If vesting end time is in the past, set expiration into the future to allow claiming.
+                // If unlock end time is in the past, set expiration into the future to allow claiming.
                 params.expiration = boundUint40(params.expiration, getBlockTimestamp(), MAX_UNIX_TIMESTAMP);
             }
         }
@@ -120,16 +121,16 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            token_: FORK_TOKEN,
-            vesting: params.vesting
+            timestamps: params.timestamps,
+            token_: FORK_TOKEN
         });
 
         vars.params = defaults.merkleVCAConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            token_: FORK_TOKEN,
-            vesting: params.vesting
+            timestamps: params.timestamps,
+            token_: FORK_TOKEN
         });
 
         vm.expectEmit({ emitter: address(merkleFactory) });
@@ -168,12 +169,12 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
         );
         vars.leafPos = Arrays.findUpperBound(leaves, vars.leafToClaim);
 
-        if (getBlockTimestamp() >= params.vesting.end) {
+        if (getBlockTimestamp() >= params.timestamps.end) {
             vars.claimableAmount = vars.amounts[params.posBeforeSort];
         } else {
             // Calculate the claimable amount based on the elapsed time.
-            uint40 elapsedTime = getBlockTimestamp() - params.vesting.start;
-            uint40 totalDuration = params.vesting.end - params.vesting.start;
+            uint40 elapsedTime = getBlockTimestamp() - params.timestamps.start;
+            uint40 totalDuration = params.timestamps.end - params.timestamps.start;
             vars.claimableAmount = uint128((uint256(vars.amounts[params.posBeforeSort]) * elapsedTime) / totalDuration);
         }
 

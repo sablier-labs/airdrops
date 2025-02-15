@@ -3,7 +3,6 @@ pragma solidity >=0.8.22;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
 import { ISablierMerkleVCA } from "./interfaces/ISablierMerkleVCA.sol";
@@ -35,7 +34,6 @@ contract SablierMerkleVCA is
     SablierMerkleBase // 3 inherited components
 {
     using SafeERC20 for IERC20;
-    using SafeCast for uint256;
 
     /*//////////////////////////////////////////////////////////////////////////
                                   STATE VARIABLES
@@ -44,8 +42,8 @@ contract SablierMerkleVCA is
     /// @inheritdoc ISablierMerkleVCA
     uint256 public override forgoneAmount;
 
-    /// @dev The vesting schedule encapsulating the start time and end time of the airdrop unlocks.
-    MerkleVCA.Timestamps private _vestingSchedule;
+    /// @dev The timestamps variable encapsulates the start time and end time of the airdrop unlock.
+    MerkleVCA.Timestamps private _timestamp;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
@@ -66,31 +64,31 @@ contract SablierMerkleVCA is
             params.token
         )
     {
-        // Check: neither vesting start time nor vesting end time is zero.
-        if (params.vesting.end == 0 || params.vesting.start == 0) {
-            revert Errors.SablierMerkleVCA_VestingTimeZero({
-                startTime: params.vesting.start,
-                endTime: params.vesting.end
+        // Check: neither unlock start time nor unlock end time is zero.
+        if (params.timestamps.end == 0 || params.timestamps.start == 0) {
+            revert Errors.SablierMerkleVCA_UnlockTimeZero({
+                startTime: params.timestamps.start,
+                endTime: params.timestamps.end
             });
         }
 
-        // Check: vesting end time is not less than the start time.
-        if (params.vesting.end < params.vesting.start) {
-            revert Errors.SablierMerkleVCA_VestingStartTimeExceedsEndTime({
-                startTime: params.vesting.start,
-                endTime: params.vesting.end
+        // Check: unlock end time is greater than the start time.
+        if (params.timestamps.end <= params.timestamps.start) {
+            revert Errors.SablierMerkleVCA_StartTimeExceedsEndTime({
+                startTime: params.timestamps.start,
+                endTime: params.timestamps.end
             });
         }
 
-        // Check: campaign expiration, if non-zero, exceeds the vesting end time by at least 1 week.
-        if (params.expiration > 0 && params.expiration < params.vesting.end + 1 weeks) {
-            revert Errors.SablierMerkleVCA_ExpiryWithinOneWeekOfVestingEnd({
-                endTime: params.vesting.end,
+        // Check: campaign expiration, if non-zero, exceeds the timestamps end time by at least 1 week.
+        if (params.expiration > 0 && params.expiration < params.timestamps.end + 1 weeks) {
+            revert Errors.SablierMerkleVCA_ExpiryWithinOneWeekOfUnlockEndTime({
+                endTime: params.timestamps.end,
                 expiration: params.expiration
             });
         }
 
-        _vestingSchedule = params.vesting;
+        _timestamp = params.timestamps;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -98,8 +96,8 @@ contract SablierMerkleVCA is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleVCA
-    function vestingSchedule() external view override returns (MerkleVCA.Timestamps memory) {
-        return _vestingSchedule;
+    function timestamps() external view override returns (MerkleVCA.Timestamps memory) {
+        return _timestamp;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -110,23 +108,23 @@ contract SablierMerkleVCA is
     function _claim(uint256 index, address recipient, uint128 amount) internal override {
         uint40 blockTimestamp = uint40(block.timestamp);
 
-        // Check: vesting start time is not in the future.
-        if (_vestingSchedule.start >= blockTimestamp) {
-            revert Errors.SablierMerkleVCA_ClaimNotStarted();
+        // Check: unlock start time is not in the future.
+        if (_timestamp.start >= blockTimestamp) {
+            revert Errors.SablierMerkleVCA_ClaimNotStarted(_timestamp.start);
         }
 
         uint128 claimableAmount;
 
         // Calculate the claimable amount.
-        if (_vestingSchedule.end <= blockTimestamp) {
-            // If the vesting period has ended, the recipient can claim the full amount.
+        if (_timestamp.end <= blockTimestamp) {
+            // If the unlock period has ended, the recipient can claim the full amount.
             claimableAmount = amount;
         } else {
             // Otherwise, calculate the claimable amount based on the elapsed time.
-            uint40 elapsedTime = blockTimestamp - _vestingSchedule.start;
-            uint40 totalDuration = _vestingSchedule.end - _vestingSchedule.start;
+            uint40 elapsedTime = blockTimestamp - _timestamp.start;
+            uint40 totalDuration = _timestamp.end - _timestamp.start;
 
-            claimableAmount = ((uint256(amount) * elapsedTime) / totalDuration).toUint128();
+            claimableAmount = uint128((uint256(amount) * elapsedTime) / totalDuration);
 
             // Effect: update the forgone amount.
             forgoneAmount += (amount - claimableAmount);

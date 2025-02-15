@@ -20,8 +20,8 @@ contract Constructor_MerkleVCA_Integration_Test is Integration_Test {
         assertEq(actualMerkleVCA.ipfsCID(), defaults.IPFS_CID(), "ipfsCID");
         assertEq(actualMerkleVCA.MERKLE_ROOT(), defaults.MERKLE_ROOT(), "merkleRoot");
         assertEq(actualMerkleVCA.forgoneAmount(), 0, "forgoneAmount");
-        assertEq(actualMerkleVCA.vestingSchedule().start, defaults.RANGED_STREAM_START_TIME(), "vesting start");
-        assertEq(actualMerkleVCA.vestingSchedule().end, defaults.RANGED_STREAM_END_TIME(), "vesting end");
+        assertEq(actualMerkleVCA.timestamps().start, defaults.RANGED_STREAM_START_TIME(), "unlock start");
+        assertEq(actualMerkleVCA.timestamps().end, defaults.RANGED_STREAM_END_TIME(), "unlock end");
         assertEq(address(actualMerkleVCA.TOKEN()), address(dai), "token");
     }
 }

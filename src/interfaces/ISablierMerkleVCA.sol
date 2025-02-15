@@ -22,6 +22,6 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
     /// @notice Returns the amount of tokens forgone by the early claimers.
     function forgoneAmount() external view returns (uint256);
 
-    /// @notice Returns the start time and end time of the airdrop vesting.
-    function vestingSchedule() external view returns (MerkleVCA.Timestamps memory);
+    /// @notice Returns the start time and end time of the airdrop unlock.
+    function timestamps() external view returns (MerkleVCA.Timestamps memory);
 }

@@ -22,9 +22,9 @@ multiple distributions options, including:
    claiming, eligible users will have their tokens streamed through Sablier over a period specified by the campaign
    owner. This distribution option has been referred to as Airstreams in the past.
 3. Variable Claim Amount (VCA) airdrops: This distribution method allows the campaign owner to set up an airdrop with
-   linear vesting. However, when a user claims their airdrop, any unvested tokens are forfeited and returned to the
+   linear unlock. However, when a user claims their airdrop, any unvested tokens are forfeited and returned to the
    campaign owner. This approach is useful for airdrops aimed at rewarding loyal users who wait until the end of the
-   vesting period to claim their tokens.
+   unlock period to claim their tokens.
 
 Sablier Airdrops also offer flexibility in configuring the Airdrop campaigns. For example, you can choose between
 whether you want to have vesting to begin at the same time for all user (absolute) or at the time of each claim

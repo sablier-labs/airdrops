@@ -306,8 +306,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        IERC20 token_,
-        MerkleVCA.Timestamps memory vesting
+        MerkleVCA.Timestamps memory timestamps,
+        IERC20 token_
     )
         internal
         view
@@ -317,8 +317,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: merkleRoot,
-            token_: token_,
-            vesting: vesting
+            timestamps: timestamps,
+            token_: token_
         });
 
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
