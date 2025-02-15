@@ -112,14 +112,14 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            token_: FORK_TOKEN
+            tokenAddress: FORK_TOKEN
         });
 
-        vars.params = defaults.merkleInstantConstructorParams({
+        vars.params = merkleInstantConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            token_: FORK_TOKEN
+            tokenAddress: FORK_TOKEN
         });
 
         vm.expectEmit({ emitter: address(merkleFactoryInstant) });
@@ -128,7 +128,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             params: vars.params,
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount,
-            fee: defaults.MINIMUM_FEE()
+            fee: MINIMUM_FEE
         });
 
         vars.merkleInstant =
@@ -180,7 +180,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
 
         expectCallToClaimWithData({
             merkleLockup: address(vars.merkleInstant),
-            fee: defaults.MINIMUM_FEE(),
+            fee: MINIMUM_FEE,
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -193,7 +193,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             value: vars.amounts[params.posBeforeSort]
         });
 
-        vars.merkleInstant.claim{ value: defaults.MINIMUM_FEE() }({
+        vars.merkleInstant.claim{ value: MINIMUM_FEE }({
             index: vars.indexes[params.posBeforeSort],
             recipient: vars.recipients[params.posBeforeSort],
             amount: vars.amounts[params.posBeforeSort],
@@ -231,11 +231,11 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
         emit ISablierMerkleFactoryBase.CollectFees({
             admin: factoryAdmin,
             merkleBase: vars.merkleInstant,
-            feeAmount: defaults.MINIMUM_FEE()
+            feeAmount: MINIMUM_FEE
         });
         merkleFactoryInstant.collectFees({ merkleBase: vars.merkleInstant });
 
         assertEq(address(vars.merkleInstant).balance, 0, "merkleInstant ETH balance");
-        assertEq(factoryAdmin.balance, initialAdminBalance + defaults.MINIMUM_FEE(), "admin ETH balance");
+        assertEq(factoryAdmin.balance, initialAdminBalance + MINIMUM_FEE, "admin ETH balance");
     }
 }
