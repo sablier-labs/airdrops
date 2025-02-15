@@ -2,9 +2,11 @@
 pragma solidity >=0.8.22 <0.9.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 import { LockupNFTDescriptor } from "@sablier/lockup/src/LockupNFTDescriptor.sol";
 import { SablierLockup } from "@sablier/lockup/src/SablierLockup.sol";
+import { Merkle } from "murky/src/Merkle.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactory } from "src/interfaces/ISablierMerkleFactory.sol";
 import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
@@ -22,11 +24,14 @@ import { Assertions } from "./utils/Assertions.sol";
 import { Constants } from "./utils/Constants.sol";
 import { Defaults } from "./utils/Defaults.sol";
 import { DeployOptimized } from "./utils/DeployOptimized.sol";
+import { MerkleBuilder } from "./utils/MerkleBuilder.sol";
 import { Modifiers } from "./utils/Modifiers.sol";
 import { Users } from "./utils/Types.sol";
 
 /// @notice Base test contract with common logic needed by all tests.
-abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers {
+abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Modifiers {
+    using MerkleBuilder for uint256[];
+
     /*//////////////////////////////////////////////////////////////////////////
                                      VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
@@ -72,7 +77,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         deployMerkleFactoryConditionally();
 
         // Set the minimum fee on the Merkle factory.
-        merkleFactory.setMinimumFee(defaults.MINIMUM_FEE());
+        merkleFactory.setMinimumFee(MINIMUM_FEE);
 
         // Create users for testing.
         users.campaignOwner = createUser("CampaignOwner");
@@ -84,8 +89,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         users.recipient4 = createUser("Recipient4");
         users.sender = createUser("Sender");
 
-        defaults.setUsers(users);
-        defaults.initMerkleTree();
+        // Initialize the Merkle tree.
+        initMerkleTree();
 
         // Set the variables in Modifiers contract.
         setVariables(defaults, users);
@@ -125,6 +130,43 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
             merkleFactory = deployOptimizedMerkleFactory(users.admin);
         }
         vm.label({ account: address(merkleFactory), newLabel: "MerkleFactory" });
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                    MERKLE-BUILDER
+    //////////////////////////////////////////////////////////////////////////*/
+
+    function index1Proof() public view returns (bytes32[] memory) {
+        return indexProof(INDEX1, users.recipient1);
+    }
+
+    function index2Proof() public view returns (bytes32[] memory) {
+        return indexProof(INDEX2, users.recipient2);
+    }
+
+    function index3Proof() public view returns (bytes32[] memory) {
+        return indexProof(INDEX3, users.recipient3);
+    }
+
+    function index4Proof() public view returns (bytes32[] memory) {
+        return indexProof(INDEX4, users.recipient4);
+    }
+
+    function indexProof(uint256 index, address recipient) public view returns (bytes32[] memory) {
+        uint256 leaf = MerkleBuilder.computeLeaf(index, recipient, CLAIM_AMOUNT);
+        uint256 pos = Arrays.findUpperBound(LEAVES, leaf);
+        return getProof(LEAVES.toBytes32(), pos);
+    }
+
+    /// @dev We need a separate function to initialize the Merkle tree because, at the construction time, the users are
+    /// not yet set.
+    function initMerkleTree() public {
+        LEAVES[0] = MerkleBuilder.computeLeaf(INDEX1, users.recipient1, CLAIM_AMOUNT);
+        LEAVES[1] = MerkleBuilder.computeLeaf(INDEX2, users.recipient2, CLAIM_AMOUNT);
+        LEAVES[2] = MerkleBuilder.computeLeaf(INDEX3, users.recipient3, CLAIM_AMOUNT);
+        LEAVES[3] = MerkleBuilder.computeLeaf(INDEX4, users.recipient4, CLAIM_AMOUNT);
+        MerkleBuilder.sortLeaves(LEAVES);
+        MERKLE_ROOT = getRoot(LEAVES.toBytes32());
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -171,10 +213,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         vm.expectCall(
             merkleLockup,
             msgValue,
-            abi.encodeCall(
-                ISablierMerkleBase.claim,
-                (defaults.INDEX1(), users.recipient1, defaults.CLAIM_AMOUNT(), defaults.index1Proof())
-            )
+            abi.encodeCall(ISablierMerkleBase.claim, (INDEX1, users.recipient1, CLAIM_AMOUNT, index1Proof()))
         );
     }
 
