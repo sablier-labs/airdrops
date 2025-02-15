@@ -3,13 +3,12 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
-import { Merkle } from "murky/src/Merkle.sol";
 
 import { Base_Test } from "../Base.t.sol";
 import { Defaults } from "../utils/Defaults.sol";
 
 /// @notice Common logic needed by all fork tests.
-abstract contract Fork_Test is Base_Test, Merkle {
+abstract contract Fork_Test is Base_Test {
     /*//////////////////////////////////////////////////////////////////////////
                                   STATE VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
@@ -46,6 +45,6 @@ abstract contract Fork_Test is Base_Test, Merkle {
 
         // Set the minimum fee for campaign.
         resetPrank({ msgSender: factoryAdmin });
-        merkleFactory.setMinimumFee(defaults.MINIMUM_FEE());
+        merkleFactory.setMinimumFee(MINIMUM_FEE);
     }
 }
