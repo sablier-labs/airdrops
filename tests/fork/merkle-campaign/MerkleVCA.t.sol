@@ -224,7 +224,7 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
         resetPrank({ msgSender: params.campaignOwner });
 
         vars.clawbackAmount = uint128(FORK_TOKEN.balanceOf(address(vars.merkleVCA)));
-        vm.warp({ newTimestamp: uint256(params.expiration) + 1 seconds });
+        vm.warp({ newTimestamp: params.expiration + 1 seconds });
 
         expectCallToTransfer({ token: FORK_TOKEN, to: params.campaignOwner, value: vars.clawbackAmount });
         vm.expectEmit({ emitter: address(vars.merkleVCA) });

@@ -129,6 +129,7 @@ contract SablierMerkleVCA is
             uint40 elapsedTime = blockTimestamp - _timestamp.start;
             uint40 totalDuration = _timestamp.end - _timestamp.start;
 
+            // Safe casting because after total duration division the result will be less than 2^128.
             claimableAmount = uint128((uint256(amount) * elapsedTime) / totalDuration);
 
             // Effect: update the forgone amount.
