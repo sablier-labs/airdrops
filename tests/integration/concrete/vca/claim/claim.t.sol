@@ -54,6 +54,9 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
             merkleProof: defaults.index1Proof()
         });
 
+        // It should update the claimed status.
+        assertTrue(merkleVCA.hasClaimed(defaults.INDEX1()), "not claimed");
+
         // It should not update forgone amount.
         assertEq(merkleVCA.forgoneAmount(), 0, "forgone amount");
     }
@@ -75,6 +78,9 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
             amount: defaults.CLAIM_AMOUNT(),
             merkleProof: defaults.index1Proof()
         });
+
+        // It should update the claimed status.
+        assertTrue(merkleVCA.hasClaimed(defaults.INDEX1()), "not claimed");
 
         // It should update forgone amount.
         assertEq(merkleVCA.forgoneAmount(), defaults.CLAIM_AMOUNT() - claimableAmount, "forgone amount");

@@ -67,10 +67,6 @@ abstract contract Modifiers is Utils {
         _;
     }
 
-    modifier whenEndTimeNotZero() {
-        _;
-    }
-
     modifier whenExpirationNotZero() {
         _;
     }

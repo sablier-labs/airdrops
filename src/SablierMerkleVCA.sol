@@ -64,12 +64,9 @@ contract SablierMerkleVCA is
             params.token
         )
     {
-        // Check: neither unlock start time nor unlock end time is zero.
-        if (params.timestamps.end == 0 || params.timestamps.start == 0) {
-            revert Errors.SablierMerkleVCA_UnlockTimeZero({
-                startTime: params.timestamps.start,
-                endTime: params.timestamps.end
-            });
+        // Check: unlock start time is not zero.
+        if (params.timestamps.start == 0) {
+            revert Errors.SablierMerkleVCA_StartTimeZero();
         }
 
         // Check: unlock end time is greater than the start time.
@@ -129,7 +126,7 @@ contract SablierMerkleVCA is
             uint40 elapsedTime = blockTimestamp - _timestamp.start;
             uint40 totalDuration = _timestamp.end - _timestamp.start;
 
-            // Safe casting because after total duration division the result will be less than 2^128.
+            // Safe to cast because the division results into a value less than `amount` which is already an `uint128`.
             claimableAmount = uint128((uint256(amount) * elapsedTime) / totalDuration);
 
             // Effect: update the forgone amount.

@@ -62,14 +62,14 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
         // Bound unlock start and end times.
         params.timestamps.start = boundUint40(params.timestamps.start, 1, getBlockTimestamp() - 1);
         params.timestamps.end =
-            boundUint40(params.timestamps.end, params.timestamps.start, MAX_UNIX_TIMESTAMP - 2 weeks);
+            boundUint40(params.timestamps.end, params.timestamps.start + 1, MAX_UNIX_TIMESTAMP - 2 weeks);
 
         // The expiration must exceed the unlock end time by at least 1 week.
         if (params.timestamps.end > getBlockTimestamp() - 1 weeks) {
             params.expiration = boundUint40(params.expiration, params.timestamps.end + 1 weeks, MAX_UNIX_TIMESTAMP);
         } else {
             // If unlock end time is in the past, set expiration into the future to allow claiming.
-            params.expiration = boundUint40(params.expiration, getBlockTimestamp(), MAX_UNIX_TIMESTAMP);
+            params.expiration = boundUint40(params.expiration, getBlockTimestamp() + 1, MAX_UNIX_TIMESTAMP);
         }
 
         /*//////////////////////////////////////////////////////////////////////////
@@ -215,6 +215,9 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
         });
 
         assertTrue(vars.merkleVCA.hasClaimed(vars.indexes[params.posBeforeSort]));
+
+        uint256 expectedForgoneAmount = vars.amounts[params.posBeforeSort] - vars.claimableAmount;
+        assertEq(vars.merkleVCA.forgoneAmount(), expectedForgoneAmount, "forgoneAmount");
 
         /*//////////////////////////////////////////////////////////////////////////
                                         CLAWBACK

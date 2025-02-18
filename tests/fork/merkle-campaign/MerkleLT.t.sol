@@ -225,7 +225,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
 
         if (params.expiration > 0) {
             vars.clawbackAmount = uint128(FORK_TOKEN.balanceOf(address(vars.merkleLT)));
-            vm.warp({ newTimestamp: uint256(params.expiration) + 1 seconds });
+            vm.warp({ newTimestamp: params.expiration + 1 seconds });
 
             resetPrank({ msgSender: params.campaignOwner });
             expectCallToTransfer({ token: FORK_TOKEN, to: params.campaignOwner, value: vars.clawbackAmount });
