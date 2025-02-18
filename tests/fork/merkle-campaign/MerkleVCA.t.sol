@@ -64,14 +64,12 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
         params.timestamps.end =
             boundUint40(params.timestamps.end, params.timestamps.start, MAX_UNIX_TIMESTAMP - 2 weeks);
 
-        // The expiration must be either zero or exceed the unlock end time by at least 1 week.
-        if (params.expiration != 0) {
-            if (params.timestamps.end > getBlockTimestamp() - 1 weeks) {
-                params.expiration = boundUint40(params.expiration, params.timestamps.end + 1 weeks, MAX_UNIX_TIMESTAMP);
-            } else {
-                // If unlock end time is in the past, set expiration into the future to allow claiming.
-                params.expiration = boundUint40(params.expiration, getBlockTimestamp(), MAX_UNIX_TIMESTAMP);
-            }
+        // The expiration must exceed the unlock end time by at least 1 week.
+        if (params.timestamps.end > getBlockTimestamp() - 1 weeks) {
+            params.expiration = boundUint40(params.expiration, params.timestamps.end + 1 weeks, MAX_UNIX_TIMESTAMP);
+        } else {
+            // If unlock end time is in the past, set expiration into the future to allow claiming.
+            params.expiration = boundUint40(params.expiration, getBlockTimestamp(), MAX_UNIX_TIMESTAMP);
         }
 
         /*//////////////////////////////////////////////////////////////////////////
@@ -225,19 +223,17 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        if (params.expiration > 0) {
-            vars.clawbackAmount = uint128(FORK_TOKEN.balanceOf(address(vars.merkleVCA)));
-            vm.warp({ newTimestamp: uint256(params.expiration) + 1 seconds });
+        vars.clawbackAmount = uint128(FORK_TOKEN.balanceOf(address(vars.merkleVCA)));
+        vm.warp({ newTimestamp: uint256(params.expiration) + 1 seconds });
 
-            expectCallToTransfer({ token: FORK_TOKEN, to: params.campaignOwner, value: vars.clawbackAmount });
-            vm.expectEmit({ emitter: address(vars.merkleVCA) });
-            emit ISablierMerkleBase.Clawback({
-                to: params.campaignOwner,
-                admin: params.campaignOwner,
-                amount: vars.clawbackAmount
-            });
-            vars.merkleVCA.clawback({ to: params.campaignOwner, amount: vars.clawbackAmount });
-        }
+        expectCallToTransfer({ token: FORK_TOKEN, to: params.campaignOwner, value: vars.clawbackAmount });
+        vm.expectEmit({ emitter: address(vars.merkleVCA) });
+        emit ISablierMerkleBase.Clawback({
+            to: params.campaignOwner,
+            admin: params.campaignOwner,
+            amount: vars.clawbackAmount
+        });
+        vars.merkleVCA.clawback({ to: params.campaignOwner, amount: vars.clawbackAmount });
 
         /*//////////////////////////////////////////////////////////////////////////
                                         COLLECT-FEES

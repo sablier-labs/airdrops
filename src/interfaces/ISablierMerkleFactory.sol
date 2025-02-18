@@ -182,13 +182,13 @@ interface ISablierMerkleFactory is IAdminable {
     /// Notes:
     /// - The MerkleVCA contract is created with CREATE2.
     /// - The immutable fee will be set to the minimum fee value unless a custom fee is set.
-    /// - A value of zero for `params.expiration` means the campaign does not expire.
     /// - Users interested into funding the campaign before its deployment must meet the below requirements, otherwise
     /// the campaign deployment will revert.
     ///
     /// Requirements:
-    /// - If set, the `params.expiration` must be at least 1 week beyond the unlock end time to ensure loyal
-    /// recipients have enough time to claim.
+    /// - The value of `params.expiration` must not be zero.
+    /// - The value of `params.expiration` must be at least 1 week beyond the unlock end time to ensure loyal recipients
+    /// have enough time to claim.
     /// - `params.timestamps.end` must be greater than `params.timestamps.start`.
     /// - Both `params.timestamps.start` and `params.timestamps.end` must be non-zero.
     ///

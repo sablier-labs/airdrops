@@ -80,8 +80,13 @@ contract SablierMerkleVCA is
             });
         }
 
-        // Check: campaign expiration, if non-zero, exceeds the timestamps end time by at least 1 week.
-        if (params.expiration > 0 && params.expiration < params.timestamps.end + 1 weeks) {
+        // Check: campaign expiration is not zero.
+        if (params.expiration == 0) {
+            revert Errors.SablierMerkleVCA_ExpiryTimeZero();
+        }
+
+        // Check: campaign expiration exceeds the timestamps end time by at least 1 week.
+        if (params.expiration < params.timestamps.end + 1 weeks) {
             revert Errors.SablierMerkleVCA_ExpiryWithinOneWeekOfUnlockEndTime({
                 endTime: params.timestamps.end,
                 expiration: params.expiration

@@ -14,11 +14,7 @@ CreateMerkleVCA_Integration_Test
          │  └── it should revert
          └── when end time greater than start time
             ├── when zero expiry
-            │  ├── it should create the campaign with minimum fee
-            │  ├── it should set the current factory address
-            │  ├── it should set return the correct unlock timestamps
-            │  ├── it should set the expiry to 0
-            │  └── it should emit a {CreateMerkleVCA} event
+            │  └── it should revert
             └── when not zero expiry
                ├── when expiry not exceed one week from end time
                │  └── it should revert

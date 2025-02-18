@@ -111,39 +111,23 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         });
     }
 
-    function test_WhenZeroExpiry()
+    function test_RevertWhen_ZeroExpiry()
         external
         givenCampaignNotExists
         whenStartTimeNotZero
         whenEndTimeNotZero
         whenEndTimeGreaterThanStartTime
     {
-        address expectedMerkleVCA = computeMerkleVCAAddress({ campaignOwner: users.sender, expiration: 0 });
+        MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
+        params.expiration = 0;
 
-        // It should emit a {CreateMerkleVCA} event.
-        vm.expectEmit(address(merkleFactory));
-        emit ISablierMerkleFactory.CreateMerkleVCA({
-            merkleVCA: ISablierMerkleVCA(address(expectedMerkleVCA)),
-            params: merkleVCAConstructorParams({ campaignOwner: users.sender, expiration: 0 }),
-            aggregateAmount: defaults.AGGREGATE_AMOUNT(),
-            recipientCount: defaults.RECIPIENT_COUNT(),
-            fee: defaults.MINIMUM_FEE()
+        // It should revert.
+        vm.expectRevert(Errors.SablierMerkleVCA_ExpiryTimeZero.selector);
+        merkleFactory.createMerkleVCA({
+            params: params,
+            aggregateAmount: aggregateAmount,
+            recipientCount: recipientCount
         });
-
-        ISablierMerkleVCA actualVCA = createMerkleVCA({ campaignOwner: users.sender, expiration: 0 });
-
-        // It should create the campaign with custom fee.
-        assertEq(actualVCA.MINIMUM_FEE(), defaults.MINIMUM_FEE(), "minimum fee");
-
-        // It should set the current factory address.
-        assertEq(actualVCA.FACTORY(), address(merkleFactory), "factory");
-
-        // It should set the expiry to 0.
-        assertEq(actualVCA.EXPIRATION(), 0, "expiration");
-
-        // It should set return the correct unlock schedule.
-        assertEq(actualVCA.timestamps().start, defaults.RANGED_STREAM_START_TIME(), "unlock start");
-        assertEq(actualVCA.timestamps().end, defaults.RANGED_STREAM_END_TIME(), "unlock end");
     }
 
     function test_RevertWhen_ExpiryNotExceedOneWeekFromEndTime()
