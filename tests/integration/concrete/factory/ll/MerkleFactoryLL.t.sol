@@ -8,6 +8,7 @@ import { CollectFees_Integration_Test } from "./../shared/collect-fees/collectFe
 import { GetFee_Integration_Test } from "./../shared/get-fee/getFee.t.sol";
 import { ResetCustomFee_Integration_Test } from "./../shared/reset-custom-fee/resetCustomFee.t.sol";
 import { SetCustomFee_Integration_Test } from "./../shared/set-custom-fee/setCustomFee.t.sol";
+import { SetMinimumFee_Integration_Test } from "./../shared/set-minimum-fee/setMinimumFee.t.sol";
 
 /*//////////////////////////////////////////////////////////////////////////
                              NON-SHARED TESTS
@@ -60,6 +61,15 @@ contract ResetCustomFee_MerkleFactoryLL_Integration_Test is
 contract SetCustomFee_MerkleFactoryLL_Integration_Test is
     MerkleFactoryLL_Integration_Shared_Test,
     SetCustomFee_Integration_Test
+{
+    function setUp() public override(MerkleFactoryLL_Integration_Shared_Test, Integration_Test) {
+        MerkleFactoryLL_Integration_Shared_Test.setUp();
+    }
+}
+
+contract SetMinimumFee_MerkleFactoryLL_Integration_Test is
+    MerkleFactoryLL_Integration_Shared_Test,
+    SetMinimumFee_Integration_Test
 {
     function setUp() public override(MerkleFactoryLL_Integration_Shared_Test, Integration_Test) {
         MerkleFactoryLL_Integration_Shared_Test.setUp();

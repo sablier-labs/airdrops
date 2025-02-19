@@ -16,36 +16,35 @@ abstract contract DeployOptimized is StdCheats, CommonBase {
     )
         internal
         returns (
-            ISablierMerkleFactoryInstant,
-            ISablierMerkleFactoryLL,
-            ISablierMerkleFactoryLT,
-            ISablierMerkleFactoryVCA
+            ISablierMerkleFactoryInstant merkleFactoryInstant,
+            ISablierMerkleFactoryLL merkleFactoryLL,
+            ISablierMerkleFactoryLT merkleFactoryLT,
+            ISablierMerkleFactoryVCA merkleFactoryVCA
         )
     {
-        ISablierMerkleFactoryInstant merkleFactoryInstant = ISablierMerkleFactoryInstant(
+        merkleFactoryInstant = ISablierMerkleFactoryInstant(
             deployCode(
                 "out-optimized/SablierMerkleFactoryInstant.sol/SablierMerkleFactoryInstant.json",
                 abi.encode(initialAdmin, initialMinimumFee)
             )
         );
-        ISablierMerkleFactoryLL merkleFactoryLL = ISablierMerkleFactoryLL(
+        merkleFactoryLL = ISablierMerkleFactoryLL(
             deployCode(
                 "out-optimized/SablierMerkleFactoryLL.sol/SablierMerkleFactoryLL.json",
                 abi.encode(initialAdmin, initialMinimumFee)
             )
         );
-        ISablierMerkleFactoryLT merkleFactoryLT = ISablierMerkleFactoryLT(
+        merkleFactoryLT = ISablierMerkleFactoryLT(
             deployCode(
                 "out-optimized/SablierMerkleFactoryLT.sol/SablierMerkleFactoryLT.json",
                 abi.encode(initialAdmin, initialMinimumFee)
             )
         );
-        ISablierMerkleFactoryVCA merkleFactoryVCA = ISablierMerkleFactoryVCA(
+        merkleFactoryVCA = ISablierMerkleFactoryVCA(
             deployCode(
                 "out-optimized/SablierMerkleFactoryVCA.sol/SablierMerkleFactoryVCA.json",
                 abi.encode(initialAdmin, initialMinimumFee)
             )
         );
-        return (merkleFactoryInstant, merkleFactoryLL, merkleFactoryLT, merkleFactoryVCA);
     }
 }

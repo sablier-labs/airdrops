@@ -42,7 +42,7 @@ contract Constructor_MerkleLT_Integration_Test is MerkleLT_Integration_Shared_Te
 
     function test_Constructor() external {
         // Make Factory the caller for the constructor test.
-        resetPrank(address(merkleFactoryBase));
+        resetPrank(address(merkleFactoryLT));
 
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
 
@@ -67,7 +67,7 @@ contract Constructor_MerkleLT_Integration_Test is MerkleLT_Integration_Shared_Te
         assertEq(vars.actualExpiration, vars.expectedExpiration, "expiration");
 
         vars.actualFactory = constructedLT.FACTORY();
-        vars.expectedFactory = address(merkleFactoryBase);
+        vars.expectedFactory = address(merkleFactoryLT);
         assertEq(vars.actualFactory, vars.expectedFactory, "factory");
 
         vars.actualFee = constructedLT.MINIMUM_FEE();

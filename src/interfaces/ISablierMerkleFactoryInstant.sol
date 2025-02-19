@@ -8,6 +8,10 @@ import { ISablierMerkleInstant } from "./ISablierMerkleInstant.sol";
 /// @title ISablierMerkleFactoryInstant
 /// @notice A contract that deploys MerkleInstant campaigns.
 interface ISablierMerkleFactoryInstant is ISablierMerkleFactoryBase {
+    /*//////////////////////////////////////////////////////////////////////////
+                                       EVENTS
+    //////////////////////////////////////////////////////////////////////////*/
+
     /// @notice Emitted when a {SablierMerkleInstant} campaign is created.
     event CreateMerkleInstant(
         ISablierMerkleInstant indexed merkleInstant,

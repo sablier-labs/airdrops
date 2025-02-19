@@ -68,6 +68,9 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
 
         Vars memory vars;
 
+        // Load the factory admin from mainnet.
+        factoryAdmin = merkleFactoryInstant.admin();
+
         vars.recipientCount = params.leafData.length;
         vars.amounts = new uint128[](vars.recipientCount);
         vars.indexes = new uint256[](vars.recipientCount);

@@ -7,22 +7,23 @@ import { Integration_Test } from "./../../../../Integration.t.sol";
 
 abstract contract SetMinimumFee_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotAdmin() external {
-        uint256 minimumFee = defaults.MINIMUM_FEE();
         resetPrank({ msgSender: users.eve });
         vm.expectRevert(abi.encodeWithSelector(Errors.CallerNotAdmin.selector, users.admin, users.eve));
-        merkleFactoryBase.setMinimumFee({ minimumFee: minimumFee });
+        merkleFactoryBase.setMinimumFee(0.001e18);
     }
 
     function test_WhenCallerAdmin() external {
         resetPrank({ msgSender: users.admin });
 
+        uint256 minimumFee = 0.001e18;
+
         // It should emit a {SetMinimumFee} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetMinimumFee({ admin: users.admin, minimumFee: defaults.MINIMUM_FEE() });
+        emit ISablierMerkleFactoryBase.SetMinimumFee({ admin: users.admin, minimumFee: minimumFee });
 
-        merkleFactoryBase.setMinimumFee({ minimumFee: defaults.MINIMUM_FEE() });
+        merkleFactoryBase.setMinimumFee(minimumFee);
 
         // It should set the minimum fee.
-        assertEq(merkleFactoryBase.minimumFee(), defaults.MINIMUM_FEE(), "minimum fee");
+        assertEq(merkleFactoryBase.minimumFee(), minimumFee, "minimum fee");
     }
 }

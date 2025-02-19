@@ -77,14 +77,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         LockupNFTDescriptor nftDescriptor = new LockupNFTDescriptor();
         lockup = new SablierLockup(users.admin, nftDescriptor, 1000);
 
-        // Deploy the Merkle Factory.
+        // Deploy the Merkle Factory contracts.
         deployMerkleFactoriesConditionally();
-
-        // Set the minimum fee on the Merkle factories.
-        merkleFactoryInstant.setMinimumFee(defaults.MINIMUM_FEE());
-        merkleFactoryLL.setMinimumFee(defaults.MINIMUM_FEE());
-        merkleFactoryLT.setMinimumFee(defaults.MINIMUM_FEE());
-        merkleFactoryVCA.setMinimumFee(defaults.MINIMUM_FEE());
 
         // Create users for testing.
         users.campaignOwner = createUser("CampaignOwner");
@@ -131,9 +125,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Modifiers
         return user;
     }
 
-    /// @dev Deploys the Merkle Factories contracts conditionally based on the test profile.
+    /// @dev Deploys the Merkle Factory contracts conditionally based on the test profile.
     function deployMerkleFactoriesConditionally() internal {
-        // Deploy the Merkle Factories.
         if (!isTestOptimizedProfile()) {
             merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, defaults.MINIMUM_FEE());
             merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, defaults.MINIMUM_FEE());

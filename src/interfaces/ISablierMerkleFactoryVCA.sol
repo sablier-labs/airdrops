@@ -8,6 +8,10 @@ import { ISablierMerkleVCA } from "./ISablierMerkleVCA.sol";
 /// @title ISablierMerkleFactoryVCA
 /// @notice A contract that deploys MerkleVCA campaigns.
 interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
+    /*//////////////////////////////////////////////////////////////////////////
+                                       EVENTS
+    //////////////////////////////////////////////////////////////////////////*/
+
     /// @notice Emitted when a {SablierMerkleVCA} campaign is created.
     event CreateMerkleVCA(
         ISablierMerkleVCA indexed merkleVCA,

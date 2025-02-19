@@ -38,7 +38,7 @@ contract Constructor_MerkleLL_Integration_Test is MerkleLL_Integration_Shared_Te
 
     function test_Constructor() external {
         // Make Factory the caller for the constructor test.
-        resetPrank(address(merkleFactoryBase));
+        resetPrank(address(merkleFactoryLL));
 
         SablierMerkleLL constructedLL = new SablierMerkleLL(merkleLLConstructorParams(), users.campaignOwner);
 
@@ -61,7 +61,7 @@ contract Constructor_MerkleLL_Integration_Test is MerkleLL_Integration_Shared_Te
         assertEq(vars.actualExpiration, vars.expectedExpiration, "expiration");
 
         vars.actualFactory = constructedLL.FACTORY();
-        vars.expectedFactory = address(merkleFactoryBase);
+        vars.expectedFactory = address(merkleFactoryLL);
         assertEq(vars.actualFactory, vars.expectedFactory, "factory");
 
         vars.actualFee = constructedLL.MINIMUM_FEE();

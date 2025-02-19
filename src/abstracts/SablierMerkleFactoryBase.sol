@@ -7,6 +7,8 @@ import { ISablierMerkleBase } from "../interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactoryBase } from "../interfaces/ISablierMerkleFactoryBase.sol";
 import { MerkleFactory } from "../types/DataTypes.sol";
 
+/// @title SablierMerkleFactoryBase
+/// @notice See the documentation in {ISablierMerkleFactoryBase}.
 abstract contract SablierMerkleFactoryBase is
     ISablierMerkleFactoryBase, // 1 inherited component
     Adminable // 1 inherited component

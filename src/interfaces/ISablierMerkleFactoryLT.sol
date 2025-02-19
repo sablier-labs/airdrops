@@ -8,6 +8,10 @@ import { ISablierMerkleLT } from "./ISablierMerkleLT.sol";
 /// @title ISablierMerkleFactoryLT
 /// @notice A contract that deploys MerkleLT campaigns.
 interface ISablierMerkleFactoryLT is ISablierMerkleFactoryBase {
+    /*//////////////////////////////////////////////////////////////////////////
+                                       EVENTS
+    //////////////////////////////////////////////////////////////////////////*/
+
     /// @notice Emitted when a {SablierMerkleLT} campaign is created.
     event CreateMerkleLT(
         ISablierMerkleLT indexed merkleLT,
