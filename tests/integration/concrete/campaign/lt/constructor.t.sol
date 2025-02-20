@@ -13,7 +13,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
 
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
 
-        SablierMerkleLT constructedLT = new SablierMerkleLT(params, users.campaignOwner);
+        SablierMerkleLT constructedLT = new SablierMerkleLT(params);
 
         uint256 actualAllowance = dai.allowance(address(constructedLT), address(lockup));
         assertEq(actualAllowance, MAX_UINT256, "allowance");
@@ -21,8 +21,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         assertEq(constructedLT.admin(), users.campaignOwner, "admin");
         assertEq(constructedLT.campaignName(), CAMPAIGN_NAME, "campaign name");
         assertEq(constructedLT.EXPIRATION(), EXPIRATION, "expiration");
-        assertEq(constructedLT.FACTORY(), address(merkleFactoryLT), "factory");
-        assertEq(constructedLT.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
+        assertEq(address(constructedLT.FACTORY()), address(merkleFactoryLT), "factory");
         assertEq(constructedLT.ipfsCID(), IPFS_CID, "ipfsCID");
         assertEq(address(constructedLT.LOCKUP()), address(lockup), "lockup");
         assertEq(constructedLT.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");

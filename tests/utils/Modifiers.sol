@@ -28,6 +28,10 @@ abstract contract Modifiers is Utils {
         _;
     }
 
+    modifier givenCustomFeeNotSet() {
+        _;
+    }
+
     modifier givenMsgValueNotLessThanFee() {
         _;
     }

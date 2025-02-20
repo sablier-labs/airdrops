@@ -1,0 +1,8 @@
+GetMinimumFeeFor_Integration_Test
+├── given custom fee set
+│  └── it should return the custom fee
+└── given custom fee not set
+   ├── given price feed not set
+   │  └── it should return 0
+   └── given price feed set
+      └── it should return the calculated fee

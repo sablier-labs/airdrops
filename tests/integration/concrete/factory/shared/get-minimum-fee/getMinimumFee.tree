@@ -1,0 +1,5 @@
+GetMinimumFee_Integration_Test
+├── given price feed not set
+│  └── it should return 0
+└── given price feed set
+   └── it should return the calculated fee

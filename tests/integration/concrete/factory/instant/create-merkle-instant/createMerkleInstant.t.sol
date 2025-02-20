@@ -38,8 +38,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             params: merkleInstantConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT,
-            fee: customFee
+            recipientCount: RECIPIENT_COUNT
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
@@ -48,11 +47,8 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             address(actualInstant), expectedMerkleInstant, "MerkleInstant contract does not match computed address"
         );
 
-        // It should create the campaign with custom fee.
-        assertEq(actualInstant.MINIMUM_FEE(), customFee, "custom fee");
-
         // It should set the current factory address.
-        assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant), "factory");
+        assertEq(actualInstant.FACTORY(), merkleFactoryInstant);
     }
 
     function test_GivenCustomFeeNotSet(address campaignOwner, uint40 expiration) external givenCampaignNotExists {
@@ -64,8 +60,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             params: merkleInstantConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT,
-            fee: MINIMUM_FEE
+            recipientCount: RECIPIENT_COUNT
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
@@ -74,10 +69,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             address(actualInstant), expectedMerkleInstant, "MerkleInstant contract does not match computed address"
         );
 
-        // It should create the campaign with custom fee.
-        assertEq(actualInstant.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
-
         // It should set the current factory address.
-        assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant), "factory");
+        assertEq(actualInstant.FACTORY(), merkleFactoryInstant);
     }
 }

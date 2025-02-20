@@ -7,7 +7,6 @@ import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol"
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
-import { MerkleInstant, MerkleLL, MerkleLT, MerkleVCA } from "src/types/DataTypes.sol";
 
 import { Base_Test } from "../Base.t.sol";
 import { ContractWithoutReceiveEth, ContractWithReceiveEth } from "../mocks/ReceiveEth.sol";

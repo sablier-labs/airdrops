@@ -38,19 +38,15 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
             merkleLL: ISablierMerkleLL(expectedLL),
             params: merkleLLConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT,
-            fee: customFee
+            recipientCount: RECIPIENT_COUNT
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(campaignOwner, expiration);
         assertGt(address(actualLL).code.length, 0, "MerkleLL contract not created");
         assertEq(address(actualLL), expectedLL, "MerkleLL contract does not match computed address");
 
-        // It should create the campaign with custom fee.
-        assertEq(actualLL.MINIMUM_FEE(), customFee, "custom fee");
-
         // It should set the current factory address.
-        assertEq(actualLL.FACTORY(), address(merkleFactoryLL), "factory");
+        assertEq(actualLL.FACTORY(), merkleFactoryLL);
     }
 
     function test_GivenCustomFeeNotSet(address campaignOwner, uint40 expiration) external givenCampaignNotExists {
@@ -62,8 +58,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
             merkleLL: ISablierMerkleLL(expectedLL),
             params: merkleLLConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT,
-            fee: MINIMUM_FEE
+            recipientCount: RECIPIENT_COUNT
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(campaignOwner, expiration);
@@ -73,10 +68,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         // It should set the correct shape.
         assertEq(actualLL.shape(), SHAPE, "shape");
 
-        // It should create the campaign with custom fee.
-        assertEq(actualLL.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
-
         // It should set the current factory address.
-        assertEq(actualLL.FACTORY(), address(merkleFactoryLL), "factory");
+        assertEq(actualLL.FACTORY(), merkleFactoryLL);
     }
 }

@@ -4,6 +4,8 @@ pragma solidity >=0.8.22;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IAdminable } from "@sablier/lockup/src/interfaces/IAdminable.sol";
 
+import { ISablierMerkleFactoryBase } from "./ISablierMerkleFactoryBase.sol";
+
 /// @title ISablierMerkleBase
 /// @dev Common interface between Merkle campaigns.
 interface ISablierMerkleBase is IAdminable {
@@ -23,15 +25,11 @@ interface ISablierMerkleBase is IAdminable {
     function EXPIRATION() external returns (uint40);
 
     /// @notice Retrieves the address of the factory contract.
-    function FACTORY() external view returns (address);
+    function FACTORY() external view returns (ISablierMerkleFactoryBase);
 
     /// @notice The root of the Merkle tree used to validate the proofs of inclusion.
     /// @dev This is an immutable state variable.
     function MERKLE_ROOT() external returns (bytes32);
-
-    /// @notice Retrieves the minimum fee required to claim the airdrop, which is paid in the native token of the chain,
-    /// e.g. ETH for Ethereum Mainnet.
-    function MINIMUM_FEE() external view returns (uint256);
 
     /// @notice The ERC-20 token to distribute.
     /// @dev This is an immutable state variable.

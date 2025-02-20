@@ -134,19 +134,15 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             merkleVCA: ISablierMerkleVCA(address(expectedMerkleVCA)),
             params: merkleVCAConstructorParams({ campaignOwner: users.sender, expiration: EXPIRATION }),
             aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT,
-            fee: 0
+            recipientCount: RECIPIENT_COUNT
         });
 
         ISablierMerkleVCA actualVCA = createMerkleVCA({ campaignOwner: users.sender, expiration: EXPIRATION });
         assertGt(address(actualVCA).code.length, 0, "MerkleVCA contract not created");
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
-        // It should create the campaign with 0 custom fee.
-        assertEq(actualVCA.MINIMUM_FEE(), 0, "custom fee");
-
         // It should set the current factory address.
-        assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
+        assertEq(actualVCA.FACTORY(), merkleFactoryVCA);
 
         // It should set return the correct unlock schedule.
         assertEq(actualVCA.timestamps().start, RANGED_STREAM_START_TIME, "unlock start");
@@ -169,19 +165,15 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             merkleVCA: ISablierMerkleVCA(address(expectedMerkleVCA)),
             params: merkleVCAConstructorParams({ campaignOwner: users.sender, expiration: EXPIRATION }),
             aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT,
-            fee: MINIMUM_FEE
+            recipientCount: RECIPIENT_COUNT
         });
 
         ISablierMerkleVCA actualVCA = createMerkleVCA({ campaignOwner: users.sender, expiration: EXPIRATION });
         assertGt(address(actualVCA).code.length, 0, "MerkleVCA contract not created");
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
-        // It should create the campaign with custom fee.
-        assertEq(actualVCA.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
-
         // It should set the current factory address.
-        assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
+        assertEq(actualVCA.FACTORY(), merkleFactoryVCA);
 
         // It should set return the correct unlock schedule.
         assertEq(actualVCA.timestamps().start, RANGED_STREAM_START_TIME, "unlock start");

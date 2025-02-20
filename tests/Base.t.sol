@@ -27,6 +27,7 @@ import { SablierMerkleInstant } from "src/SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "src/SablierMerkleLL.sol";
 import { SablierMerkleLT } from "src/SablierMerkleLT.sol";
 import { SablierMerkleVCA } from "src/SablierMerkleVCA.sol";
+import { ChainlinkPriceFeedMock } from "src/tests/ChainlinkPriceFeedMock.sol";
 import { MerkleInstant, MerkleLL, MerkleLT, MerkleVCA } from "src/types/DataTypes.sol";
 import { ERC20Mock } from "./mocks/erc20/ERC20Mock.sol";
 import { Assertions } from "./utils/Assertions.sol";
@@ -51,6 +52,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     //////////////////////////////////////////////////////////////////////////*/
 
     ERC20Mock internal dai;
+    ChainlinkPriceFeedMock internal chainlinkPriceFeedMock;
     ISablierLockup internal lockup;
     ISablierMerkleFactoryInstant internal merkleFactoryInstant;
     ISablierMerkleFactoryLL internal merkleFactoryLL;
@@ -68,6 +70,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     function setUp() public virtual {
         // Deploy the base test contracts.
         dai = new ERC20Mock("Dai Stablecoin", "DAI");
+        chainlinkPriceFeedMock = new ChainlinkPriceFeedMock();
 
         // Label the base test contracts.
         vm.label({ account: address(dai), newLabel: "DAI" });
@@ -131,13 +134,13 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     /// @dev Deploys the Merkle Factory contracts conditionally based on the test profile.
     function deployMerkleFactoriesConditionally() internal {
         if (!isTestOptimizedProfile()) {
-            merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, MINIMUM_FEE);
-            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, MINIMUM_FEE);
-            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, MINIMUM_FEE);
-            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, MINIMUM_FEE);
+            merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, address(chainlinkPriceFeedMock));
+            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, address(chainlinkPriceFeedMock));
+            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, address(chainlinkPriceFeedMock));
+            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, address(chainlinkPriceFeedMock));
         } else {
             (merkleFactoryInstant, merkleFactoryLL, merkleFactoryLT, merkleFactoryVCA) =
-                deployOptimizedMerkleFactories(users.admin, MINIMUM_FEE);
+                deployOptimizedMerkleFactories(users.admin, address(chainlinkPriceFeedMock));
         }
         vm.label({ account: address(merkleFactoryInstant), newLabel: "MerkleFactoryInstant" });
         vm.label({ account: address(merkleFactoryLL), newLabel: "MerkleFactoryLL" });
@@ -266,13 +269,11 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         bytes32 creationBytecodeHash;
 
         if (!isTestOptimizedProfile()) {
-            creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleInstant).creationCode, abi.encode(params, campaignCreator)));
+            creationBytecodeHash = keccak256(bytes.concat(type(SablierMerkleInstant).creationCode, abi.encode(params)));
         } else {
             creationBytecodeHash = keccak256(
                 bytes.concat(
-                    vm.getCode("out-optimized/SablierMerkleInstant.sol/SablierMerkleInstant.json"),
-                    abi.encode(params, campaignCreator)
+                    vm.getCode("out-optimized/SablierMerkleInstant.sol/SablierMerkleInstant.json"), abi.encode(params)
                 )
             );
         }
@@ -360,14 +361,10 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
 
         bytes32 creationBytecodeHash;
         if (!isTestOptimizedProfile()) {
-            creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleLL).creationCode, abi.encode(params, campaignCreator)));
+            creationBytecodeHash = keccak256(bytes.concat(type(SablierMerkleLL).creationCode, abi.encode(params)));
         } else {
             creationBytecodeHash = keccak256(
-                bytes.concat(
-                    vm.getCode("out-optimized/SablierMerkleLL.sol/SablierMerkleLL.json"),
-                    abi.encode(params, campaignCreator)
-                )
+                bytes.concat(vm.getCode("out-optimized/SablierMerkleLL.sol/SablierMerkleLL.json"), abi.encode(params))
             );
         }
         return vm.computeCreate2Address({
@@ -466,14 +463,10 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
 
         bytes32 creationBytecodeHash;
         if (!isTestOptimizedProfile()) {
-            creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleLT).creationCode, abi.encode(params, campaignCreator)));
+            creationBytecodeHash = keccak256(bytes.concat(type(SablierMerkleLT).creationCode, abi.encode(params)));
         } else {
             creationBytecodeHash = keccak256(
-                bytes.concat(
-                    vm.getCode("out-optimized/SablierMerkleLT.sol/SablierMerkleLT.json"),
-                    abi.encode(params, campaignCreator)
-                )
+                bytes.concat(vm.getCode("out-optimized/SablierMerkleLT.sol/SablierMerkleLT.json"), abi.encode(params))
             );
         }
 
@@ -608,14 +601,10 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
 
         bytes32 creationBytecodeHash;
         if (!isTestOptimizedProfile()) {
-            creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleVCA).creationCode, abi.encode(params, campaignCreator)));
+            creationBytecodeHash = keccak256(bytes.concat(type(SablierMerkleVCA).creationCode, abi.encode(params)));
         } else {
             creationBytecodeHash = keccak256(
-                bytes.concat(
-                    vm.getCode("out-optimized/SablierMerkleVCA.sol/SablierMerkleVCA.json"),
-                    abi.encode(params, campaignCreator)
-                )
+                bytes.concat(vm.getCode("out-optimized/SablierMerkleVCA.sol/SablierMerkleVCA.json"), abi.encode(params))
             );
         }
         return vm.computeCreate2Address({

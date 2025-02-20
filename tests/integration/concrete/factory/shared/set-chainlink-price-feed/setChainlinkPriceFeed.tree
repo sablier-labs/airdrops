@@ -1,0 +1,6 @@
+SetChainlinkPriceFeed_Integration_Test
+├── when caller not admin
+│   └── it should revert
+└── when caller admin
+    ├── it should set the price feed
+    └── it should emit a {SetChainlinkPriceFeed} event

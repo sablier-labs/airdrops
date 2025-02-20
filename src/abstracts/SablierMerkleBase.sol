@@ -28,13 +28,10 @@ abstract contract SablierMerkleBase is
     uint40 public immutable override EXPIRATION;
 
     /// @inheritdoc ISablierMerkleBase
-    address public immutable override FACTORY;
+    ISablierMerkleFactoryBase public immutable override FACTORY;
 
     /// @inheritdoc ISablierMerkleBase
     bytes32 public immutable override MERKLE_ROOT;
-
-    /// @inheritdoc ISablierMerkleBase
-    uint256 public immutable override MINIMUM_FEE;
 
     /// @inheritdoc ISablierMerkleBase
     IERC20 public immutable override TOKEN;
@@ -57,7 +54,6 @@ abstract contract SablierMerkleBase is
 
     /// @notice Constructs the contract by initializing the immutable state variables.
     constructor(
-        address campaignCreator,
         string memory _campaignName,
         uint40 expiration,
         address initialAdmin,
@@ -69,8 +65,7 @@ abstract contract SablierMerkleBase is
     {
         campaignName = _campaignName;
         EXPIRATION = expiration;
-        FACTORY = msg.sender;
-        MINIMUM_FEE = ISablierMerkleFactoryBase(FACTORY).getFee(campaignCreator);
+        FACTORY = ISablierMerkleFactoryBase(msg.sender);
         MERKLE_ROOT = merkleRoot;
         TOKEN = token;
         ipfsCID = _ipfsCID;
@@ -115,9 +110,12 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CampaignExpired({ blockTimestamp: block.timestamp, expiration: EXPIRATION });
         }
 
+        // Calculate the minimum fee.
+        uint256 minimumFee = FACTORY.getMinimumFeeFor(admin);
+
         // Check: `msg.value` is not less than the minimum fee.
-        if (msg.value < MINIMUM_FEE) {
-            revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, MINIMUM_FEE);
+        if (msg.value < minimumFee) {
+            revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, minimumFee);
         }
 
         // Check: the index has not been claimed.
@@ -167,8 +165,8 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     function collectFees(address factoryAdmin) external override returns (uint256 feeAmount) {
         // Check: the caller is the FACTORY.
-        if (msg.sender != FACTORY) {
-            revert Errors.SablierMerkleBase_CallerNotFactory(FACTORY, msg.sender);
+        if (msg.sender != address(FACTORY)) {
+            revert Errors.SablierMerkleBase_CallerNotFactory(address(FACTORY), msg.sender);
         }
 
         feeAmount = address(this).balance;

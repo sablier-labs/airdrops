@@ -15,12 +15,12 @@ contract SablierMerkleFactoryInstant is ISablierMerkleFactoryInstant, SablierMer
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
-    /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
+    /// @param initialChainlinkPriceFeed The initial Chainlink price feed contract.
     constructor(
         address initialAdmin,
-        uint256 initialMinimumFee
+        address initialChainlinkPriceFeed
     )
-        SablierMerkleFactoryBase(initialAdmin, initialMinimumFee)
+        SablierMerkleFactoryBase(initialAdmin, initialChainlinkPriceFeed)
     { }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -41,15 +41,14 @@ contract SablierMerkleFactoryInstant is ISablierMerkleFactoryInstant, SablierMer
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
 
         // Deploy the MerkleInstant contract with CREATE2.
-        merkleInstant = new SablierMerkleInstant{ salt: salt }({ params: params, campaignCreator: msg.sender });
+        merkleInstant = new SablierMerkleInstant{ salt: salt }({ params: params });
 
         // Log the creation of the MerkleInstant contract, including some metadata that is not stored on-chain.
         emit CreateMerkleInstant({
             merkleInstant: merkleInstant,
             params: params,
             aggregateAmount: aggregateAmount,
-            recipientCount: recipientCount,
-            fee: _getFee(msg.sender)
+            recipientCount: recipientCount
         });
     }
 }

@@ -140,8 +140,7 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
             merkleVCA: ISablierMerkleVCA(vars.expectedMerkleVCA),
             params: vars.params,
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount,
-            fee: MINIMUM_FEE
+            recipientCount: vars.recipientCount
         });
 
         vars.merkleVCA = merkleFactoryVCA.createMerkleVCA(vars.params, vars.aggregateAmount, vars.recipientCount);

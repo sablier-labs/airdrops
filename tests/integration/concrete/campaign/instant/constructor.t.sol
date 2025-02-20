@@ -10,14 +10,12 @@ contract Constructor_MerkleInstant_Integration_Test is MerkleInstant_Integration
         // Make Factory the caller for the constructor test.
         resetPrank(address(merkleFactoryInstant));
 
-        SablierMerkleInstant constructedInstant =
-            new SablierMerkleInstant(merkleInstantConstructorParams(), users.campaignOwner);
+        SablierMerkleInstant constructedInstant = new SablierMerkleInstant(merkleInstantConstructorParams());
 
         assertEq(constructedInstant.admin(), users.campaignOwner, "admin");
         assertEq(constructedInstant.campaignName(), CAMPAIGN_NAME, "campaign name");
         assertEq(constructedInstant.EXPIRATION(), EXPIRATION, "expiration");
-        assertEq(constructedInstant.FACTORY(), address(merkleFactoryInstant), "factory");
-        assertEq(constructedInstant.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
+        assertEq(constructedInstant.FACTORY(), merkleFactoryInstant);
         assertEq(constructedInstant.ipfsCID(), IPFS_CID, "ipfsCID");
         assertEq(constructedInstant.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
         assertEq(address(constructedInstant.TOKEN()), address(dai), "token");
