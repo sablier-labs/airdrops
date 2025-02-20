@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.22;
 
+import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import { IAdminable } from "@sablier/lockup/src/interfaces/IAdminable.sol";
 
 import { ISablierMerkleBase } from "../interfaces/ISablierMerkleBase.sol";
@@ -33,6 +34,9 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /*//////////////////////////////////////////////////////////////////////////
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Retrieves the Chainlink price feed contract.
+    function chainlinkPriceFeed() external view returns (AggregatorV3Interface);
 
     /// @notice Retrieves the custom fee struct for the provided campaign creator.
     /// @dev The fee is denominated in the native token of the chain, e.g., ETH for Ethereum Mainnet.

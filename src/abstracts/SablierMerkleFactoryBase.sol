@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.8.22;
 
+import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+
 import { Adminable } from "@sablier/lockup/src/abstracts/Adminable.sol";
 
 import { ISablierMerkleBase } from "../interfaces/ISablierMerkleBase.sol";
@@ -18,6 +20,9 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
+    AggregatorV3Interface public override chainlinkPriceFeed;
+
+    /// @inheritdoc ISablierMerkleFactoryBase
     uint256 public override minimumFee;
 
     /// @dev A mapping of custom fees mapped by campaign creator addresses.
@@ -29,7 +34,15 @@ abstract contract SablierMerkleFactoryBase is
 
     /// @param initialAdmin The address of the initial contract admin.
     /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
-    constructor(address initialAdmin, uint256 initialMinimumFee) Adminable(initialAdmin) {
+    /// @param initialPriceFeed The initial Chainlink price feed contract.
+    constructor(
+        address initialAdmin,
+        uint256 initialMinimumFee,
+        AggregatorV3Interface initialPriceFeed
+    )
+        Adminable(initialAdmin)
+    {
+        chainlinkPriceFeed = initialPriceFeed;
         minimumFee = initialMinimumFee;
     }
 
@@ -91,6 +104,8 @@ abstract contract SablierMerkleFactoryBase is
 
         emit SetMinimumFee({ admin: msg.sender, minimumFee: newFee });
     }
+
+    function getMinimumFee() external view returns (uint256) { }
 
     /*//////////////////////////////////////////////////////////////////////////
                             INTERNAL CONSTANT FUNCTIONS
