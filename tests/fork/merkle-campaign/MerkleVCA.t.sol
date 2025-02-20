@@ -124,7 +124,7 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
             timestamps: params.timestamps,
-            tokenAddress: FORK_TOKEN
+            token_: FORK_TOKEN
         });
 
         vars.params = merkleVCAConstructorParams({
@@ -132,7 +132,7 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
             timestamps: params.timestamps,
-            tokenAddress: FORK_TOKEN
+            token_: FORK_TOKEN
         });
 
         vm.expectEmit({ emitter: address(merkleFactoryVCA) });

@@ -117,15 +117,15 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            tokenAddress: FORK_TOKEN
+            token_: FORK_TOKEN
         });
 
         vars.params = merkleLLConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
-            lockupAddress: lockup,
+            lockup_: lockup,
             merkleRoot: vars.merkleRoot,
-            tokenAddress: FORK_TOKEN
+            token_: FORK_TOKEN
         });
 
         vm.expectEmit({ emitter: address(merkleFactoryLL) });
