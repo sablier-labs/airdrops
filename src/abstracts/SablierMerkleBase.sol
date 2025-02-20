@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.8.22;
 
+import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
@@ -23,6 +24,9 @@ abstract contract SablierMerkleBase is
     /*//////////////////////////////////////////////////////////////////////////
                                   STATE VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @inheritdoc ISablierMerkleBase
+    address public immutable override CHAINLINK_PRICE_FEED;
 
     /// @inheritdoc ISablierMerkleBase
     uint40 public immutable override EXPIRATION;
@@ -67,18 +71,24 @@ abstract contract SablierMerkleBase is
     )
         Adminable(initialAdmin)
     {
-        campaignName = _campaignName;
-        EXPIRATION = expiration;
         FACTORY = msg.sender;
-        MINIMUM_FEE = ISablierMerkleFactoryBase(FACTORY).getFee(campaignCreator);
+        CHAINLINK_PRICE_FEED = ISablierMerkleFactoryBase(FACTORY).chainlinkPriceFeed();
+        EXPIRATION = expiration;
         MERKLE_ROOT = merkleRoot;
+        MINIMUM_FEE = ISablierMerkleFactoryBase(FACTORY).getFee(campaignCreator);
         TOKEN = token;
+        campaignName = _campaignName;
         ipfsCID = _ipfsCID;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                            USER-FACING CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @inheritdoc ISablierMerkleBase
+    function calculateMinimumFeeInWei() external view returns (uint256) {
+        return _calculateMinimumFeeInWei();
+    }
 
     /// @inheritdoc ISablierMerkleBase
     function getFirstClaimTime() external view override returns (uint40) {
@@ -115,9 +125,12 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CampaignExpired({ blockTimestamp: block.timestamp, expiration: EXPIRATION });
         }
 
+        // Calculate the minimum fee in wei.
+        uint256 minimumFeeInWei = _calculateMinimumFeeInWei();
+
         // Check: `msg.value` is not less than the minimum fee.
-        if (msg.value < MINIMUM_FEE) {
-            revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, MINIMUM_FEE);
+        if (msg.value < minimumFeeInWei) {
+            revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, minimumFeeInWei);
         }
 
         // Check: the index has not been claimed.
@@ -167,8 +180,8 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     function collectFees(address factoryAdmin) external override returns (uint256 feeAmount) {
         // Check: the caller is the FACTORY.
-        if (msg.sender != FACTORY) {
-            revert Errors.SablierMerkleBase_CallerNotFactory(FACTORY, msg.sender);
+        if (msg.sender != address(FACTORY)) {
+            revert Errors.SablierMerkleBase_CallerNotFactory(address(FACTORY), msg.sender);
         }
 
         feeAmount = address(this).balance;
@@ -185,6 +198,26 @@ abstract contract SablierMerkleBase is
     /*//////////////////////////////////////////////////////////////////////////
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev See the documentation for the user-facing functions that call this internal function.
+    function _calculateMinimumFeeInWei() internal view returns (uint256) {
+        // If the Chainlink price feed is not set, return 0.
+        if (CHAINLINK_PRICE_FEED == address(0)) {
+            return 0;
+        }
+
+        // If the minimum fee is 0, return 0.
+        if (MINIMUM_FEE == 0) {
+            return 0;
+        }
+
+        // Q: should we do a low-level call here instead?
+        (, int256 price,,,) = AggregatorV3Interface(CHAINLINK_PRICE_FEED).latestRoundData();
+        // Q: should we check the price is greater than 0 ? If yes, should we revert?
+
+        // Calculate the minimum fee in wei.
+        return 1e18 * MINIMUM_FEE / uint256(price);
+    }
 
     /// @notice Returns a flag indicating whether the grace period has passed.
     /// @dev The grace period is 7 days after the first claim.

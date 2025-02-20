@@ -24,6 +24,9 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @notice Emitted when the admin resets the custom fee for the provided campaign creator to the minimum fee.
     event ResetCustomFee(address indexed admin, address indexed campaignCreator);
 
+    /// @notice Emitted when the Chainlink price feed contract is set by the admin.
+    event SetChainlinkPriceFeed(address indexed admin, address chainlinkPriceFeed);
+
     /// @notice Emitted when the admin sets a custom fee for the provided campaign creator.
     event SetCustomFee(address indexed admin, address indexed campaignCreator, uint256 customFee);
 
@@ -34,18 +37,23 @@ interface ISablierMerkleFactoryBase is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Retrieves the Chainlink price feed address.
+    function chainlinkPriceFeed() external view returns (address);
+
     /// @notice Retrieves the custom fee struct for the provided campaign creator.
-    /// @dev The fee is denominated in the native token of the chain, e.g., ETH for Ethereum Mainnet.
+    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
     /// @param campaignCreator The address of the campaign creator.
     function getCustomFee(address campaignCreator) external view returns (MerkleFactory.CustomFee memory);
 
     /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
-    /// @dev The fee is denominated in the native token of the chain, e.g., ETH for Ethereum Mainnet.
+    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
     /// @param campaignCreator The address of the campaign creator.
     function getFee(address campaignCreator) external view returns (uint256);
 
-    /// @notice Retrieves the minimum fee charged for claiming an airdrop.
-    /// @dev The fee is denominated in the native token of the chain, e.g., ETH for Ethereum Mainnet.
+    /// @notice Retrieves the minimum fee required to claim the airdrop, paid in the native token of the
+    /// chain, e.g., ETH for Ethereum Mainnet.
+    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
+    /// @return The minimum fee required to claim the airdrop, as an 8-decimal number.
     function minimumFee() external view returns (uint256);
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -73,6 +81,15 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @param campaignCreator The user for whom the fee is reset for.
     function resetCustomFee(address campaignCreator) external;
 
+    /// @notice Sets the Chainlink price feed contract.
+    /// @dev Emits a {SetChainlinkPriceFeed} event.
+    ///
+    /// Requirements:
+    /// - `msg.sender` must be the admin.
+    ///
+    /// @param newChainlinkPriceFeed The new Chainlink price feed contract.
+    function setChainlinkPriceFeed(address newChainlinkPriceFeed) external;
+
     /// @notice Sets a custom fee for the provided campaign creator.
     /// @dev Emits a {SetCustomFee} event.
     ///
@@ -96,6 +113,6 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// Requirements:
     /// - `msg.sender` must be the admin.
     ///
-    /// @param minimumFee The new minimum fee to be set.
-    function setMinimumFee(uint256 minimumFee) external;
+    /// @param newMinimumFee The new minimum fee to be set.
+    function setMinimumFee(uint256 newMinimumFee) external;
 }

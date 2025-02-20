@@ -18,6 +18,9 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
+    address public override chainlinkPriceFeed;
+
+    /// @inheritdoc ISablierMerkleFactoryBase
     uint256 public override minimumFee;
 
     /// @dev A mapping of custom fees mapped by campaign creator addresses.
@@ -28,8 +31,16 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
+    /// @param initialChainlinkPriceFeed The initial Chainlink price feed contract address.
     /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
-    constructor(address initialAdmin, uint256 initialMinimumFee) Adminable(initialAdmin) {
+    constructor(
+        address initialAdmin,
+        address initialChainlinkPriceFeed,
+        uint256 initialMinimumFee
+    )
+        Adminable(initialAdmin)
+    {
+        chainlinkPriceFeed = initialChainlinkPriceFeed;
         minimumFee = initialMinimumFee;
     }
 
@@ -69,6 +80,15 @@ abstract contract SablierMerkleFactoryBase is
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
+    function setChainlinkPriceFeed(address newChainlinkPriceFeed) external override onlyAdmin {
+        // Effect: update the Chainlink price feed.
+        chainlinkPriceFeed = newChainlinkPriceFeed;
+
+        // Log the update.
+        emit SetChainlinkPriceFeed({ admin: msg.sender, chainlinkPriceFeed: newChainlinkPriceFeed });
+    }
+
+    /// @inheritdoc ISablierMerkleFactoryBase
     function setCustomFee(address campaignCreator, uint256 newFee) external override onlyAdmin {
         MerkleFactory.CustomFee storage customFeeByUser = _customFees[campaignCreator];
 
@@ -85,11 +105,12 @@ abstract contract SablierMerkleFactoryBase is
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function setMinimumFee(uint256 newFee) external override onlyAdmin {
+    function setMinimumFee(uint256 newMinimumFee) external override onlyAdmin {
         // Effect: update the minimum fee.
-        minimumFee = newFee;
+        minimumFee = newMinimumFee;
 
-        emit SetMinimumFee({ admin: msg.sender, minimumFee: newFee });
+        // Log the update.
+        emit SetMinimumFee({ admin: msg.sender, minimumFee: newMinimumFee });
     }
 
     /*//////////////////////////////////////////////////////////////////////////

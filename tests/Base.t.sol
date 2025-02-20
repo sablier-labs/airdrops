@@ -28,6 +28,7 @@ import { SablierMerkleInstant } from "src/SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "src/SablierMerkleLL.sol";
 import { SablierMerkleLT } from "src/SablierMerkleLT.sol";
 import { SablierMerkleVCA } from "src/SablierMerkleVCA.sol";
+import { ChainlinkPriceFeedMock } from "src/tests/ChainlinkPriceFeedMock.sol";
 import { MerkleInstant, MerkleLL, MerkleLT, MerkleVCA } from "src/types/DataTypes.sol";
 import { Assertions } from "./utils/Assertions.sol";
 import { Constants } from "./utils/Constants.sol";
@@ -50,6 +51,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
                                    TEST CONTRACTS
     //////////////////////////////////////////////////////////////////////////*/
 
+    ChainlinkPriceFeedMock internal chainlinkPriceFeedMock;
     ISablierLockup internal lockup;
     ISablierMerkleFactoryInstant internal merkleFactoryInstant;
     ISablierMerkleFactoryLL internal merkleFactoryLL;
@@ -66,6 +68,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
 
     function setUp() public virtual override {
         EvmUtilsBase.setUp();
+        // Deploy the base test contracts.
+        chainlinkPriceFeedMock = new ChainlinkPriceFeedMock();
 
         // Create the protocol admin.
         users.admin = payable(makeAddr({ name: "Admin" }));
@@ -114,13 +118,14 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     /// @dev Deploys the Merkle Factory contracts conditionally based on the test profile.
     function deployMerkleFactoriesConditionally() internal {
         if (!isTestOptimizedProfile()) {
-            merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, MINIMUM_FEE);
-            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, MINIMUM_FEE);
-            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, MINIMUM_FEE);
-            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, MINIMUM_FEE);
+            merkleFactoryInstant =
+                new SablierMerkleFactoryInstant(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
+            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
+            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
+            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
         } else {
             (merkleFactoryInstant, merkleFactoryLL, merkleFactoryLT, merkleFactoryVCA) =
-                deployOptimizedMerkleFactories(users.admin, MINIMUM_FEE);
+                deployOptimizedMerkleFactories(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
         }
         vm.label({ account: address(merkleFactoryInstant), newLabel: "MerkleFactoryInstant" });
         vm.label({ account: address(merkleFactoryLL), newLabel: "MerkleFactoryLL" });
@@ -172,7 +177,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     /// @dev Expects a call to {ISablierMerkleBase.claim} with data provided.
     function expectCallToClaimWithData(
         address merkleLockup,
-        uint256 fee,
+        uint256 feeInWei,
         uint256 index,
         address recipient,
         uint128 amount,
@@ -181,7 +186,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         internal
     {
         vm.expectCall(
-            merkleLockup, fee, abi.encodeCall(ISablierMerkleBase.claim, (index, recipient, amount, merkleProof))
+            merkleLockup, feeInWei, abi.encodeCall(ISablierMerkleBase.claim, (index, recipient, amount, merkleProof))
         );
     }
 

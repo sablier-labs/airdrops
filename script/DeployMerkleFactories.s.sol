@@ -7,11 +7,13 @@ import { SablierMerkleFactoryInstant } from "../src/SablierMerkleFactoryInstant.
 import { SablierMerkleFactoryLL } from "../src/SablierMerkleFactoryLL.sol";
 import { SablierMerkleFactoryLT } from "../src/SablierMerkleFactoryLT.sol";
 import { SablierMerkleFactoryVCA } from "../src/SablierMerkleFactoryVCA.sol";
+import { ChainlinkPriceFeedAddresses } from "../src/tests/ChainlinkPriceFeedAddresses.sol";
+import { InitialMinimumFees } from "../src/tests/InitialMinimumFees.sol";
 
 /// @notice Deploys Merkle factory contracts.
-contract DeployMerkleFactories is BaseScript {
+contract DeployMerkleFactories is BaseScript, ChainlinkPriceFeedAddresses, InitialMinimumFees {
     /// @dev Deploy via Forge.
-    function run(uint256 initialMinimumFee)
+    function run()
         public
         broadcast
         returns (
@@ -21,9 +23,13 @@ contract DeployMerkleFactories is BaseScript {
             SablierMerkleFactoryVCA merkleFactoryVCA
         )
     {
-        merkleFactoryInstant = new SablierMerkleFactoryInstant(protocolAdmin(), initialMinimumFee);
-        merkleFactoryLL = new SablierMerkleFactoryLL(protocolAdmin(), initialMinimumFee);
-        merkleFactoryLT = new SablierMerkleFactoryLT(protocolAdmin(), initialMinimumFee);
-        merkleFactoryVCA = new SablierMerkleFactoryVCA(protocolAdmin(), initialMinimumFee);
+        address initialAdmin = protocolAdmin();
+        address initialChainlinkPriceFeed = getPriceFeedAddress();
+        uint256 initialMinimumFee = getMinimumFee();
+        merkleFactoryInstant =
+            new SablierMerkleFactoryInstant(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee);
+        merkleFactoryLL = new SablierMerkleFactoryLL(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee);
+        merkleFactoryLT = new SablierMerkleFactoryLT(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee);
+        merkleFactoryVCA = new SablierMerkleFactoryVCA(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee);
     }
 }

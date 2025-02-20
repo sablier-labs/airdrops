@@ -15,11 +15,12 @@ contract Constructor_MerkleInstant_Integration_Test is MerkleInstant_Integration
 
         assertEq(constructedInstant.admin(), users.campaignOwner, "admin");
         assertEq(constructedInstant.campaignName(), CAMPAIGN_NAME, "campaign name");
+        assertEq(constructedInstant.CHAINLINK_PRICE_FEED(), address(chainlinkPriceFeedMock), "price feed");
         assertEq(constructedInstant.EXPIRATION(), EXPIRATION, "expiration");
         assertEq(constructedInstant.FACTORY(), address(merkleFactoryInstant), "factory");
-        assertEq(constructedInstant.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
         assertEq(constructedInstant.ipfsCID(), IPFS_CID, "ipfsCID");
         assertEq(constructedInstant.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
+        assertEq(constructedInstant.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
         assertEq(address(constructedInstant.TOKEN()), address(dai), "token");
     }
 }

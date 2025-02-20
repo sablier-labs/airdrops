@@ -16,7 +16,7 @@ contract CreateMerkleLT is BaseScript {
     /// @dev Deploy via Forge.
     function run() public broadcast returns (ISablierMerkleLT merkleLT) {
         // TODO: Load deployed addresses from Ethereum mainnet.
-        SablierMerkleFactoryLT merkleFactory = new SablierMerkleFactoryLT(DEFAULT_SABLIER_ADMIN, 0);
+        SablierMerkleFactoryLT merkleFactory = new SablierMerkleFactoryLT(DEFAULT_SABLIER_ADMIN, address(0), 0);
 
         // Prepare the constructor parameters.
         MerkleLT.ConstructorParams memory params;

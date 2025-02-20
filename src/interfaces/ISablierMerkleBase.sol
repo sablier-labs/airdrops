@@ -18,6 +18,14 @@ interface ISablierMerkleBase is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Retrieves the address of the Chainlink price feed contract.
+    /// @dev This is an immutable state variable.
+    function CHAINLINK_PRICE_FEED() external view returns (address);
+
+    /// @notice Retrieves the minimum fee required to claim the airdrop, paid in the native token of the chain.
+    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
+    function MINIMUM_FEE() external view returns (uint256);
+
     /// @notice The cut-off point for the campaign, as a Unix timestamp. A value of zero means there is no expiration.
     /// @dev This is an immutable state variable.
     function EXPIRATION() external returns (uint40);
@@ -29,13 +37,14 @@ interface ISablierMerkleBase is IAdminable {
     /// @dev This is an immutable state variable.
     function MERKLE_ROOT() external returns (bytes32);
 
-    /// @notice Retrieves the minimum fee required to claim the airdrop, which is paid in the native token of the chain,
-    /// e.g. ETH for Ethereum Mainnet.
-    function MINIMUM_FEE() external view returns (uint256);
-
     /// @notice The ERC-20 token to distribute.
     /// @dev This is an immutable state variable.
     function TOKEN() external returns (IERC20);
+
+    /// @notice Calculates the minimum fee in wei required to claim the airdrop.
+    /// @dev It uses the `MINIMUM_FEE` and the Chainlink price feed contract to calculate the fee in wei.
+    /// @return The minimum fee required to claim the airdrop, as an 18-decimal number, where 1e18 is 1 native token.
+    function calculateMinimumFeeInWei() external view returns (uint256);
 
     /// @notice Retrieves the name of the campaign.
     function campaignName() external view returns (string memory);

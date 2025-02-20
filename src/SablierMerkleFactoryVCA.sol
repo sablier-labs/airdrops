@@ -15,12 +15,14 @@ contract SablierMerkleFactoryVCA is ISablierMerkleFactoryVCA, SablierMerkleFacto
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
+    /// @param initialChainlinkPriceFeed The initial Chainlink price feed contract.
     /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
     constructor(
         address initialAdmin,
+        address initialChainlinkPriceFeed,
         uint256 initialMinimumFee
     )
-        SablierMerkleFactoryBase(initialAdmin, initialMinimumFee)
+        SablierMerkleFactoryBase(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee)
     { }
 
     /*//////////////////////////////////////////////////////////////////////////

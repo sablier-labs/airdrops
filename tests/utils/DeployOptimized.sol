@@ -11,6 +11,7 @@ import { ISablierMerkleFactoryVCA } from "../../src/interfaces/ISablierMerkleFac
 abstract contract DeployOptimized is StdCheats {
     function deployOptimizedMerkleFactories(
         address initialAdmin,
+        address initialChainlinkPriceFeed,
         uint256 initialMinimumFee
     )
         internal
@@ -24,25 +25,25 @@ abstract contract DeployOptimized is StdCheats {
         merkleFactoryInstant = ISablierMerkleFactoryInstant(
             deployCode(
                 "out-optimized/SablierMerkleFactoryInstant.sol/SablierMerkleFactoryInstant.json",
-                abi.encode(initialAdmin, initialMinimumFee)
+                abi.encode(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee)
             )
         );
         merkleFactoryLL = ISablierMerkleFactoryLL(
             deployCode(
                 "out-optimized/SablierMerkleFactoryLL.sol/SablierMerkleFactoryLL.json",
-                abi.encode(initialAdmin, initialMinimumFee)
+                abi.encode(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee)
             )
         );
         merkleFactoryLT = ISablierMerkleFactoryLT(
             deployCode(
                 "out-optimized/SablierMerkleFactoryLT.sol/SablierMerkleFactoryLT.json",
-                abi.encode(initialAdmin, initialMinimumFee)
+                abi.encode(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee)
             )
         );
         merkleFactoryVCA = ISablierMerkleFactoryVCA(
             deployCode(
                 "out-optimized/SablierMerkleFactoryVCA.sol/SablierMerkleFactoryVCA.json",
-                abi.encode(initialAdmin, initialMinimumFee)
+                abi.encode(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee)
             )
         );
     }

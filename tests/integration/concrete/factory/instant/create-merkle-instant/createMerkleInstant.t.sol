@@ -48,11 +48,9 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             address(actualInstant), expectedMerkleInstant, "MerkleInstant contract does not match computed address"
         );
 
-        // It should create the campaign with custom fee.
-        assertEq(actualInstant.MINIMUM_FEE(), customFee, "custom fee");
-
         // It should set the current factory address.
-        assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant), "factory");
+        assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant));
+        assertEq(actualInstant.MINIMUM_FEE(), customFee, "minimum fee");
     }
 
     function test_GivenCustomFeeNotSet(address campaignOwner, uint40 expiration) external givenCampaignNotExists {
@@ -74,10 +72,8 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             address(actualInstant), expectedMerkleInstant, "MerkleInstant contract does not match computed address"
         );
 
-        // It should create the campaign with custom fee.
-        assertEq(actualInstant.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
-
         // It should set the current factory address.
-        assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant), "factory");
+        assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant));
+        assertEq(actualInstant.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
     }
 }
