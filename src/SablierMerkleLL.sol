@@ -123,7 +123,7 @@ contract SablierMerkleLL is
             cliffTime
         );
 
-        // Push the stream ID into the `_claimedStreams` array for the recipient.
+        // Effect: push the stream ID into the `_claimedStreams` array for the recipient.
         _claimedStreams[recipient].push(streamId);
 
         // Log the claim.
