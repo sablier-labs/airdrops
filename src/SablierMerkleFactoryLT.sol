@@ -2,6 +2,7 @@
 pragma solidity >=0.8.22;
 
 import { uUNIT } from "@prb/math/src/UD2x18.sol";
+
 import { SablierMerkleFactoryBase } from "./abstracts/SablierMerkleFactoryBase.sol";
 import { ISablierMerkleFactoryLT } from "./interfaces/ISablierMerkleFactoryLT.sol";
 import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
@@ -16,12 +17,12 @@ contract SablierMerkleFactoryLT is ISablierMerkleFactoryLT, SablierMerkleFactory
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
-    /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
+    /// @param initialPriceFeed The initial Chainlink price feed contract.
     constructor(
         address initialAdmin,
-        uint256 initialMinimumFee
+        address initialPriceFeed
     )
-        SablierMerkleFactoryBase(initialAdmin, initialMinimumFee)
+        SablierMerkleFactoryBase(initialAdmin, initialPriceFeed)
     { }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -70,7 +71,7 @@ contract SablierMerkleFactoryLT is ISablierMerkleFactoryLT, SablierMerkleFactory
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
 
         // Deploy the MerkleLT contract with CREATE2.
-        merkleLT = new SablierMerkleLT{ salt: salt }({ params: params, campaignCreator: msg.sender });
+        merkleLT = new SablierMerkleLT{ salt: salt }({ params: params });
 
         // Log the creation of the MerkleLT contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLT({
@@ -78,8 +79,7 @@ contract SablierMerkleFactoryLT is ISablierMerkleFactoryLT, SablierMerkleFactory
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
-            totalDuration: totalDuration,
-            fee: _getFee(msg.sender)
+            totalDuration: totalDuration
         });
     }
 }

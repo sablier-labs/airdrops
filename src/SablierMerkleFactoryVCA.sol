@@ -15,12 +15,12 @@ contract SablierMerkleFactoryVCA is ISablierMerkleFactoryVCA, SablierMerkleFacto
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
-    /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
+    /// @param initialPriceFeed The initial Chainlink price feed contract.
     constructor(
         address initialAdmin,
-        uint256 initialMinimumFee
+        address initialPriceFeed
     )
-        SablierMerkleFactoryBase(initialAdmin, initialMinimumFee)
+        SablierMerkleFactoryBase(initialAdmin, initialPriceFeed)
     { }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -40,15 +40,14 @@ contract SablierMerkleFactoryVCA is ISablierMerkleFactoryVCA, SablierMerkleFacto
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
 
         // Deploy the MerkleVCA contract with CREATE2.
-        merkleVCA = new SablierMerkleVCA{ salt: salt }({ params: params, campaignCreator: msg.sender });
+        merkleVCA = new SablierMerkleVCA{ salt: salt }({ params: params });
 
         // Log the creation of the MerkleVCA contract, including some metadata that is not stored on-chain.
         emit CreateMerkleVCA({
             merkleVCA: merkleVCA,
             params: params,
             aggregateAmount: aggregateAmount,
-            recipientCount: recipientCount,
-            fee: _getFee(msg.sender)
+            recipientCount: recipientCount
         });
     }
 }

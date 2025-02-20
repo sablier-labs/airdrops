@@ -50,12 +50,8 @@ contract SablierMerkleVCA is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev Constructs the contract by initializing the immutable state variables.
-    constructor(
-        MerkleVCA.ConstructorParams memory params,
-        address campaignCreator
-    )
+    constructor(MerkleVCA.ConstructorParams memory params)
         SablierMerkleBase(
-            campaignCreator,
             params.campaignName,
             params.expiration,
             params.initialAdmin,

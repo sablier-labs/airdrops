@@ -42,7 +42,6 @@ abstract contract SablierMerkleLockup is
     /// @dev Constructs the contract by initializing the immutable state variables, and max approving the Lockup
     /// contract.
     constructor(
-        address campaignCreator,
         string memory campaignName,
         bool cancelable,
         ISablierLockup lockup,
@@ -54,7 +53,7 @@ abstract contract SablierMerkleLockup is
         IERC20 token,
         bool transferable
     )
-        SablierMerkleBase(campaignCreator, campaignName, expiration, initialAdmin, ipfsCID, merkleRoot, token)
+        SablierMerkleBase(campaignName, expiration, initialAdmin, ipfsCID, merkleRoot, token)
     {
         LOCKUP = lockup;
         shape = _shape;

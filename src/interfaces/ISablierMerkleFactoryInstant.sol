@@ -17,8 +17,7 @@ interface ISablierMerkleFactoryInstant is ISablierMerkleFactoryBase {
         ISablierMerkleInstant indexed merkleInstant,
         MerkleInstant.ConstructorParams params,
         uint256 aggregateAmount,
-        uint256 recipientCount,
-        uint256 fee
+        uint256 recipientCount
     );
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -31,7 +30,6 @@ interface ISablierMerkleFactoryInstant is ISablierMerkleFactoryBase {
     ///
     /// Notes:
     /// - The MerkleInstant contract is created with CREATE2.
-    /// - The immutable fee will be set to the minimum fee value unless a custom fee is set.
     /// - A value of zero for `params.expiration` means the campaign does not expire.
     ///
     /// @param params Struct encapsulating the input parameters, which are documented in {DataTypes}.
