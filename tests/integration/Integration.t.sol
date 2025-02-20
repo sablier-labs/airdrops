@@ -89,7 +89,7 @@ contract Integration_Test is Base_Test {
                 campaignOwner: campaignOwner,
                 expiration: expiration,
                 merkleRoot: MERKLE_ROOT,
-                token_: dai
+                tokenAddress: dai
             }),
             AGGREGATE_AMOUNT,
             RECIPIENT_COUNT
@@ -117,9 +117,9 @@ contract Integration_Test is Base_Test {
             merkleLLConstructorParams({
                 campaignOwner: campaignOwner,
                 expiration: expiration,
-                lockup_: lockup,
+                lockupAddress: lockup,
                 merkleRoot: MERKLE_ROOT,
-                token_: dai
+                tokenAddress: dai
             }),
             AGGREGATE_AMOUNT,
             RECIPIENT_COUNT
@@ -147,9 +147,9 @@ contract Integration_Test is Base_Test {
             merkleLTConstructorParams({
                 campaignOwner: campaignOwner,
                 expiration: expiration,
-                lockup_: lockup,
+                lockupAddress: lockup,
                 merkleRoot: MERKLE_ROOT,
-                token_: dai
+                tokenAddress: dai
             }),
             AGGREGATE_AMOUNT,
             RECIPIENT_COUNT
@@ -179,7 +179,7 @@ contract Integration_Test is Base_Test {
                 expiration: expiration,
                 merkleRoot: MERKLE_ROOT,
                 timestamps: merkleVCATimestamps(),
-                token_: dai
+                tokenAddress: dai
             }),
             AGGREGATE_AMOUNT,
             RECIPIENT_COUNT

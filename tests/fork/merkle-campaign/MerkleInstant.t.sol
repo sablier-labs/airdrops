@@ -16,7 +16,7 @@ import { Fork_Test } from "./../Fork.t.sol";
 abstract contract MerkleInstant_Fork_Test is Fork_Test {
     using MerkleBuilder for uint256[];
 
-    constructor(IERC20 token_) Fork_Test(token_) { }
+    constructor(IERC20 tokenAddress) Fork_Test(tokenAddress) { }
 
     /// @dev Encapsulates the data needed to compute a Merkle tree leaf.
     struct LeafData {
@@ -112,14 +112,14 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            token_: FORK_TOKEN
+            tokenAddress: FORK_TOKEN
         });
 
         vars.params = merkleInstantConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            token_: FORK_TOKEN
+            tokenAddress: FORK_TOKEN
         });
 
         vm.expectEmit({ emitter: address(merkleFactoryInstant) });

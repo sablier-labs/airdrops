@@ -240,7 +240,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
-            token_: dai
+            tokenAddress: dai
         });
     }
 
@@ -249,7 +249,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        IERC20 token_
+        IERC20 tokenAddress
     )
         internal
         view
@@ -259,7 +259,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: merkleRoot,
-            token_: token_
+            tokenAddress: tokenAddress
         });
 
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
@@ -300,7 +300,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
-            token_: dai
+            tokenAddress: dai
         });
     }
 
@@ -308,7 +308,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        IERC20 token_
+        IERC20 tokenAddress
     )
         public
         view
@@ -320,7 +320,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             initialAdmin: campaignOwner,
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
-            token: token_
+            token: tokenAddress
         });
     }
 
@@ -334,7 +334,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
-            token_: dai
+            tokenAddress: dai
         });
     }
 
@@ -343,7 +343,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        IERC20 token_
+        IERC20 tokenAddress
     )
         internal
         view
@@ -351,10 +351,10 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     {
         MerkleLL.ConstructorParams memory params = merkleLLConstructorParams({
             campaignOwner: campaignOwner,
-            lockup_: lockup,
+            lockupAddress: lockup,
             expiration: expiration,
             merkleRoot: merkleRoot,
-            token_: token_
+            tokenAddress: tokenAddress
         });
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
 
@@ -392,18 +392,18 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         return merkleLLConstructorParams({
             campaignOwner: campaignOwner,
             expiration: expiration,
-            lockup_: lockup,
+            lockupAddress: lockup,
             merkleRoot: MERKLE_ROOT,
-            token_: dai
+            tokenAddress: dai
         });
     }
 
     function merkleLLConstructorParams(
         address campaignOwner,
         uint40 expiration,
-        ISablierLockup lockup_,
+        ISablierLockup lockupAddress,
         bytes32 merkleRoot,
-        IERC20 token_
+        IERC20 tokenAddress
     )
         public
         view
@@ -415,7 +415,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             expiration: expiration,
             initialAdmin: campaignOwner,
             ipfsCID: IPFS_CID,
-            lockup: lockup_,
+            lockup: lockupAddress,
             merkleRoot: merkleRoot,
             schedule: MerkleLL.Schedule({
                 startTime: ZERO,
@@ -425,7 +425,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
                 totalDuration: TOTAL_DURATION
             }),
             shape: SHAPE,
-            token: token_,
+            token: tokenAddress,
             transferable: TRANSFERABLE
         });
     }
@@ -440,7 +440,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
-            token_: dai
+            tokenAddress: dai
         });
     }
 
@@ -449,7 +449,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         address campaignOwner,
         uint40 expiration,
         bytes32 merkleRoot,
-        IERC20 token_
+        IERC20 tokenAddress
     )
         internal
         view
@@ -457,10 +457,10 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     {
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams({
             campaignOwner: campaignOwner,
-            lockup_: lockup,
+            lockupAddress: lockup,
             expiration: expiration,
             merkleRoot: merkleRoot,
-            token_: token_
+            tokenAddress: tokenAddress
         });
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
 
@@ -499,18 +499,18 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         return merkleLTConstructorParams({
             campaignOwner: campaignOwner,
             expiration: expiration,
-            lockup_: lockup,
+            lockupAddress: lockup,
             merkleRoot: MERKLE_ROOT,
-            token_: dai
+            tokenAddress: dai
         });
     }
 
     function merkleLTConstructorParams(
         address campaignOwner,
         uint40 expiration,
-        ISablierLockup lockup_,
+        ISablierLockup lockupAddress,
         bytes32 merkleRoot,
-        IERC20 token_
+        IERC20 tokenAddress
     )
         public
         view
@@ -528,11 +528,11 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             expiration: expiration,
             initialAdmin: campaignOwner,
             ipfsCID: IPFS_CID,
-            lockup: lockup_,
+            lockup: lockupAddress,
             merkleRoot: merkleRoot,
             shape: SHAPE,
             streamStartTime: ZERO,
-            token: token_,
+            token: tokenAddress,
             tranchesWithPercentages: tranchesWithPercentages_,
             transferable: TRANSFERABLE
         });
@@ -580,7 +580,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
             timestamps: merkleVCATimestamps(),
-            token_: dai
+            tokenAddress: dai
         });
     }
 
@@ -590,7 +590,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         uint40 expiration,
         bytes32 merkleRoot,
         MerkleVCA.Timestamps memory timestamps,
-        IERC20 token_
+        IERC20 tokenAddress
     )
         internal
         view
@@ -601,7 +601,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             expiration: expiration,
             merkleRoot: merkleRoot,
             timestamps: timestamps,
-            token_: token_
+            tokenAddress: tokenAddress
         });
 
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
@@ -642,7 +642,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
             timestamps: merkleVCATimestamps(),
-            token_: dai
+            tokenAddress: dai
         });
     }
 
@@ -651,7 +651,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         uint40 expiration,
         bytes32 merkleRoot,
         MerkleVCA.Timestamps memory timestamps,
-        IERC20 token_
+        IERC20 tokenAddress
     )
         public
         view
@@ -664,7 +664,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
             timestamps: timestamps,
-            token: token_
+            token: tokenAddress
         });
     }
 
