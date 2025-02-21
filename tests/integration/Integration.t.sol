@@ -1,24 +1,20 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
+import { ContractWithoutReceive, ContractWithReceive } from "@sablier/evm-utils/src/mocks/Receive.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
 import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
-import { MerkleInstant, MerkleLL, MerkleLT, MerkleVCA } from "src/types/DataTypes.sol";
 
 import { Base_Test } from "../Base.t.sol";
-import { ContractWithoutReceiveEth, ContractWithReceiveEth } from "../mocks/ReceiveEth.sol";
 
 contract Integration_Test is Base_Test {
     /*//////////////////////////////////////////////////////////////////////////
                                    TEST CONTRACTS
     //////////////////////////////////////////////////////////////////////////*/
-
-    ContractWithoutReceiveEth internal contractWithoutReceiveEth;
-    ContractWithReceiveEth internal contractWithReceiveEth;
 
     /// @dev A test contract meant to be overridden by the implementing Merkle campaign contracts.
     ISablierMerkleBase internal merkleBase;
@@ -33,10 +29,10 @@ contract Integration_Test is Base_Test {
     function setUp() public virtual override {
         Base_Test.setUp();
 
-        contractWithoutReceiveEth = new ContractWithoutReceiveEth();
-        contractWithReceiveEth = new ContractWithReceiveEth();
-        vm.label({ account: address(contractWithoutReceiveEth), newLabel: "Contract Without Receive Eth" });
-        vm.label({ account: address(contractWithReceiveEth), newLabel: "Contract With Receive Eth" });
+        contractWithoutReceive = new ContractWithoutReceive();
+        contractWithReceive = new ContractWithReceive();
+        vm.label({ account: address(contractWithoutReceive), newLabel: "Contract Without Receive Eth" });
+        vm.label({ account: address(contractWithReceive), newLabel: "Contract With Receive Eth" });
 
         // Make campaign owner the caller.
         resetPrank(users.campaignOwner);

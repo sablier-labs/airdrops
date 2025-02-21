@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { CommonBase } from "forge-std/src/Base.sol";
-import { StdCheats } from "forge-std/src/StdCheats.sol";
+import { BaseTest as EvmUtilsBase } from "@sablier/evm-utils/src/tests/BaseTest.sol";
 
 import { ISablierMerkleFactoryInstant } from "../../src/interfaces/ISablierMerkleFactoryInstant.sol";
 import { ISablierMerkleFactoryLL } from "../../src/interfaces/ISablierMerkleFactoryLL.sol";
 import { ISablierMerkleFactoryLT } from "../../src/interfaces/ISablierMerkleFactoryLT.sol";
 import { ISablierMerkleFactoryVCA } from "../../src/interfaces/ISablierMerkleFactoryVCA.sol";
 
-abstract contract DeployOptimized is StdCheats, CommonBase {
+abstract contract DeployOptimized is EvmUtilsBase {
     function deployOptimizedMerkleFactories(
         address initialAdmin,
         uint256 initialMinimumFee
