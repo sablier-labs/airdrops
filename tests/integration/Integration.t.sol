@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ContractWithoutReceive, ContractWithReceive } from "@sablier/evm-utils/src/mocks/Receive.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
 import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
@@ -28,11 +27,6 @@ contract Integration_Test is Base_Test {
 
     function setUp() public virtual override {
         Base_Test.setUp();
-
-        contractWithoutReceive = new ContractWithoutReceive();
-        contractWithReceive = new ContractWithReceive();
-        vm.label({ account: address(contractWithoutReceive), newLabel: "Contract Without Receive Eth" });
-        vm.label({ account: address(contractWithReceive), newLabel: "Contract With Receive Eth" });
 
         // Make campaign owner the caller.
         resetPrank(users.campaignOwner);

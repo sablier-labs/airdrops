@@ -16,9 +16,9 @@ abstract contract Constants {
 
     // Durations and Timestamps
     uint40 public constant CLIFF_DURATION = 2 days;
-    uint40 public immutable EXPIRATION = JULY_1_2024 + 12 weeks;
-    uint40 public constant FIRST_CLAIM_TIME = JULY_1_2024;
-    uint40 public immutable RANGED_STREAM_START_TIME = JULY_1_2024 - 2 days;
+    uint40 public immutable EXPIRATION = FEB_1_2025 + 12 weeks;
+    uint40 public constant FIRST_CLAIM_TIME = FEB_1_2025;
+    uint40 public immutable RANGED_STREAM_START_TIME = FEB_1_2025 - 2 days;
     uint40 public immutable RANGED_STREAM_END_TIME = RANGED_STREAM_START_TIME + TOTAL_DURATION;
     uint40 public constant TOTAL_DURATION = 10 days;
 
@@ -37,7 +37,7 @@ abstract contract Constants {
     bool public constant TRANSFERABLE = false;
 
     // Global
-    uint40 internal constant JULY_1_2024 = 1_719_792_000;
+    uint40 internal constant FEB_1_2025 = 1_738_368_000;
     uint64 public constant TOTAL_PERCENTAGE = uUNIT;
     uint40 internal constant ZERO = 0;
 }
