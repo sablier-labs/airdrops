@@ -15,12 +15,12 @@ contract SablierMerkleFactoryLL is ISablierMerkleFactoryLL, SablierMerkleFactory
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
-    /// @param initialPriceFeed The initial Chainlink price feed contract.
+    /// @param initialChainlinkPriceFeed The initial Chainlink price feed contract.
     constructor(
         address initialAdmin,
-        address initialPriceFeed
+        address initialChainlinkPriceFeed
     )
-        SablierMerkleFactoryBase(initialAdmin, initialPriceFeed)
+        SablierMerkleFactoryBase(initialAdmin, initialChainlinkPriceFeed)
     { }
 
     /*//////////////////////////////////////////////////////////////////////////

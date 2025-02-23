@@ -111,7 +111,7 @@ abstract contract SablierMerkleBase is
         }
 
         // Calculate the minimum fee.
-        uint256 minimumFee = FACTORY.calculateMinimumFee();
+        uint256 minimumFee = FACTORY.getMinimumFeeFor(admin);
 
         // Check: `msg.value` is not less than the minimum fee.
         if (msg.value < minimumFee) {

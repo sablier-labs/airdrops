@@ -10,7 +10,7 @@ abstract contract Constants {
     uint128 public constant CLAIM_AMOUNT = 10_000e18;
     uint128 public constant CLIFF_AMOUNT = (CLAIM_AMOUNT * CLIFF_DURATION) / TOTAL_DURATION;
     UD2x18 public immutable CLIFF_PERCENTAGE = (ud(CLIFF_AMOUNT).div(ud(CLAIM_AMOUNT)).intoUD2x18());
-    uint256 public constant MINIMUM_FEE = 0.005e18;
+    uint256 public constant MINIMUM_FEE = 0.000333333333333333e18;
     uint128 public constant START_AMOUNT = 100e18;
     UD2x18 public immutable START_PERCENTAGE = (ud(START_AMOUNT).div(ud(CLAIM_AMOUNT)).intoUD2x18());
 

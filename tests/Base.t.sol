@@ -28,7 +28,7 @@ import { SablierMerkleLL } from "src/SablierMerkleLL.sol";
 import { SablierMerkleLT } from "src/SablierMerkleLT.sol";
 import { SablierMerkleVCA } from "src/SablierMerkleVCA.sol";
 import { MerkleInstant, MerkleLL, MerkleLT, MerkleVCA } from "src/types/DataTypes.sol";
-import { ChainlinkPriceFeed } from "./mocks/ChainlinkPriceFeed.sol";
+import { ChainlinkPriceFeedMock } from "src/tests/ChainlinkPriceFeedMock.sol";
 import { ERC20Mock } from "./mocks/erc20/ERC20Mock.sol";
 import { Assertions } from "./utils/Assertions.sol";
 import { Constants } from "./utils/Constants.sol";
@@ -52,7 +52,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     //////////////////////////////////////////////////////////////////////////*/
 
     ERC20Mock internal dai;
-    ChainlinkPriceFeed internal chainlinkPriceFeed;
+    ChainlinkPriceFeedMock internal chainlinkPriceFeedMock;
     ISablierLockup internal lockup;
     ISablierMerkleFactoryInstant internal merkleFactoryInstant;
     ISablierMerkleFactoryLL internal merkleFactoryLL;
@@ -70,7 +70,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     function setUp() public virtual {
         // Deploy the base test contracts.
         dai = new ERC20Mock("Dai Stablecoin", "DAI");
-        chainlinkPriceFeed = new ChainlinkPriceFeed();
+        chainlinkPriceFeedMock = new ChainlinkPriceFeedMock();
 
         // Label the base test contracts.
         vm.label({ account: address(dai), newLabel: "DAI" });
@@ -134,13 +134,13 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     /// @dev Deploys the Merkle Factory contracts conditionally based on the test profile.
     function deployMerkleFactoriesConditionally() internal {
         if (!isTestOptimizedProfile()) {
-            merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, address(chainlinkPriceFeed));
-            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, address(chainlinkPriceFeed));
-            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, address(chainlinkPriceFeed));
-            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, address(chainlinkPriceFeed));
+            merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, address(chainlinkPriceFeedMock));
+            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, address(chainlinkPriceFeedMock));
+            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, address(chainlinkPriceFeedMock));
+            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, address(chainlinkPriceFeedMock));
         } else {
             (merkleFactoryInstant, merkleFactoryLL, merkleFactoryLT, merkleFactoryVCA) =
-                deployOptimizedMerkleFactories(users.admin, address(chainlinkPriceFeed));
+                deployOptimizedMerkleFactories(users.admin, address(chainlinkPriceFeedMock));
         }
         vm.label({ account: address(merkleFactoryInstant), newLabel: "MerkleFactoryInstant" });
         vm.label({ account: address(merkleFactoryLL), newLabel: "MerkleFactoryLL" });

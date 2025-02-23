@@ -127,8 +127,7 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
             merkleInstant: ISablierMerkleInstant(vars.expectedMerkleInstant),
             params: vars.params,
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount,
-            fee: MINIMUM_FEE
+            recipientCount: vars.recipientCount
         });
 
         vars.merkleInstant =

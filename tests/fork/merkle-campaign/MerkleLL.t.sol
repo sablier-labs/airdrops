@@ -133,8 +133,7 @@ abstract contract MerkleLL_Fork_Test is Fork_Test {
             merkleLL: ISablierMerkleLL(vars.expectedLL),
             params: vars.params,
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount,
-            fee: MINIMUM_FEE
+            recipientCount: vars.recipientCount
         });
 
         vars.merkleLL = merkleFactoryLL.createMerkleLL(vars.params, vars.aggregateAmount, vars.recipientCount);

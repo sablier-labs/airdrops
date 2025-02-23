@@ -132,8 +132,7 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
             params: vars.params,
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount,
-            totalDuration: TOTAL_DURATION,
-            fee: MINIMUM_FEE
+            totalDuration: TOTAL_DURATION
         });
 
         vars.merkleLT = merkleFactoryLT.createMerkleLT(vars.params, vars.aggregateAmount, vars.recipientCount);

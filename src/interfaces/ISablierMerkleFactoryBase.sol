@@ -35,12 +35,6 @@ interface ISablierMerkleFactoryBase is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Calculates the minimum fee required to claim the airdrop, which is paid in the native token of the
-    /// chain, e.g., ETH for Ethereum Mainnet.
-    /// @dev It uses the Chainlink price feed to calculate the minimum fee.
-    /// @return The minimum fee required to claim the airdrop, denoted as a 18-decimal fixed-point number.
-    function calculateMinimumFee() external view returns (uint256);
-
     /// @notice Retrieves the Chainlink price feed contract.
     function chainlinkPriceFeed() external view returns (AggregatorV3Interface);
 
@@ -49,10 +43,17 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @param campaignCreator The address of the campaign creator.
     function getCustomFee(address campaignCreator) external view returns (MerkleFactory.CustomFee memory);
 
-    /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
+    /// @notice Retrieves the fee for the provided campaign creator, using the calculated fee if no custom fee is set.
     /// @dev The fee is denominated in the native token of the chain, e.g., ETH for Ethereum Mainnet.
     /// @param campaignCreator The address of the campaign creator.
-    function getFeeFor(address campaignCreator) external view returns (uint256);
+    function getMinimumFeeFor(address campaignCreator) external view returns (uint256);
+
+    /// @notice Retrieves the minimum fee required to claim the airdrop, which is paid in the native token of the
+    /// chain, e.g., ETH for Ethereum Mainnet, and represents the equivalent of $1 converted to the native token.
+    /// @dev It uses the Chainlink price feed to calculate the minimum fee. If there is not a price feed address
+    /// configured for a specific chain, it will return the `_minimumFee`.
+    /// @return The minimum fee required to claim the airdrop, denoted as a 18-decimal fixed-point number.
+    function getMinimumFee() external view returns (uint256);
 
     /*//////////////////////////////////////////////////////////////////////////
                                NON-CONSTANT FUNCTIONS

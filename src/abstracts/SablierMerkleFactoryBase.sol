@@ -25,14 +25,17 @@ abstract contract SablierMerkleFactoryBase is
     /// @dev A mapping of custom fees mapped by campaign creator addresses.
     mapping(address campaignCreator => MerkleFactory.CustomFee customFee) private _customFees;
 
+    /// @dev If no Chainlink price feed is set, this fallback value is used.
+    uint256 private _minimumFee;
+
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
-    /// @param initialPriceFeed The initial Chainlink price feed contract.
-    constructor(address initialAdmin, address initialPriceFeed) Adminable(initialAdmin) {
-        chainlinkPriceFeed = AggregatorV3Interface(initialPriceFeed);
+    /// @param initialChainlinkPriceFeed The initial Chainlink price feed contract address.
+    constructor(address initialAdmin, address initialChainlinkPriceFeed) Adminable(initialAdmin) {
+        chainlinkPriceFeed = AggregatorV3Interface(initialChainlinkPriceFeed);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -40,28 +43,18 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function calculateMinimumFee() public view returns (uint256) {
-        // Chainlink returns the ETH price in USD with 8 decimals.
-        (, int256 price,,,) = chainlinkPriceFeed.latestRoundData();
-
-        // Q: should we return 0, or revert?
-        require(price > 0, "Invalid price");
-
-        // Convert the price to 18 decimals format.
-        uint256 nativeTokenAmount = (1e18 * 10 ** 8) / uint256(price);
-
-        return nativeTokenAmount;
-    }
-
-    /// @inheritdoc ISablierMerkleFactoryBase
     function getCustomFee(address campaignCreator) external view override returns (MerkleFactory.CustomFee memory) {
         return _customFees[campaignCreator];
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function getFeeFor(address campaignCreator) external view returns (uint256) {
-        uint256 minimumFee = calculateMinimumFee();
-        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : minimumFee;
+    function getMinimumFee() external view returns (uint256) {
+        return _calculateMinimumFee();
+    }
+
+    /// @inheritdoc ISablierMerkleFactoryBase
+    function getMinimumFeeFor(address campaignCreator) external view returns (uint256) {
+        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : _calculateMinimumFee();
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -108,5 +101,28 @@ abstract contract SablierMerkleFactoryBase is
 
         // Log the update.
         emit SetCustomFee({ admin: msg.sender, campaignCreator: campaignCreator, customFee: newFee });
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                             PRIVATE CONSTANT FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev See the documentation for the user-facing functions that call this private function.
+    function _calculateMinimumFee() private view returns (uint256) {
+        // If there is no Chainlink price feed configured, return 0.
+        if (address(chainlinkPriceFeed) == address(0)) {
+            return _minimumFee;
+        }
+
+        // Chainlink returns the ETH price in USD with 8 decimals.
+        (, int256 price,,,) = chainlinkPriceFeed.latestRoundData();
+
+        // Q: should we return 0, or revert?
+        require(price > 0, "Invalid price");
+
+        // Convert the price to 18 decimals format.
+        uint256 nativeTokenAmount = (1e18 * 10 ** 8) / uint256(price);
+
+        return nativeTokenAmount;
     }
 }

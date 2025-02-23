@@ -11,7 +11,7 @@ import { BaseScript } from "./Base.s.sol";
 /// @notice Deploys Merkle factory contracts.
 contract DeployMerkleFactories is BaseScript {
     /// @dev Deploy via Forge.
-    function run(address initialPriceFeed)
+    function run(address initialChainlinkPriceFeed)
         public
         broadcast
         returns (
@@ -22,9 +22,9 @@ contract DeployMerkleFactories is BaseScript {
         )
     {
         address initialAdmin = adminMap[block.chainid];
-        merkleFactoryInstant = new SablierMerkleFactoryInstant(initialAdmin, initialPriceFeed);
-        merkleFactoryLL = new SablierMerkleFactoryLL(initialAdmin, initialPriceFeed);
-        merkleFactoryLT = new SablierMerkleFactoryLT(initialAdmin, initialPriceFeed);
-        merkleFactoryVCA = new SablierMerkleFactoryVCA(initialAdmin, initialPriceFeed);
+        merkleFactoryInstant = new SablierMerkleFactoryInstant(initialAdmin, initialChainlinkPriceFeed);
+        merkleFactoryLL = new SablierMerkleFactoryLL(initialAdmin, initialChainlinkPriceFeed);
+        merkleFactoryLT = new SablierMerkleFactoryLT(initialAdmin, initialChainlinkPriceFeed);
+        merkleFactoryVCA = new SablierMerkleFactoryVCA(initialAdmin, initialChainlinkPriceFeed);
     }
 }
