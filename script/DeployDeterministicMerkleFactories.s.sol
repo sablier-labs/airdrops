@@ -13,7 +13,7 @@ import { BaseScript } from "./Base.s.sol";
 /// @dev Reverts if any contract has already been deployed.
 contract DeployDeterministicMerkleFactories is BaseScript {
     /// @dev Deploy via Forge.
-    function run(uint256 initialMinimumFee)
+    function run(address initialChainlinkPriceFeed)
         public
         broadcast
         returns (
@@ -24,9 +24,9 @@ contract DeployDeterministicMerkleFactories is BaseScript {
         )
     {
         address initialAdmin = adminMap[block.chainid];
-        merkleFactoryInstant = new SablierMerkleFactoryInstant{ salt: SALT }(initialAdmin, initialMinimumFee);
-        merkleFactoryLL = new SablierMerkleFactoryLL{ salt: SALT }(initialAdmin, initialMinimumFee);
-        merkleFactoryLT = new SablierMerkleFactoryLT{ salt: SALT }(initialAdmin, initialMinimumFee);
-        merkleFactoryVCA = new SablierMerkleFactoryVCA{ salt: SALT }(initialAdmin, initialMinimumFee);
+        merkleFactoryInstant = new SablierMerkleFactoryInstant{ salt: SALT }(initialAdmin, initialChainlinkPriceFeed);
+        merkleFactoryLL = new SablierMerkleFactoryLL{ salt: SALT }(initialAdmin, initialChainlinkPriceFeed);
+        merkleFactoryLT = new SablierMerkleFactoryLT{ salt: SALT }(initialAdmin, initialChainlinkPriceFeed);
+        merkleFactoryVCA = new SablierMerkleFactoryVCA{ salt: SALT }(initialAdmin, initialChainlinkPriceFeed);
     }
 }

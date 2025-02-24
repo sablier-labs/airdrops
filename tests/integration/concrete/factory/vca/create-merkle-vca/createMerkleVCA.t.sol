@@ -134,8 +134,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             merkleVCA: ISablierMerkleVCA(address(expectedMerkleVCA)),
             params: merkleVCAConstructorParams({ campaignOwner: users.sender, expiration: EXPIRATION }),
             aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT,
-            fee: 0
+            recipientCount: RECIPIENT_COUNT
         });
 
         ISablierMerkleVCA actualVCA = createMerkleVCA({ campaignOwner: users.sender, expiration: EXPIRATION });
@@ -169,8 +168,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             merkleVCA: ISablierMerkleVCA(address(expectedMerkleVCA)),
             params: merkleVCAConstructorParams({ campaignOwner: users.sender, expiration: EXPIRATION }),
             aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT,
-            fee: MINIMUM_FEE
+            recipientCount: RECIPIENT_COUNT
         });
 
         ISablierMerkleVCA actualVCA = createMerkleVCA({ campaignOwner: users.sender, expiration: EXPIRATION });

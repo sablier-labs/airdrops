@@ -10,13 +10,12 @@ contract Constructor_MerkleVCA_Integration_Test is MerkleVCA_Integration_Shared_
         // Make Factory the caller for the constructor test.
         resetPrank(address(merkleFactoryVCA));
 
-        SablierMerkleVCA actualMerkleVCA = new SablierMerkleVCA(merkleVCAConstructorParams(), users.campaignOwner);
+        SablierMerkleVCA actualMerkleVCA = new SablierMerkleVCA(merkleVCAConstructorParams());
 
         assertEq(actualMerkleVCA.admin(), users.campaignOwner, "admin");
         assertEq(actualMerkleVCA.campaignName(), CAMPAIGN_NAME, "campaign name");
         assertEq(actualMerkleVCA.EXPIRATION(), EXPIRATION, "expiration");
-        assertEq(actualMerkleVCA.FACTORY(), address(merkleFactoryVCA), "factory");
-        assertEq(actualMerkleVCA.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
+        assertEq(address(actualMerkleVCA.FACTORY()), address(merkleFactoryVCA), "factory");
         assertEq(actualMerkleVCA.ipfsCID(), IPFS_CID, "ipfsCID");
         assertEq(actualMerkleVCA.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
         assertEq(actualMerkleVCA.forgoneAmount(), 0, "forgoneAmount");

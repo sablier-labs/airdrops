@@ -17,8 +17,7 @@ interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
         ISablierMerkleVCA indexed merkleVCA,
         MerkleVCA.ConstructorParams params,
         uint256 aggregateAmount,
-        uint256 recipientCount,
-        uint256 fee
+        uint256 recipientCount
     );
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -31,7 +30,6 @@ interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
     ///
     /// Notes:
     /// - The MerkleVCA contract is created with CREATE2.
-    /// - The immutable fee will be set to the minimum fee value unless a custom fee is set.
     /// - Users interested into funding the campaign before its deployment must meet the below requirements, otherwise
     /// the campaign deployment will revert.
     ///

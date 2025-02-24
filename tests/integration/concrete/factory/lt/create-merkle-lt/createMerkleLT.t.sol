@@ -38,8 +38,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             params: merkleLTConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            totalDuration: TOTAL_DURATION,
-            fee: customFee
+            totalDuration: TOTAL_DURATION
         });
 
         ISablierMerkleLT actualLT = createMerkleLT(campaignOwner, expiration);
@@ -61,8 +60,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             params: merkleLTConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            totalDuration: TOTAL_DURATION,
-            fee: MINIMUM_FEE
+            totalDuration: TOTAL_DURATION
         });
 
         ISablierMerkleLT actualLT = createMerkleLT(campaignOwner, expiration);
