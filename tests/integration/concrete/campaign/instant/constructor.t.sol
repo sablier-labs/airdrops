@@ -15,7 +15,7 @@ contract Constructor_MerkleInstant_Integration_Test is MerkleInstant_Integration
 
         assertEq(constructedInstant.admin(), users.campaignOwner, "admin");
         assertEq(constructedInstant.campaignName(), CAMPAIGN_NAME, "campaign name");
-        assertEq(constructedInstant.CHAINLINK_PRICE_FEED(), address(chainlinkPriceFeedMock), "price feed");
+        assertEq(constructedInstant.CHAINLINK_PRICE_FEED(), address(chainlinkPriceFeed), "price feed");
         assertEq(constructedInstant.EXPIRATION(), EXPIRATION, "expiration");
         assertEq(constructedInstant.FACTORY(), address(merkleFactoryInstant), "factory");
         assertEq(constructedInstant.ipfsCID(), IPFS_CID, "ipfsCID");

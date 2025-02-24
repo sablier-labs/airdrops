@@ -51,7 +51,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
                                    TEST CONTRACTS
     //////////////////////////////////////////////////////////////////////////*/
 
-    ChainlinkPriceFeedMock internal chainlinkPriceFeedMock;
+    ChainlinkPriceFeedMock internal chainlinkPriceFeed;
     ISablierLockup internal lockup;
     ISablierMerkleFactoryInstant internal merkleFactoryInstant;
     ISablierMerkleFactoryLL internal merkleFactoryLL;
@@ -69,7 +69,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     function setUp() public virtual override {
         EvmUtilsBase.setUp();
         // Deploy the base test contracts.
-        chainlinkPriceFeedMock = new ChainlinkPriceFeedMock();
+        chainlinkPriceFeed = new ChainlinkPriceFeedMock();
 
         // Create the protocol admin.
         users.admin = payable(makeAddr({ name: "Admin" }));
@@ -119,13 +119,13 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     function deployMerkleFactoriesConditionally() internal {
         if (!isTestOptimizedProfile()) {
             merkleFactoryInstant =
-                new SablierMerkleFactoryInstant(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
-            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
-            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
-            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
+                new SablierMerkleFactoryInstant(users.admin, address(chainlinkPriceFeed), MINIMUM_FEE);
+            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, address(chainlinkPriceFeed), MINIMUM_FEE);
+            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, address(chainlinkPriceFeed), MINIMUM_FEE);
+            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, address(chainlinkPriceFeed), MINIMUM_FEE);
         } else {
             (merkleFactoryInstant, merkleFactoryLL, merkleFactoryLT, merkleFactoryVCA) =
-                deployOptimizedMerkleFactories(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
+                deployOptimizedMerkleFactories(users.admin, address(chainlinkPriceFeed), MINIMUM_FEE);
         }
         vm.label({ account: address(merkleFactoryInstant), newLabel: "MerkleFactoryInstant" });
         vm.label({ account: address(merkleFactoryLL), newLabel: "MerkleFactoryLL" });

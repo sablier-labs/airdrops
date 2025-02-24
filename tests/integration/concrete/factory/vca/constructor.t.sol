@@ -8,10 +8,10 @@ import { Integration_Test } from "../../../Integration.t.sol";
 contract Constructor_MerkleFactoryVCA_Integration_Test is Integration_Test {
     function test_Constructor() external {
         SablierMerkleFactoryVCA constructedFactoryVCA =
-            new SablierMerkleFactoryVCA(users.admin, address(chainlinkPriceFeedMock), MINIMUM_FEE);
+            new SablierMerkleFactoryVCA(users.admin, address(chainlinkPriceFeed), MINIMUM_FEE);
 
         assertEq(constructedFactoryVCA.admin(), users.admin, "factory admin");
-        assertEq(constructedFactoryVCA.chainlinkPriceFeed(), address(chainlinkPriceFeedMock), "price feed");
+        assertEq(constructedFactoryVCA.chainlinkPriceFeed(), address(chainlinkPriceFeed), "price feed");
         assertEq(constructedFactoryVCA.minimumFee(), MINIMUM_FEE, "minimum fee");
     }
 }

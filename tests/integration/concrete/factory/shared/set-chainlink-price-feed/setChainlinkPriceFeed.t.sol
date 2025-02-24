@@ -14,7 +14,7 @@ abstract contract SetChainlinkPriceFeed_Integration_Test is Integration_Test {
 
     function test_WhenCallerAdmin() external {
         resetPrank({ msgSender: users.admin });
-        assertEq(merkleFactoryBase.chainlinkPriceFeed(), address(chainlinkPriceFeedMock), "price feed before");
+        assertEq(merkleFactoryBase.chainlinkPriceFeed(), address(chainlinkPriceFeed), "price feed before");
         merkleFactoryBase.setChainlinkPriceFeed(address(0));
         assertEq(merkleFactoryBase.chainlinkPriceFeed(), address(0), "price feed after");
     }
