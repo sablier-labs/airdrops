@@ -37,6 +37,11 @@ interface ISablierMerkleFactoryBase is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Retrieves the maximum minimum fee that can be set.
+    /// @dev The value is equal to 100 USD.
+    /// @return The maximum minimum fee that can be set denominated in Chainlink's 8-decimal.
+    function MAX_MINIMUM_FEE() external view returns (uint256);
+
     /// @notice Retrieves the Chainlink price feed address.
     function chainlinkPriceFeed() external view returns (address);
 

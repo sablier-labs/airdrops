@@ -40,7 +40,9 @@ abstract contract SetChainlinkPriceFeed_Integration_Test is Integration_Test {
         ChainlinkPriceFeedMock_Zero newChainlinkPriceFeed = new ChainlinkPriceFeedMock_Zero();
         resetPrank({ msgSender: users.admin });
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.IncorrectChainlinkPriceFeed.selector, address(newChainlinkPriceFeed))
+            abi.encodeWithSelector(
+                Errors.SablierMerkleFactoryBase_IncorrectChainlinkPriceFeed.selector, address(newChainlinkPriceFeed)
+            )
         );
         merkleFactoryBase.setChainlinkPriceFeed(address(newChainlinkPriceFeed));
     }

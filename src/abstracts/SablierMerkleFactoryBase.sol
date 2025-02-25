@@ -20,6 +20,9 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
+    uint256 public constant override MAX_MINIMUM_FEE = 100e8;
+
+    /// @inheritdoc ISablierMerkleFactoryBase
     address public override chainlinkPriceFeed;
 
     /// @inheritdoc ISablierMerkleFactoryBase
@@ -96,6 +99,11 @@ abstract contract SablierMerkleFactoryBase is
             customFeeByUser.enabled = true;
         }
 
+        // Check: the new  fee is not greater than the maximum.
+        if (newFee > MAX_MINIMUM_FEE) {
+            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_MINIMUM_FEE);
+        }
+
         // Effect: update the custom fee for the given campaign creator.
         customFeeByUser.fee = newFee;
 
@@ -105,6 +113,11 @@ abstract contract SablierMerkleFactoryBase is
 
     /// @inheritdoc ISablierMerkleFactoryBase
     function setMinimumFee(uint256 newMinimumFee) external override onlyAdmin {
+        // Check: the new minimum fee is not greater than the maximum.
+        if (newMinimumFee > MAX_MINIMUM_FEE) {
+            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newMinimumFee, MAX_MINIMUM_FEE);
+        }
+
         // Effect: update the minimum fee.
         minimumFee = newMinimumFee;
 
@@ -124,7 +137,7 @@ abstract contract SablierMerkleFactoryBase is
 
             // Check: the price is not zero.
             if (price == 0) {
-                revert Errors.IncorrectChainlinkPriceFeed(newChainlinkPriceFeed);
+                revert Errors.SablierMerkleFactoryBase_IncorrectChainlinkPriceFeed(newChainlinkPriceFeed);
             }
         }
 

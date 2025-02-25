@@ -95,6 +95,10 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
+    modifier whenNewFeeDoesNotExceedTheMaximumFee() {
+        _;
+    }
+
     modifier whenNotZeroExpiry() {
         _;
     }
