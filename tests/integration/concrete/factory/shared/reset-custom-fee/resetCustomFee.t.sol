@@ -33,13 +33,13 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
 
     function test_WhenEnabled() external whenCallerAdmin {
         // Set the custom fee.
-        merkleFactoryBase.setCustomFee({ campaignCreator: users.campaignOwner, newFee: 1 ether });
+        merkleFactoryBase.setCustomFee({ campaignCreator: users.campaignOwner, newFee: 1e8 });
 
         // Check that its enabled.
         MerkleFactory.CustomFee memory customFee = merkleFactoryBase.getCustomFee(users.campaignOwner);
 
         assertTrue(customFee.enabled, "custom fee not enabled");
-        assertEq(customFee.fee, 1 ether, "custom fee");
+        assertEq(customFee.fee, 1e8, "custom fee");
 
         // It should emit a {ResetCustomFee} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });

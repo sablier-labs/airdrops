@@ -25,6 +25,8 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         external
         givenCampaignNotExists
     {
+        vm.assume(customFee < 100e8);
+
         // Set the custom fee for this test.
         resetPrank(users.admin);
         merkleFactoryInstant.setCustomFee(users.campaignOwner, customFee);
