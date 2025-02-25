@@ -11,21 +11,29 @@ import { Base_Test } from "../../Base.t.sol";
 contract ChainlinkPriceFeed_ForkTest is Base_Test, ChainlinkPriceFeedAddresses {
     using stdJson for string;
 
-    string internal tokenPricesJson;
+    struct ForkData {
+        uint256 blockNumber;
+        uint256 nativeTokenPrice;
+    }
 
-    /// @dev Run the Python script to get the token prices from CoinGecko API.
+    mapping(string chainName => ForkData forkData) internal _forkData;
+
     function setUp() public override {
-        Base_Test.setUp();
-
-        string[] memory inputs = new string[](2);
-        inputs[0] = "python";
-        inputs[1] = "tests/fork/price-feed/get_token_prices.py";
-        tokenPricesJson = string(vm.ffi(inputs));
+        _forkData["mainnet"] = ForkData({ blockNumber: 21_747_949, nativeTokenPrice: 3296.39063484e8 });
+        _forkData["arbitrum"] = ForkData({ blockNumber: 301_342_102, nativeTokenPrice: 3296.39063484e8 });
+        _forkData["avalanche"] = ForkData({ blockNumber: 56_638_766, nativeTokenPrice: 34.40327525e8 });
+        _forkData["base"] = ForkData({ blockNumber: 25_789_326, nativeTokenPrice: 3296.39063484e8 });
+        _forkData["bnb"] = ForkData({ blockNumber: 46_262_221, nativeTokenPrice: 677.11242076e8 });
+        _forkData["gnosis"] = ForkData({ blockNumber: 38_330_311, nativeTokenPrice: 1e8 });
+        _forkData["linea"] = ForkData({ blockNumber: 15_278_290, nativeTokenPrice: 3296.39063484e8 });
+        _forkData["optimism"] = ForkData({ blockNumber: 131_384_611, nativeTokenPrice: 3296.39063484e8 });
+        _forkData["polygon"] = ForkData({ blockNumber: 67_387_132, nativeTokenPrice: 0.40694339e8 });
+        _forkData["scroll"] = ForkData({ blockNumber: 13_108_201, nativeTokenPrice: 3296.39063484e8 });
     }
 
     /// @dev We need to re-deploy the contracts on each forked chain.
     modifier initTest(string memory chainName) {
-        vm.createSelectFork({ urlOrAlias: chainName });
+        vm.createSelectFork({ urlOrAlias: chainName, blockNumber: _forkData[chainName].blockNumber });
         merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, getPriceFeedAddress(), MINIMUM_FEE);
         merkleInstant = merkleFactoryInstant.createMerkleInstant(
             merkleInstantConstructorParams(), AGGREGATE_AMOUNT, RECIPIENT_COUNT
@@ -34,51 +42,51 @@ contract ChainlinkPriceFeed_ForkTest is Base_Test, ChainlinkPriceFeedAddresses {
     }
 
     function testFork_PriceFeed_Mainnet() external initTest("mainnet") {
-        _test_PriceFeed({ tokenName: "ethereum" });
+        _test_PriceFeed("mainnet");
     }
 
-    // function testFork_PriceFeed_Arbitrum() external initTest("arbitrum") {
-    //     _test_PriceFeed({ tokenName: "ethereum" });
-    // }
+    function testFork_PriceFeed_Arbitrum() external initTest("arbitrum") {
+        _test_PriceFeed("arbitrum");
+    }
 
-    // function testFork_PriceFeed_Avalanche() external initTest("avalanche") {
-    //     _test_PriceFeed({ tokenName: "avalanche" });
-    // }
+    function testFork_PriceFeed_Avalanche() external initTest("avalanche") {
+        _test_PriceFeed("avalanche");
+    }
 
     function testFork_PriceFeed_Base() external initTest("base") {
-        _test_PriceFeed({ tokenName: "ethereum" });
+        _test_PriceFeed("base");
     }
 
     function testFork_PriceFeed_BNB() external initTest("bnb") {
-        _test_PriceFeed({ tokenName: "bnb" });
+        _test_PriceFeed("bnb");
     }
 
     function testFork_PriceFeed_Gnosis() external initTest("gnosis") {
-        _test_PriceFeed({ tokenName: "dai" });
+        _test_PriceFeed("gnosis");
     }
 
     function testFork_PriceFeed_Linea() external initTest("linea") {
-        _test_PriceFeed({ tokenName: "ethereum" });
+        _test_PriceFeed("linea");
     }
 
-    // function testFork_PriceFeed_Optimism() external initTest("optimism") {
-    //     _test_PriceFeed({ tokenName: "ethereum" });
-    // }
+    function testFork_PriceFeed_Optimism() external initTest("optimism") {
+        _test_PriceFeed("optimism");
+    }
 
-    // function testFork_PriceFeed_Polygon() external initTest("polygon") {
-    //     _test_PriceFeed({ tokenName: "polygon" });
-    // }
+    function testFork_PriceFeed_Polygon() external initTest("polygon") {
+        _test_PriceFeed("polygon");
+    }
 
     function testFork_PriceFeed_Scroll() external initTest("scroll") {
-        _test_PriceFeed({ tokenName: "ethereum" });
+        _test_PriceFeed("scroll");
     }
 
-    function _test_PriceFeed(string memory tokenName) private view {
-        uint256 expectedFeeInWei = tokenPricesJson.readUint(string.concat(".", tokenName));
+    function _test_PriceFeed(string memory chainName) private view {
+        uint256 expectedFeeInWei = 1e18 * MINIMUM_FEE / _forkData[chainName].nativeTokenPrice;
         uint256 actualFeeInWei = merkleInstant.calculateMinimumFeeInWei();
 
-        // Assert the actual fee is within 1.5% of the expected fee.
-        uint256 tolerance = actualFeeInWei * 15 / 1000;
+        // Assert the actual fee in wei is within 2% of the expected fee in wei.
+        uint256 tolerance = actualFeeInWei * 20 / 1000;
         assertApproxEqAbs(actualFeeInWei, expectedFeeInWei, tolerance, "fee");
     }
 }

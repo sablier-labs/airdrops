@@ -2,7 +2,6 @@
   auto_detect_solc = false
   bytecode_hash = "none"
   evm_version = "shanghai"
-  ffi = true
   fs_permissions = [
     { access = "read", path = "./out-optimized" },
     { access = "read", path = "package.json" },
@@ -88,17 +87,17 @@
   wrap_comments = true
 
 [rpc_endpoints]
-  arbitrum = "${ARBITRUM_RPC_URL}"
+  arbitrum = "https://rpc.ankr.com/arbitrum"
   arbitrum_sepolia = "https://arbitrum-sepolia-rpc.publicnode.com"
-  avalanche = "${AVALANCHE_RPC_URL}"
+  avalanche = "https://rpc.ankr.com/avalanche"
   base = "https://mainnet.base.org"
   base_sepolia = "https://sepolia.base.org"
   berachain_artio = "https://bartio.rpc.berachain.com/"
   blast = "https://rpc.blast.io"
   blast_sepolia = "https://sepolia.blast.io"
-  bnb = "https://bsc-dataseed.binance.org"
+  bnb = "https://rpc.ankr.com/bsc"
   core_dao = "https://rpc.coredao.org"
-  gnosis = "https://rpc.gnosischain.com"
+  gnosis = "https://rpc.ankr.com/gnosis"
   lightlink = "https://replicator.phoenix.lightlink.io/rpc/v1"
   linea = "https://rpc.linea.build"
   linea_sepolia = "https://rpc.sepolia.linea.build"
@@ -107,9 +106,9 @@
   mode = "https://mainnet.mode.network/"
   mode_sepolia = "https://sepolia.mode.network/"
   morph = "https://rpc.morphl2.io"
-  optimism = "${OPTIMISM_RPC_URL}"
+  optimism = "https://rpc.ankr.com/optimism"
   optimism_sepolia = "https://sepolia.optimism.io"
-  polygon = "${POLYGON_RPC_URL}"
+  polygon = "https://rpc.ankr.com/polygon"
   scroll = "https://rpc.scroll.io/"
   sei = "https://evm-rpc.sei-apis.com"
   sei_testnet = "https://evm-rpc.arctic-1.seinetwork.io"
@@ -118,3 +117,4 @@
   superseed_sepolia = "https://sepolia.superseed.xyz"
   taiko_hekla = "https://rpc.hekla.taiko.xyz"
   taiko_mainnet = "https://rpc.mainnet.taiko.xyz"
+  zkSync = "https://mainnet.era.zksync.io"
