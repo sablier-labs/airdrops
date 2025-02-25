@@ -32,11 +32,6 @@ contract ChainlinkPriceFeedAddresses {
         _priceFeeds[324] = 0x6D41d1dc818112880b40e26BD6FD347E41008eDA;
     }
 
-    /// @dev Defaults to address zero if the chain is not supported.
-    function getPriceFeedAddress(uint256 chainId) public view returns (address) {
-        return _priceFeeds[chainId];
-    }
-
     function getPriceFeedAddress() public view returns (address) {
         return _priceFeeds[block.chainid];
     }
