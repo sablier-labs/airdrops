@@ -230,9 +230,8 @@ abstract contract SablierMerkleBase is
             return 0;
         }
 
-        // Q: should we do a low-level call here instead?
+        //  Retrieve the latest price from the Chainlink price feed.
         (, int256 price,,,) = AggregatorV3Interface(CHAINLINK_PRICE_FEED).latestRoundData();
-        // Q: should we check the price is greater than 0 ? If yes, should we revert?
 
         // Calculate the minimum fee in wei.
         return 1e18 * minimumFee / uint256(price);

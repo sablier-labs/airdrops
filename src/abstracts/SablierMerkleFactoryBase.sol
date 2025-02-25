@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.8.22;
 
+import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import { Adminable } from "@sablier/evm-utils/src/Adminable.sol";
 
 import { ISablierMerkleBase } from "../interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactoryBase } from "../interfaces/ISablierMerkleFactoryBase.sol";
+import { Errors } from "../libraries/Errors.sol";
 import { MerkleFactory } from "../types/DataTypes.sol";
 
 /// @title SablierMerkleFactoryBase
@@ -30,6 +32,7 @@ abstract contract SablierMerkleFactoryBase is
                                     CONSTRUCTOR
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @dev Emits a {SetChainlinkPriceFeed} event.
     /// @param initialAdmin The address of the initial contract admin.
     /// @param initialChainlinkPriceFeed The initial Chainlink price feed contract address.
     /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
@@ -40,8 +43,8 @@ abstract contract SablierMerkleFactoryBase is
     )
         Adminable(initialAdmin)
     {
-        chainlinkPriceFeed = initialChainlinkPriceFeed;
         minimumFee = initialMinimumFee;
+        _setChainlinkPriceFeed(initialChainlinkPriceFeed, initialAdmin);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -81,11 +84,7 @@ abstract contract SablierMerkleFactoryBase is
 
     /// @inheritdoc ISablierMerkleFactoryBase
     function setChainlinkPriceFeed(address newChainlinkPriceFeed) external override onlyAdmin {
-        // Effect: update the Chainlink price feed.
-        chainlinkPriceFeed = newChainlinkPriceFeed;
-
-        // Log the update.
-        emit SetChainlinkPriceFeed({ admin: msg.sender, chainlinkPriceFeed: newChainlinkPriceFeed });
+        _setChainlinkPriceFeed(newChainlinkPriceFeed, msg.sender);
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
@@ -111,6 +110,29 @@ abstract contract SablierMerkleFactoryBase is
 
         // Log the update.
         emit SetMinimumFee({ admin: msg.sender, minimumFee: newMinimumFee });
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                          PRIVATE NON-CONSTANT FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev See the documentation for the user-facing functions that call this internal function.
+    function _setChainlinkPriceFeed(address newChainlinkPriceFeed, address admin) private {
+        // If the Chainlink address is not zero, verify that the price feed is valid.
+        if (newChainlinkPriceFeed != address(0)) {
+            (, int256 price,,,) = AggregatorV3Interface(newChainlinkPriceFeed).latestRoundData();
+
+            // Check: the price is not zero.
+            if (price == 0) {
+                revert Errors.IncorrectChainlinkPriceFeed(newChainlinkPriceFeed);
+            }
+        }
+
+        // Effect: update the Chainlink price feed.
+        chainlinkPriceFeed = newChainlinkPriceFeed;
+
+        // Log the update.
+        emit SetChainlinkPriceFeed({ admin: admin, chainlinkPriceFeed: newChainlinkPriceFeed });
     }
 
     /*//////////////////////////////////////////////////////////////////////////

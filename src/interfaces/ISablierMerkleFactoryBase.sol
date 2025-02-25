@@ -86,6 +86,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
+    /// - If `newChainlinkPriceFeed` is not the zero address, it must return a price greater than zero.
     ///
     /// @param newChainlinkPriceFeed The new Chainlink price feed contract.
     function setChainlinkPriceFeed(address newChainlinkPriceFeed) external;
