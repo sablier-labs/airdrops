@@ -15,7 +15,7 @@ interface ISablierMerkleBase is IAdminable {
     event Clawback(address indexed admin, address indexed to, uint128 amount);
 
     /// @notice Emitted when the minimum fee is set to zero.
-    event MinimumFeeSetToZero(address indexed factoryAdmin, uint256 previousFee);
+    event SetMinimumFeeToZero(address indexed factoryAdmin, uint256 previousFee);
 
     /*//////////////////////////////////////////////////////////////////////////
                                  CONSTANT FUNCTIONS
@@ -112,7 +112,7 @@ interface ISablierMerkleBase is IAdminable {
 
     /// @notice Sets the minimum fee required to claim the airdrop to zero.
     ///
-    /// @dev Emits a {MinimumFeeSetToZero} event.
+    /// @dev Emits a {SetMinimumFeeToZero} event.
     ///
     /// Requirements:
     /// - `msg.sender` must be the `FACTORY` admin.

@@ -6,4 +6,4 @@ SetMinimumFeeToZero_Integration_Test
    │  └── it should do nothing
    └── given minimum fee not zero
       ├── it should set minimum fee to zero   
-      └── it should emit event MinimumFeeSetToZero
+      └── it should emit event SetMinimumFeeToZero

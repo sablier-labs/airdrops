@@ -30,7 +30,7 @@ abstract contract SetMinimumFeeToZero_Integration_Test is Integration_Test {
     function test_GivenMinimumFeeNotZero() external whenCallerFactoryAdmin {
         resetPrank(users.admin);
         vm.expectEmit({ emitter: address(merkleBase) });
-        emit ISablierMerkleBase.MinimumFeeSetToZero(users.admin, MINIMUM_FEE);
+        emit ISablierMerkleBase.SetMinimumFeeToZero(users.admin, MINIMUM_FEE);
         merkleBase.setMinimumFeeToZero();
         assertEq(merkleBase.minimumFee(), 0);
     }

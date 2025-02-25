@@ -211,7 +211,7 @@ abstract contract SablierMerkleBase is
         minimumFee = 0;
 
         // Log the event.
-        emit MinimumFeeSetToZero(factoryAdmin, previousMinimumFee);
+        emit SetMinimumFeeToZero(factoryAdmin, previousMinimumFee);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
