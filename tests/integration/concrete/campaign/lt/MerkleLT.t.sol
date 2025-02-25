@@ -9,6 +9,7 @@ import { CollectFees_Integration_Test } from "./../shared/collect-fees/collectFe
 import { GetFirstClaimTime_Integration_Test } from "./../shared/get-first-claim-time/getFirstClaimTime.t.sol";
 import { HasClaimed_Integration_Test } from "./../shared/has-claimed/hasClaimed.t.sol";
 import { HasExpired_Integration_Test } from "./../shared/has-expired/hasExpired.t.sol";
+import { SetMinimumFeeToZero_Integration_Test } from "./../shared/set-minimum-fee-to-zero/setMinimumFeeToZero.t.sol";
 
 /*//////////////////////////////////////////////////////////////////////////
                              NON-SHARED TESTS
@@ -58,6 +59,15 @@ contract HasClaimed_MerkleLT_Integration_Test is MerkleLT_Integration_Shared_Tes
 }
 
 contract HasExpired_MerkleLT_Integration_Test is MerkleLT_Integration_Shared_Test, HasExpired_Integration_Test {
+    function setUp() public override(MerkleLT_Integration_Shared_Test, Integration_Test) {
+        MerkleLT_Integration_Shared_Test.setUp();
+    }
+}
+
+contract SetMinimumFeeToZero_MerkleLT_Integration_Test is
+    MerkleLT_Integration_Shared_Test,
+    SetMinimumFeeToZero_Integration_Test
+{
     function setUp() public override(MerkleLT_Integration_Shared_Test, Integration_Test) {
         MerkleLT_Integration_Shared_Test.setUp();
     }

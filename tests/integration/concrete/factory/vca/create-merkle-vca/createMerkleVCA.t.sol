@@ -176,7 +176,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
-        assertEq(actualVCA.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
+        assertEq(actualVCA.minimumFee(), MINIMUM_FEE, "minimum fee");
 
         // It should set return the correct unlock schedule.
         assertEq(actualVCA.timestamps().start, RANGED_STREAM_START_TIME, "unlock start");

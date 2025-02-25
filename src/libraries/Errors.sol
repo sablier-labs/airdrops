@@ -11,6 +11,9 @@ library Errors {
     /// @notice Thrown when caller is not the factory contract.
     error SablierMerkleBase_CallerNotFactory(address factory, address caller);
 
+    /// @notice Thrown when caller is not the factory admin.
+    error SablierMerkleBase_CallerNotFactoryAdmin(address factoryAdmin, address caller);
+
     /// @notice Thrown when trying to claim after the campaign has expired.
     error SablierMerkleBase_CampaignExpired(uint256 blockTimestamp, uint40 expiration);
 

@@ -38,9 +38,6 @@ abstract contract SablierMerkleBase is
     bytes32 public immutable override MERKLE_ROOT;
 
     /// @inheritdoc ISablierMerkleBase
-    uint256 public immutable override MINIMUM_FEE;
-
-    /// @inheritdoc ISablierMerkleBase
     IERC20 public immutable override TOKEN;
 
     /// @inheritdoc ISablierMerkleBase
@@ -48,6 +45,9 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     string public override ipfsCID;
+
+    /// @inheritdoc ISablierMerkleBase
+    uint256 public override minimumFee;
 
     /// @dev Packed booleans that record the history of claims.
     BitMaps.BitMap internal _claimedBitMap;
@@ -75,10 +75,10 @@ abstract contract SablierMerkleBase is
         CHAINLINK_PRICE_FEED = ISablierMerkleFactoryBase(FACTORY).chainlinkPriceFeed();
         EXPIRATION = expiration;
         MERKLE_ROOT = merkleRoot;
-        MINIMUM_FEE = ISablierMerkleFactoryBase(FACTORY).getFee(campaignCreator);
         TOKEN = token;
         campaignName = _campaignName;
         ipfsCID = _ipfsCID;
+        minimumFee = ISablierMerkleFactoryBase(FACTORY).getFee(campaignCreator);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -195,6 +195,25 @@ abstract contract SablierMerkleBase is
         }
     }
 
+    /// @inheritdoc ISablierMerkleBase
+    function setMinimumFeeToZero() external override {
+        // Retrieve the factory admin.
+        address factoryAdmin = ISablierMerkleFactoryBase(FACTORY).admin();
+
+        // Check: the caller is the factory admin.
+        if (msg.sender != factoryAdmin) {
+            revert Errors.SablierMerkleBase_CallerNotFactoryAdmin(factoryAdmin, msg.sender);
+        }
+
+        uint256 previousMinimumFee = minimumFee;
+
+        // Effect: set the minimum fee to zero.
+        minimumFee = 0;
+
+        // Log the event.
+        emit MinimumFeeSetToZero(factoryAdmin, previousMinimumFee);
+    }
+
     /*//////////////////////////////////////////////////////////////////////////
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
@@ -207,7 +226,7 @@ abstract contract SablierMerkleBase is
         }
 
         // If the minimum fee is 0, return 0.
-        if (MINIMUM_FEE == 0) {
+        if (minimumFee == 0) {
             return 0;
         }
 
@@ -216,7 +235,7 @@ abstract contract SablierMerkleBase is
         // Q: should we check the price is greater than 0 ? If yes, should we revert?
 
         // Calculate the minimum fee in wei.
-        return 1e18 * MINIMUM_FEE / uint256(price);
+        return 1e18 * minimumFee / uint256(price);
     }
 
     /// @notice Returns a flag indicating whether the grace period has passed.

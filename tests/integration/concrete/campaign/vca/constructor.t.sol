@@ -18,7 +18,7 @@ contract Constructor_MerkleVCA_Integration_Test is MerkleVCA_Integration_Shared_
         assertEq(constructedVCA.FACTORY(), address(merkleFactoryVCA), "factory");
         assertEq(constructedVCA.ipfsCID(), IPFS_CID, "ipfsCID");
         assertEq(constructedVCA.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
-        assertEq(constructedVCA.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
+        assertEq(constructedVCA.minimumFee(), MINIMUM_FEE, "minimum fee");
         assertEq(constructedVCA.forgoneAmount(), 0, "forgoneAmount");
         assertEq(constructedVCA.timestamps().start, RANGED_STREAM_START_TIME, "unlock start");
         assertEq(constructedVCA.timestamps().end, RANGED_STREAM_END_TIME, "unlock end");

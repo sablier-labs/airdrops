@@ -48,7 +48,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(actualLT.FACTORY(), address(merkleFactoryLT), "factory");
-        assertEq(actualLT.MINIMUM_FEE(), customFee, "minimum fee");
+        assertEq(actualLT.minimumFee(), customFee, "minimum fee");
     }
 
     function test_GivenCustomFeeNotSet(address campaignOwner, uint40 expiration) external givenCampaignNotExists {
@@ -73,6 +73,6 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(actualLT.FACTORY(), address(merkleFactoryLT), "factory");
-        assertEq(actualLT.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
+        assertEq(actualLT.minimumFee(), MINIMUM_FEE, "minimum fee");
     }
 }

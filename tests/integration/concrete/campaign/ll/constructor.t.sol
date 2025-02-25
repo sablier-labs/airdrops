@@ -24,7 +24,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         assertEq(constructedLL.ipfsCID(), IPFS_CID, "ipfsCID");
         assertEq(address(constructedLL.LOCKUP()), address(lockup), "lockup");
         assertEq(constructedLL.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
-        assertEq(constructedLL.MINIMUM_FEE(), MINIMUM_FEE, "minimum fee");
+        assertEq(constructedLL.minimumFee(), MINIMUM_FEE, "minimum fee");
         assertEq(constructedLL.shape(), SHAPE, "shape");
         assertEq(constructedLL.STREAM_CANCELABLE(), CANCELABLE, "stream cancelable");
         assertEq(constructedLL.STREAM_TRANSFERABLE(), TRANSFERABLE, "stream transferable");

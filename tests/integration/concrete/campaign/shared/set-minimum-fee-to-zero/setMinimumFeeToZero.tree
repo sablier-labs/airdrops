@@ -1,0 +1,9 @@
+SetMinimumFeeToZero_Integration_Test
+├── when caller not factory admin
+│  └── it should revert
+└── when caller factory admin
+   ├── given minimum fee already zero
+   │  └── it should do nothing
+   └── given minimum fee not zero
+      ├── it should set minimum fee to zero   
+      └── it should emit event MinimumFeeSetToZero
