@@ -2,6 +2,7 @@
 pragma solidity >=0.8.22;
 
 import { uUNIT } from "@prb/math/src/UD2x18.sol";
+
 import { SablierMerkleFactoryBase } from "./abstracts/SablierMerkleFactoryBase.sol";
 import { ISablierMerkleFactoryLT } from "./interfaces/ISablierMerkleFactoryLT.sol";
 import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
@@ -16,12 +17,14 @@ contract SablierMerkleFactoryLT is ISablierMerkleFactoryLT, SablierMerkleFactory
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
+    /// @param initialChainlinkPriceFeed The initial Chainlink price feed contract.
     /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
     constructor(
         address initialAdmin,
+        address initialChainlinkPriceFeed,
         uint256 initialMinimumFee
     )
-        SablierMerkleFactoryBase(initialAdmin, initialMinimumFee)
+        SablierMerkleFactoryBase(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee)
     { }
 
     /*//////////////////////////////////////////////////////////////////////////

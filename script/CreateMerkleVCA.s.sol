@@ -12,7 +12,7 @@ contract CreateMerkleVCA is BaseScript {
     /// @dev Deploy via Forge.
     function run() public broadcast returns (ISablierMerkleVCA merkleVCA) {
         // TODO: Load deployed addresses from Ethereum mainnet.
-        SablierMerkleFactoryVCA merkleFactory = new SablierMerkleFactoryVCA(DEFAULT_SABLIER_ADMIN, 0);
+        SablierMerkleFactoryVCA merkleFactory = new SablierMerkleFactoryVCA(DEFAULT_SABLIER_ADMIN, address(0), 0);
 
         // Prepare the constructor parameters.
         MerkleVCA.ConstructorParams memory params;

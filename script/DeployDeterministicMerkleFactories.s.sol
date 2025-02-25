@@ -7,13 +7,15 @@ import { SablierMerkleFactoryInstant } from "../src/SablierMerkleFactoryInstant.
 import { SablierMerkleFactoryLL } from "../src/SablierMerkleFactoryLL.sol";
 import { SablierMerkleFactoryLT } from "../src/SablierMerkleFactoryLT.sol";
 import { SablierMerkleFactoryVCA } from "../src/SablierMerkleFactoryVCA.sol";
+import { ChainlinkPriceFeedAddresses } from "../src/tests/ChainlinkPriceFeedAddresses.sol";
+import { InitialMinimumFees } from "../src/tests/InitialMinimumFees.sol";
 
 /// @notice Deploys Merkle factory contracts at deterministic address.
 ///
 /// @dev Reverts if any contract has already been deployed.
-contract DeployDeterministicMerkleFactories is BaseScript {
+contract DeployDeterministicMerkleFactories is BaseScript, ChainlinkPriceFeedAddresses, InitialMinimumFees {
     /// @dev Deploy via Forge.
-    function run(uint256 initialMinimumFee)
+    function run()
         public
         broadcast
         returns (
@@ -23,9 +25,16 @@ contract DeployDeterministicMerkleFactories is BaseScript {
             SablierMerkleFactoryVCA merkleFactoryVCA
         )
     {
-        merkleFactoryInstant = new SablierMerkleFactoryInstant{ salt: SALT }(protocolAdmin(), initialMinimumFee);
-        merkleFactoryLL = new SablierMerkleFactoryLL{ salt: SALT }(protocolAdmin(), initialMinimumFee);
-        merkleFactoryLT = new SablierMerkleFactoryLT{ salt: SALT }(protocolAdmin(), initialMinimumFee);
-        merkleFactoryVCA = new SablierMerkleFactoryVCA{ salt: SALT }(protocolAdmin(), initialMinimumFee);
+        address initialAdmin = protocolAdmin();
+        address initialChainlinkPriceFeed = getPriceFeedAddress();
+        uint256 initialMinimumFee = getMinimumFee();
+        merkleFactoryInstant =
+            new SablierMerkleFactoryInstant{ salt: SALT }(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee);
+        merkleFactoryLL =
+            new SablierMerkleFactoryLL{ salt: SALT }(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee);
+        merkleFactoryLT =
+            new SablierMerkleFactoryLT{ salt: SALT }(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee);
+        merkleFactoryVCA =
+            new SablierMerkleFactoryVCA{ salt: SALT }(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee);
     }
 }

@@ -27,6 +27,10 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
+    modifier givenCustomFeeNotSet() {
+        _;
+    }
+
     modifier givenMsgValueNotLessThanFee() {
         _;
     }

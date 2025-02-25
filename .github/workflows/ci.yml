@@ -43,6 +43,7 @@ jobs:
     with:
       foundry-fuzz-runs: 20
       foundry-profile: "test-optimized"
+      install-python: true
       match-path: "tests/fork/**/*.sol"
       name: "Fork tests"
 
