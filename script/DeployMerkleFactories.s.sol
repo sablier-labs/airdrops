@@ -8,10 +8,10 @@ import { SablierMerkleFactoryLL } from "../src/SablierMerkleFactoryLL.sol";
 import { SablierMerkleFactoryLT } from "../src/SablierMerkleFactoryLT.sol";
 import { SablierMerkleFactoryVCA } from "../src/SablierMerkleFactoryVCA.sol";
 import { ChainlinkPriceFeedAddresses } from "../src/tests/ChainlinkPriceFeedAddresses.sol";
-import { InitialMinimumFees } from "../src/tests/InitialMinimumFees.sol";
+import { InitialMinimumFee } from "../src/tests/InitialMinimumFee.sol";
 
 /// @notice Deploys Merkle factory contracts.
-contract DeployMerkleFactories is BaseScript, ChainlinkPriceFeedAddresses, InitialMinimumFees {
+contract DeployMerkleFactories is BaseScript, ChainlinkPriceFeedAddresses, InitialMinimumFee {
     /// @dev Deploy via Forge.
     function run()
         public

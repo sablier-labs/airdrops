@@ -180,8 +180,8 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     function collectFees(address factoryAdmin) external override returns (uint256 feeAmount) {
         // Check: the caller is the FACTORY.
-        if (msg.sender != address(FACTORY)) {
-            revert Errors.SablierMerkleBase_CallerNotFactory(address(FACTORY), msg.sender);
+        if (msg.sender != FACTORY) {
+            revert Errors.SablierMerkleBase_CallerNotFactory(FACTORY, msg.sender);
         }
 
         feeAmount = address(this).balance;
