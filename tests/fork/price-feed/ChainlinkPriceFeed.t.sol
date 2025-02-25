@@ -1,16 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { stdJson } from "forge-std/src/StdJson.sol";
-
 import { SablierMerkleFactoryInstant } from "src/SablierMerkleFactoryInstant.sol";
 import { ChainlinkPriceFeedAddresses } from "src/tests/ChainlinkPriceFeedAddresses.sol";
 
 import { Base_Test } from "../../Base.t.sol";
 
 contract ChainlinkPriceFeed_ForkTest is Base_Test, ChainlinkPriceFeedAddresses {
-    using stdJson for string;
-
     struct ForkData {
         uint256 blockNumber;
         uint256 nativeTokenPrice;

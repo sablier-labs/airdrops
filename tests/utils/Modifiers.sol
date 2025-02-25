@@ -35,6 +35,10 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
+    modifier givenPriceFeedAddressNotZero() {
+        _;
+    }
+
     modifier givenRecipientNotClaimed() {
         _;
     }
