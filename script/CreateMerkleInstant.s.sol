@@ -13,7 +13,7 @@ contract CreateMerkleInstant is BaseScript {
     function run() public broadcast returns (ISablierMerkleInstant merkleInstant) {
         // TODO: Load deployed addresses from Ethereum mainnet.
         SablierMerkleFactoryInstant merkleFactory =
-            new SablierMerkleFactoryInstant(DEFAULT_SABLIER_ADMIN, address(0), 0);
+            new SablierMerkleFactoryInstant(DEFAULT_SABLIER_ADMIN, 0, address(0));
 
         // Prepare the constructor parameters.
         MerkleInstant.ConstructorParams memory params;

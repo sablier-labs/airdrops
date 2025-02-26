@@ -15,14 +15,14 @@ contract SablierMerkleFactoryLL is ISablierMerkleFactoryLL, SablierMerkleFactory
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
-    /// @param initialChainlinkPriceFeed The initial Chainlink price feed contract.
     /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
+    /// @param initialOracle The initial oracle contract address.
     constructor(
         address initialAdmin,
-        address initialChainlinkPriceFeed,
-        uint256 initialMinimumFee
+        uint256 initialMinimumFee,
+        address initialOracle
     )
-        SablierMerkleFactoryBase(initialAdmin, initialChainlinkPriceFeed, initialMinimumFee)
+        SablierMerkleFactoryBase(initialAdmin, initialMinimumFee, initialOracle)
     { }
 
     /*//////////////////////////////////////////////////////////////////////////

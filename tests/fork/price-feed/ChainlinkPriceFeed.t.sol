@@ -30,7 +30,7 @@ contract ChainlinkPriceFeed_ForkTest is Base_Test, ChainlinkPriceFeedAddresses {
     /// @dev We need to re-deploy the contracts on each forked chain.
     modifier initTest(string memory chainName) {
         vm.createSelectFork({ urlOrAlias: chainName, blockNumber: _forkData[chainName].blockNumber });
-        merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, getPriceFeedAddress(), MINIMUM_FEE);
+        merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, MINIMUM_FEE, getPriceFeedAddress());
         merkleInstant = merkleFactoryInstant.createMerkleInstant(
             merkleInstantConstructorParams(), AGGREGATE_AMOUNT, RECIPIENT_COUNT
         );

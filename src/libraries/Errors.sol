@@ -38,10 +38,7 @@ library Errors {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Thrown when trying to set a fee that exceeds the maximum minimum fee.
-    error SablierMerkleFactoryBase_MaximumFeeExceeded(uint256 newMinimumFee, uint256 maximumMinimumFee);
-
-    /// @notice Thrown when trying to set an invalid Chainlink price feed contract address.
-    error SablierMerkleFactoryBase_IncorrectChainlinkPriceFeed(address chainlinkPriceFeed);
+    error SablierMerkleFactoryBase_MaximumFeeExceeded(uint256 newFee, uint256 maximumMinimumFee);
 
     /*//////////////////////////////////////////////////////////////////////////
                                  SABLIER-MERKLE-LT

@@ -9,11 +9,11 @@ import { ChainlinkPriceFeedMock, ChainlinkPriceFeedMock_Zero } from "src/tests/C
 
 import { Integration_Test } from "../../../../Integration.t.sol";
 
-abstract contract SetChainlinkPriceFeed_Integration_Test is Integration_Test {
+abstract contract SetOracle_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotAdmin() external {
         resetPrank({ msgSender: users.eve });
         vm.expectRevert(abi.encodeWithSelector(EvmUtilsErrors.CallerNotAdmin.selector, users.admin, users.eve));
-        merkleFactoryBase.setChainlinkPriceFeed(address(0));
+        merkleFactoryBase.setOracle(address(0));
     }
 
     function test_WhenCallerAdmin() external {
@@ -23,13 +23,13 @@ abstract contract SetChainlinkPriceFeed_Integration_Test is Integration_Test {
     function test_WhenNewPriceFeedZeroAddress() external whenCallerAdmin {
         resetPrank({ msgSender: users.admin });
 
-        assertNotEq(merkleFactoryBase.chainlinkPriceFeed(), address(0), "price feed before");
+        assertNotEq(merkleFactoryBase.oracle(), address(0), "oracle before");
 
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetChainlinkPriceFeed(users.admin, address(0));
-        merkleFactoryBase.setChainlinkPriceFeed(address(0));
+        emit ISablierMerkleFactoryBase.SetOracle(users.admin, address(0), address(oracle));
+        merkleFactoryBase.setOracle(address(0));
 
-        assertEq(merkleFactoryBase.chainlinkPriceFeed(), address(0), "price feed after");
+        assertEq(merkleFactoryBase.oracle(), address(0), "oracle after");
     }
 
     modifier whenNewPriceFeedNotZeroAddress() {
@@ -37,28 +37,24 @@ abstract contract SetChainlinkPriceFeed_Integration_Test is Integration_Test {
     }
 
     function test_RevertWhen_NewPriceFeedReturnsZeroPrice() external whenCallerAdmin whenNewPriceFeedNotZeroAddress {
-        ChainlinkPriceFeedMock_Zero newChainlinkPriceFeed = new ChainlinkPriceFeedMock_Zero();
+        ChainlinkPriceFeedMock_Zero newOracle = new ChainlinkPriceFeedMock_Zero();
         resetPrank({ msgSender: users.admin });
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                Errors.SablierMerkleFactoryBase_IncorrectChainlinkPriceFeed.selector, address(newChainlinkPriceFeed)
-            )
-        );
-        merkleFactoryBase.setChainlinkPriceFeed(address(newChainlinkPriceFeed));
+
+        merkleFactoryBase.setOracle(address(newOracle));
     }
 
     function test_WhenNewPriceFeedReturnsNonZeroPrice() external whenCallerAdmin whenNewPriceFeedNotZeroAddress {
         // Deploy a new Chainlink price feed contract that returns a constant price of $3000 for 1 native token.
-        ChainlinkPriceFeedMock newChainlinkPriceFeed = new ChainlinkPriceFeedMock();
+        ChainlinkPriceFeedMock newOracle = new ChainlinkPriceFeedMock();
 
         resetPrank({ msgSender: users.admin });
 
-        assertNotEq(merkleFactoryBase.chainlinkPriceFeed(), address(newChainlinkPriceFeed), "price feed before");
+        assertNotEq(merkleFactoryBase.oracle(), address(newOracle), "oracle before");
 
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetChainlinkPriceFeed(users.admin, address(newChainlinkPriceFeed));
-        merkleFactoryBase.setChainlinkPriceFeed(address(newChainlinkPriceFeed));
+        emit ISablierMerkleFactoryBase.SetOracle(users.admin, address(newOracle), address(oracle));
+        merkleFactoryBase.setOracle(address(newOracle));
 
-        assertEq(merkleFactoryBase.chainlinkPriceFeed(), address(newChainlinkPriceFeed), "price feed after");
+        assertEq(merkleFactoryBase.oracle(), address(newOracle), "oracle after");
     }
 }

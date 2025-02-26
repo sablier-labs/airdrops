@@ -1,7 +1,7 @@
 CalculateMinimumFeeInWei_Integration_Test
-├── given price feed address zero
+├── given oracle address zero
 │  └── it should return zero
-└── given price feed address not zero
+└── given oracle address not zero
    ├── given minimum fee zero
    │  └── it should return zero
    └── given minimum fee not zero

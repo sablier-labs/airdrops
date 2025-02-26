@@ -24,14 +24,14 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @notice Emitted when the admin resets the custom fee for the provided campaign creator to the minimum fee.
     event ResetCustomFee(address indexed admin, address indexed campaignCreator);
 
-    /// @notice Emitted when the Chainlink price feed contract is set by the admin.
-    event SetChainlinkPriceFeed(address indexed admin, address chainlinkPriceFeed);
-
     /// @notice Emitted when the admin sets a custom fee for the provided campaign creator.
     event SetCustomFee(address indexed admin, address indexed campaignCreator, uint256 customFee);
 
     /// @notice Emitted when the minimum fee is set by the admin.
     event SetMinimumFee(address indexed admin, uint256 minimumFee);
+
+    /// @notice Emitted when the oracle contract address is set by the admin.
+    event SetOracle(address indexed admin, address newOracle, address previousOracle);
 
     /*//////////////////////////////////////////////////////////////////////////
                                  CONSTANT FUNCTIONS
@@ -41,9 +41,6 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @dev The value is equal to 100 USD.
     /// @return The maximum minimum fee that can be set denominated in Chainlink's 8-decimal.
     function MAX_MINIMUM_FEE() external view returns (uint256);
-
-    /// @notice Retrieves the Chainlink price feed address.
-    function chainlinkPriceFeed() external view returns (address);
 
     /// @notice Retrieves the custom fee struct for the provided campaign creator.
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
@@ -60,6 +57,9 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
     /// @return The minimum fee required to claim the airdrop, as an 8-decimal number.
     function minimumFee() external view returns (uint256);
+
+    /// @notice Retrieves the oracle contract address.
+    function oracle() external view returns (address);
 
     /*//////////////////////////////////////////////////////////////////////////
                                NON-CONSTANT FUNCTIONS
@@ -86,16 +86,6 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @param campaignCreator The user for whom the fee is reset for.
     function resetCustomFee(address campaignCreator) external;
 
-    /// @notice Sets the Chainlink price feed contract.
-    /// @dev Emits a {SetChainlinkPriceFeed} event.
-    ///
-    /// Requirements:
-    /// - `msg.sender` must be the admin.
-    /// - If `newChainlinkPriceFeed` is not the zero address, it must return a price greater than zero.
-    ///
-    /// @param newChainlinkPriceFeed The new Chainlink price feed contract.
-    function setChainlinkPriceFeed(address newChainlinkPriceFeed) external;
-
     /// @notice Sets a custom fee for the provided campaign creator.
     /// @dev Emits a {SetCustomFee} event.
     ///
@@ -119,6 +109,16 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// Requirements:
     /// - `msg.sender` must be the admin.
     ///
-    /// @param newMinimumFee The new minimum fee to be set.
-    function setMinimumFee(uint256 newMinimumFee) external;
+    /// @param newFee The new minimum fee to be set.
+    function setMinimumFee(uint256 newFee) external;
+
+    /// @notice Sets the oracle contract address.
+    /// @dev Emits a {SetOracle} event.
+    ///
+    /// Requirements:
+    /// - `msg.sender` must be the admin.
+    /// - If `newOracle` is not the zero address, the call to it must not fail.
+    ///
+    /// @param newOracle The new oracle contract address.
+    function setOracle(address newOracle) external;
 }

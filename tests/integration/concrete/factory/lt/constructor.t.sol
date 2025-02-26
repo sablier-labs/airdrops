@@ -8,10 +8,10 @@ import { Integration_Test } from "../../../Integration.t.sol";
 contract Constructor_MerkleFactoryLT_Integration_Test is Integration_Test {
     function test_Constructor() external {
         SablierMerkleFactoryLT constructedFactoryLT =
-            new SablierMerkleFactoryLT(users.admin, address(chainlinkPriceFeed), MINIMUM_FEE);
+            new SablierMerkleFactoryLT(users.admin, MINIMUM_FEE, address(oracle));
 
         assertEq(constructedFactoryLT.admin(), users.admin, "factory admin");
-        assertEq(constructedFactoryLT.chainlinkPriceFeed(), address(chainlinkPriceFeed), "price feed");
+        assertEq(constructedFactoryLT.oracle(), address(oracle), "oracle");
         assertEq(constructedFactoryLT.minimumFee(), MINIMUM_FEE, "minimum fee");
     }
 }

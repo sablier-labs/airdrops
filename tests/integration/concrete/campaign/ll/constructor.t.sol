@@ -18,7 +18,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
 
         assertEq(constructedLL.admin(), users.campaignOwner, "admin");
         assertEq(constructedLL.campaignName(), CAMPAIGN_NAME, "campaign name");
-        assertEq(constructedLL.CHAINLINK_PRICE_FEED(), address(chainlinkPriceFeed), "price feed");
+        assertEq(constructedLL.ORACLE(), address(oracle), "oracle");
         assertEq(constructedLL.EXPIRATION(), EXPIRATION, "expiration");
         assertEq(constructedLL.FACTORY(), address(merkleFactoryLL), "factory");
         assertEq(constructedLL.ipfsCID(), IPFS_CID, "ipfsCID");

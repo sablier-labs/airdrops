@@ -14,7 +14,7 @@ abstract contract CalculateMinimumFeeInWei_Integration_Test is Integration_Test 
 
     function test_GivenPriceFeedAddressZero() external {
         resetPrank(users.admin);
-        merkleFactoryBase.setChainlinkPriceFeed(address(0));
+        merkleFactoryBase.setOracle(address(0));
 
         if (Strings.equal(_campaignType, "instant")) {
             merkleInstant = createMerkleInstant();

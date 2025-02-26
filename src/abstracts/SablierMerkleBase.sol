@@ -26,9 +26,6 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleBase
-    address public immutable override CHAINLINK_PRICE_FEED;
-
-    /// @inheritdoc ISablierMerkleBase
     uint40 public immutable override EXPIRATION;
 
     /// @inheritdoc ISablierMerkleBase
@@ -36,6 +33,9 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     bytes32 public immutable override MERKLE_ROOT;
+
+    /// @inheritdoc ISablierMerkleBase
+    address public immutable override ORACLE;
 
     /// @inheritdoc ISablierMerkleBase
     IERC20 public immutable override TOKEN;
@@ -71,10 +71,10 @@ abstract contract SablierMerkleBase is
     )
         Adminable(initialAdmin)
     {
-        FACTORY = msg.sender;
-        CHAINLINK_PRICE_FEED = ISablierMerkleFactoryBase(FACTORY).chainlinkPriceFeed();
         EXPIRATION = expiration;
+        FACTORY = msg.sender;
         MERKLE_ROOT = merkleRoot;
+        ORACLE = ISablierMerkleFactoryBase(FACTORY).oracle();
         TOKEN = token;
         campaignName = _campaignName;
         ipfsCID = _ipfsCID;
@@ -86,7 +86,7 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleBase
-    function calculateMinimumFeeInWei() external view returns (uint256) {
+    function calculateMinimumFeeInWei() external view override returns (uint256) {
         return _calculateMinimumFeeInWei();
     }
 
@@ -220,8 +220,8 @@ abstract contract SablierMerkleBase is
 
     /// @dev See the documentation for the user-facing functions that call this internal function.
     function _calculateMinimumFeeInWei() internal view returns (uint256) {
-        // If the Chainlink price feed is not set, return 0.
-        if (CHAINLINK_PRICE_FEED == address(0)) {
+        // If the oracle is not set, return 0.
+        if (ORACLE == address(0)) {
             return 0;
         }
 
@@ -230,8 +230,8 @@ abstract contract SablierMerkleBase is
             return 0;
         }
 
-        //  Retrieve the latest price from the Chainlink price feed.
-        (, int256 price,,,) = AggregatorV3Interface(CHAINLINK_PRICE_FEED).latestRoundData();
+        //  Retrieve the latest price from the oracle.
+        (, int256 price,,,) = AggregatorV3Interface(ORACLE).latestRoundData();
 
         // Calculate the minimum fee in wei.
         return 1e18 * minimumFee / uint256(price);

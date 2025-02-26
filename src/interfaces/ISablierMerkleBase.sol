@@ -21,10 +21,6 @@ interface ISablierMerkleBase is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Retrieves the address of the Chainlink price feed contract.
-    /// @dev This is an immutable state variable.
-    function CHAINLINK_PRICE_FEED() external view returns (address);
-
     /// @notice The cut-off point for the campaign, as a Unix timestamp. A value of zero means there is no expiration.
     /// @dev This is an immutable state variable.
     function EXPIRATION() external returns (uint40);
@@ -36,12 +32,16 @@ interface ISablierMerkleBase is IAdminable {
     /// @dev This is an immutable state variable.
     function MERKLE_ROOT() external returns (bytes32);
 
+    /// @notice Retrieves the oracle contract address.
+    /// @dev This is an immutable state variable.
+    function ORACLE() external view returns (address);
+
     /// @notice The ERC-20 token to distribute.
     /// @dev This is an immutable state variable.
     function TOKEN() external returns (IERC20);
 
     /// @notice Calculates the minimum fee in wei required to claim the airdrop.
-    /// @dev It uses the `MINIMUM_FEE` and the Chainlink price feed contract to calculate the fee in wei.
+    /// @dev It uses the `MINIMUM_FEE` and the oracle price to calculate the fee in wei.
     /// @return The minimum fee required to claim the airdrop, as an 18-decimal number, where 1e18 is 1 native token.
     function calculateMinimumFeeInWei() external view returns (uint256);
 
