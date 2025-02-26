@@ -99,7 +99,7 @@ abstract contract SablierMerkleFactoryBase is
             customFeeByUser.enabled = true;
         }
 
-        // Check: the new  fee is not greater than the maximum.
+        // Check: the new fee is not greater than the maximum.
         if (newFee > MAX_MINIMUM_FEE) {
             revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_MINIMUM_FEE);
         }
