@@ -30,6 +30,9 @@ library Errors {
     /// @notice Thrown when trying to claim with an invalid Merkle proof.
     error SablierMerkleBase_InvalidProof();
 
+    /// @notice Thrown when trying to set a fee that is not lower than the current fee.
+    error SablierMerkleBase_NewFeeNotLower(uint256 currentFee, uint256 newFee);
+
     /// @notice Thrown when trying to claim the same stream more than once.
     error SablierMerkleBase_StreamClaimed(uint256 index);
 

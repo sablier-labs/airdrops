@@ -33,7 +33,7 @@ abstract contract CalculateMinimumFeeInWei_Integration_Test is Integration_Test 
 
     function test_GivenMinimumFeeZero() external givenPriceFeedAddressNotZero {
         resetPrank(users.admin);
-        merkleBase.setMinimumFeeToZero();
+        merkleBase.lowerMinimumFee(0);
         assertEq(merkleBase.calculateMinimumFeeInWei(), 0, "minimum fee in wei");
     }
 

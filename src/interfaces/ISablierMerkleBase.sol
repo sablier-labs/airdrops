@@ -14,8 +14,8 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice Emitted when the admin claws back the unclaimed tokens.
     event Clawback(address indexed admin, address indexed to, uint128 amount);
 
-    /// @notice Emitted when the minimum fee is set to zero.
-    event SetMinimumFeeToZero(address indexed factoryAdmin, uint256 previousFee);
+    /// @notice Emitted when the minimum fee is set to a lower value.
+    event LowerMinimumFee(address indexed factoryAdmin, uint256 newFee, uint256 previousFee);
 
     /*//////////////////////////////////////////////////////////////////////////
                                  CONSTANT FUNCTIONS
@@ -110,11 +110,12 @@ interface ISablierMerkleBase is IAdminable {
     /// @return feeAmount The amount of native tokens (e.g., ETH) collected as fees.
     function collectFees(address factoryAdmin) external returns (uint256 feeAmount);
 
-    /// @notice Sets the minimum fee required to claim the airdrop to zero.
+    /// @notice Sets the minimum fee to a lower value.
     ///
-    /// @dev Emits a {SetMinimumFeeToZero} event.
+    /// @dev Emits a {LowerMinimumFee} event.
     ///
     /// Requirements:
     /// - `msg.sender` must be the `FACTORY` admin.
-    function setMinimumFeeToZero() external;
+    /// - The new fee must be less than the current `minimumFee`.
+    function lowerMinimumFee(uint256 newFee) external;
 }

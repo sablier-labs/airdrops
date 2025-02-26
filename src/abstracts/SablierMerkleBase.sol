@@ -196,7 +196,7 @@ abstract contract SablierMerkleBase is
     }
 
     /// @inheritdoc ISablierMerkleBase
-    function setMinimumFeeToZero() external override {
+    function lowerMinimumFee(uint256 newFee) external override {
         // Retrieve the factory admin.
         address factoryAdmin = ISablierMerkleFactoryBase(FACTORY).admin();
 
@@ -205,13 +205,18 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CallerNotFactoryAdmin(factoryAdmin, msg.sender);
         }
 
-        uint256 previousMinimumFee = minimumFee;
+        uint256 previousFee = minimumFee;
+
+        // Check: the new fee is less than the current fee.
+        if (newFee >= previousFee) {
+            revert Errors.SablierMerkleBase_NewFeeNotLower(previousFee, newFee);
+        }
 
         // Effect: set the minimum fee to zero.
-        minimumFee = 0;
+        minimumFee = newFee;
 
         // Log the event.
-        emit SetMinimumFeeToZero(factoryAdmin, previousMinimumFee);
+        emit LowerMinimumFee(factoryAdmin, newFee, previousFee);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
