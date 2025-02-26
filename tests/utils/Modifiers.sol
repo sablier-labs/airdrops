@@ -99,6 +99,10 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
+    modifier whenNewOracleNotZeroAddress() {
+        _;
+    }
+
     modifier whenNotZeroExpiry() {
         _;
     }

@@ -14,15 +14,5 @@ contract ChainlinkPriceFeedMock {
     }
 }
 
-/// @notice A mock Chainlink price feed contract that returns a price of $0.
-contract ChainlinkPriceFeedMock_Zero {
-    int256 private constant ZERO = 0;
-
-    function latestRoundData()
-        external
-        pure
-        returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
-    {
-        return (0, ZERO, 0, 0, 0);
-    }
-}
+/// @notice A mock Chainlink price feed that does not implement the `latestRoundData` function.
+contract ChainlinkPriceFeedMock_Empty { }

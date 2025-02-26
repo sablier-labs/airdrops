@@ -12,7 +12,7 @@ abstract contract CalculateMinimumFeeInWei_Integration_Test is Integration_Test 
         _campaignType = campaignType;
     }
 
-    function test_GivenPriceFeedAddressZero() external {
+    function test_GivenOracleAddressZero() external {
         resetPrank(users.admin);
         merkleFactoryBase.setOracle(address(0));
 

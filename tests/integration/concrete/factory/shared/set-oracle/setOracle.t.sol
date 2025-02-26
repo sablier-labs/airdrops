@@ -5,7 +5,7 @@ import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Error
 
 import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
 import { Errors } from "src/libraries/Errors.sol";
-import { ChainlinkPriceFeedMock, ChainlinkPriceFeedMock_Zero } from "src/tests/ChainlinkPriceFeedMock.sol";
+import { ChainlinkPriceFeedMock, ChainlinkPriceFeedMock_Empty } from "src/tests/ChainlinkPriceFeedMock.sol";
 
 import { Integration_Test } from "../../../../Integration.t.sol";
 
@@ -16,11 +16,7 @@ abstract contract SetOracle_Integration_Test is Integration_Test {
         merkleFactoryBase.setOracle(address(0));
     }
 
-    function test_WhenCallerAdmin() external {
-        resetPrank({ msgSender: users.admin });
-    }
-
-    function test_WhenNewPriceFeedZeroAddress() external whenCallerAdmin {
+    function test_WhenNewOracleZeroAddress() external whenCallerAdmin {
         resetPrank({ msgSender: users.admin });
 
         assertNotEq(merkleFactoryBase.oracle(), address(0), "oracle before");
@@ -32,18 +28,15 @@ abstract contract SetOracle_Integration_Test is Integration_Test {
         assertEq(merkleFactoryBase.oracle(), address(0), "oracle after");
     }
 
-    modifier whenNewPriceFeedNotZeroAddress() {
-        _;
-    }
-
-    function test_RevertWhen_NewPriceFeedReturnsZeroPrice() external whenCallerAdmin whenNewPriceFeedNotZeroAddress {
-        ChainlinkPriceFeedMock_Zero newOracle = new ChainlinkPriceFeedMock_Zero();
+    function test_RevertWhen_NewOracleInvalid() external whenCallerAdmin whenNewOracleNotZeroAddress {
+        ChainlinkPriceFeedMock_Empty emptyOracle = new ChainlinkPriceFeedMock_Empty();
         resetPrank({ msgSender: users.admin });
 
-        merkleFactoryBase.setOracle(address(newOracle));
+        vm.expectRevert();
+        merkleFactoryBase.setOracle(address(emptyOracle));
     }
 
-    function test_WhenNewPriceFeedReturnsNonZeroPrice() external whenCallerAdmin whenNewPriceFeedNotZeroAddress {
+    function test_WhenNewOracleValid() external whenCallerAdmin whenNewOracleNotZeroAddress {
         // Deploy a new Chainlink price feed contract that returns a constant price of $3000 for 1 native token.
         ChainlinkPriceFeedMock newOracle = new ChainlinkPriceFeedMock();
 
