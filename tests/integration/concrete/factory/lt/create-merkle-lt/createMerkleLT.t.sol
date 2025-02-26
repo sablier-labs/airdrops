@@ -41,7 +41,8 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
             totalDuration: TOTAL_DURATION,
-            fee: customFee
+            fee: customFee,
+            oracle: address(oracle)
         });
 
         ISablierMerkleLT actualLT = createMerkleLT(campaignOwner, expiration);
@@ -63,7 +64,8 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
             totalDuration: TOTAL_DURATION,
-            fee: MINIMUM_FEE
+            fee: MINIMUM_FEE,
+            oracle: address(oracle)
         });
 
         ISablierMerkleLT actualLT = createMerkleLT(campaignOwner, expiration);

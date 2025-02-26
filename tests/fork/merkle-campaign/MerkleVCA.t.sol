@@ -141,7 +141,8 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
             params: vars.params,
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.recipientCount,
-            fee: MINIMUM_FEE
+            fee: MINIMUM_FEE,
+            oracle: address(oracle)
         });
 
         vars.merkleVCA = merkleFactoryVCA.createMerkleVCA(vars.params, vars.aggregateAmount, vars.recipientCount);

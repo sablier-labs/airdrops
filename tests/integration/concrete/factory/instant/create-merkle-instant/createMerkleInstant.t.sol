@@ -41,7 +41,8 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: merkleInstantConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: customFee
+            fee: customFee,
+            oracle: address(oracle)
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);
@@ -65,7 +66,8 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: merkleInstantConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: MINIMUM_FEE
+            fee: MINIMUM_FEE,
+            oracle: address(oracle)
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(campaignOwner, expiration);

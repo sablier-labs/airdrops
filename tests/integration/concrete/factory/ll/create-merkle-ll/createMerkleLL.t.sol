@@ -41,7 +41,8 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
             params: merkleLLConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: customFee
+            fee: customFee,
+            oracle: address(oracle)
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(campaignOwner, expiration);
@@ -63,7 +64,8 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
             params: merkleLLConstructorParams(campaignOwner, expiration),
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: MINIMUM_FEE
+            fee: MINIMUM_FEE,
+            oracle: address(oracle)
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(campaignOwner, expiration);

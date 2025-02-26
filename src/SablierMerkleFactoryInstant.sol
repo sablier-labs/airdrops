@@ -51,7 +51,8 @@ contract SablierMerkleFactoryInstant is ISablierMerkleFactoryInstant, SablierMer
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
-            fee: _getFee(msg.sender)
+            fee: _getFee(msg.sender),
+            oracle: oracle
         });
     }
 }

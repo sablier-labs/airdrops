@@ -19,7 +19,8 @@ interface ISablierMerkleFactoryLT is ISablierMerkleFactoryBase {
         uint256 aggregateAmount,
         uint256 recipientCount,
         uint256 totalDuration,
-        uint256 fee
+        uint256 fee,
+        address oracle
     );
 
     /*//////////////////////////////////////////////////////////////////////////
