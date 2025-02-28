@@ -63,7 +63,7 @@ interface ISablierMerkleBase is IAdminable {
     function minimumFee() external view returns (uint256);
 
     /// @notice Calculates the minimum fee in wei required to claim the airdrop.
-    /// @dev It uses the `MINIMUM_FEE` and the oracle price to calculate the fee in wei.
+    /// @dev It uses the `minimumFee` and the oracle price to calculate the fee in wei.
     /// @return The minimum fee required to claim the airdrop, as an 18-decimal number, where 1e18 is 1 native token.
     function minimumFeeInWei() external view returns (uint256);
 
@@ -80,7 +80,7 @@ interface ISablierMerkleBase is IAdminable {
     /// - The campaign must not have expired.
     /// - The stream must not have been claimed already.
     /// - The Merkle proof must be valid.
-    /// - The `msg.value` must not be less than `MINIMUM_FEE`.
+    /// - The `msg.value` must not be less than `minimumFee`.
     ///
     /// @param index The index of the recipient in the Merkle tree.
     /// @param recipient The address of the airdrop recipient.

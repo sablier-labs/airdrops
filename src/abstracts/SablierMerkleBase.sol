@@ -125,12 +125,12 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CampaignExpired({ blockTimestamp: block.timestamp, expiration: EXPIRATION });
         }
 
-        // Calculate the minimum fee in wei.
-        uint256 minimumFeeInWei = _minimumFeeInWei();
+        // Calculate the minimum claim fee in wei.
+        uint256 minClaimFee = _minimumFeeInWei();
 
-        // Check: `msg.value` is not less than the minimum fee.
-        if (msg.value < minimumFeeInWei) {
-            revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, minimumFeeInWei);
+        // Check: `msg.value` is more than the minimum claim fee.
+        if (msg.value < minClaimFee) {
+            revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, minClaimFee);
         }
 
         // Check: the index has not been claimed.
