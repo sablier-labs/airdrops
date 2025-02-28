@@ -4,7 +4,6 @@ pragma solidity >=0.8.22 <0.9.0;
 import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Errors.sol";
 
 import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
-import { Errors } from "src/libraries/Errors.sol";
 import { ChainlinkPriceFeedMock, ChainlinkPriceFeedMock_Empty } from "tests/utils/ChainlinkPriceFeedMock.sol";
 
 import { Integration_Test } from "../../../../Integration.t.sol";
