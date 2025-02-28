@@ -14,7 +14,7 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice Emitted when the admin claws back the unclaimed tokens.
     event Clawback(address indexed admin, address indexed to, uint128 amount);
 
-    /// @notice Emitted when the minimum fee is set to a lower value.
+    /// @notice Emitted when the minimum fee is reduced.
     event LowerMinimumFee(address indexed factoryAdmin, uint256 newFee, uint256 previousFee);
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,8 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice The content identifier for indexing the campaign on IPFS.
     function ipfsCID() external view returns (string memory);
 
-    /// @notice Retrieves the minimum fee required to claim the airdrop, paid in the native token of the chain.
+    /// @notice Retrieves the minimum fee, in USD (8 decimals), required to claim the airdrop, to be paid in the native
+    /// token of the chain.
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
     function minimumFee() external view returns (uint256);
 
@@ -110,7 +111,7 @@ interface ISablierMerkleBase is IAdminable {
     /// @return feeAmount The amount of native tokens (e.g., ETH) collected as fees.
     function collectFees(address factoryAdmin) external returns (uint256 feeAmount);
 
-    /// @notice Sets the minimum fee to a lower value.
+    /// @notice Sets the minimum fee to a new value lower than the current fee.
     ///
     /// @dev Emits a {LowerMinimumFee} event.
     ///

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.22;
 
 /// @notice A contract that stores the Chainlink price feed addresses for the supported chains.

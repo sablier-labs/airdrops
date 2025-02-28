@@ -15,9 +15,9 @@ abstract contract SetMinimumFee_Integration_Test is Integration_Test {
 
     function test_RevertWhen_NewMinimumFeeExceedsTheMaximumFee() external whenCallerAdmin {
         resetPrank({ msgSender: users.admin });
-        uint256 newFee = MAX_MINIMUM_FEE + 1;
+        uint256 newFee = MAX_FEE + 1;
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_MaximumFeeExceeded.selector, newFee, MAX_MINIMUM_FEE)
+            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_MaximumFeeExceeded.selector, newFee, MAX_FEE)
         );
         merkleFactoryBase.setMinimumFee(newFee);
     }

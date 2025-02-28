@@ -13,6 +13,7 @@ import { ChainlinkPriceFeedAddresses } from ".//ChainlinkPriceFeedAddresses.sol"
 ///
 /// @dev Reverts if any contract has already been deployed.
 contract DeployDeterministicMerkleFactories is BaseScript, ChainlinkPriceFeedAddresses {
+    /// @dev The initial minimum fee, using Chainlink's 8 decimals format, where 1e8 is $1.
     uint256 private constant ONE_DOLLAR = 1e8;
 
     /// @dev Deploy via Forge.

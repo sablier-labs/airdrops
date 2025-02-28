@@ -11,6 +11,7 @@ import { ChainlinkPriceFeedAddresses } from "./ChainlinkPriceFeedAddresses.sol";
 
 /// @notice Deploys Merkle factory contracts.
 contract DeployMerkleFactories is BaseScript, ChainlinkPriceFeedAddresses {
+    /// @dev The initial minimum fee, using Chainlink's 8 decimals format, where 1e8 is $1.
     uint256 private constant ONE_DOLLAR = 1e8;
 
     /// @dev Deploy via Forge.

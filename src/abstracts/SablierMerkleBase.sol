@@ -205,25 +205,25 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CallerNotFactoryAdmin(factoryAdmin, msg.sender);
         }
 
-        uint256 previousFee = minimumFee;
+        uint256 currentFee = minimumFee;
 
         // Check: the new fee is less than the current fee.
-        if (newFee >= previousFee) {
-            revert Errors.SablierMerkleBase_NewFeeNotLower(previousFee, newFee);
+        if (newFee >= currentFee) {
+            revert Errors.SablierMerkleBase_NewFeeHigher(currentFee, newFee);
         }
 
-        // Effect: set the minimum fee to zero.
+        // Effect: update the minimum fee to new value.
         minimumFee = newFee;
 
         // Log the event.
-        emit LowerMinimumFee(factoryAdmin, newFee, previousFee);
+        emit LowerMinimumFee(factoryAdmin, newFee, currentFee);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev See the documentation for the user-facing functions that call this internal function.
+    /// @dev Calculates the minimum fee in the native token  18 decimals.
     function _calculateMinimumFeeInWei() internal view returns (uint256) {
         // If the oracle is not set, return 0.
         if (ORACLE == address(0)) {
@@ -238,23 +238,28 @@ abstract contract SablierMerkleBase is
         //  Retrieve the latest price from the oracle.
         (, int256 price,,,) = AggregatorV3Interface(ORACLE).latestRoundData();
 
+        // If the price is not greater than 0, return 0.
+        if (price <= 0) {
+            return 0;
+        }
+
         // Retrieve the oracle's decimals.
         uint256 oracleDecimals = AggregatorV3Interface(ORACLE).decimals();
 
-        // Scale the minimum fee to 18 decimals.
-        uint256 scaledMinimumFee = minimumFee * 1e18;
-
-        // Adjust price to match 8 decimals. If decimals are higher than 8, scale it up. If lower, scale it down.
         uint256 adjustedPrice;
-        if (oracleDecimals > 8) {
-            adjustedPrice = uint256(price) * (10 ** (oracleDecimals - 8));
-        } else if (oracleDecimals < 8) {
-            adjustedPrice = uint256(price) / (10 ** (8 - oracleDecimals));
-        } else {
+
+        if (oracleDecimals == 8) {
             adjustedPrice = uint256(price);
         }
+        // If the decimals is not equal to 8, adjust the price to match 8 decimals format and return.
+        else if (oracleDecimals > 8) {
+            adjustedPrice = uint256(price) / 10 ** (oracleDecimals - 8);
+        } else {
+            adjustedPrice = uint256(price) * 10 ** (oracleDecimals - 8);
+        }
 
-        return scaledMinimumFee / adjustedPrice;
+        // Multiply it with 1e18 before returning because the price is of for 1e18 wei tokens.
+        return (minimumFee * 1e18) / adjustedPrice;
     }
 
     /// @notice Returns a flag indicating whether the grace period has passed.

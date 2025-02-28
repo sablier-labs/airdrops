@@ -4,7 +4,6 @@ pragma solidity >=0.8.22;
 import { IAdminable } from "@sablier/evm-utils/src/interfaces/IAdminable.sol";
 
 import { ISablierMerkleBase } from "../interfaces/ISablierMerkleBase.sol";
-import { MerkleFactory } from "../types/DataTypes.sol";
 
 /// @title ISablierMerkleFactoryBase
 /// @dev Common interface between Merkle factories. All contracts deployed use Merkle proofs for token distribution.
@@ -38,14 +37,8 @@ interface ISablierMerkleFactoryBase is IAdminable {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Retrieves the maximum minimum fee that can be set.
-    /// @dev The value is equal to 100 USD.
-    /// @return The maximum minimum fee that can be set denominated in Chainlink's 8-decimal.
-    function MAX_MINIMUM_FEE() external view returns (uint256);
-
-    /// @notice Retrieves the custom fee struct for the provided campaign creator.
-    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
-    /// @param campaignCreator The address of the campaign creator.
-    function getCustomFee(address campaignCreator) external view returns (MerkleFactory.CustomFee memory);
+    /// @dev The returned value is 100e8, which is equivalent to $100.
+    function MAX_FEE() external view returns (uint256);
 
     /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
@@ -55,7 +48,6 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @notice Retrieves the minimum fee required to claim the airdrop, paid in the native token of the
     /// chain, e.g., ETH for Ethereum Mainnet.
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
-    /// @return The minimum fee required to claim the airdrop, as an 8-decimal number.
     function minimumFee() external view returns (uint256);
 
     /// @notice Retrieves the oracle contract address.

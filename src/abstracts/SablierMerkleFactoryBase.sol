@@ -20,7 +20,7 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    uint256 public constant override MAX_MINIMUM_FEE = 100e8;
+    uint256 public constant override MAX_FEE = 100e8;
 
     /// @inheritdoc ISablierMerkleFactoryBase
     address public override oracle;
@@ -35,7 +35,6 @@ abstract contract SablierMerkleFactoryBase is
                                     CONSTRUCTOR
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev Emits a {SetOracle} event if the address is not zero.
     /// @param initialAdmin The address of the initial contract admin.
     /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
     /// @param initialOracle The initial oracle contract address.
@@ -43,18 +42,13 @@ abstract contract SablierMerkleFactoryBase is
         minimumFee = initialMinimumFee;
 
         if (initialOracle != address(0)) {
-            _setOracle(initialOracle, initialAdmin);
+            _setOracle(initialOracle);
         }
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                            USER-FACING CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
-
-    /// @inheritdoc ISablierMerkleFactoryBase
-    function getCustomFee(address campaignCreator) external view override returns (MerkleFactory.CustomFee memory) {
-        return _customFees[campaignCreator];
-    }
 
     /// @inheritdoc ISablierMerkleFactoryBase
     function getFee(address campaignCreator) external view returns (uint256) {
@@ -91,9 +85,9 @@ abstract contract SablierMerkleFactoryBase is
             customFeeByUser.enabled = true;
         }
 
-        // Check: the new fee is not greater than the maximum.
-        if (newFee > MAX_MINIMUM_FEE) {
-            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_MINIMUM_FEE);
+        // Check: the new fee is not greater than `MAX_FEE`.
+        if (newFee > MAX_FEE) {
+            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_FEE);
         }
 
         // Effect: update the custom fee for the given campaign creator.
@@ -105,9 +99,9 @@ abstract contract SablierMerkleFactoryBase is
 
     /// @inheritdoc ISablierMerkleFactoryBase
     function setMinimumFee(uint256 newFee) external override onlyAdmin {
-        // Check: the new minimum fee is not greater than the maximum.
-        if (newFee > MAX_MINIMUM_FEE) {
-            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_MINIMUM_FEE);
+        // Check: the new fee is not greater than `MAX_FEE`.
+        if (newFee > MAX_FEE) {
+            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_FEE);
         }
 
         // Effect: update the minimum fee.
@@ -119,7 +113,12 @@ abstract contract SablierMerkleFactoryBase is
 
     /// @inheritdoc ISablierMerkleFactoryBase
     function setOracle(address newOracle) external override onlyAdmin {
-        _setOracle(newOracle, msg.sender);
+        address currentOracle = oracle;
+
+        _setOracle(newOracle);
+
+        // Log the update.
+        emit SetOracle({ admin: msg.sender, newOracle: newOracle, previousOracle: currentOracle });
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -127,19 +126,14 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev See the documentation for the user-facing functions that call this internal function.
-    function _setOracle(address newOracle, address admin) private {
-        // Check: if the oracle is not zero, the call does not fail.
+    function _setOracle(address newOracle) private {
+        // Check: oracle has implemented `latestRoundData` function.
         if (newOracle != address(0)) {
             AggregatorV3Interface(newOracle).latestRoundData();
         }
 
-        address previousOracle = oracle;
-
         // Effect: update the oracle.
         oracle = newOracle;
-
-        // Log the update.
-        emit SetOracle({ admin: admin, newOracle: newOracle, previousOracle: previousOracle });
     }
 
     /*//////////////////////////////////////////////////////////////////////////

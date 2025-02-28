@@ -18,7 +18,7 @@ abstract contract LowerMinimumFee_Integration_Test is Integration_Test {
     function test_RevertWhen_NewFeeNotLower() external whenCallerFactoryAdmin {
         uint256 newFee = MINIMUM_FEE + 1;
         resetPrank(users.admin);
-        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleBase_NewFeeNotLower.selector, MINIMUM_FEE, newFee));
+        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleBase_NewFeeHigher.selector, MINIMUM_FEE, newFee));
         merkleBase.lowerMinimumFee(newFee);
     }
 
