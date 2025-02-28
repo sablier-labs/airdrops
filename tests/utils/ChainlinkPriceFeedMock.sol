@@ -5,6 +5,10 @@ pragma solidity >=0.8.22;
 contract ChainlinkPriceFeedMock {
     int256 private constant THREE_THOUSAND = 3000e8; // Chainlink format price (8 decimals)
 
+    function decimals() external pure returns (uint8) {
+        return 8;
+    }
+
     function latestRoundData()
         external
         pure

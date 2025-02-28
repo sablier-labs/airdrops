@@ -7,13 +7,14 @@ import { SablierMerkleFactoryInstant } from "../src/SablierMerkleFactoryInstant.
 import { SablierMerkleFactoryLL } from "../src/SablierMerkleFactoryLL.sol";
 import { SablierMerkleFactoryLT } from "../src/SablierMerkleFactoryLT.sol";
 import { SablierMerkleFactoryVCA } from "../src/SablierMerkleFactoryVCA.sol";
-import { ChainlinkPriceFeedAddresses } from "../src/tests/ChainlinkPriceFeedAddresses.sol";
-import { InitialMinimumFee } from "../src/tests/InitialMinimumFee.sol";
+import { ChainlinkPriceFeedAddresses } from ".//ChainlinkPriceFeedAddresses.sol";
 
 /// @notice Deploys Merkle factory contracts at deterministic address.
 ///
 /// @dev Reverts if any contract has already been deployed.
-contract DeployDeterministicMerkleFactories is BaseScript, ChainlinkPriceFeedAddresses, InitialMinimumFee {
+contract DeployDeterministicMerkleFactories is BaseScript, ChainlinkPriceFeedAddresses {
+    uint256 private constant ONE_DOLLAR = 1e8;
+
     /// @dev Deploy via Forge.
     function run()
         public
@@ -27,11 +28,9 @@ contract DeployDeterministicMerkleFactories is BaseScript, ChainlinkPriceFeedAdd
     {
         address initialAdmin = protocolAdmin();
         address initialOracle = getPriceFeedAddress();
-        uint256 initialMinimumFee = getMinimumFee();
-        merkleFactoryInstant =
-            new SablierMerkleFactoryInstant{ salt: SALT }(initialAdmin, initialMinimumFee, initialOracle);
-        merkleFactoryLL = new SablierMerkleFactoryLL{ salt: SALT }(initialAdmin, initialMinimumFee, initialOracle);
-        merkleFactoryLT = new SablierMerkleFactoryLT{ salt: SALT }(initialAdmin, initialMinimumFee, initialOracle);
-        merkleFactoryVCA = new SablierMerkleFactoryVCA{ salt: SALT }(initialAdmin, initialMinimumFee, initialOracle);
+        merkleFactoryInstant = new SablierMerkleFactoryInstant{ salt: SALT }(initialAdmin, ONE_DOLLAR, initialOracle);
+        merkleFactoryLL = new SablierMerkleFactoryLL{ salt: SALT }(initialAdmin, ONE_DOLLAR, initialOracle);
+        merkleFactoryLT = new SablierMerkleFactoryLT{ salt: SALT }(initialAdmin, ONE_DOLLAR, initialOracle);
+        merkleFactoryVCA = new SablierMerkleFactoryVCA{ salt: SALT }(initialAdmin, ONE_DOLLAR, initialOracle);
     }
 }

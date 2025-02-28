@@ -238,8 +238,23 @@ abstract contract SablierMerkleBase is
         //  Retrieve the latest price from the oracle.
         (, int256 price,,,) = AggregatorV3Interface(ORACLE).latestRoundData();
 
-        // Calculate the minimum fee in wei.
-        return 1e18 * minimumFee / uint256(price);
+        // Retrieve the oracle's decimals.
+        uint256 oracleDecimals = AggregatorV3Interface(ORACLE).decimals();
+
+        // Scale the minimum fee to 18 decimals.
+        uint256 scaledMinimumFee = minimumFee * 1e18;
+
+        // Adjust price to match 8 decimals. If decimals are higher than 8, scale it up. If lower, scale it down.
+        uint256 adjustedPrice;
+        if (oracleDecimals > 8) {
+            adjustedPrice = uint256(price) * (10 ** (oracleDecimals - 8));
+        } else if (oracleDecimals < 8) {
+            adjustedPrice = uint256(price) / (10 ** (8 - oracleDecimals));
+        } else {
+            adjustedPrice = uint256(price);
+        }
+
+        return scaledMinimumFee / adjustedPrice;
     }
 
     /// @notice Returns a flag indicating whether the grace period has passed.

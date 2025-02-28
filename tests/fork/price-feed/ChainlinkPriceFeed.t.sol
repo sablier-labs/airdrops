@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
+import { ChainlinkPriceFeedAddresses } from "script/ChainlinkPriceFeedAddresses.sol";
 import { SablierMerkleFactoryInstant } from "src/SablierMerkleFactoryInstant.sol";
-import { ChainlinkPriceFeedAddresses } from "src/tests/ChainlinkPriceFeedAddresses.sol";
 
-import { Base_Test } from "../../Base.t.sol";
+import { Base_Test } from "./../../Base.t.sol";
 
 contract ChainlinkPriceFeed_ForkTest is Base_Test, ChainlinkPriceFeedAddresses {
     struct ForkData {
