@@ -64,7 +64,7 @@ interface ISablierMerkleBase is IAdminable {
 
     /// @notice Retrieves the minimum fee, in USD (8 decimals), required to claim the airdrop, to be paid in the native
     /// token of the chain.
-    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
+    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
     function minimumFee() external view returns (uint256);
 
     /*//////////////////////////////////////////////////////////////////////////

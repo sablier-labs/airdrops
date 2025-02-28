@@ -40,7 +40,7 @@ library Errors {
                             SABLIER-MERKLE-FACTORY-BASE
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Thrown when trying to set a fee that exceeds the maximum minimum fee.
+    /// @notice Thrown when trying to set fee to a value that exceeds the maximum fee.
     error SablierMerkleFactoryBase_MaximumFeeExceeded(uint256 newFee, uint256 maxFee);
 
     /*//////////////////////////////////////////////////////////////////////////

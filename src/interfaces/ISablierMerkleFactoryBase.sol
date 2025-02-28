@@ -36,18 +36,18 @@ interface ISablierMerkleFactoryBase is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Retrieves the maximum minimum fee that can be set.
+    /// @notice Retrieves the maximum value that can be set for claim fee.
     /// @dev The returned value is 100e8, which is equivalent to $100.
     function MAX_FEE() external view returns (uint256);
 
     /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
-    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
+    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
     /// @param campaignCreator The address of the campaign creator.
     function getFee(address campaignCreator) external view returns (uint256);
 
     /// @notice Retrieves the minimum fee required to claim the airdrop, paid in the native token of the
     /// chain, e.g., ETH for Ethereum Mainnet.
-    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where $1 is 1e8.
+    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
     function minimumFee() external view returns (uint256);
 
     /// @notice Retrieves the oracle contract address.

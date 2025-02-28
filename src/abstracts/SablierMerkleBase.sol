@@ -223,7 +223,7 @@ abstract contract SablierMerkleBase is
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev Calculates the minimum fee in the native token  18 decimals.
+    /// @dev Calculates the minimum fee in the native token with 18 decimals.
     function _calculateMinimumFeeInWei() internal view returns (uint256) {
         // If the oracle is not set, return 0.
         if (ORACLE == address(0)) {
@@ -235,7 +235,7 @@ abstract contract SablierMerkleBase is
             return 0;
         }
 
-        //  Retrieve the latest price from the oracle.
+        // Retrieve the latest price from the oracle.
         (, int256 price,,,) = AggregatorV3Interface(ORACLE).latestRoundData();
 
         // If the price is not greater than 0, return 0.
@@ -258,7 +258,7 @@ abstract contract SablierMerkleBase is
             adjustedPrice = uint256(price) * 10 ** (oracleDecimals - 8);
         }
 
-        // Multiply it with 1e18 before returning because the price is of for 1e18 wei tokens.
+        // Multiply it with 1e18 before returning because the price is for 1e18 wei tokens.
         return (minimumFee * 1e18) / adjustedPrice;
     }
 
