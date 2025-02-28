@@ -86,11 +86,6 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleBase
-    function calculateMinimumFeeInWei() external view override returns (uint256) {
-        return _calculateMinimumFeeInWei();
-    }
-
-    /// @inheritdoc ISablierMerkleBase
     function getFirstClaimTime() external view override returns (uint40) {
         return _firstClaimTime;
     }
@@ -103,6 +98,11 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     function hasExpired() public view override returns (bool) {
         return EXPIRATION > 0 && EXPIRATION <= block.timestamp;
+    }
+
+    /// @inheritdoc ISablierMerkleBase
+    function minimumFeeInWei() external view override returns (uint256) {
+        return _minimumFeeInWei();
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ abstract contract SablierMerkleBase is
         }
 
         // Calculate the minimum fee in wei.
-        uint256 minimumFeeInWei = _calculateMinimumFeeInWei();
+        uint256 minimumFeeInWei = _minimumFeeInWei();
 
         // Check: `msg.value` is not less than the minimum fee.
         if (msg.value < minimumFeeInWei) {
@@ -224,7 +224,7 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev Calculates the minimum fee in the native token with 18 decimals.
-    function _calculateMinimumFeeInWei() internal view returns (uint256) {
+    function _minimumFeeInWei() internal view returns (uint256) {
         // If the oracle is not set, return 0.
         if (ORACLE == address(0)) {
             return 0;

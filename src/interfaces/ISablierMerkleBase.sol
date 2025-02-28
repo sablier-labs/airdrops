@@ -40,11 +40,6 @@ interface ISablierMerkleBase is IAdminable {
     /// @dev This is an immutable state variable.
     function TOKEN() external returns (IERC20);
 
-    /// @notice Calculates the minimum fee in wei required to claim the airdrop.
-    /// @dev It uses the `MINIMUM_FEE` and the oracle price to calculate the fee in wei.
-    /// @return The minimum fee required to claim the airdrop, as an 18-decimal number, where 1e18 is 1 native token.
-    function calculateMinimumFeeInWei() external view returns (uint256);
-
     /// @notice Retrieves the name of the campaign.
     function campaignName() external view returns (string memory);
 
@@ -66,6 +61,11 @@ interface ISablierMerkleBase is IAdminable {
     /// token of the chain.
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
     function minimumFee() external view returns (uint256);
+
+    /// @notice Calculates the minimum fee in wei required to claim the airdrop.
+    /// @dev It uses the `MINIMUM_FEE` and the oracle price to calculate the fee in wei.
+    /// @return The minimum fee required to claim the airdrop, as an 18-decimal number, where 1e18 is 1 native token.
+    function minimumFeeInWei() external view returns (uint256);
 
     /*//////////////////////////////////////////////////////////////////////////
                                NON-CONSTANT FUNCTIONS

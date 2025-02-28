@@ -1,4 +1,4 @@
-CalculateMinimumFeeInWei_Integration_Test
+MinimumFeeInWei_Integration_Test
 ├── given oracle address zero
 │  └── it should return zero
 └── given oracle address not zero

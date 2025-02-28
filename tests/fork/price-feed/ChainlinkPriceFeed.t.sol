@@ -79,7 +79,7 @@ contract ChainlinkPriceFeed_ForkTest is Base_Test, ChainlinkPriceFeedAddresses {
 
     function _test_PriceFeed(string memory chainName) private view {
         uint256 expectedFeeInWei = 1e18 * MINIMUM_FEE / _forkData[chainName].nativeTokenPrice;
-        uint256 actualFeeInWei = merkleInstant.calculateMinimumFeeInWei();
+        uint256 actualFeeInWei = merkleInstant.minimumFeeInWei();
 
         // Assert the actual fee in wei is within 2% of the expected fee in wei.
         uint256 tolerance = actualFeeInWei * 20 / 1000;
