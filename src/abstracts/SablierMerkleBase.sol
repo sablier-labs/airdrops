@@ -225,13 +225,8 @@ abstract contract SablierMerkleBase is
 
     /// @dev Calculates the minimum fee in the native token with 18 decimals.
     function _minimumFeeInWei() internal view returns (uint256) {
-        // If the oracle is not set, return 0.
-        if (ORACLE == address(0)) {
-            return 0;
-        }
-
-        // If the minimum fee is 0, return 0.
-        if (minimumFee == 0) {
+        // If the oracle is not set or minimum fee is 0, return 0.
+        if (ORACLE == address(0) || minimumFee == 0) {
             return 0;
         }
 
