@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
 import { Integration_Test } from "../../../Integration.t.sol";
 import { Clawback_Integration_Test } from "./../shared/clawback/clawback.t.sol";
 import { CollectFees_Integration_Test } from "./../shared/collect-fees/collectFees.t.sol";
@@ -20,10 +18,13 @@ abstract contract MerkleVCA_Integration_Shared_Test is Integration_Test {
         Integration_Test.setUp();
 
         // Cast the {MerkleFactoryVCA} contract as {ISablierMerkleFactoryBase}
-        merkleFactoryBase = ISablierMerkleFactoryBase(merkleFactoryVCA);
+        merkleFactoryBase = merkleFactoryVCA;
 
         // Cast the {MerkleVCA} contract as {ISablierMerkleBase}
-        merkleBase = ISablierMerkleBase(merkleVCA);
+        merkleBase = merkleVCA;
+
+        // Set the campaign type.
+        campaignType = "vca";
     }
 }
 
@@ -75,9 +76,10 @@ contract LowerMinimumFee_MerkleVCA_Integration_Test is
 
 contract MinimumFeeInWei_MerkleVCA_Integration_Test is
     MerkleVCA_Integration_Shared_Test,
-    MinimumFeeInWei_Integration_Test("vca")
+    MinimumFeeInWei_Integration_Test
 {
-    function setUp() public override(MerkleVCA_Integration_Shared_Test, Integration_Test) {
+    function setUp() public override(MerkleVCA_Integration_Shared_Test, MinimumFeeInWei_Integration_Test) {
         MerkleVCA_Integration_Shared_Test.setUp();
+        MinimumFeeInWei_Integration_Test.setUp();
     }
 }
