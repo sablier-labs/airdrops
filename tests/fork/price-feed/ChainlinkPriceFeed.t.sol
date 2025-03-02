@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ChainlinkPriceFeedAddresses } from "script/ChainlinkPriceFeedAddresses.sol";
+import { ChainlinkOracles } from "script/ChainlinkOracles.sol";
 import { SablierMerkleFactoryInstant } from "src/SablierMerkleFactoryInstant.sol";
 
 import { Base_Test } from "./../../Base.t.sol";
 
-contract ChainlinkPriceFeed_ForkTest is Base_Test, ChainlinkPriceFeedAddresses {
+contract ChainlinkPriceFeed_ForkTest is Base_Test, ChainlinkOracles {
     struct ForkData {
         uint256 blockNumber;
         uint256 nativeTokenPrice;
@@ -30,7 +30,7 @@ contract ChainlinkPriceFeed_ForkTest is Base_Test, ChainlinkPriceFeedAddresses {
     /// @dev We need to re-deploy the contracts on each forked chain.
     modifier initTest(string memory chainName) {
         vm.createSelectFork({ urlOrAlias: chainName, blockNumber: _forkData[chainName].blockNumber });
-        merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, MINIMUM_FEE, getPriceFeedAddress());
+        merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, MINIMUM_FEE, oracleAddr());
         merkleInstant = merkleFactoryInstant.createMerkleInstant(
             merkleInstantConstructorParams(), AGGREGATE_AMOUNT, RECIPIENT_COUNT
         );
