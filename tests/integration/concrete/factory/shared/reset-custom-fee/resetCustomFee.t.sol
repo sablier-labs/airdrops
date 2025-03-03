@@ -14,6 +14,9 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
     }
 
     function test_WhenNotEnabled() external whenCallerAdmin {
+        // Check that custom fee is not enabled by verifying that `getFee` returns the minimum fee.
+        assertEq(merkleFactoryBase.getFee(users.campaignOwner), MINIMUM_FEE, "custom fee enabled");
+
         // It should emit a {ResetCustomFee} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
         emit ISablierMerkleFactoryBase.ResetCustomFee({ admin: users.admin, campaignCreator: users.campaignOwner });
@@ -22,7 +25,7 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
         merkleFactoryBase.resetCustomFee({ campaignCreator: users.campaignOwner });
 
         // Check that `getFee` returns the minimum fee.
-        assertEq(merkleFactoryBase.getFee(users.campaignOwner), MINIMUM_FEE, "custom fee");
+        assertEq(merkleFactoryBase.getFee(users.campaignOwner), MINIMUM_FEE, "custom fee changed");
     }
 
     function test_WhenEnabled() external whenCallerAdmin {
@@ -31,7 +34,7 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
         merkleFactoryBase.setCustomFee({ campaignCreator: users.campaignOwner, newFee: customFee });
 
         // Check that `getFee` returns the custom fee.
-        assertEq(merkleFactoryBase.getFee(users.campaignOwner), customFee, "custom fee");
+        assertEq(merkleFactoryBase.getFee(users.campaignOwner), customFee, "custom fee not enabled");
 
         // It should emit a {ResetCustomFee} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
@@ -41,6 +44,6 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
         merkleFactoryBase.resetCustomFee({ campaignCreator: users.campaignOwner });
 
         // Check that `getFee` returns the minimum fee.
-        assertEq(merkleFactoryBase.getFee(users.campaignOwner), MINIMUM_FEE, "fee");
+        assertEq(merkleFactoryBase.getFee(users.campaignOwner), MINIMUM_FEE, "custom fee not changed");
     }
 }
