@@ -6,8 +6,8 @@ SetOracle_Integration_Test
    │  ├── it should set the oracle to zero
    │  └── it should emit a {SetOracle} event
    └── when new oracle not zero
-      ├── when new oracle misses implementation
+      ├── when new oracle without implementation
       │  └── it should revert
-      └── when new oracle not miss implementation
+      └── when new oracle with implementation
          ├── it should set the oracle
          └── it should emit a {SetOracle} event

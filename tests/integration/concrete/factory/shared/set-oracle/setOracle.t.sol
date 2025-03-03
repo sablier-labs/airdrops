@@ -27,7 +27,7 @@ abstract contract SetOracle_Integration_Test is Integration_Test {
         assertEq(merkleFactoryBase.oracle(), address(0), "oracle after");
     }
 
-    function test_RevertWhen_NewOracleMissesImplementation() external whenCallerAdmin whenNewOracleNotZero {
+    function test_RevertWhen_NewOracleWithoutImplementation() external whenCallerAdmin whenNewOracleNotZero {
         ChainlinkOracleWithoutImpl oracleWithoutImpl = new ChainlinkOracleWithoutImpl();
 
         // It should revert.
@@ -35,7 +35,7 @@ abstract contract SetOracle_Integration_Test is Integration_Test {
         merkleFactoryBase.setOracle(address(oracleWithoutImpl));
     }
 
-    function test_WhenNewOracleNotMissImplementation() external whenCallerAdmin whenNewOracleNotZero {
+    function test_WhenNewOracleWithImplementation() external whenCallerAdmin whenNewOracleNotZero {
         ChainlinkOracleMock newOracleWithImpl = new ChainlinkOracleMock();
 
         // It should emit a {SetOracle} event.
