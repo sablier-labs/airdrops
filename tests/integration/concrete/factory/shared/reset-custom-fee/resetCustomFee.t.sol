@@ -29,9 +29,8 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
     }
 
     function test_WhenEnabled() external whenCallerAdmin {
-        // Set the custom fee.
-        uint256 customFee = 0.5e8;
-        merkleFactoryBase.setCustomFee({ campaignCreator: users.campaignOwner, newFee: customFee });
+        // Enable the custom fee.
+        merkleFactoryBase.setCustomFee({ campaignCreator: users.campaignOwner, newFee: 0.5e8 });
 
         // Check that custom fee is enabled for user by checking that it is not equal to the minimum fee.
         assertNotEq(

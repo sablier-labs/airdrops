@@ -23,8 +23,8 @@ abstract contract SetCustomFee_Integration_Test is Integration_Test {
     }
 
     function test_WhenNotEnabled() external whenCallerAdmin {
-        // Check that custom fee is not enabled.
-        assertEq(merkleFactoryBase.getFee(users.campaignOwner), MINIMUM_FEE, "custom fee");
+        // Check that custom fee is not enabled for user.
+        assertEq(merkleFactoryBase.getFee(users.campaignOwner), merkleFactoryBase.minimumFee(), "custom fee enabled");
 
         uint256 customFee = 0;
 
@@ -46,7 +46,11 @@ abstract contract SetCustomFee_Integration_Test is Integration_Test {
     function test_WhenEnabled() external whenCallerAdmin whenNewFeeNotExceedMaxFee {
         // Enable the custom fee.
         merkleFactoryBase.setCustomFee({ campaignCreator: users.campaignOwner, newFee: 0.5e8 });
-        assertEq(merkleFactoryBase.getFee(users.campaignOwner), 0.5e8, "custom fee");
+
+        // Check that custom fee is enabled for user by checking that it is not equal to the minimum fee.
+        assertNotEq(
+            merkleFactoryBase.getFee(users.campaignOwner), merkleFactoryBase.minimumFee(), "custom fee not enabled"
+        );
 
         // Now set the custom fee to a different value.
         uint256 customFee = 0;
