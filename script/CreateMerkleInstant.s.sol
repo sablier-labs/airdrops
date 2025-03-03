@@ -14,8 +14,8 @@ contract CreateMerkleInstant is BaseScript {
         // TODO: Load deployed addresses from Ethereum mainnet.
         SablierMerkleFactoryInstant merkleFactory = new SablierMerkleFactoryInstant({
             initialAdmin: DEFAULT_SABLIER_ADMIN,
-            initialMinimumFee: ONE_DOLLAR,
-            initialOracle: chainlinkOracle()
+            initialMinimumFee: 0,
+            initialOracle: address(0)
         });
 
         // Prepare the constructor parameters.

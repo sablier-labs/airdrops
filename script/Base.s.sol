@@ -5,11 +5,9 @@ pragma solidity >=0.8.22 <0.9.0;
 import { BaseScript as EvmBaseScript } from "@sablier/evm-utils/src/tests/BaseScript.sol";
 
 abstract contract BaseScript is EvmBaseScript {
-    // The initial minimum fee, in Chainlink's 8 decimals format, where 1e8 is $1.
-    uint256 public constant ONE_DOLLAR = 1e8;
-
-    /// Returns the Chainlink oracle for the supported chains. These addresses can be verified on
+    /// @notice Returns the Chainlink oracle for the supported chains. These addresses can be verified on
     /// https://docs.chain.link/data-feeds/price-feeds/addresses.
+    /// @dev If the chain does not have a Chainlink oracle, return 0.
     function chainlinkOracle() public view returns (address addr) {
         // Ethereum Mainnet
         if (block.chainid == 1) return 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419;
@@ -36,5 +34,13 @@ abstract contract BaseScript is EvmBaseScript {
 
         // Return 0 for unsupported chain.
         return address(0);
+    }
+
+    /// @notice Returns the initial minimum fee. If the chain does not have a Chainlink oracle, return 0.
+    function initialMinimumFee() public view returns (uint256 fee) {
+        if (chainlinkOracle() != address(0)) return 1e8;
+
+        // Return 0 for chains without Chainlink oracle.
+        return 0;
     }
 }

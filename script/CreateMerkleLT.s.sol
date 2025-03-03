@@ -18,8 +18,8 @@ contract CreateMerkleLT is BaseScript {
         // TODO: Load deployed addresses from Ethereum mainnet.
         SablierMerkleFactoryLT merkleFactory = new SablierMerkleFactoryLT({
             initialAdmin: DEFAULT_SABLIER_ADMIN,
-            initialMinimumFee: ONE_DOLLAR,
-            initialOracle: chainlinkOracle()
+            initialMinimumFee: 0,
+            initialOracle: address(0)
         });
 
         // Prepare the constructor parameters.
