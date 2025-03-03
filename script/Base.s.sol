@@ -33,5 +33,8 @@ abstract contract BaseScript is EvmBaseScript {
         if (block.chainid == 534_352) return 0x6bF14CB0A831078629D993FDeBcB182b21A8774C;
         // zkSync Era
         if (block.chainid == 324) return 0x6D41d1dc818112880b40e26BD6FD347E41008eDA;
+
+        // Return 0 for unsupported chain.
+        return address(0);
     }
 }

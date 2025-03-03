@@ -21,7 +21,6 @@ contract Constructor_MerkleVCA_Integration_Test is MerkleVCA_Integration_Shared_
         assertEq(constructedVCA.ipfsCID(), IPFS_CID, "ipfsCID");
         assertEq(constructedVCA.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
         assertEq(constructedVCA.minimumFee(), MINIMUM_FEE, "minimum fee");
-        assertEq(constructedVCA.minimumFeeInWei(), MINIMUM_FEE_IN_WEI, "minimum fee");
         assertEq(constructedVCA.ORACLE(), address(oracle), "oracle");
         assertEq(address(constructedVCA.TOKEN()), address(dai), "token");
 

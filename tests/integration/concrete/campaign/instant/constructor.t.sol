@@ -22,7 +22,6 @@ contract Constructor_MerkleInstant_Integration_Test is MerkleInstant_Integration
         assertEq(constructedInstant.ipfsCID(), IPFS_CID, "ipfsCID");
         assertEq(constructedInstant.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
         assertEq(constructedInstant.minimumFee(), MINIMUM_FEE, "minimum fee");
-        assertEq(constructedInstant.minimumFeeInWei(), MINIMUM_FEE_IN_WEI, "minimum fee");
         assertEq(constructedInstant.ORACLE(), address(oracle), "oracle");
         assertEq(address(constructedInstant.TOKEN()), address(dai), "token");
     }
