@@ -23,9 +23,6 @@ abstract contract MerkleLL_Integration_Shared_Test is Integration_Test {
 
         // Cast the {MerkleLL} contract as {ISablierMerkleBase}
         merkleBase = merkleLL;
-
-        // Set the campaign type.
-        campaignType = "ll";
     }
 }
 
@@ -77,7 +74,7 @@ contract LowerMinimumFee_MerkleLL_Integration_Test is
 
 contract MinimumFeeInWei_MerkleLL_Integration_Test is
     MerkleLL_Integration_Shared_Test,
-    MinimumFeeInWei_Integration_Test
+    MinimumFeeInWei_Integration_Test("ll")
 {
     function setUp() public override(MerkleLL_Integration_Shared_Test, MinimumFeeInWei_Integration_Test) {
         MerkleLL_Integration_Shared_Test.setUp();

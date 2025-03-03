@@ -21,9 +21,6 @@ contract Integration_Test is Base_Test {
     /// @dev A test contract meant to be overridden by the implementing Merkle factory contracts.
     ISablierMerkleFactoryBase internal merkleFactoryBase;
 
-    /// @dev A variable to track campaign type through parent contract.
-    string internal campaignType;
-
     /*//////////////////////////////////////////////////////////////////////////
                                   SET-UP FUNCTION
     //////////////////////////////////////////////////////////////////////////*/

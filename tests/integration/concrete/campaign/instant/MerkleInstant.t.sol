@@ -22,9 +22,6 @@ abstract contract MerkleInstant_Integration_Shared_Test is Integration_Test {
 
         // Cast the {merkleInstant} contract as {ISablierMerkleBase}
         merkleBase = merkleInstant;
-
-        // Set the campaign type.
-        campaignType = "instant";
     }
 }
 
@@ -85,7 +82,7 @@ contract LowerMinimumFee_MerkleInstant_Integration_Test is
 
 contract MinimumFeeInWei_MerkleInstant_Integration_Test is
     MerkleInstant_Integration_Shared_Test,
-    MinimumFeeInWei_Integration_Test
+    MinimumFeeInWei_Integration_Test("instant")
 {
     function setUp() public override(MerkleInstant_Integration_Shared_Test, MinimumFeeInWei_Integration_Test) {
         MerkleInstant_Integration_Shared_Test.setUp();
