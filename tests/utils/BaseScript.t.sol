@@ -4,7 +4,7 @@ pragma solidity >=0.8.22 <0.9.0;
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { CommonBase } from "forge-std/src/Base.sol";
 import { StdAssertions } from "forge-std/src/StdAssertions.sol";
-import { BaseScript } from "script/Base.s.sol";
+import { BaseScript } from "script/Base.sol";
 
 contract BaseScriptMock is BaseScript { }
 
@@ -13,12 +13,12 @@ contract BaseScript_Test is StdAssertions, CommonBase {
 
     BaseScriptMock internal baseScript;
 
-    uint256[11] internal supportedChainIds;
+    uint256[10] internal supportedChainIds;
 
     function setUp() public {
         baseScript = new BaseScriptMock();
 
-        supportedChainIds = [1, 42_161, 43_114, 8453, 56, 100, 59_144, 10, 137, 534_352, 324];
+        supportedChainIds = [1, 42_161, 43_114, 8453, 56, 100, 59_144, 10, 137, 534_352];
     }
 
     function test_ConstructCreate2Salt() public view {
@@ -41,7 +41,7 @@ contract BaseScript_Test is StdAssertions, CommonBase {
     }
 
     function test_InitialMinimumFee() public {
-        for (uint256 i; i < supportedChainIds.length; i++) {
+        for (uint256 i; i < supportedChainIds.length; ++i) {
             vm.chainId(supportedChainIds[i]);
 
             // Assert that the initial minimum fee is 1e8 for supported chains.

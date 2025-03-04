@@ -7,7 +7,7 @@ import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.so
 import { ISablierMerkleLL } from "./../src/interfaces/ISablierMerkleLL.sol";
 import { SablierMerkleFactoryLL } from "./../src/SablierMerkleFactoryLL.sol";
 import { MerkleLL } from "./../src/types/DataTypes.sol";
-import { BaseScript } from "./Base.s.sol";
+import { BaseScript } from "./Base.sol";
 
 /// @dev Creates a dummy campaign to airdrop tokens through Lockup Linear.
 contract CreateMerkleLL is BaseScript {

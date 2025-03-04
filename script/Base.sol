@@ -2,9 +2,9 @@
 // solhint-disable code-complexity
 pragma solidity >=0.8.22 <0.9.0;
 
-import { BaseScript as EvmBaseScript } from "@sablier/evm-utils/src/tests/BaseScript.sol";
+import { BaseScript as EvmUtilsBaseScript } from "@sablier/evm-utils/src/tests/BaseScript.sol";
 
-abstract contract BaseScript is EvmBaseScript {
+abstract contract BaseScript is EvmUtilsBaseScript {
     /// @notice Returns the Chainlink oracle for the supported chains. These addresses can be verified on
     /// https://docs.chain.link/data-feeds/price-feeds/addresses.
     /// @dev If the chain does not have a Chainlink oracle, return 0.
@@ -29,14 +29,12 @@ abstract contract BaseScript is EvmBaseScript {
         if (block.chainid == 137) return 0xAB594600376Ec9fD91F8e885dADF0CE036862dE0;
         // Scroll
         if (block.chainid == 534_352) return 0x6bF14CB0A831078629D993FDeBcB182b21A8774C;
-        // zkSync Era
-        if (block.chainid == 324) return 0x6D41d1dc818112880b40e26BD6FD347E41008eDA;
 
-        // Return 0 for unsupported chain.
+        // Return address zero for unsupported chain.
         return address(0);
     }
 
-    /// @notice Returns the initial minimum fee. If the chain does not have a Chainlink oracle, return 0.
+    /// @notice Returns the initial minimum fee as $1. If the chain does not have a Chainlink oracle, return 0.
     function initialMinimumFee() public view returns (uint256 fee) {
         if (chainlinkOracle() != address(0)) return 1e8;
 

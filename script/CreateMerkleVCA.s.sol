@@ -5,7 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { SablierMerkleFactoryVCA } from "src/SablierMerkleFactoryVCA.sol";
 import { MerkleVCA } from "src/types/DataTypes.sol";
-import { BaseScript } from "./Base.s.sol";
+import { BaseScript } from "./Base.sol";
 
 /// @dev Creates a dummy MerkleVCA campaign.
 contract CreateMerkleVCA is BaseScript {

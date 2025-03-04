@@ -9,7 +9,7 @@ import { ISablierMerkleLT } from "../src/interfaces/ISablierMerkleLT.sol";
 import { SablierMerkleFactoryLT } from "../src/SablierMerkleFactoryLT.sol";
 
 import { MerkleLT } from "../src/types/DataTypes.sol";
-import { BaseScript } from "./Base.s.sol";
+import { BaseScript } from "./Base.sol";
 
 /// @dev Creates a dummy campaign to airdrop tokens through Lockup Tranched.
 contract CreateMerkleLT is BaseScript {

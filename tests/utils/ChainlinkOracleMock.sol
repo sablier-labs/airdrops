@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22;
 
-/// @notice A mock Chainlink oracle contract that returns $3000 price.
+/// @notice A mock Chainlink oracle contract that returns $3000 price with 8 decimals.
 contract ChainlinkOracleMock {
     function decimals() external pure returns (uint8) {
         return 8;
@@ -19,7 +19,7 @@ contract ChainlinkOracleMock {
 /// @notice A mock Chainlink oracle that does not implement the `latestRoundData` function.
 contract ChainlinkOracleWithoutImpl { }
 
-/// @notice A mock Chainlink oracle contract that returns 18 decimals.
+/// @notice A mock Chainlink oracle contract that returns $3000 price with 18 decimals.
 contract ChainlinkOracleMockWith18Decimals {
     function decimals() external pure returns (uint8) {
         return 18;
@@ -34,7 +34,7 @@ contract ChainlinkOracleMockWith18Decimals {
     }
 }
 
-/// @notice A mock Chainlink oracle contract that returns 6 decimals.
+/// @notice A mock Chainlink oracle contract that returns $3000 price with 6 decimals.
 contract ChainlinkOracleMockWith6Decimals {
     function decimals() external pure returns (uint8) {
         return 6;

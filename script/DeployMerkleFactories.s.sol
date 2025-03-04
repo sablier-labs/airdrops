@@ -5,7 +5,7 @@ import { SablierMerkleFactoryInstant } from "../src/SablierMerkleFactoryInstant.
 import { SablierMerkleFactoryLL } from "../src/SablierMerkleFactoryLL.sol";
 import { SablierMerkleFactoryLT } from "../src/SablierMerkleFactoryLT.sol";
 import { SablierMerkleFactoryVCA } from "../src/SablierMerkleFactoryVCA.sol";
-import { BaseScript } from "./Base.s.sol";
+import { BaseScript } from "./Base.sol";
 
 /// @notice Deploys Merkle factory contracts.
 contract DeployMerkleFactories is BaseScript {
