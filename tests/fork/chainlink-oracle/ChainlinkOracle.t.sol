@@ -6,59 +6,41 @@ import { SablierMerkleFactoryInstant } from "src/SablierMerkleFactoryInstant.sol
 
 import { Base_Test } from "./../../Base.t.sol";
 
-contract ChainlinkOracle_ForkTest is BaseScript, Base_Test {
-    /// @dev We need to re-deploy the contracts on each forked chain.
-    modifier initTest(string memory chainName) {
+contract ChainlinkOracle_Fork_Test is BaseScript, Base_Test {
+    /// @notice A modifier that runs the forked test for a given chain
+    modifier initForkTest(string memory chainName) {
+        // Fork chain on the latest block number.
         vm.createSelectFork({ urlOrAlias: chainName });
+
+        // Deploy the Merkle Instant factory and create a new campaign.
         merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, initialMinimumFee(), chainlinkOracle());
         merkleInstant = merkleFactoryInstant.createMerkleInstant(
             merkleInstantConstructorParams(), AGGREGATE_AMOUNT, RECIPIENT_COUNT
         );
+
+        // Assert that the Chainlink returns a non-zero price by checking the value of minimum fee in wei.
+        assertGt(merkleInstant.minimumFeeInWei(), 0, "minimum fee in wei");
+
         _;
     }
 
-    function testFork_ChainlinkOracle_Mainnet() external initTest("mainnet") {
-        _test_ChainlinkOracle();
-    }
+    function testFork_ChainlinkOracle_Mainnet() external initForkTest("mainnet") { }
 
-    function testFork_ChainlinkOracle_Arbitrum() external initTest("arbitrum") {
-        _test_ChainlinkOracle();
-    }
+    function testFork_ChainlinkOracle_Arbitrum() external initForkTest("arbitrum") { }
 
-    function testFork_ChainlinkOracle_Avalanche() external initTest("avalanche") {
-        _test_ChainlinkOracle();
-    }
+    function testFork_ChainlinkOracle_Avalanche() external initForkTest("avalanche") { }
 
-    function testFork_ChainlinkOracle_Base() external initTest("base") {
-        _test_ChainlinkOracle();
-    }
+    function testFork_ChainlinkOracle_Base() external initForkTest("base") { }
 
-    function testFork_ChainlinkOracle_BNB() external initTest("bnb") {
-        _test_ChainlinkOracle();
-    }
+    function testFork_ChainlinkOracle_BNB() external initForkTest("bnb") { }
 
-    function testFork_ChainlinkOracle_Gnosis() external initTest("gnosis") {
-        _test_ChainlinkOracle();
-    }
+    function testFork_ChainlinkOracle_Gnosis() external initForkTest("gnosis") { }
 
-    function testFork_ChainlinkOracle_Linea() external initTest("linea") {
-        _test_ChainlinkOracle();
-    }
+    function testFork_ChainlinkOracle_Linea() external initForkTest("linea") { }
 
-    function testFork_ChainlinkOracle_Optimism() external initTest("optimism") {
-        _test_ChainlinkOracle();
-    }
+    function testFork_ChainlinkOracle_Optimism() external initForkTest("optimism") { }
 
-    function testFork_ChainlinkOracle_Polygon() external initTest("polygon") {
-        _test_ChainlinkOracle();
-    }
+    function testFork_ChainlinkOracle_Polygon() external initForkTest("polygon") { }
 
-    function testFork_ChainlinkOracle_Scroll() external initTest("scroll") {
-        _test_ChainlinkOracle();
-    }
-
-    function _test_ChainlinkOracle() private view {
-        uint256 actualFeeInWei = merkleInstant.minimumFeeInWei();
-        assertGt(actualFeeInWei, 0, "minimum fee in wei");
-    }
+    function testFork_ChainlinkOracle_Scroll() external initForkTest("scroll") { }
 }
