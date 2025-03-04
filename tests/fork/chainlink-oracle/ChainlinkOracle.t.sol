@@ -17,47 +17,47 @@ contract ChainlinkOracle_ForkTest is BaseScript, Base_Test {
         _;
     }
 
-    function testFork_PriceFeed_Mainnet() external initTest("mainnet") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_Mainnet() external initTest("mainnet") {
+        _test_ChainlinkOracle();
     }
 
-    function testFork_PriceFeed_Arbitrum() external initTest("arbitrum") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_Arbitrum() external initTest("arbitrum") {
+        _test_ChainlinkOracle();
     }
 
-    function testFork_PriceFeed_Avalanche() external initTest("avalanche") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_Avalanche() external initTest("avalanche") {
+        _test_ChainlinkOracle();
     }
 
-    function testFork_PriceFeed_Base() external initTest("base") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_Base() external initTest("base") {
+        _test_ChainlinkOracle();
     }
 
-    function testFork_PriceFeed_BNB() external initTest("bnb") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_BNB() external initTest("bnb") {
+        _test_ChainlinkOracle();
     }
 
-    function testFork_PriceFeed_Gnosis() external initTest("gnosis") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_Gnosis() external initTest("gnosis") {
+        _test_ChainlinkOracle();
     }
 
-    function testFork_PriceFeed_Linea() external initTest("linea") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_Linea() external initTest("linea") {
+        _test_ChainlinkOracle();
     }
 
-    function testFork_PriceFeed_Optimism() external initTest("optimism") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_Optimism() external initTest("optimism") {
+        _test_ChainlinkOracle();
     }
 
-    function testFork_PriceFeed_Polygon() external initTest("polygon") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_Polygon() external initTest("polygon") {
+        _test_ChainlinkOracle();
     }
 
-    function testFork_PriceFeed_Scroll() external initTest("scroll") {
-        _test_PriceFeed();
+    function testFork_ChainlinkOracle_Scroll() external initTest("scroll") {
+        _test_ChainlinkOracle();
     }
 
-    function _test_PriceFeed() private view {
+    function _test_ChainlinkOracle() private view {
         uint256 actualFeeInWei = merkleInstant.minimumFeeInWei();
         assertGt(actualFeeInWei, 0, "minimum fee in wei");
     }
