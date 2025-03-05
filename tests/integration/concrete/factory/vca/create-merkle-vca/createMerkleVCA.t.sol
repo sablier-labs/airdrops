@@ -18,11 +18,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
         // Expect a revert due to CREATE2.
         vm.expectRevert();
-        merkleFactoryVCA.createMerkleVCA({
-            params: params,
-            aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT
-        });
+        createMerkleVCA(params);
     }
 
     function test_RevertWhen_StartTimeZero() external givenCampaignNotExists {
@@ -31,11 +27,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
         // It should revert.
         vm.expectRevert(Errors.SablierMerkleVCA_StartTimeZero.selector);
-        merkleFactoryVCA.createMerkleVCA({
-            params: params,
-            aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT
-        });
+        createMerkleVCA(params);
     }
 
     function test_RevertWhen_EndTimeLessThanStartTime() external givenCampaignNotExists whenStartTimeNotZero {
@@ -49,11 +41,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
                 Errors.SablierMerkleVCA_StartTimeExceedsEndTime.selector, params.timestamps.start, params.timestamps.end
             )
         );
-        merkleFactoryVCA.createMerkleVCA({
-            params: params,
-            aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT
-        });
+        createMerkleVCA(params);
     }
 
     function test_RevertWhen_EndTimeEqualsStartTime() external givenCampaignNotExists whenStartTimeNotZero {
@@ -67,11 +55,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
                 Errors.SablierMerkleVCA_StartTimeExceedsEndTime.selector, params.timestamps.start, params.timestamps.end
             )
         );
-        merkleFactoryVCA.createMerkleVCA({
-            params: params,
-            aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT
-        });
+        createMerkleVCA(params);
     }
 
     function test_RevertWhen_ZeroExpiry()
@@ -85,11 +69,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
         // It should revert.
         vm.expectRevert(Errors.SablierMerkleVCA_ExpiryTimeZero.selector);
-        merkleFactoryVCA.createMerkleVCA({
-            params: params,
-            aggregateAmount: AGGREGATE_AMOUNT,
-            recipientCount: RECIPIENT_COUNT
-        });
+        createMerkleVCA(params);
     }
 
     function test_RevertWhen_ExpiryNotExceedOneWeekFromEndTime()
@@ -110,7 +90,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
                 params.expiration
             )
         );
-        merkleFactoryVCA.createMerkleVCA(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
+        createMerkleVCA(params);
     }
 
     function test_GivenCustomFeeSet()
@@ -122,29 +102,34 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         whenExpiryNotExceedOneWeekFromEndTime
     {
         // Set the custom fee to 0 for this test.
-        resetPrank(users.admin);
-        merkleFactoryVCA.setCustomFee(users.campaignOwner, 0);
+        uint256 customFee = 0;
 
-        resetPrank(users.campaignOwner);
-        address expectedMerkleVCA = computeMerkleVCAAddress({ campaignOwner: users.sender, expiration: EXPIRATION });
+        resetPrank(users.admin);
+        merkleFactoryVCA.setCustomFee(users.campaignCreator, customFee);
+
+        resetPrank(users.campaignCreator);
+        MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
+        params.campaignName = "Merkle VCA campaign with custom fee set";
+
+        address expectedMerkleVCA = computeMerkleVCAAddress(params, users.campaignCreator);
 
         // It should emit a {CreateMerkleVCA} event.
         vm.expectEmit(address(merkleFactoryVCA));
         emit ISablierMerkleFactoryVCA.CreateMerkleVCA({
             merkleVCA: ISablierMerkleVCA(address(expectedMerkleVCA)),
-            params: merkleVCAConstructorParams({ campaignOwner: users.sender, expiration: EXPIRATION }),
+            params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: 0,
+            fee: customFee,
             oracle: address(oracle)
         });
 
-        ISablierMerkleVCA actualVCA = createMerkleVCA({ campaignOwner: users.sender, expiration: EXPIRATION });
+        ISablierMerkleVCA actualVCA = createMerkleVCA(params);
         assertGt(address(actualVCA).code.length, 0, "MerkleVCA contract not created");
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
         // It should create the campaign with 0 custom fee.
-        assertEq(actualVCA.minimumFee(), 0, "custom fee");
+        assertEq(actualVCA.minimumFee(), customFee, "custom fee");
 
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
@@ -162,20 +147,23 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         whenNotZeroExpiry
         whenExpiryNotExceedOneWeekFromEndTime
     {
-        address expectedMerkleVCA = computeMerkleVCAAddress({ campaignOwner: users.sender, expiration: EXPIRATION });
+        MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
+        params.campaignName = "Merkle VCA campaign with default fee set";
+
+        address expectedMerkleVCA = computeMerkleVCAAddress(params, users.campaignCreator);
 
         // It should emit a {CreateMerkleVCA} event.
         vm.expectEmit(address(merkleFactoryVCA));
         emit ISablierMerkleFactoryVCA.CreateMerkleVCA({
             merkleVCA: ISablierMerkleVCA(address(expectedMerkleVCA)),
-            params: merkleVCAConstructorParams({ campaignOwner: users.sender, expiration: EXPIRATION }),
+            params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
             fee: MINIMUM_FEE,
             oracle: address(oracle)
         });
 
-        ISablierMerkleVCA actualVCA = createMerkleVCA({ campaignOwner: users.sender, expiration: EXPIRATION });
+        ISablierMerkleVCA actualVCA = createMerkleVCA(params);
         assertGt(address(actualVCA).code.length, 0, "MerkleVCA contract not created");
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 

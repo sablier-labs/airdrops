@@ -40,20 +40,15 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
 
         preCreateCampaign(params);
 
-        vars.expectedMerkleCampaign = computeMerkleInstantAddress({
-            campaignCreator: params.campaignOwner,
-            campaignOwner: params.campaignOwner,
-            expiration: params.expiration,
-            merkleRoot: vars.merkleRoot,
-            tokenAddress: FORK_TOKEN
-        });
-
         MerkleInstant.ConstructorParams memory constructorParams = merkleInstantConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
             tokenAddress: FORK_TOKEN
         });
+
+        vars.expectedMerkleCampaign =
+            computeMerkleInstantAddress({ params: constructorParams, campaignCreator: params.campaignOwner });
 
         vm.expectEmit({ emitter: address(merkleFactoryInstant) });
         emit ISablierMerkleFactoryInstant.CreateMerkleInstant({

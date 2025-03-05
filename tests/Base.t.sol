@@ -5,6 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ud2x18 } from "@prb/math/src/UD2x18.sol";
 import { ud } from "@prb/math/src/UD60x18.sol";
+import { PRBMathUtils } from "@prb/math/test/utils/Utils.sol";
 import { BaseTest as EvmUtilsBase } from "@sablier/evm-utils/src/tests/BaseTest.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 import { LockupNFTDescriptor } from "@sablier/lockup/src/LockupNFTDescriptor.sol";
@@ -34,12 +35,12 @@ import { Assertions } from "./utils/Assertions.sol";
 import { ChainlinkOracleMock } from "./utils/ChainlinkOracleMock.sol";
 import { Constants } from "./utils/Constants.sol";
 import { DeployOptimized } from "./utils/DeployOptimized.sol";
+import { Fuzzers } from "./utils/Fuzzers.sol";
 import { MerkleBuilder } from "./utils/MerkleBuilder.sol";
-import { Modifiers } from "./utils/Modifiers.sol";
 import { Users } from "./utils/Types.sol";
 
 /// @notice Base test contract with common logic needed by all tests.
-abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Modifiers {
+abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Fuzzers, PRBMathUtils {
     using MerkleBuilder for uint256[];
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -95,7 +96,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         spenders[3] = address(merkleFactoryVCA);
 
         // Create users for testing.
-        users.campaignOwner = createUser("CampaignOwner", spenders);
+        users.campaignCreator = createUser("CampaignCreator", spenders);
         users.eve = createUser("Eve", spenders);
         users.recipient = createUser("Recipient", spenders);
         users.recipient1 = createUser("Recipient1", spenders);
@@ -208,34 +209,26 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
                                   MERKLE-INSTANT
     //////////////////////////////////////////////////////////////////////////*/
 
-    function computeMerkleInstantAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
-        return computeMerkleInstantAddress({
-            campaignCreator: users.campaignOwner,
-            campaignOwner: campaignOwner,
-            expiration: expiration,
-            merkleRoot: MERKLE_ROOT,
-            tokenAddress: dai
-        });
+    function computeMerkleInstantAddress() internal view returns (address) {
+        return computeMerkleInstantAddress(
+            merkleInstantConstructorParams({
+                campaignOwner: users.campaignCreator,
+                expiration: EXPIRATION,
+                merkleRoot: MERKLE_ROOT,
+                tokenAddress: dai
+            }),
+            users.campaignCreator
+        );
     }
 
     function computeMerkleInstantAddress(
-        address campaignCreator,
-        address campaignOwner,
-        uint40 expiration,
-        bytes32 merkleRoot,
-        IERC20 tokenAddress
+        MerkleInstant.ConstructorParams memory params,
+        address campaignCreator
     )
         internal
         view
         returns (address)
     {
-        MerkleInstant.ConstructorParams memory params = merkleInstantConstructorParams({
-            campaignOwner: campaignOwner,
-            expiration: expiration,
-            merkleRoot: merkleRoot,
-            tokenAddress: tokenAddress
-        });
-
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
         bytes32 creationBytecodeHash;
 
@@ -259,7 +252,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     }
 
     function merkleInstantConstructorParams() public view returns (MerkleInstant.ConstructorParams memory) {
-        return merkleInstantConstructorParams(users.campaignOwner, EXPIRATION);
+        return merkleInstantConstructorParams(users.campaignCreator, EXPIRATION);
     }
 
     function merkleInstantConstructorParams(
@@ -302,37 +295,28 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
                                     MERKLE-LL
     //////////////////////////////////////////////////////////////////////////*/
 
-    function computeMerkleLLAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
-        return computeMerkleLLAddress({
-            campaignCreator: users.campaignOwner,
-            campaignOwner: campaignOwner,
-            expiration: expiration,
-            merkleRoot: MERKLE_ROOT,
-            startTime: RANGED_STREAM_START_TIME,
-            tokenAddress: dai
-        });
+    function computeMerkleLLAddress() internal view returns (address) {
+        return computeMerkleLLAddress(
+            merkleLLConstructorParams({
+                campaignOwner: users.campaignCreator,
+                expiration: EXPIRATION,
+                lockupAddress: lockup,
+                merkleRoot: MERKLE_ROOT,
+                startTime: RANGED_STREAM_START_TIME,
+                tokenAddress: dai
+            }),
+            users.campaignCreator
+        );
     }
 
     function computeMerkleLLAddress(
-        address campaignCreator,
-        address campaignOwner,
-        uint40 expiration,
-        bytes32 merkleRoot,
-        uint40 startTime,
-        IERC20 tokenAddress
+        MerkleLL.ConstructorParams memory params,
+        address campaignCreator
     )
         internal
         view
         returns (address)
     {
-        MerkleLL.ConstructorParams memory params = merkleLLConstructorParams({
-            campaignOwner: campaignOwner,
-            lockupAddress: lockup,
-            expiration: expiration,
-            merkleRoot: merkleRoot,
-            startTime: startTime,
-            tokenAddress: tokenAddress
-        });
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
 
         bytes32 creationBytecodeHash;
@@ -355,7 +339,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     }
 
     function merkleLLConstructorParams() public view returns (MerkleLL.ConstructorParams memory) {
-        return merkleLLConstructorParams(users.campaignOwner, EXPIRATION);
+        return merkleLLConstructorParams(users.campaignCreator, EXPIRATION);
     }
 
     function merkleLLConstructorParams(
@@ -413,37 +397,28 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
                                     MERKLE-LT
     //////////////////////////////////////////////////////////////////////////*/
 
-    function computeMerkleLTAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
-        return computeMerkleLTAddress({
-            campaignCreator: users.campaignOwner,
-            campaignOwner: campaignOwner,
-            expiration: expiration,
-            startTime: RANGED_STREAM_START_TIME,
-            merkleRoot: MERKLE_ROOT,
-            tokenAddress: dai
-        });
+    function computeMerkleLTAddress() internal view returns (address) {
+        return computeMerkleLTAddress(
+            merkleLTConstructorParams({
+                campaignOwner: users.campaignCreator,
+                expiration: EXPIRATION,
+                lockupAddress: lockup,
+                merkleRoot: MERKLE_ROOT,
+                startTime: RANGED_STREAM_START_TIME,
+                tokenAddress: dai
+            }),
+            users.campaignCreator
+        );
     }
 
     function computeMerkleLTAddress(
-        address campaignCreator,
-        address campaignOwner,
-        uint40 expiration,
-        bytes32 merkleRoot,
-        uint40 startTime,
-        IERC20 tokenAddress
+        MerkleLT.ConstructorParams memory params,
+        address campaignCreator
     )
         internal
         view
         returns (address)
     {
-        MerkleLT.ConstructorParams memory params = merkleLTConstructorParams({
-            campaignOwner: campaignOwner,
-            lockupAddress: lockup,
-            expiration: expiration,
-            merkleRoot: merkleRoot,
-            startTime: startTime,
-            tokenAddress: tokenAddress
-        });
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
 
         bytes32 creationBytecodeHash;
@@ -467,7 +442,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     }
 
     function merkleLTConstructorParams() public view returns (MerkleLT.ConstructorParams memory) {
-        return merkleLTConstructorParams(users.campaignOwner, EXPIRATION);
+        return merkleLTConstructorParams(users.campaignCreator, EXPIRATION);
     }
 
     function merkleLTConstructorParams(
@@ -557,37 +532,27 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
                                     MERKLE-VCA
     //////////////////////////////////////////////////////////////////////////*/
 
-    function computeMerkleVCAAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
-        return computeMerkleVCAAddress({
-            campaignCreator: users.campaignOwner,
-            campaignOwner: campaignOwner,
-            expiration: expiration,
-            merkleRoot: MERKLE_ROOT,
-            timestamps: merkleVCATimestamps(),
-            tokenAddress: dai
-        });
+    function computeMerkleVCAAddress() internal view returns (address) {
+        return computeMerkleVCAAddress(
+            merkleVCAConstructorParams({
+                campaignOwner: users.campaignCreator,
+                expiration: EXPIRATION,
+                merkleRoot: MERKLE_ROOT,
+                timestamps: merkleVCATimestamps(),
+                tokenAddress: dai
+            }),
+            users.campaignCreator
+        );
     }
 
     function computeMerkleVCAAddress(
-        address campaignCreator,
-        address campaignOwner,
-        uint40 expiration,
-        bytes32 merkleRoot,
-        MerkleVCA.Timestamps memory timestamps,
-        IERC20 tokenAddress
+        MerkleVCA.ConstructorParams memory params,
+        address campaignCreator
     )
         internal
         view
         returns (address)
     {
-        MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams({
-            campaignOwner: campaignOwner,
-            expiration: expiration,
-            merkleRoot: merkleRoot,
-            timestamps: timestamps,
-            tokenAddress: tokenAddress
-        });
-
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
 
         bytes32 creationBytecodeHash;
@@ -610,7 +575,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     }
 
     function merkleVCAConstructorParams() public view returns (MerkleVCA.ConstructorParams memory) {
-        return merkleVCAConstructorParams(users.campaignOwner, EXPIRATION);
+        return merkleVCAConstructorParams(users.campaignCreator, EXPIRATION);
     }
 
     function merkleVCAConstructorParams(

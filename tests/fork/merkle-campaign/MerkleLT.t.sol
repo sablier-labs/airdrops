@@ -53,15 +53,6 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
 
         preCreateCampaign(params);
 
-        vars.expectedMerkleCampaign = computeMerkleLTAddress({
-            campaignCreator: params.campaignOwner,
-            campaignOwner: params.campaignOwner,
-            expiration: params.expiration,
-            merkleRoot: vars.merkleRoot,
-            startTime: startTime,
-            tokenAddress: FORK_TOKEN
-        });
-
         MerkleLT.ConstructorParams memory constructorParams = merkleLTConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
@@ -70,6 +61,9 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
             startTime: startTime,
             tokenAddress: FORK_TOKEN
         });
+
+        vars.expectedMerkleCampaign =
+            computeMerkleLTAddress({ params: constructorParams, campaignCreator: params.campaignOwner });
 
         vm.expectEmit({ emitter: address(merkleFactoryLT) });
         emit ISablierMerkleFactoryLT.CreateMerkleLT({
