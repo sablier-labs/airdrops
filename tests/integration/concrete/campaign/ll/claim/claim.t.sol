@@ -137,7 +137,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         assertEq(lockup.getDepositedAmount(expectedStreamId), CLAIM_AMOUNT, "depositedAmount");
         assertEq(lockup.getEndTime(expectedStreamId), startTime + TOTAL_DURATION, "end time");
         assertEq(lockup.getRecipient(expectedStreamId), users.recipient1, "recipient");
-        assertEq(lockup.getSender(expectedStreamId), users.campaignOwner, "sender");
+        assertEq(lockup.getSender(expectedStreamId), users.campaignCreator, "sender");
         assertEq(lockup.getStartTime(expectedStreamId), startTime, "start time");
         assertEq(lockup.getUnderlyingToken(expectedStreamId), dai, "token");
         assertEq(lockup.getUnlockAmounts(expectedStreamId).cliff, expectedCliffAmount, "unlock amount cliff");

@@ -123,9 +123,9 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
     {
         // Set the custom fee to 0 for this test.
         resetPrank(users.admin);
-        merkleFactoryVCA.setCustomFee(users.campaignOwner, 0);
+        merkleFactoryVCA.setCustomFee(users.campaignCreator, 0);
 
-        resetPrank(users.campaignOwner);
+        resetPrank(users.campaignCreator);
         address expectedMerkleVCA = computeMerkleVCAAddress({ campaignOwner: users.sender, expiration: EXPIRATION });
 
         // It should emit a {CreateMerkleVCA} event.

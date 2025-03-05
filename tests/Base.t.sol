@@ -90,7 +90,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
         spenders[3] = address(merkleFactoryVCA);
 
         // Create users for testing.
-        users.campaignOwner = createUser("CampaignOwner", spenders);
+        users.campaignCreator = createUser("CampaignCreator", spenders);
         users.eve = createUser("Eve", spenders);
         users.recipient = createUser("Recipient", spenders);
         users.recipient1 = createUser("Recipient1", spenders);
@@ -205,7 +205,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
 
     function computeMerkleInstantAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleInstantAddress({
-            campaignCreator: users.campaignOwner,
+            campaignCreator: users.campaignCreator,
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
@@ -254,7 +254,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     }
 
     function merkleInstantConstructorParams() public view returns (MerkleInstant.ConstructorParams memory) {
-        return merkleInstantConstructorParams(users.campaignOwner, EXPIRATION);
+        return merkleInstantConstructorParams(users.campaignCreator, EXPIRATION);
     }
 
     function merkleInstantConstructorParams(
@@ -299,7 +299,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
 
     function computeMerkleLLAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleLLAddress({
-            campaignCreator: users.campaignOwner,
+            campaignCreator: users.campaignCreator,
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
@@ -350,7 +350,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     }
 
     function merkleLLConstructorParams() public view returns (MerkleLL.ConstructorParams memory) {
-        return merkleLLConstructorParams(users.campaignOwner, EXPIRATION);
+        return merkleLLConstructorParams(users.campaignCreator, EXPIRATION);
     }
 
     function merkleLLConstructorParams(
@@ -410,7 +410,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
 
     function computeMerkleLTAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleLTAddress({
-            campaignCreator: users.campaignOwner,
+            campaignCreator: users.campaignCreator,
             campaignOwner: campaignOwner,
             expiration: expiration,
             startTime: RANGED_STREAM_START_TIME,
@@ -462,7 +462,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     }
 
     function merkleLTConstructorParams() public view returns (MerkleLT.ConstructorParams memory) {
-        return merkleLTConstructorParams(users.campaignOwner, EXPIRATION);
+        return merkleLTConstructorParams(users.campaignCreator, EXPIRATION);
     }
 
     function merkleLTConstructorParams(
@@ -554,7 +554,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
 
     function computeMerkleVCAAddress(address campaignOwner, uint40 expiration) internal view returns (address) {
         return computeMerkleVCAAddress({
-            campaignCreator: users.campaignOwner,
+            campaignCreator: users.campaignCreator,
             campaignOwner: campaignOwner,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
@@ -605,7 +605,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, M
     }
 
     function merkleVCAConstructorParams() public view returns (MerkleVCA.ConstructorParams memory) {
-        return merkleVCAConstructorParams(users.campaignOwner, EXPIRATION);
+        return merkleVCAConstructorParams(users.campaignCreator, EXPIRATION);
     }
 
     function merkleVCAConstructorParams(

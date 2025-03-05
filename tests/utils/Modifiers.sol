@@ -63,7 +63,7 @@ abstract contract Modifiers is EvmUtilsBase {
     }
 
     modifier whenCallerCampaignOwner() {
-        resetPrank({ msgSender: users.campaignOwner });
+        resetPrank({ msgSender: users.campaignCreator });
         _;
     }
 

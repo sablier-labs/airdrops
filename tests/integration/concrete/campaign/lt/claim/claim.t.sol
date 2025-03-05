@@ -128,7 +128,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         assertEq(lockup.getDepositedAmount(expectedStreamId), CLAIM_AMOUNT, "depositedAmount");
         assertEq(lockup.getEndTime(expectedStreamId), startTime + TOTAL_DURATION, "end time");
         assertEq(lockup.getRecipient(expectedStreamId), users.recipient1, "recipient");
-        assertEq(lockup.getSender(expectedStreamId), users.campaignOwner, "sender");
+        assertEq(lockup.getSender(expectedStreamId), users.campaignCreator, "sender");
         assertEq(lockup.getStartTime(expectedStreamId), startTime, "start time");
         // It should create a stream with `RANGED_STREAM_START_TIME` as start time.
         assertEq(

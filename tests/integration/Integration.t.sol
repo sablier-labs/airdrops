@@ -28,8 +28,8 @@ contract Integration_Test is Base_Test {
     function setUp() public virtual override {
         Base_Test.setUp();
 
-        // Make campaign owner the caller.
-        resetPrank(users.campaignOwner);
+        // Make campaign creator the caller.
+        resetPrank(users.campaignCreator);
 
         // Create the default Merkle contracts.
         merkleInstant = createMerkleInstant();
@@ -62,7 +62,7 @@ contract Integration_Test is Base_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function createMerkleInstant() internal returns (ISablierMerkleInstant) {
-        return createMerkleInstant(users.campaignOwner, EXPIRATION);
+        return createMerkleInstant(users.campaignCreator, EXPIRATION);
     }
 
     function createMerkleInstant(address campaignOwner) internal returns (ISablierMerkleInstant) {
@@ -70,7 +70,7 @@ contract Integration_Test is Base_Test {
     }
 
     function createMerkleInstant(uint40 expiration) internal returns (ISablierMerkleInstant) {
-        return createMerkleInstant(users.campaignOwner, expiration);
+        return createMerkleInstant(users.campaignCreator, expiration);
     }
 
     function createMerkleInstant(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleInstant) {
@@ -84,7 +84,7 @@ contract Integration_Test is Base_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function createMerkleLL() internal returns (ISablierMerkleLL) {
-        return createMerkleLL(users.campaignOwner, EXPIRATION);
+        return createMerkleLL(users.campaignCreator, EXPIRATION);
     }
 
     function createMerkleLL(address campaignOwner) internal returns (ISablierMerkleLL) {
@@ -92,7 +92,7 @@ contract Integration_Test is Base_Test {
     }
 
     function createMerkleLL(uint40 expiration) internal returns (ISablierMerkleLL) {
-        return createMerkleLL(users.campaignOwner, expiration);
+        return createMerkleLL(users.campaignCreator, expiration);
     }
 
     function createMerkleLL(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleLL) {
@@ -106,7 +106,7 @@ contract Integration_Test is Base_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function createMerkleLT() internal returns (ISablierMerkleLT) {
-        return createMerkleLT(users.campaignOwner, EXPIRATION);
+        return createMerkleLT(users.campaignCreator, EXPIRATION);
     }
 
     function createMerkleLT(address campaignOwner) internal returns (ISablierMerkleLT) {
@@ -114,7 +114,7 @@ contract Integration_Test is Base_Test {
     }
 
     function createMerkleLT(uint40 expiration) internal returns (ISablierMerkleLT) {
-        return createMerkleLT(users.campaignOwner, expiration);
+        return createMerkleLT(users.campaignCreator, expiration);
     }
 
     function createMerkleLT(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleLT) {
@@ -128,7 +128,7 @@ contract Integration_Test is Base_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function createMerkleVCA() internal returns (ISablierMerkleVCA) {
-        return createMerkleVCA(users.campaignOwner, EXPIRATION);
+        return createMerkleVCA(users.campaignCreator, EXPIRATION);
     }
 
     function createMerkleVCA(address campaignOwner) internal returns (ISablierMerkleVCA) {
@@ -136,7 +136,7 @@ contract Integration_Test is Base_Test {
     }
 
     function createMerkleVCA(uint40 expiration) internal returns (ISablierMerkleVCA) {
-        return createMerkleVCA(users.campaignOwner, expiration);
+        return createMerkleVCA(users.campaignCreator, expiration);
     }
 
     function createMerkleVCA(address campaignOwner, uint40 expiration) internal returns (ISablierMerkleVCA) {

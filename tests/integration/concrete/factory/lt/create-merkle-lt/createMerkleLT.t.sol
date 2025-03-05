@@ -28,9 +28,9 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
 
         // Set the custom fee for this test.
         resetPrank(users.admin);
-        merkleFactoryLT.setCustomFee(users.campaignOwner, customFee);
+        merkleFactoryLT.setCustomFee(users.campaignCreator, customFee);
 
-        resetPrank(users.campaignOwner);
+        resetPrank(users.campaignCreator);
         address expectedLT = computeMerkleLTAddress(campaignOwner, expiration);
 
         // It should emit a {CreateMerkleLT} event.

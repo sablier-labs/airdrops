@@ -29,9 +29,9 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
         // Set the custom fee for this test.
         resetPrank(users.admin);
-        merkleFactoryInstant.setCustomFee(users.campaignOwner, customFee);
+        merkleFactoryInstant.setCustomFee(users.campaignCreator, customFee);
 
-        resetPrank(users.campaignOwner);
+        resetPrank(users.campaignCreator);
         address expectedMerkleInstant = computeMerkleInstantAddress(campaignOwner, expiration);
 
         // It should emit a {CreateMerkleInstant} event.

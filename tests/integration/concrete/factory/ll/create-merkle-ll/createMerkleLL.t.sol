@@ -29,9 +29,9 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
 
         // Set the custom fee for this test.
         resetPrank(users.admin);
-        merkleFactoryLL.setCustomFee(users.campaignOwner, customFee);
+        merkleFactoryLL.setCustomFee(users.campaignCreator, customFee);
 
-        resetPrank(users.campaignOwner);
+        resetPrank(users.campaignCreator);
         address expectedLL = computeMerkleLLAddress(campaignOwner, expiration);
 
         // It should emit a {CreateMerkleLL} event.
