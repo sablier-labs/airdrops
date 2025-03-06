@@ -126,4 +126,3 @@
   sepolia = "${SEPOLIA_RPC_URL}"
   superseed_sepolia = "https://sepolia.superseed.xyz"
   taiko_hekla = "https://rpc.hekla.taiko.xyz"
-  taiko_mainnet = "https://rpc.mainnet.taiko.xyz"

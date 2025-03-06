@@ -5,6 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ud2x18 } from "@prb/math/src/UD2x18.sol";
 import { ud } from "@prb/math/src/UD60x18.sol";
+import { PRBMathUtils } from "@prb/math/test/utils/Utils.sol";
 import { BaseTest as EvmUtilsBase } from "@sablier/evm-utils/src/tests/BaseTest.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 import { LockupNFTDescriptor } from "@sablier/lockup/src/LockupNFTDescriptor.sol";
@@ -38,7 +39,7 @@ import { Modifiers } from "./utils/Modifiers.sol";
 import { Users } from "./utils/Types.sol";
 
 /// @notice Base test contract with common logic needed by all tests.
-abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Modifiers {
+abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Modifiers, PRBMathUtils {
     using MerkleBuilder for uint256[];
 
     /*//////////////////////////////////////////////////////////////////////////

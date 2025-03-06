@@ -4,6 +4,7 @@ pragma solidity >=0.8.22 <0.9.0;
 import { ud2x18 } from "@prb/math/src/UD2x18.sol";
 import { ud60x18 } from "@prb/math/src/UD60x18.sol";
 import { Errors as LockupErrors } from "@sablier/lockup/src/libraries/Errors.sol";
+import { Lockup } from "@sablier/lockup/src/types/DataTypes.sol";
 
 import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
 import { MerkleLL } from "src/types/DataTypes.sol";
@@ -149,6 +150,9 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         assertEq(lockup.wasCanceled(expectedStreamId), false, "was canceled");
 
         assertTrue(merkleLL.hasClaimed(INDEX1), "not claimed");
+
+        // Check stream is created with correct Lockup model.
+        assertEq(lockup.getLockupModel(expectedStreamId), Lockup.Model.LOCKUP_LINEAR);
 
         uint256[] memory expectedClaimedStreamIds = new uint256[](1);
         expectedClaimedStreamIds[0] = expectedStreamId;
