@@ -128,15 +128,6 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        vars.expectedLT = computeMerkleLTAddress({
-            campaignCreator: params.campaignOwner,
-            campaignOwner: params.campaignOwner,
-            expiration: params.expiration,
-            merkleRoot: vars.merkleRoot,
-            startTime: params.startTime,
-            tokenAddress: FORK_TOKEN
-        });
-
         vars.params = merkleLTConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
@@ -145,6 +136,8 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
             startTime: params.startTime,
             tokenAddress: FORK_TOKEN
         });
+
+        vars.expectedLT = computeMerkleLTAddress({ params: vars.params, campaignCreator: params.campaignOwner });
 
         // Load the mainnet values from the deployed contract.
         vars.oracle = merkleFactoryLT.oracle();

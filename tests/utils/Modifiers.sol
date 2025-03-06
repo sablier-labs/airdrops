@@ -79,6 +79,10 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
+    modifier whenExpirationZero() {
+        _;
+    }
+
     modifier whenExpiryNotExceedOneWeekFromEndTime() {
         _;
     }

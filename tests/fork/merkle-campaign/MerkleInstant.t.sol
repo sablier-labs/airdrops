@@ -110,20 +110,15 @@ abstract contract MerkleInstant_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        vars.expectedMerkleInstant = computeMerkleInstantAddress({
-            campaignCreator: params.campaignOwner,
-            campaignOwner: params.campaignOwner,
-            expiration: params.expiration,
-            merkleRoot: vars.merkleRoot,
-            tokenAddress: FORK_TOKEN
-        });
-
         vars.params = merkleInstantConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
             tokenAddress: FORK_TOKEN
         });
+
+        vars.expectedMerkleInstant =
+            computeMerkleInstantAddress({ params: vars.params, campaignCreator: params.campaignOwner });
 
         // Load the mainnet values from the deployed contract.
         vars.oracle = merkleFactoryInstant.oracle();

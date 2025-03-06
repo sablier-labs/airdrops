@@ -121,15 +121,6 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        vars.expectedMerkleVCA = computeMerkleVCAAddress({
-            campaignCreator: params.campaignOwner,
-            campaignOwner: params.campaignOwner,
-            expiration: params.expiration,
-            merkleRoot: vars.merkleRoot,
-            timestamps: params.timestamps,
-            tokenAddress: FORK_TOKEN
-        });
-
         vars.params = merkleVCAConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
@@ -137,6 +128,8 @@ abstract contract MerkleVCA_Fork_Test is Fork_Test {
             timestamps: params.timestamps,
             tokenAddress: FORK_TOKEN
         });
+
+        vars.expectedMerkleVCA = computeMerkleVCAAddress({ params: vars.params, campaignCreator: params.campaignOwner });
 
         // Load the mainnet values from the deployed contract.
         vars.oracle = merkleFactoryVCA.oracle();
