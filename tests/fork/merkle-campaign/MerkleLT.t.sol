@@ -3,7 +3,6 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
-import { LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol";
 import { Lockup } from "@sablier/lockup/src/types/DataTypes.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
@@ -35,7 +34,6 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
     }
 
     struct Vars {
-        LockupTranched.Tranche[] actualTranches;
         uint256 aggregateAmount;
         uint128[] amounts;
         uint128 clawbackAmount;
@@ -128,15 +126,6 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
         // Make the campaign owner as the caller.
         resetPrank({ msgSender: params.campaignOwner });
 
-        vars.expectedLT = computeMerkleLTAddress({
-            campaignCreator: params.campaignOwner,
-            campaignOwner: params.campaignOwner,
-            expiration: params.expiration,
-            merkleRoot: vars.merkleRoot,
-            startTime: params.startTime,
-            tokenAddress: FORK_TOKEN
-        });
-
         vars.params = merkleLTConstructorParams({
             campaignOwner: params.campaignOwner,
             expiration: params.expiration,
@@ -145,6 +134,8 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
             startTime: params.startTime,
             tokenAddress: FORK_TOKEN
         });
+
+        vars.expectedLT = computeMerkleLTAddress({ params: vars.params, campaignCreator: params.campaignOwner });
 
         // Load the mainnet values from the deployed contract.
         vars.oracle = merkleFactoryLT.oracle();

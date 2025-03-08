@@ -63,7 +63,7 @@ abstract contract Modifiers is EvmUtilsBase {
     }
 
     modifier whenCallerCampaignOwner() {
-        resetPrank({ msgSender: users.campaignOwner });
+        resetPrank({ msgSender: users.campaignCreator });
         _;
     }
 
@@ -76,6 +76,10 @@ abstract contract Modifiers is EvmUtilsBase {
     }
 
     modifier whenExpirationNotZero() {
+        _;
+    }
+
+    modifier whenExpirationZero() {
         _;
     }
 
