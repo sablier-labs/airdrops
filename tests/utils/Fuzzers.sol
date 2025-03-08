@@ -44,4 +44,14 @@ abstract contract Fuzzers is Modifiers {
                 ud2x18(tranches[tranches.length - 1].unlockPercentage.unwrap() + upperBoundPercentage);
         }
     }
+
+    function getTotalDuration(MerkleLT.TrancheWithPercentage[] memory tranches)
+        internal
+        pure
+        returns (uint40 totalDuration)
+    {
+        for (uint256 i; i < tranches.length; ++i) {
+            totalDuration += tranches[i].duration;
+        }
+    }
 }

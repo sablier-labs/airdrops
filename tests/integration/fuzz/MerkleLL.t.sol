@@ -13,7 +13,7 @@ import { Shared_Fuzz_Test } from "./Fuzz.t.sol";
 
 contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     /*//////////////////////////////////////////////////////////////////////////
-                                        TEST
+                                    TEST-FUNCTION
     //////////////////////////////////////////////////////////////////////////*/
 
     function testFuzz_MerkleLL(
@@ -24,13 +24,15 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         uint40 expiration,
         uint256[] memory indexesToClaim,
         uint256 msgValue,
-        MerkleLL.Schedule memory schedule,
-        uint40 timeJumpSeed
+        MerkleLL.Schedule memory schedule
     )
         external
     {
         // Ensure that allocation data is not empty.
         vm.assume(allocation.length > 0 && indexesToClaim.length < allocation.length);
+
+        // Bound expiration so that the campaign is still active at the block time.
+        if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
 
         // Set the custom fee if enabled.
         feeForUser = enabled ? setCustomFee(merkleFactoryLL, feeForUser) : MINIMUM_FEE;
@@ -44,7 +46,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         firstClaimTime = getBlockTimestamp();
 
         // Claim the airdrop for the given indexes.
-        _claimAirdrops(indexesToClaim, msgValue, timeJumpSeed);
+        claimMultipleAirdrops(merkleLL, indexesToClaim, msgValue);
 
         // Clawback funds.
         clawback(merkleLL, clawbackAmount);
@@ -68,9 +70,6 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         givenCampaignNotExists
         whenTotalPercentageNotGreaterThan100
     {
-        // Bound expiration so that the campaign is still active at the block time.
-        if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
-
         // Bound the start time.
         schedule.startTime = boundUint40(schedule.startTime, 0, MAX_UNIX_TIMESTAMP - 1);
 
@@ -132,83 +131,33 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                                    CLAIM-HELPER
+                                CLAIM-EVENT-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function _claimAirdrops(
-        uint256[] memory indexesToClaim,
-        uint256 msgValue,
-        uint40 timeJumpSeed
-    )
-        private
-        givenMsgValueNotLessThanFee
-    {
-        for (uint256 i; i < indexesToClaim.length; ++i) {
-            // Bound lead index so its valid.
-            uint256 leafIndex = bound(indexesToClaim[i], 0, allotment.length - 1);
+    function expectClaimEvents(Allocation memory allocation) internal override {
+        // It should emit {Claim} event based on the vesting end time.
+        MerkleLL.Schedule memory schedule = merkleLL.getSchedule();
+        uint40 expectedStartTime = schedule.startTime == 0 ? getBlockTimestamp() : schedule.startTime;
 
-            // Claim the airdrop if it has not been claimed.
-            if (!merkleLL.hasClaimed(allotment[leafIndex].index)) {
-                // Bound msgValue so that its greater than the minimum fee.
-                msgValue = bound(msgValue, merkleLL.minimumFeeInWei(), 100 ether);
+        // If the vesting has ended, the claim should be transferred directly to the recipient.
+        if (expectedStartTime + schedule.totalDuration <= getBlockTimestamp()) {
+            vm.expectEmit({ emitter: address(merkleLL) });
+            emit ISablierMerkleLockup.Claim(allocation.index, allocation.recipient, allocation.amount);
 
-                resetPrank(users.recipient);
-                vm.deal(users.recipient, msgValue);
+            expectCallToTransfer({ token: dai, to: allocation.recipient, value: allocation.amount });
+        }
+        // Otherwise, the claim should be transferred to the lockup contract.
+        else {
+            uint256 expectedStreamId = lockup.nextStreamId();
+            vm.expectEmit({ emitter: address(merkleLL) });
+            emit ISablierMerkleLockup.Claim(allocation.index, allocation.recipient, allocation.amount, expectedStreamId);
 
-                Allocation memory allocation = allotment[leafIndex];
-
-                // It should emit {Claim} event based on the vesting end time.
-                MerkleLL.Schedule memory schedule = merkleLL.getSchedule();
-                uint40 expectedStartTime = schedule.startTime == 0 ? getBlockTimestamp() : schedule.startTime;
-
-                // If the vesting has ended, the claim should be transferred directly to the recipient.
-                if (expectedStartTime + schedule.totalDuration <= getBlockTimestamp()) {
-                    vm.expectEmit({ emitter: address(merkleLL) });
-                    emit ISablierMerkleLockup.Claim(allocation.index, allocation.recipient, allocation.amount);
-
-                    expectCallToTransfer({ token: dai, to: allocation.recipient, value: allocation.amount });
-                }
-                // Otherwise, the claim should be transferred to the lockup contract.
-                else {
-                    uint256 expectedStreamId = lockup.nextStreamId();
-                    vm.expectEmit({ emitter: address(merkleLL) });
-                    emit ISablierMerkleLockup.Claim(
-                        allocation.index, allocation.recipient, allocation.amount, expectedStreamId
-                    );
-
-                    expectCallToTransferFrom({
-                        token: dai,
-                        from: address(merkleLL),
-                        to: address(lockup),
-                        value: allocation.amount
-                    });
-                }
-
-                bytes32[] memory merkleProof = computerMerkleProof(allocation);
-
-                // Claim the airdrop.
-                merkleLL.claim{ value: msgValue }({
-                    index: allocation.index,
-                    recipient: allocation.recipient,
-                    amount: allocation.amount,
-                    merkleProof: merkleProof
-                });
-
-                // Assert that the claim has been made.
-                assertTrue(merkleLL.hasClaimed(allocation.index));
-
-                // Update the fee earned.
-                feeEarned += msgValue;
-
-                // Warp to a new time.
-                timeJumpSeed = boundUint40(timeJumpSeed, 0, 7 days);
-                vm.warp(getBlockTimestamp() + timeJumpSeed);
-
-                // Break loop if the campaign has expired.
-                if (merkleLL.EXPIRATION() > 0 && getBlockTimestamp() >= merkleLL.EXPIRATION()) {
-                    break;
-                }
-            }
+            expectCallToTransferFrom({
+                token: dai,
+                from: address(merkleLL),
+                to: address(lockup),
+                value: allocation.amount
+            });
         }
     }
 }

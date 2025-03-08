@@ -12,7 +12,7 @@ contract Shared_Fuzz_Test is Integration_Test {
     using MerkleBuilder for uint256[];
 
     /*//////////////////////////////////////////////////////////////////////////
-                                     STORAGE
+                                 STORAGE-VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
 
     // Struct to store the airdrop allocation data for the test.
@@ -35,8 +35,61 @@ contract Shared_Fuzz_Test is Integration_Test {
     uint256 internal feeEarned;
 
     /*//////////////////////////////////////////////////////////////////////////
-                                 CAMPAIGN FUNCTIONS
+                             COMMON-CAMPAIGN-FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
+
+    function claimMultipleAirdrops(
+        ISablierMerkleBase merkleBase,
+        uint256[] memory indexesToClaim,
+        uint256 msgValue
+    )
+        internal
+        givenMsgValueNotLessThanFee
+    {
+        for (uint256 i; i < indexesToClaim.length; ++i) {
+            // Bound lead index so its valid.
+            uint256 leafIndex = bound(indexesToClaim[i], 0, allotment.length - 1);
+
+            Allocation memory allocation = allotment[leafIndex];
+
+            // Claim the airdrop if it has not been claimed.
+            if (!merkleBase.hasClaimed(allotment[leafIndex].index)) {
+                // Bound msgValue so that its greater than the minimum fee.
+                msgValue = bound(msgValue, merkleBase.minimumFeeInWei(), 100 ether);
+
+                resetPrank(users.recipient);
+                vm.deal(users.recipient, msgValue);
+
+                expectClaimEvents(allocation);
+
+                bytes32[] memory merkleProof = computerMerkleProof(allocation);
+
+                // Claim the airdrop.
+                merkleBase.claim{ value: msgValue }({
+                    index: allocation.index,
+                    recipient: allocation.recipient,
+                    amount: allocation.amount,
+                    merkleProof: merkleProof
+                });
+
+                // Assert that the claim has been made.
+                assertTrue(merkleBase.hasClaimed(allocation.index));
+
+                // Update the fee earned.
+                feeEarned += msgValue;
+
+                // Warp to a new time.
+                uint40 timeJumpSeed = uint40(uint256(keccak256(abi.encode(allocation))));
+                timeJumpSeed = boundUint40(timeJumpSeed, 0, 7 days);
+                vm.warp(getBlockTimestamp() + timeJumpSeed);
+
+                // Break loop if the campaign has expired.
+                if (merkleBase.EXPIRATION() > 0 && getBlockTimestamp() >= merkleBase.EXPIRATION()) {
+                    break;
+                }
+            }
+        }
+    }
 
     function clawback(ISablierMerkleBase merkleBase, uint128 amount) internal {
         amount = boundUint128(amount, 0, uint128(dai.balanceOf(address(merkleBase))));
@@ -75,6 +128,8 @@ contract Shared_Fuzz_Test is Integration_Test {
         // It should transfer fee to the factory admin.
         assertEq(users.admin.balance, initialAdminBalance + feeEarned, "admin ETH balance");
     }
+
+    function expectClaimEvents(Allocation memory allocation) internal virtual { }
 
     function setCustomFee(ISablierMerkleFactoryBase factory, uint256 newFee) internal returns (uint256 feeForUser) {
         // Bound the custom fee between 0 and MAX_FEE.

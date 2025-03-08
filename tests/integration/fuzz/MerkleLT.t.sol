@@ -11,7 +11,7 @@ import { Shared_Fuzz_Test } from "./Fuzz.t.sol";
 
 contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
     /*//////////////////////////////////////////////////////////////////////////
-                                        TEST
+                                    TEST-FUNCTION
     //////////////////////////////////////////////////////////////////////////*/
 
     function testFuzz_MerkleLT(
@@ -23,7 +23,6 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         uint256[] memory indexesToClaim,
         uint256 msgValue,
         uint40 startTime,
-        uint40 timeJumpSeed,
         MerkleLT.TrancheWithPercentage[] memory tranches
     )
         external
@@ -33,6 +32,9 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
 
         // Ensure that tranches are not empty and not too large.
         vm.assume(tranches.length <= 1000 && tranches.length > 0);
+
+        // Bound expiration so that the campaign is still active at the block time.
+        if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
 
         // Set the custom fee if enabled.
         feeForUser = enabled ? setCustomFee(merkleFactoryLT, feeForUser) : MINIMUM_FEE;
@@ -51,7 +53,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         firstClaimTime = getBlockTimestamp();
 
         // Claim the airdrop for the given indexes.
-        _claimAirdrops(indexesToClaim, msgValue, timeJumpSeed, streamDuration, startTime);
+        claimMultipleAirdrops(merkleLT, indexesToClaim, msgValue);
 
         // Clawback funds.
         clawback(merkleLT, clawbackAmount);
@@ -77,9 +79,6 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         givenCampaignNotExists
         whenTotalPercentage100
     {
-        // Bound expiration so that the campaign is still active at the block time.
-        if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
-
         // Set campaign creator as the caller.
         resetPrank(users.campaignCreator);
 
@@ -116,96 +115,43 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
 
         // Verify tranches.
         assertEq(merkleLT.getTranchesWithPercentages(), tranches);
+        assertEq(merkleLT.STREAM_START_TIME(), startTime);
+        assertEq(merkleLT.TOTAL_PERCENTAGE(), 1e18);
 
         // Fund the MerkleLT contract.
         deal({ token: address(dai), to: address(merkleLT), give: aggregateAmount });
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                                    CLAIM-HELPER
+                                CLAIM-EVENT-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function _claimAirdrops(
-        uint256[] memory indexesToClaim,
-        uint256 msgValue,
-        uint40 timeJumpSeed,
-        uint40 streamDuration,
-        uint40 startTime
-    )
-        private
-        givenMsgValueNotLessThanFee
-        whenTotalPercentage100
-    {
-        for (uint256 i; i < indexesToClaim.length; ++i) {
-            // Bound lead index so its valid.
-            uint256 leafIndex = bound(indexesToClaim[i], 0, allotment.length - 1);
+    function expectClaimEvents(Allocation memory allocation) internal override {
+        uint40 totalDuration = getTotalDuration(merkleLT.getTranchesWithPercentages());
 
-            // Claim the airdrop if it has not been claimed.
-            if (!merkleLT.hasClaimed(allotment[leafIndex].index)) {
-                // Bound msgValue so that its greater than the minimum fee.
-                msgValue = bound(msgValue, merkleLT.minimumFeeInWei(), 100 ether);
+        // Calculate end time based on the start time.
+        uint40 startTime = merkleLT.STREAM_START_TIME();
+        uint40 endTime = startTime == 0 ? getBlockTimestamp() + totalDuration : startTime + totalDuration;
 
-                resetPrank(users.recipient);
-                vm.deal(users.recipient, msgValue);
+        // If the vesting has ended, the claim should be transferred directly to the recipient.
+        if (endTime <= getBlockTimestamp()) {
+            vm.expectEmit({ emitter: address(merkleLT) });
+            emit ISablierMerkleLockup.Claim(allocation.index, allocation.recipient, allocation.amount);
 
-                Allocation memory allocation = allotment[leafIndex];
+            expectCallToTransfer({ token: dai, to: allocation.recipient, value: allocation.amount });
+        }
+        // Otherwise, the claim should be transferred to the lockup contract.
+        else {
+            uint256 expectedStreamId = lockup.nextStreamId();
+            vm.expectEmit({ emitter: address(merkleLT) });
+            emit ISablierMerkleLockup.Claim(allocation.index, allocation.recipient, allocation.amount, expectedStreamId);
 
-                // Calculate end time based on the start time.
-                uint40 endTime;
-                if (startTime == 0) {
-                    endTime = getBlockTimestamp() + streamDuration;
-                } else {
-                    endTime = startTime + streamDuration;
-                }
-
-                // If the vesting has ended, the claim should be transferred directly to the recipient.
-                if (endTime <= getBlockTimestamp()) {
-                    vm.expectEmit({ emitter: address(merkleLT) });
-                    emit ISablierMerkleLockup.Claim(allocation.index, allocation.recipient, allocation.amount);
-
-                    expectCallToTransfer({ token: dai, to: allocation.recipient, value: allocation.amount });
-                }
-                // Otherwise, the claim should be transferred to the lockup contract.
-                else {
-                    uint256 expectedStreamId = lockup.nextStreamId();
-                    vm.expectEmit({ emitter: address(merkleLT) });
-                    emit ISablierMerkleLockup.Claim(
-                        allocation.index, allocation.recipient, allocation.amount, expectedStreamId
-                    );
-
-                    expectCallToTransferFrom({
-                        token: dai,
-                        from: address(merkleLT),
-                        to: address(lockup),
-                        value: allocation.amount
-                    });
-                }
-
-                bytes32[] memory merkleProof = computerMerkleProof(allocation);
-
-                // Claim the airdrop.
-                merkleLT.claim{ value: msgValue }({
-                    index: allocation.index,
-                    recipient: allocation.recipient,
-                    amount: allocation.amount,
-                    merkleProof: merkleProof
-                });
-
-                // Assert that the claim has been made.
-                assertTrue(merkleLT.hasClaimed(allocation.index));
-
-                // Update the fee earned.
-                feeEarned += msgValue;
-
-                // Warp to a new time.
-                timeJumpSeed = boundUint40(timeJumpSeed, 0, 7 days);
-                vm.warp(getBlockTimestamp() + timeJumpSeed);
-
-                // Break loop if the campaign has expired.
-                if (merkleLT.EXPIRATION() > 0 && getBlockTimestamp() >= merkleLT.EXPIRATION()) {
-                    break;
-                }
-            }
+            expectCallToTransferFrom({
+                token: dai,
+                from: address(merkleLT),
+                to: address(lockup),
+                value: allocation.amount
+            });
         }
     }
 }
