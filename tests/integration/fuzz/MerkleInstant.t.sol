@@ -25,7 +25,7 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
     )
         external
     {
-        // Ensure that merkle data is not empty.
+        // Ensure that allocation data is not empty.
         vm.assume(allocation.length > 0 && indexesToClaim.length < allocation.length);
 
         // Set the custom fee if enabled.
@@ -97,7 +97,7 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
         );
 
         // Verify the campaign's expiration state.
-        bool isExpired = expiration > 0 && expiration <= block.timestamp ? true : false;
+        bool isExpired = expiration > 0 && expiration <= getBlockTimestamp() ? true : false;
         assertEq(merkleInstant.hasExpired(), isExpired, "isExpired");
 
         // Fund the MerkleInstant contract.

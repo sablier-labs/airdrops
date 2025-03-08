@@ -34,12 +34,12 @@ import { Assertions } from "./utils/Assertions.sol";
 import { ChainlinkOracleMock } from "./utils/ChainlinkOracleMock.sol";
 import { Constants } from "./utils/Constants.sol";
 import { DeployOptimized } from "./utils/DeployOptimized.sol";
+import { Fuzzers } from "./utils/Fuzzers.sol";
 import { MerkleBuilder } from "./utils/MerkleBuilder.sol";
-import { Modifiers } from "./utils/Modifiers.sol";
 import { Users } from "./utils/Types.sol";
 
 /// @notice Base test contract with common logic needed by all tests.
-abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Modifiers, PRBMathUtils {
+abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Fuzzers, PRBMathUtils {
     using MerkleBuilder for uint256[];
 
     /*//////////////////////////////////////////////////////////////////////////

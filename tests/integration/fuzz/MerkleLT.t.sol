@@ -1,22 +1,20 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ud2x18 } from "@prb/math/src/UD2x18.sol";
-
-import { ISablierMerkleFactoryLL } from "src/interfaces/ISablierMerkleFactoryLL.sol";
-import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
+import { ISablierMerkleFactoryLT } from "src/interfaces/ISablierMerkleFactoryLT.sol";
 import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
+import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
 
-import { MerkleLL } from "src/types/DataTypes.sol";
+import { MerkleLT } from "src/types/DataTypes.sol";
 
 import { Shared_Fuzz_Test } from "./Fuzz.t.sol";
 
-contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
+contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
     /*//////////////////////////////////////////////////////////////////////////
                                         TEST
     //////////////////////////////////////////////////////////////////////////*/
 
-    function testFuzz_MerkleLL(
+    function testFuzz_MerkleLT(
         Allocation[] memory allocation,
         uint128 clawbackAmount,
         uint256 feeForUser,
@@ -24,111 +22,103 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         uint40 expiration,
         uint256[] memory indexesToClaim,
         uint256 msgValue,
-        MerkleLL.Schedule memory schedule,
-        uint40 timeJumpSeed
+        uint40 startTime,
+        uint40 timeJumpSeed,
+        MerkleLT.TrancheWithPercentage[] memory tranches
     )
         external
     {
-        // Ensure that allocation data is not empty.
+        // Ensure that merkle data is not empty.
         vm.assume(allocation.length > 0 && indexesToClaim.length < allocation.length);
 
+        // Ensure that tranches are not empty and not too large.
+        vm.assume(tranches.length <= 1000 && tranches.length > 0);
+
         // Set the custom fee if enabled.
-        feeForUser = enabled ? setCustomFee(merkleFactoryLL, feeForUser) : MINIMUM_FEE;
+        feeForUser = enabled ? setCustomFee(merkleFactoryLT, feeForUser) : MINIMUM_FEE;
 
         // Generate merkle root for the given allocation data.
         (uint256 aggregateAmount, bytes32 merkleRoot) = generateMerkleRoot(allocation);
 
-        // Create the MerkleLL campaign.
-        _createMerkleLL(aggregateAmount, expiration, feeForUser, merkleRoot, schedule);
+        // Bound the start time.
+        startTime = boundUint40(startTime, 0, MAX_UNIX_TIMESTAMP - 1000);
+
+        uint40 streamDuration = fuzzTranchesMerkleLT(startTime, tranches);
+
+        // Create the MerkleLT campaign.
+        _createMerkleLT(aggregateAmount, expiration, feeForUser, merkleRoot, startTime, streamDuration, tranches);
 
         firstClaimTime = getBlockTimestamp();
 
         // Claim the airdrop for the given indexes.
-        _claimAirdrops(indexesToClaim, msgValue, timeJumpSeed);
+        _claimAirdrops(indexesToClaim, msgValue, timeJumpSeed, streamDuration, startTime);
 
         // Clawback funds.
-        clawback(merkleLL, clawbackAmount);
+        clawback(merkleLT, clawbackAmount);
 
         // Collect fees earned.
-        collectFee(merkleFactoryLL, merkleLL);
+        collectFee(merkleFactoryLT, merkleLT);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CREATE-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function _createMerkleLL(
+    function _createMerkleLT(
         uint256 aggregateAmount,
         uint40 expiration,
         uint256 feeForUser,
         bytes32 merkleRoot,
-        MerkleLL.Schedule memory schedule
+        uint40 startTime,
+        uint40 streamDuration,
+        MerkleLT.TrancheWithPercentage[] memory tranches
     )
         private
         givenCampaignNotExists
-        whenTotalPercentageNotGreaterThan100
+        whenTotalPercentage100
     {
         // Bound expiration so that the campaign is still active at the block time.
         if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
 
-        // Bound the start time.
-        schedule.startTime = boundUint40(schedule.startTime, 0, MAX_UNIX_TIMESTAMP - 1);
-
-        // Expected start time is the start time if it is set, otherwise the current block time.
-        uint40 expectedStartTime = schedule.startTime == 0 ? getBlockTimestamp() : schedule.startTime;
-
-        // Bound cliff duration so that it does not overflow timestamps.
-        schedule.cliffDuration = boundUint40(schedule.cliffDuration, 0, MAX_UNIX_TIMESTAMP - expectedStartTime - 1);
-
-        // Bound the total duration so that the end time to be greater than the cliff time.
-        schedule.totalDuration =
-            boundUint40(schedule.totalDuration, schedule.cliffDuration + 1, MAX_UNIX_TIMESTAMP - expectedStartTime);
-
-        // Bound unlock percentages so that the sum does not exceed 100%.
-        schedule.startPercentage = _bound(schedule.startPercentage, 0, 1e18);
-
-        // Bound cliff percentage so that the sum does not exceed 100% and is 0 if cliff duration is 0.
-        schedule.cliffPercentage = schedule.cliffDuration > 0
-            ? _bound(schedule.cliffPercentage, 0, 1e18 - schedule.startPercentage.unwrap())
-            : ud2x18(0);
-
         // Set campaign creator as the caller.
         resetPrank(users.campaignCreator);
 
-        MerkleLL.ConstructorParams memory params = merkleLLConstructorParams(users.campaignCreator, expiration);
-        params.schedule = schedule;
+        MerkleLT.ConstructorParams memory params = merkleLTConstructorParams(users.campaignCreator, expiration);
         params.merkleRoot = merkleRoot;
+        params.streamStartTime = startTime;
+        params.tranchesWithPercentages = tranches;
 
         // Get CREATE2 address of the campaign.
-        address expectedMerkleLL = computeMerkleLLAddress(params, users.campaignCreator);
+        address expectedMerkleLT = computeMerkleLTAddress(params, users.campaignCreator);
 
-        // Expect a {CreateMerkleLL} event.
-        vm.expectEmit({ emitter: address(merkleFactoryLL) });
-        emit ISablierMerkleFactoryLL.CreateMerkleLL({
-            merkleLL: ISablierMerkleLL(expectedMerkleLL),
+        // Expect a {CreateMerkleLT} event.
+        vm.expectEmit({ emitter: address(merkleFactoryLT) });
+        emit ISablierMerkleFactoryLT.CreateMerkleLT({
+            merkleLT: ISablierMerkleLT(expectedMerkleLT),
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: allotment.length,
+            totalDuration: streamDuration,
             fee: feeForUser,
             oracle: address(oracle)
         });
 
         // Create the campaign.
-        merkleLL = merkleFactoryLL.createMerkleLL(params, aggregateAmount, allotment.length);
+        merkleLT = merkleFactoryLT.createMerkleLT(params, aggregateAmount, allotment.length);
 
         // Verify that the contract is deployed at the correct address.
-        assertGt(address(merkleLL).code.length, 0, "MerkleLL contract not created");
-        assertEq(address(merkleLL), expectedMerkleLL, "MerkleLL contract does not match computed address");
+        assertGt(address(merkleLT).code.length, 0, "MerkleLT contract not created");
+        assertEq(address(merkleLT), expectedMerkleLT, "MerkleLT contract does not match computed address");
 
         // Verify the campaign's expiration state.
         bool isExpired = expiration > 0 && expiration <= getBlockTimestamp() ? true : false;
-        assertEq(merkleLL.hasExpired(), isExpired, "isExpired");
+        assertEq(merkleLT.hasExpired(), isExpired, "isExpired");
 
-        // Verify campaign's schedule.
-        assertEq(merkleLL.getSchedule(), schedule);
+        // Verify tranches.
+        assertEq(merkleLT.getTranchesWithPercentages(), tranches);
 
-        // Fund the MerkleLL contract.
-        deal({ token: address(dai), to: address(merkleLL), give: aggregateAmount });
+        // Fund the MerkleLT contract.
+        deal({ token: address(dai), to: address(merkleLT), give: aggregateAmount });
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -138,32 +128,39 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     function _claimAirdrops(
         uint256[] memory indexesToClaim,
         uint256 msgValue,
-        uint40 timeJumpSeed
+        uint40 timeJumpSeed,
+        uint40 streamDuration,
+        uint40 startTime
     )
         private
         givenMsgValueNotLessThanFee
+        whenTotalPercentage100
     {
         for (uint256 i; i < indexesToClaim.length; ++i) {
             // Bound lead index so its valid.
             uint256 leafIndex = bound(indexesToClaim[i], 0, allotment.length - 1);
 
             // Claim the airdrop if it has not been claimed.
-            if (!merkleLL.hasClaimed(allotment[leafIndex].index)) {
+            if (!merkleLT.hasClaimed(allotment[leafIndex].index)) {
                 // Bound msgValue so that its greater than the minimum fee.
-                msgValue = bound(msgValue, merkleLL.minimumFeeInWei(), 100 ether);
+                msgValue = bound(msgValue, merkleLT.minimumFeeInWei(), 100 ether);
 
                 resetPrank(users.recipient);
                 vm.deal(users.recipient, msgValue);
 
                 Allocation memory allocation = allotment[leafIndex];
 
-                // It should emit {Claim} event based on the vesting end time.
-                MerkleLL.Schedule memory schedule = merkleLL.getSchedule();
-                uint40 expectedStartTime = schedule.startTime == 0 ? getBlockTimestamp() : schedule.startTime;
+                // Calculate end time based on the start time.
+                uint40 endTime;
+                if (startTime == 0) {
+                    endTime = getBlockTimestamp() + streamDuration;
+                } else {
+                    endTime = startTime + streamDuration;
+                }
 
                 // If the vesting has ended, the claim should be transferred directly to the recipient.
-                if (expectedStartTime + schedule.totalDuration <= getBlockTimestamp()) {
-                    vm.expectEmit({ emitter: address(merkleLL) });
+                if (endTime <= getBlockTimestamp()) {
+                    vm.expectEmit({ emitter: address(merkleLT) });
                     emit ISablierMerkleLockup.Claim(allocation.index, allocation.recipient, allocation.amount);
 
                     expectCallToTransfer({ token: dai, to: allocation.recipient, value: allocation.amount });
@@ -171,14 +168,14 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
                 // Otherwise, the claim should be transferred to the lockup contract.
                 else {
                     uint256 expectedStreamId = lockup.nextStreamId();
-                    vm.expectEmit({ emitter: address(merkleLL) });
+                    vm.expectEmit({ emitter: address(merkleLT) });
                     emit ISablierMerkleLockup.Claim(
                         allocation.index, allocation.recipient, allocation.amount, expectedStreamId
                     );
 
                     expectCallToTransferFrom({
                         token: dai,
-                        from: address(merkleLL),
+                        from: address(merkleLT),
                         to: address(lockup),
                         value: allocation.amount
                     });
@@ -187,7 +184,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
                 bytes32[] memory merkleProof = computerMerkleProof(allocation);
 
                 // Claim the airdrop.
-                merkleLL.claim{ value: msgValue }({
+                merkleLT.claim{ value: msgValue }({
                     index: allocation.index,
                     recipient: allocation.recipient,
                     amount: allocation.amount,
@@ -195,7 +192,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
                 });
 
                 // Assert that the claim has been made.
-                assertTrue(merkleLL.hasClaimed(allocation.index));
+                assertTrue(merkleLT.hasClaimed(allocation.index));
 
                 // Update the fee earned.
                 feeEarned += msgValue;
@@ -205,7 +202,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
                 vm.warp(getBlockTimestamp() + timeJumpSeed);
 
                 // Break loop if the campaign has expired.
-                if (merkleLL.EXPIRATION() > 0 && getBlockTimestamp() >= merkleLL.EXPIRATION()) {
+                if (merkleLT.EXPIRATION() > 0 && getBlockTimestamp() >= merkleLT.EXPIRATION()) {
                     break;
                 }
             }

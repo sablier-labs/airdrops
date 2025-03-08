@@ -3,7 +3,6 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
-import { LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol";
 import { Lockup } from "@sablier/lockup/src/types/DataTypes.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
@@ -35,7 +34,6 @@ abstract contract MerkleLT_Fork_Test is Fork_Test {
     }
 
     struct Vars {
-        LockupTranched.Tranche[] actualTranches;
         uint256 aggregateAmount;
         uint128[] amounts;
         uint128 clawbackAmount;
