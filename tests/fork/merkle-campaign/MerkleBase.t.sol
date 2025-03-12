@@ -25,7 +25,7 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
     }
 
     struct Params {
-        address campaignOwner;
+        address campaignCreator;
         uint40 expiration;
         LeafData[] leafData;
         uint256 posBeforeSort;
@@ -69,9 +69,9 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function preCreateCampaign(Params memory params) internal {
-        vm.assume(params.campaignOwner != address(0));
+        vm.assume(params.campaignCreator != address(0));
         vm.assume(params.leafData.length > 0);
-        assumeNoBlacklisted({ token: address(FORK_TOKEN), addr: params.campaignOwner });
+        assumeNoBlacklisted({ token: address(FORK_TOKEN), addr: params.campaignCreator });
         params.posBeforeSort = _bound(params.posBeforeSort, 0, params.leafData.length - 1);
 
         // The expiration must be either zero or greater than the block timestamp.
@@ -115,8 +115,8 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
             vars.merkleRoot = getRoot(leaves.toBytes32());
         }
 
-        // Make the campaign owner as the caller.
-        resetPrank({ msgSender: params.campaignOwner });
+        // Make the campaign creator as the caller.
+        resetPrank({ msgSender: params.campaignCreator });
 
         // Load the mainnet values from the deployed contract.
         vars.oracle = merkleFactoryBase.oracle();
@@ -163,21 +163,21 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function testClawback(Params memory params) internal {
-        // Make the campaign owner as the caller.
-        resetPrank({ msgSender: params.campaignOwner });
+        // Make the campaign creator as the caller.
+        resetPrank({ msgSender: params.campaignCreator });
 
         if (params.expiration > 0) {
             vars.clawbackAmount = uint128(FORK_TOKEN.balanceOf(address(merkleBase)));
             vm.warp({ newTimestamp: params.expiration + 1 seconds });
 
-            expectCallToTransfer({ token: FORK_TOKEN, to: params.campaignOwner, value: vars.clawbackAmount });
+            expectCallToTransfer({ token: FORK_TOKEN, to: params.campaignCreator, value: vars.clawbackAmount });
             vm.expectEmit({ emitter: address(merkleBase) });
             emit ISablierMerkleBase.Clawback({
-                to: params.campaignOwner,
-                admin: params.campaignOwner,
+                to: params.campaignCreator,
+                admin: params.campaignCreator,
                 amount: vars.clawbackAmount
             });
-            merkleBase.clawback({ to: params.campaignOwner, amount: vars.clawbackAmount });
+            merkleBase.clawback({ to: params.campaignCreator, amount: vars.clawbackAmount });
         }
     }
 

@@ -54,7 +54,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
         preCreateCampaign(params);
 
         MerkleLT.ConstructorParams memory constructorParams = merkleLTConstructorParams({
-            campaignOwner: params.campaignOwner,
+            campaignCreator: params.campaignCreator,
             expiration: params.expiration,
             lockupAddress: lockup,
             merkleRoot: vars.merkleRoot,
@@ -63,7 +63,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
         });
 
         vars.expectedMerkleCampaign =
-            computeMerkleLTAddress({ params: constructorParams, campaignCreator: params.campaignOwner });
+            computeMerkleLTAddress({ params: constructorParams, campaignCreator: params.campaignCreator });
 
         vm.expectEmit({ emitter: address(merkleFactoryLT) });
         emit ISablierMerkleFactoryLT.CreateMerkleLT({
@@ -134,7 +134,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
         // Assertions when vesting end time exceeds the block time.
         else {
             Lockup.CreateWithTimestamps memory expectedLockup = Lockup.CreateWithTimestamps({
-                sender: params.campaignOwner,
+                sender: params.campaignCreator,
                 recipient: vars.recipientToClaim,
                 depositAmount: vars.amountToClaim,
                 token: FORK_TOKEN,

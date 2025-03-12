@@ -55,7 +55,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         }
 
         MerkleVCA.ConstructorParams memory constructorParams = merkleVCAConstructorParams({
-            campaignOwner: params.campaignOwner,
+            campaignCreator: params.campaignCreator,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
             timestamps: timestamps,
@@ -63,7 +63,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         });
 
         vars.expectedMerkleCampaign =
-            computeMerkleVCAAddress({ params: constructorParams, campaignCreator: params.campaignOwner });
+            computeMerkleVCAAddress({ params: constructorParams, campaignCreator: params.campaignCreator });
 
         vm.expectEmit({ emitter: address(merkleFactoryVCA) });
         emit ISablierMerkleFactoryVCA.CreateMerkleVCA({

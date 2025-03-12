@@ -8,7 +8,7 @@ import { MerkleVCA } from "src/types/DataTypes.sol";
 
 import { Integration_Test } from "../../../../Integration.t.sol";
 
-/// @dev Some of the tests use `users.sender` as the campaign owner to avoid collision with the default MerkleVCA
+/// @dev Some of the tests use `users.sender` as the campaign creator to avoid collision with the default MerkleVCA
 /// contract deployed in {Integration_Test.setUp}.
 contract CreateMerkleVCA_Integration_Test is Integration_Test {
     /// @dev This test reverts because a default MerkleVCA contract is deployed in {Integration_Test.setUp}

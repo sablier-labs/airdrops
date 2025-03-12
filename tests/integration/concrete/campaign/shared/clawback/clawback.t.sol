@@ -8,7 +8,7 @@ import { Errors } from "src/libraries/Errors.sol";
 import { Integration_Test } from "../../../../Integration.t.sol";
 
 abstract contract Clawback_Integration_Test is Integration_Test {
-    function test_RevertWhen_CallerNotCampaignOwner() external {
+    function test_RevertWhen_CallerNotCampaignCreator() external {
         resetPrank({ msgSender: users.eve });
         vm.expectRevert(
             abi.encodeWithSelector(EvmUtilsErrors.CallerNotAdmin.selector, users.campaignCreator, users.eve)
@@ -16,7 +16,7 @@ abstract contract Clawback_Integration_Test is Integration_Test {
         merkleBase.clawback({ to: users.eve, amount: 1 });
     }
 
-    function test_WhenFirstClaimNotMade() external whenCallerCampaignOwner {
+    function test_WhenFirstClaimNotMade() external whenCallerCampaignCreator {
         test_Clawback(users.campaignCreator);
     }
 
@@ -29,14 +29,14 @@ abstract contract Clawback_Integration_Test is Integration_Test {
         _;
     }
 
-    function test_GivenSevenDaysNotPassed() external whenCallerCampaignOwner whenFirstClaimMade {
+    function test_GivenSevenDaysNotPassed() external whenCallerCampaignCreator whenFirstClaimMade {
         vm.warp({ newTimestamp: getBlockTimestamp() + 6 days });
         test_Clawback(users.campaignCreator);
     }
 
     function test_RevertGiven_CampaignNotExpired()
         external
-        whenCallerCampaignOwner
+        whenCallerCampaignCreator
         whenFirstClaimMade
         givenSevenDaysPassed
     {
@@ -50,7 +50,7 @@ abstract contract Clawback_Integration_Test is Integration_Test {
 
     function test_GivenCampaignExpired(address to)
         external
-        whenCallerCampaignOwner
+        whenCallerCampaignCreator
         whenFirstClaimMade
         givenSevenDaysPassed
     {

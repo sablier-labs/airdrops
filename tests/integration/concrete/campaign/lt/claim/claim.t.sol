@@ -145,7 +145,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
         assertTrue(merkleLT.hasClaimed(INDEX1), "not claimed");
 
-        // Check stream is created with correct Lockup model.
+        // It should create the stream with the correct Lockup model.
         assertEq(lockup.getLockupModel(expectedStreamId), Lockup.Model.LOCKUP_TRANCHED);
 
         uint256[] memory expectedClaimedStreamIds = new uint256[](1);

@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
-
 import { Integration_Test } from "./../../../Integration.t.sol";
 import { Clawback_Integration_Test } from "./../shared/clawback/clawback.t.sol";
 import { CollectFees_Integration_Test } from "./../shared/collect-fees/collectFees.t.sol";
@@ -66,7 +64,7 @@ contract HasExpired_MerkleLL_Integration_Test is MerkleLL_Integration_Shared_Tes
         MerkleLL_Integration_Shared_Test.setUp();
 
         // Create a campaign with zero expiry to be used in this test.
-        campaignWithZeroExpiry = ISablierMerkleBase(createMerkleLL(merkleLLConstructorParams({ expiration: 0 })));
+        campaignWithZeroExpiry = createMerkleLL(merkleLLConstructorParams({ expiration: 0 }));
     }
 }
 
