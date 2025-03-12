@@ -66,9 +66,7 @@ contract HasExpired_MerkleLL_Integration_Test is MerkleLL_Integration_Shared_Tes
         MerkleLL_Integration_Shared_Test.setUp();
 
         // Create a campaign with zero expiry to be used in this test.
-        campaignWithZeroExpiry = ISablierMerkleBase(
-            createMerkleLL(merkleLLConstructorParams({ campaignOwner: users.campaignCreator, expiration: 0 }))
-        );
+        campaignWithZeroExpiry = ISablierMerkleBase(createMerkleLL(merkleLLConstructorParams({ expiration: 0 })));
     }
 }
 

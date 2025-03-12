@@ -86,7 +86,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         // Set campaign creator as the caller.
         resetPrank(users.campaignCreator);
 
-        MerkleLT.ConstructorParams memory params = merkleLTConstructorParams(users.campaignCreator, expiration);
+        MerkleLT.ConstructorParams memory params = merkleLTConstructorParams(expiration);
         params.merkleRoot = merkleRoot;
         params.streamStartTime = startTime;
         params.tranchesWithPercentages = tranches;

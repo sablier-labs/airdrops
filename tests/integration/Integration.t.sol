@@ -58,7 +58,7 @@ contract Integration_Test is Base_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function createMerkleInstant() internal returns (ISablierMerkleInstant) {
-        return createMerkleInstant(merkleInstantConstructorParams(users.campaignCreator, EXPIRATION));
+        return createMerkleInstant(merkleInstantConstructorParams());
     }
 
     function createMerkleInstant(MerkleInstant.ConstructorParams memory params)
@@ -73,7 +73,7 @@ contract Integration_Test is Base_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function createMerkleLL() internal returns (ISablierMerkleLL) {
-        return createMerkleLL(merkleLLConstructorParams(users.campaignCreator, EXPIRATION));
+        return createMerkleLL(merkleLLConstructorParams());
     }
 
     function createMerkleLL(MerkleLL.ConstructorParams memory params) internal returns (ISablierMerkleLL) {
@@ -85,7 +85,7 @@ contract Integration_Test is Base_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function createMerkleLT() internal returns (ISablierMerkleLT) {
-        return createMerkleLT(merkleLTConstructorParams(users.campaignCreator, EXPIRATION));
+        return createMerkleLT(merkleLTConstructorParams());
     }
 
     function createMerkleLT(MerkleLT.ConstructorParams memory params) internal returns (ISablierMerkleLT) {
@@ -97,7 +97,7 @@ contract Integration_Test is Base_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function createMerkleVCA() internal returns (ISablierMerkleVCA) {
-        return createMerkleVCA(merkleVCAConstructorParams(users.campaignCreator, EXPIRATION));
+        return createMerkleVCA(merkleVCAConstructorParams());
     }
 
     function createMerkleVCA(MerkleVCA.ConstructorParams memory params) internal returns (ISablierMerkleVCA) {

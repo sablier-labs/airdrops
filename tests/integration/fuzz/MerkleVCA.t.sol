@@ -77,7 +77,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         // Set campaign creator as the caller.
         resetPrank(users.campaignCreator);
 
-        MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams(users.campaignCreator, expiration);
+        MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams(expiration);
         params.merkleRoot = merkleRoot;
         params.timestamps = timestamps;
 
