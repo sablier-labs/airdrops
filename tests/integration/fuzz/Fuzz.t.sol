@@ -38,23 +38,18 @@ contract Shared_Fuzz_Test is Integration_Test {
                              COMMON-CAMPAIGN-FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    function prepareCommonCreateParmas(
+    function prepareCommonCreateParams(
         Allocation[] memory allocation,
-        uint256 indexesLength,
-        uint256 feeForUser,
-        bool enableCustomFee,
-        uint40 expiration
+        uint40 expiration,
+        uint256 indexesCount
     )
         internal
-        returns (uint256 feeForUser_, uint40 expiration_, uint256 aggregateAmount, bytes32 merkleRoot)
+        returns (uint256 aggregateAmount, uint40 expiration_, bytes32 merkleRoot)
     {
-        vm.assume(allocation.length > 0 && indexesLength < allocation.length);
+        vm.assume(allocation.length > 0 && indexesCount < allocation.length);
 
         // Bound expiration so that the campaign is still active at the creation.
         if (expiration > 0) expiration_ = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
-
-        // Set the custom fee if enabled.
-        feeForUser_ = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
 
         // Construct merkle root for the given allocation data.
         (aggregateAmount, merkleRoot) = constructMerkleTree(allocation);

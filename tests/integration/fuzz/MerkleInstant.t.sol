@@ -35,20 +35,23 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
     function testFuzz_MerkleInstant(
         Allocation[] memory allocation,
         uint128 clawbackAmount,
-        uint256 feeForUser,
         bool enableCustomFee,
         uint40 expiration,
+        uint256 feeForUser,
         uint256[] memory indexesToClaim,
         uint256 msgValue
     )
         external
     {
         // Bound the fuzzed params and construct the Merkle tree.
-        (uint256 feeForUser_, uint40 expiration_, uint256 aggregateAmount, bytes32 merkleRoot) =
-            prepareCommonCreateParmas(allocation, indexesToClaim.length, feeForUser, enableCustomFee, expiration);
+        (uint256 aggregateAmount, uint40 expiration_, bytes32 merkleRoot) =
+            prepareCommonCreateParams(allocation, expiration, indexesToClaim.length);
+
+        // Set the custom fee if enabled.
+        feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
 
         // Test creating the MerkleInstant campaign.
-        _testCreateMerkleInstant(aggregateAmount, expiration_, feeForUser_, merkleRoot);
+        _testCreateMerkleInstant(aggregateAmount, expiration_, feeForUser, merkleRoot);
 
         // Test claiming the airdrop for the given indexes.
         testClaimMultipleAirdrops(indexesToClaim, msgValue);

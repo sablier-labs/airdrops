@@ -38,9 +38,9 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     function testFuzz_MerkleLL(
         Allocation[] memory allocation,
         uint128 clawbackAmount,
-        uint256 feeForUser,
         bool enableCustomFee,
         uint40 expiration,
+        uint256 feeForUser,
         uint256[] memory indexesToClaim,
         uint256 msgValue,
         MerkleLL.Schedule memory schedule
@@ -48,11 +48,14 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         external
     {
         // Bound the fuzzed params and construct the Merkle tree.
-        (uint256 feeForUser_, uint40 expiration_, uint256 aggregateAmount, bytes32 merkleRoot) =
-            prepareCommonCreateParmas(allocation, indexesToClaim.length, feeForUser, enableCustomFee, expiration);
+        (uint256 aggregateAmount, uint40 expiration_, bytes32 merkleRoot) =
+            prepareCommonCreateParams(allocation, expiration, indexesToClaim.length);
+
+        // Set the custom fee if enabled.
+        feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
 
         // Test creating the MerkleLL campaign.
-        _testCreateMerkleLL(aggregateAmount, expiration_, feeForUser_, merkleRoot, schedule);
+        _testCreateMerkleLL(aggregateAmount, expiration_, feeForUser, merkleRoot, schedule);
 
         // Test claiming the airdrop for the given indexes.
         testClaimMultipleAirdrops(indexesToClaim, msgValue);

@@ -35,9 +35,9 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
     function testFuzz_MerkleVCA(
         Allocation[] memory allocation,
         uint128 clawbackAmount,
-        uint256 feeForUser,
         bool enableCustomFee,
         uint40 expiration,
+        uint256 feeForUser,
         uint256[] memory indexesToClaim,
         uint256 msgValue,
         MerkleVCA.Timestamps memory timestamps
@@ -45,14 +45,17 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         external
     {
         // Bound the fuzzed params and construct the Merkle tree.
-        (uint256 feeForUser_,, uint256 aggregateAmount, bytes32 merkleRoot) =
-            prepareCommonCreateParmas(allocation, indexesToClaim.length, feeForUser, enableCustomFee, expiration);
+        (uint256 aggregateAmount,, bytes32 merkleRoot) =
+            prepareCommonCreateParams(allocation, expiration, indexesToClaim.length);
 
-        // Unlike the other campaigns, MerkleVCA requires a non-zero expiration.
+        // Bound expiration so that its not zero. Unlike other campaigns, MerkleVCA requires a non-zero expiration.
         expiration = boundUint40(expiration, getBlockTimestamp() + 365 days + 1 weeks, MAX_UNIX_TIMESTAMP);
 
+        // Set the custom fee if enabled.
+        feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
+
         // Test creating the MerkleVCA campaign.
-        _testCreateMerkleVCA(aggregateAmount, expiration, feeForUser_, merkleRoot, timestamps);
+        _testCreateMerkleVCA(aggregateAmount, expiration, feeForUser, merkleRoot, timestamps);
 
         // Test claiming the airdrop for the given indexes.
         testClaimMultipleAirdrops(indexesToClaim, msgValue);
