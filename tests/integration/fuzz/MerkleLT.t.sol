@@ -47,7 +47,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         (uint256 aggregateAmount, bytes32 merkleRoot) = constructMerkleTree(allocation);
 
         // Bound the start time.
-        startTime = boundUint40(startTime, 0, MAX_UNIX_TIMESTAMP - 1000);
+        startTime = boundUint40(startTime, 0, getBlockTimestamp() + 1000);
 
         uint40 streamDuration = fuzzTranchesMerkleLT(startTime, tranches);
 
