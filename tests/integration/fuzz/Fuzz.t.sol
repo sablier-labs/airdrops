@@ -3,7 +3,6 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
 import { Errors } from "src/libraries/Errors.sol";
 import { MerkleBuilder } from "../../utils/MerkleBuilder.sol";
 import { Integration_Test } from "../Integration.t.sol";
@@ -39,9 +38,30 @@ contract Shared_Fuzz_Test is Integration_Test {
                              COMMON-CAMPAIGN-FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
+    function prepareCommonCreateParmas(
+        Allocation[] memory allocation,
+        uint256 indexesLength,
+        uint256 feeForUser,
+        bool enableCustomFee,
+        uint40 expiration
+    )
+        internal
+        returns (uint256 feeForUser_, uint40 expiration_, uint256 aggregateAmount, bytes32 merkleRoot)
+    {
+        vm.assume(allocation.length > 0 && indexesLength < allocation.length);
+
+        // Bound expiration so that the campaign is still active at the creation.
+        if (expiration > 0) expiration_ = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
+
+        // Set the custom fee if enabled.
+        feeForUser_ = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
+
+        // Construct merkle root for the given allocation data.
+        (aggregateAmount, merkleRoot) = constructMerkleTree(allocation);
+    }
+
     // Helper function to test claiming multiple airdrops.
     function testClaimMultipleAirdrops(
-        ISablierMerkleBase merkleBase,
         uint256[] memory indexesToClaim,
         uint256 msgValue
     )
@@ -68,7 +88,7 @@ contract Shared_Fuzz_Test is Integration_Test {
                 // Call the expect claim event function, implemented by the child contract.
                 expectClaimEvent(allocation);
 
-                bytes32[] memory merkleProof = computerMerkleProof(allocation);
+                bytes32[] memory merkleProof = computeMerkleProof(allocation);
 
                 // Claim the airdrop.
                 merkleBase.claim{ value: msgValue }({
@@ -98,7 +118,7 @@ contract Shared_Fuzz_Test is Integration_Test {
     }
 
     // Helper function to test clawbacking funds.
-    function testClawback(ISablierMerkleBase merkleBase, uint128 amount) internal {
+    function testClawback(uint128 amount) internal {
         amount = boundUint128(amount, 0, uint128(dai.balanceOf(address(merkleBase))));
 
         resetPrank(users.campaignCreator);
@@ -128,15 +148,15 @@ contract Shared_Fuzz_Test is Integration_Test {
     }
 
     // Helper function to test collecting fees earned.
-    function testCollectFees(ISablierMerkleFactoryBase factory, ISablierMerkleBase merkleBase) internal {
+    function testCollectFees() internal {
         // Load the initial ETH balance of the admin.
         uint256 initialAdminBalance = users.admin.balance;
 
         // collect the fees earned.
-        factory.collectFees(merkleBase);
+        merkleFactoryBase.collectFees(merkleBase);
 
         // It should decrease merkle contract balance to zero.
-        assertEq(address(merkleBase).balance, 0, "merkle lockup ETH balance");
+        assertEq(address(merkleBase).balance, 0, "merkle base ETH balance");
 
         // It should transfer fee to the factory admin.
         assertEq(users.admin.balance, initialAdminBalance + feeEarned, "admin ETH balance");
@@ -146,25 +166,20 @@ contract Shared_Fuzz_Test is Integration_Test {
     function expectClaimEvent(Allocation memory allocation) internal virtual { }
 
     // Helper function to test setting custom fee.
-    function testSetCustomFee(
-        ISablierMerkleFactoryBase factory,
-        uint256 newFee
-    )
-        internal
-        returns (uint256 feeForUser)
-    {
+    function testSetCustomFee(uint256 newFee) internal returns (uint256 feeForUser) {
         // Bound the custom fee between 0 and MAX_FEE.
         feeForUser = bound(newFee, 0, MAX_FEE);
 
         resetPrank(users.admin);
-        factory.setCustomFee(users.campaignCreator, feeForUser);
+        merkleFactoryBase.setCustomFee(users.campaignCreator, feeForUser);
+        assertEq(merkleFactoryBase.getFee(users.campaignCreator), feeForUser, "custom fee");
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                                      HELPERS
     //////////////////////////////////////////////////////////////////////////*/
 
-    function computerMerkleProof(Allocation memory allocation) internal view returns (bytes32[] memory merkleProof) {
+    function computeMerkleProof(Allocation memory allocation) internal view returns (bytes32[] memory merkleProof) {
         uint256 leafToClaim = MerkleBuilder.computeLeaf(allocation.index, allocation.recipient, allocation.amount);
         uint256 leafPos = Arrays.findUpperBound(leaves, leafToClaim);
 
@@ -175,13 +190,12 @@ contract Shared_Fuzz_Test is Integration_Test {
         internal
         returns (uint256 aggregateAmount, bytes32 merkleRoot)
     {
-        uint256 recipientCount = allocation.length;
-        uint128[] memory amounts = new uint128[](recipientCount);
-        uint256[] memory indexes = new uint256[](recipientCount);
-        address[] memory recipients = new address[](recipientCount);
+        uint128[] memory amounts = new uint128[](allocation.length);
+        uint256[] memory indexes = new uint256[](allocation.length);
+        address[] memory recipients = new address[](allocation.length);
 
         // Generate Merkle data with the given allocation data.
-        for (uint256 i = 0; i < recipientCount; ++i) {
+        for (uint256 i = 0; i < allocation.length; ++i) {
             indexes[i] = allocation[i].index;
             // Avoid zero recipient addresses.
             allocation[i].recipient =
@@ -189,7 +203,7 @@ contract Shared_Fuzz_Test is Integration_Test {
             recipients[i] = allocation[i].recipient;
 
             // Bound each leaf amount so that `aggregateAmount` does not overflow.
-            allocation[i].amount = boundUint128(allocation[i].amount, 1, uint128(MAX_UINT128 / recipientCount - 1));
+            allocation[i].amount = boundUint128(allocation[i].amount, 1, uint128(MAX_UINT128 / allocation.length - 1));
             amounts[i] = allocation[i].amount;
             aggregateAmount += allocation[i].amount;
 
@@ -197,12 +211,12 @@ contract Shared_Fuzz_Test is Integration_Test {
             allotment.push(allocation[i]);
         }
 
-        // Compute the merkle leaves..
-        leaves = new uint256[](recipientCount);
+        // Compute the Merkle leaves.
+        leaves = new uint256[](allocation.length);
         leaves = MerkleBuilder.computeLeaves(indexes, recipients, amounts);
 
         // Sort the leaves in ascending order to match the production environment.
-        MerkleBuilder.sortLeaves(leaves);
+        leaves.sortLeaves();
 
         // If there is only one leaf, the Merkle root is the hash of the leaf itself.
         merkleRoot = leaves.length == 1 ? bytes32(leaves[0]) : getRoot(leaves.toBytes32());

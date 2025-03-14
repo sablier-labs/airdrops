@@ -7,9 +7,24 @@ import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
 
 import { MerkleLT } from "src/types/DataTypes.sol";
 
-import { Shared_Fuzz_Test } from "./Fuzz.t.sol";
+import { Shared_Fuzz_Test, Integration_Test } from "./Fuzz.t.sol";
 
 contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
+    /*//////////////////////////////////////////////////////////////////////////
+                                  SET-UP FUNCTION
+    //////////////////////////////////////////////////////////////////////////*/
+
+    function setUp() public virtual override {
+        Integration_Test.setUp();
+
+        // Cast the {merkleFactoryLT} contract as {ISablierMerkleFactoryBase}
+        merkleFactoryBase = merkleFactoryLT;
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                   TEST FUNCTION
+    //////////////////////////////////////////////////////////////////////////*/
+
     /// @dev Given enough fuzz runs, all of the following scenarios will be fuzzed:
     ///
     /// - Fuzzed custom fee.
@@ -31,37 +46,21 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
     )
         external
     {
-        // Ensure that merkle data is not empty.
-        vm.assume(allocation.length > 0 && indexesToClaim.length < allocation.length);
-
-        // Ensure that tranches are not empty and not too large.
-        vm.assume(tranches.length <= 1000 && tranches.length > 0);
-
-        // Bound expiration so that the campaign is still active at the block time.
-        if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
-
-        // Set the custom fee if enabled.
-        feeForUser = enableCustomFee ? testSetCustomFee(merkleFactoryLT, feeForUser) : MINIMUM_FEE;
-
-        // Construct merkle root for the given allocation data.
-        (uint256 aggregateAmount, bytes32 merkleRoot) = constructMerkleTree(allocation);
-
-        // Bound the start time.
-        startTime = boundUint40(startTime, 0, getBlockTimestamp() + 1000);
-
-        uint40 streamDuration = fuzzTranchesMerkleLT(startTime, tranches);
+        // Bound the fuzzed params and construct the Merkle tree.
+        (uint256 feeForUser_, uint40 expiration_, uint256 aggregateAmount, bytes32 merkleRoot) =
+            prepareCommonCreateParmas(allocation, indexesToClaim.length, feeForUser, enableCustomFee, expiration);
 
         // Test creating the MerkleLT campaign.
-        _testCreateMerkleLT(aggregateAmount, expiration, feeForUser, merkleRoot, startTime, streamDuration, tranches);
+        _testCreateMerkleLT(aggregateAmount, expiration_, feeForUser_, merkleRoot, startTime, tranches);
 
         // Test claiming the airdrop for the given indexes.
-        testClaimMultipleAirdrops(merkleLT, indexesToClaim, msgValue);
+        testClaimMultipleAirdrops(indexesToClaim, msgValue);
 
         // Test clawbacking funds.
-        testClawback(merkleLT, clawbackAmount);
+        testClawback(clawbackAmount);
 
         // Test collecting fees earned.
-        testCollectFees(merkleFactoryLT, merkleLT);
+        testCollectFees();
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -74,13 +73,20 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         uint256 feeForUser,
         bytes32 merkleRoot,
         uint40 startTime,
-        uint40 streamDuration,
         MerkleLT.TrancheWithPercentage[] memory tranches
     )
         private
         givenCampaignNotExists
         whenTotalPercentage100
     {
+        // Ensure that tranches are not empty and not too large.
+        vm.assume(tranches.length <= 1000 && tranches.length > 0);
+
+        // Bound the start time.
+        startTime = boundUint40(startTime, 0, getBlockTimestamp() + 1000);
+
+        uint40 streamDuration = fuzzTranchesMerkleLT(startTime, tranches);
+
         // Set campaign creator as the caller.
         resetPrank(users.campaignCreator);
 
@@ -121,6 +127,9 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
 
         // Fund the MerkleLT contract.
         deal({ token: address(dai), to: address(merkleLT), give: aggregateAmount });
+
+        // Cast the {MerkleLT} contract as {ISablierMerkleBase}
+        merkleBase = merkleLT;
     }
 
     /*//////////////////////////////////////////////////////////////////////////

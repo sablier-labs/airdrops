@@ -5,9 +5,24 @@ import { ISablierMerkleFactoryVCA } from "src/interfaces/ISablierMerkleFactoryVC
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { MerkleVCA } from "src/types/DataTypes.sol";
 
-import { Shared_Fuzz_Test } from "./Fuzz.t.sol";
+import { Shared_Fuzz_Test, Integration_Test } from "./Fuzz.t.sol";
 
 contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
+    /*//////////////////////////////////////////////////////////////////////////
+                                  SET-UP FUNCTION
+    //////////////////////////////////////////////////////////////////////////*/
+
+    function setUp() public virtual override {
+        Integration_Test.setUp();
+
+        // Cast the {merkleFactoryVCA} contract as {ISablierMerkleFactoryBase}
+        merkleFactoryBase = merkleFactoryVCA;
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                   TEST FUNCTION
+    //////////////////////////////////////////////////////////////////////////*/
+
     /// @dev Given enough fuzz runs, all of the following scenarios will be fuzzed:
     ///
     /// - Fuzzed custom fee.
@@ -29,33 +44,24 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
     )
         external
     {
-        // Ensure that allocation data is not empty.
-        vm.assume(allocation.length > 0 && indexesToClaim.length < allocation.length);
+        // Bound the fuzzed params and construct the Merkle tree.
+        (uint256 feeForUser_,, uint256 aggregateAmount, bytes32 merkleRoot) =
+            prepareCommonCreateParmas(allocation, indexesToClaim.length, feeForUser, enableCustomFee, expiration);
 
-        // Bound timestamps so that campaign start time is in the past and end time exceed start time.
-        timestamps.start = boundUint40(timestamps.start, 1, getBlockTimestamp() - 1);
-        timestamps.end = boundUint40(timestamps.end, timestamps.start + 1, getBlockTimestamp() + 365 days);
-
-        // Bound expiration so that the campaign is still active at the block time.
+        // Unlike the other campaigns, MerkleVCA requires a non-zero expiration.
         expiration = boundUint40(expiration, getBlockTimestamp() + 365 days + 1 weeks, MAX_UNIX_TIMESTAMP);
 
-        // Set the custom fee if enabled.
-        feeForUser = enableCustomFee ? testSetCustomFee(merkleFactoryVCA, feeForUser) : MINIMUM_FEE;
-
-        // Construct merkle root for the given allocation data.
-        (uint256 aggregateAmount, bytes32 merkleRoot) = constructMerkleTree(allocation);
-
         // Test creating the MerkleVCA campaign.
-        _testCreateMerkleVCA(aggregateAmount, expiration, feeForUser, merkleRoot, timestamps);
+        _testCreateMerkleVCA(aggregateAmount, expiration, feeForUser_, merkleRoot, timestamps);
 
         // Test claiming the airdrop for the given indexes.
-        testClaimMultipleAirdrops(merkleVCA, indexesToClaim, msgValue);
+        testClaimMultipleAirdrops(indexesToClaim, msgValue);
 
         // Test clawbacking funds.
-        testClawback(merkleVCA, clawbackAmount);
+        testClawback(clawbackAmount);
 
         // Test collecting fees earned.
-        testCollectFees(merkleFactoryVCA, merkleVCA);
+        testCollectFees();
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -76,6 +82,10 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         whenNotZeroExpiry
         whenExpiryExceedsOneWeekFromEndTime
     {
+        // Bound timestamps so that campaign start time is in the past and end time exceed start time.
+        timestamps.start = boundUint40(timestamps.start, 1, getBlockTimestamp() - 1);
+        timestamps.end = boundUint40(timestamps.end, timestamps.start + 1, getBlockTimestamp() + 365 days);
+
         // Set campaign creator as the caller.
         resetPrank(users.campaignCreator);
 
@@ -113,6 +123,9 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
 
         // Fund the MerkleVCA contract.
         deal({ token: address(dai), to: address(merkleVCA), give: aggregateAmount });
+
+        // Cast the {MerkleVCA} contract as {ISablierMerkleBase}
+        merkleBase = merkleVCA;
     }
 
     /*//////////////////////////////////////////////////////////////////////////

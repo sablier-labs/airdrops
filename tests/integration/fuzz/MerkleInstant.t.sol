@@ -6,9 +6,24 @@ import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol"
 
 import { MerkleInstant } from "src/types/DataTypes.sol";
 
-import { Shared_Fuzz_Test } from "./Fuzz.t.sol";
+import { Shared_Fuzz_Test, Integration_Test } from "./Fuzz.t.sol";
 
 contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
+    /*//////////////////////////////////////////////////////////////////////////
+                                  SET-UP FUNCTION
+    //////////////////////////////////////////////////////////////////////////*/
+
+    function setUp() public virtual override {
+        Integration_Test.setUp();
+
+        // Cast the {merkleFactoryInstant} contract as {ISablierMerkleFactoryBase}
+        merkleFactoryBase = merkleFactoryInstant;
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                   TEST FUNCTION
+    //////////////////////////////////////////////////////////////////////////*/
+
     /// @dev Given enough fuzz runs, all of the following scenarios will be fuzzed:
     ///
     /// - Fuzzed custom fee.
@@ -28,29 +43,21 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
     )
         external
     {
-        // Ensure that allocation data is not empty.
-        vm.assume(allocation.length > 0 && indexesToClaim.length < allocation.length);
-
-        // Bound expiration so that the campaign is still active at the block time.
-        if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
-
-        // Set the custom fee if enabled.
-        feeForUser = enableCustomFee ? testSetCustomFee(merkleFactoryInstant, feeForUser) : MINIMUM_FEE;
-
-        // Construct merkle root for the given allocation data.
-        (uint256 aggregateAmount, bytes32 merkleRoot) = constructMerkleTree(allocation);
+        // Bound the fuzzed params and construct the Merkle tree.
+        (uint256 feeForUser_, uint40 expiration_, uint256 aggregateAmount, bytes32 merkleRoot) =
+            prepareCommonCreateParmas(allocation, indexesToClaim.length, feeForUser, enableCustomFee, expiration);
 
         // Test creating the MerkleInstant campaign.
-        _testCreateMerkleInstant(aggregateAmount, expiration, feeForUser, merkleRoot);
+        _testCreateMerkleInstant(aggregateAmount, expiration_, feeForUser_, merkleRoot);
 
         // Test claiming the airdrop for the given indexes.
-        testClaimMultipleAirdrops(merkleInstant, indexesToClaim, msgValue);
+        testClaimMultipleAirdrops(indexesToClaim, msgValue);
 
         // Test clawbacking funds.
-        testClawback(merkleInstant, clawbackAmount);
+        testClawback(clawbackAmount);
 
         // Test collecting fees earned.
-        testCollectFees(merkleFactoryInstant, merkleInstant);
+        testCollectFees();
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -100,6 +107,9 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
 
         // Fund the MerkleInstant contract.
         deal({ token: address(dai), to: address(merkleInstant), give: aggregateAmount });
+
+        // Cast the {MerkleInstant} contract as {ISablierMerkleBase}
+        merkleBase = merkleInstant;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
