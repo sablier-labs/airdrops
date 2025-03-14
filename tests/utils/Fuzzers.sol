@@ -2,11 +2,12 @@
 pragma solidity >=0.8.22;
 
 import { ud2x18 } from "@prb/math/src/UD2x18.sol";
+import { PRBMathUtils } from "@prb/math/test/utils/Utils.sol";
 import { MerkleLT } from "src/types/DataTypes.sol";
 
 import { Modifiers } from "./Modifiers.sol";
 
-abstract contract Fuzzers is Modifiers {
+abstract contract Fuzzers is Modifiers, PRBMathUtils {
     // Fuzz tranches by making sure that total unlock percentage is 1e18 and total duration does not overflow the
     // maximum timestamp.
     function fuzzTranchesMerkleLT(
@@ -29,8 +30,7 @@ abstract contract Fuzzers is Modifiers {
         uint64 upperBoundPercentage = 1e18;
 
         for (uint256 i; i < tranches.length; ++i) {
-            tranches[i].unlockPercentage =
-                ud2x18(boundUint64(tranches[i].unlockPercentage.unwrap(), 0, upperBoundPercentage));
+            tranches[i].unlockPercentage = bound(tranches[i].unlockPercentage, 0, upperBoundPercentage);
             tranches[i].duration = boundUint40(tranches[i].duration, 1, uint40(upperBoundDuration));
 
             totalDuration += tranches[i].duration;

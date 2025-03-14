@@ -24,7 +24,7 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
         // Reset the custom fee.
         merkleFactoryBase.resetCustomFee({ campaignCreator: users.campaignCreator });
 
-        // Check that `getFee` returns the minimum fee.
+        // It should return the minimum fee in `getFee`.
         assertEq(merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minimumFee(), "custom fee changed");
     }
 
@@ -44,7 +44,7 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
         // Reset the custom fee.
         merkleFactoryBase.resetCustomFee({ campaignCreator: users.campaignCreator });
 
-        // Check that `getFee` returns the minimum fee.
+        // It should return the minimum fee in `getFee`.
         assertEq(
             merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minimumFee(), "custom fee not changed"
         );

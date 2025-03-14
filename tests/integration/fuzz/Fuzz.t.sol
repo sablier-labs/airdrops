@@ -13,7 +13,7 @@ contract Shared_Fuzz_Test is Integration_Test {
     using MerkleBuilder for uint256[];
 
     /*//////////////////////////////////////////////////////////////////////////
-                                 STORAGE-VARIABLES
+                                 STATE-VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
 
     // Struct to store the airdrop allocation data for the test.
@@ -39,8 +39,8 @@ contract Shared_Fuzz_Test is Integration_Test {
                              COMMON-CAMPAIGN-FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    // Helper function to claim multiple airdrops.
-    function claimMultipleAirdrops(
+    // Helper function to test claiming multiple airdrops.
+    function testClaimMultipleAirdrops(
         ISablierMerkleBase merkleBase,
         uint256[] memory indexesToClaim,
         uint256 msgValue
@@ -48,6 +48,8 @@ contract Shared_Fuzz_Test is Integration_Test {
         internal
         givenMsgValueNotLessThanFee
     {
+        firstClaimTime = getBlockTimestamp();
+
         for (uint256 i; i < indexesToClaim.length; ++i) {
             // Bound lead index so its valid.
             uint256 leafIndex = bound(indexesToClaim[i], 0, allotment.length - 1);
@@ -62,8 +64,8 @@ contract Shared_Fuzz_Test is Integration_Test {
                 resetPrank(users.recipient);
                 vm.deal(users.recipient, msgValue);
 
-                // Call the expect claim events function, implemented by the child contract.
-                expectClaimEvents(allocation);
+                // Call the expect claim event function, implemented by the child contract.
+                expectClaimEvent(allocation);
 
                 bytes32[] memory merkleProof = computerMerkleProof(allocation);
 
@@ -94,8 +96,8 @@ contract Shared_Fuzz_Test is Integration_Test {
         }
     }
 
-    // Helper function to clawback funds.
-    function clawback(ISablierMerkleBase merkleBase, uint128 amount) internal {
+    // Helper function to test clawbacking funds.
+    function testClawback(ISablierMerkleBase merkleBase, uint128 amount) internal {
         amount = boundUint128(amount, 0, uint128(dai.balanceOf(address(merkleBase))));
 
         resetPrank(users.campaignCreator);
@@ -124,8 +126,8 @@ contract Shared_Fuzz_Test is Integration_Test {
         merkleBase.clawback({ to: users.campaignCreator, amount: amount });
     }
 
-    // Helper function to collect fees earned.
-    function collectFee(ISablierMerkleFactoryBase factory, ISablierMerkleBase merkleBase) internal {
+    // Helper function to test collecting fees earned.
+    function testCollectFees(ISablierMerkleFactoryBase factory, ISablierMerkleBase merkleBase) internal {
         // Load the initial ETH balance of the admin.
         uint256 initialAdminBalance = users.admin.balance;
 
@@ -139,11 +141,17 @@ contract Shared_Fuzz_Test is Integration_Test {
         assertEq(users.admin.balance, initialAdminBalance + feeEarned, "admin ETH balance");
     }
 
-    // Helper function to expect claim events. This function should be overridden in the child contract.
-    function expectClaimEvents(Allocation memory allocation) internal virtual { }
+    // Helper function to expect claim event. This function should be overridden in the child contract.
+    function expectClaimEvent(Allocation memory allocation) internal virtual { }
 
-    // Helper function to set custom fee.
-    function setCustomFee(ISablierMerkleFactoryBase factory, uint256 newFee) internal returns (uint256 feeForUser) {
+    // Helper function to test setting custom fee.
+    function testSetCustomFee(
+        ISablierMerkleFactoryBase factory,
+        uint256 newFee
+    )
+        internal
+        returns (uint256 feeForUser)
+    {
         // Bound the custom fee between 0 and MAX_FEE.
         feeForUser = bound(newFee, 0, MAX_FEE);
 
@@ -162,7 +170,7 @@ contract Shared_Fuzz_Test is Integration_Test {
         merkleProof = leaves.length == 1 ? new bytes32[](0) : getProof(leaves.toBytes32(), leafPos);
     }
 
-    function generateMerkleRoot(Allocation[] memory allocation)
+    function constructMerkleTree(Allocation[] memory allocation)
         internal
         returns (uint256 aggregateAmount, bytes32 merkleRoot)
     {

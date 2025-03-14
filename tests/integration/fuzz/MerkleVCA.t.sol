@@ -21,7 +21,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         Allocation[] memory allocation,
         uint128 clawbackAmount,
         uint256 feeForUser,
-        bool enabled,
+        bool enableCustomFee,
         uint40 expiration,
         uint256[] memory indexesToClaim,
         uint256 msgValue,
@@ -40,31 +40,29 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         expiration = boundUint40(expiration, getBlockTimestamp() + 365 days + 1 weeks, MAX_UNIX_TIMESTAMP);
 
         // Set the custom fee if enabled.
-        feeForUser = enabled ? setCustomFee(merkleFactoryVCA, feeForUser) : MINIMUM_FEE;
+        feeForUser = enableCustomFee ? testSetCustomFee(merkleFactoryVCA, feeForUser) : MINIMUM_FEE;
 
-        // Generate merkle root for the given allocation data.
-        (uint256 aggregateAmount, bytes32 merkleRoot) = generateMerkleRoot(allocation);
+        // Construct merkle root for the given allocation data.
+        (uint256 aggregateAmount, bytes32 merkleRoot) = constructMerkleTree(allocation);
 
-        // Create the MerkleVCA campaign.
-        _createMerkleVCA(aggregateAmount, expiration, feeForUser, merkleRoot, timestamps);
+        // Test creating the MerkleVCA campaign.
+        _testCreateMerkleVCA(aggregateAmount, expiration, feeForUser, merkleRoot, timestamps);
 
-        firstClaimTime = getBlockTimestamp();
+        // Test claiming the airdrop for the given indexes.
+        testClaimMultipleAirdrops(merkleVCA, indexesToClaim, msgValue);
 
-        // Claim the airdrop for the given indexes.
-        claimMultipleAirdrops(merkleVCA, indexesToClaim, msgValue);
+        // Test clawbacking funds.
+        testClawback(merkleVCA, clawbackAmount);
 
-        // Clawback funds.
-        clawback(merkleVCA, clawbackAmount);
-
-        // Collect fees earned.
-        collectFee(merkleFactoryVCA, merkleVCA);
+        // Test collecting fees earned.
+        testCollectFees(merkleFactoryVCA, merkleVCA);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CREATE-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function _createMerkleVCA(
+    function _testCreateMerkleVCA(
         uint256 aggregateAmount,
         uint40 expiration,
         uint256 feeForUser,
@@ -73,6 +71,10 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
     )
         private
         givenCampaignNotExists
+        whenStartTimeNotZero
+        whenEndTimeGreaterThanStartTime
+        whenNotZeroExpiry
+        whenExpiryExceedsOneWeekFromEndTime
     {
         // Set campaign creator as the caller.
         resetPrank(users.campaignCreator);
@@ -81,7 +83,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         params.merkleRoot = merkleRoot;
         params.timestamps = timestamps;
 
-        // Get CREATE2 address of the campaign.
+        // Precompute the deterministic address.
         address expectedMerkleVCA = computeMerkleVCAAddress(params, users.campaignCreator);
 
         // Expect a {CreateMerkleVCA} event.
@@ -105,7 +107,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         // It should return false for hasExpired.
         assertFalse(merkleVCA.hasExpired(), "isExpired");
 
-        // It should set return the correct unlock schedule.
+        // It should set return the correct unlock timestamps.
         assertEq(merkleVCA.timestamps().start, timestamps.start, "unlock start");
         assertEq(merkleVCA.timestamps().end, timestamps.end, "unlock end");
 
@@ -117,7 +119,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
                                 CLAIM-EVENT-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function expectClaimEvents(Allocation memory allocation) internal override {
+    function expectClaimEvent(Allocation memory allocation) internal override {
         MerkleVCA.Timestamps memory timestamps = merkleVCA.timestamps();
 
         // Calculate claimable amount based on the vesting schedule.

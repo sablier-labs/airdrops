@@ -99,7 +99,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         whenStartTimeNotZero
         whenEndTimeGreaterThanStartTime
         whenNotZeroExpiry
-        whenExpiryNotExceedOneWeekFromEndTime
+        whenExpiryExceedsOneWeekFromEndTime
     {
         // Set the custom fee to 0 for this test.
         uint256 customFee = 0;
@@ -134,7 +134,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
 
-        // It should set return the correct unlock schedule.
+        // It should set return the correct unlock timestamps.
         assertEq(actualVCA.timestamps().start, RANGED_STREAM_START_TIME, "unlock start");
         assertEq(actualVCA.timestamps().end, RANGED_STREAM_END_TIME, "unlock end");
     }
@@ -145,7 +145,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         whenStartTimeNotZero
         whenEndTimeGreaterThanStartTime
         whenNotZeroExpiry
-        whenExpiryNotExceedOneWeekFromEndTime
+        whenExpiryExceedsOneWeekFromEndTime
     {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
         params.campaignName = "Merkle VCA campaign with default fee set";
@@ -172,7 +172,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
 
-        // It should set return the correct unlock schedule.
+        // It should set return the correct unlock timestamps.
         assertEq(actualVCA.timestamps().start, RANGED_STREAM_START_TIME, "unlock start");
         assertEq(actualVCA.timestamps().end, RANGED_STREAM_END_TIME, "unlock end");
     }

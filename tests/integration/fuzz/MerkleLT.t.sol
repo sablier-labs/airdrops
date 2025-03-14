@@ -22,7 +22,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         Allocation[] memory allocation,
         uint128 clawbackAmount,
         uint256 feeForUser,
-        bool enabled,
+        bool enableCustomFee,
         uint40 expiration,
         uint256[] memory indexesToClaim,
         uint256 msgValue,
@@ -41,36 +41,34 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
 
         // Set the custom fee if enabled.
-        feeForUser = enabled ? setCustomFee(merkleFactoryLT, feeForUser) : MINIMUM_FEE;
+        feeForUser = enableCustomFee ? testSetCustomFee(merkleFactoryLT, feeForUser) : MINIMUM_FEE;
 
-        // Generate merkle root for the given allocation data.
-        (uint256 aggregateAmount, bytes32 merkleRoot) = generateMerkleRoot(allocation);
+        // Construct merkle root for the given allocation data.
+        (uint256 aggregateAmount, bytes32 merkleRoot) = constructMerkleTree(allocation);
 
         // Bound the start time.
         startTime = boundUint40(startTime, 0, MAX_UNIX_TIMESTAMP - 1000);
 
         uint40 streamDuration = fuzzTranchesMerkleLT(startTime, tranches);
 
-        // Create the MerkleLT campaign.
-        _createMerkleLT(aggregateAmount, expiration, feeForUser, merkleRoot, startTime, streamDuration, tranches);
+        // Test creating the MerkleLT campaign.
+        _testCreateMerkleLT(aggregateAmount, expiration, feeForUser, merkleRoot, startTime, streamDuration, tranches);
 
-        firstClaimTime = getBlockTimestamp();
+        // Test claiming the airdrop for the given indexes.
+        testClaimMultipleAirdrops(merkleLT, indexesToClaim, msgValue);
 
-        // Claim the airdrop for the given indexes.
-        claimMultipleAirdrops(merkleLT, indexesToClaim, msgValue);
+        // Test clawbacking funds.
+        testClawback(merkleLT, clawbackAmount);
 
-        // Clawback funds.
-        clawback(merkleLT, clawbackAmount);
-
-        // Collect fees earned.
-        collectFee(merkleFactoryLT, merkleLT);
+        // Test collecting fees earned.
+        testCollectFees(merkleFactoryLT, merkleLT);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CREATE-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function _createMerkleLT(
+    function _testCreateMerkleLT(
         uint256 aggregateAmount,
         uint40 expiration,
         uint256 feeForUser,
@@ -91,7 +89,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         params.streamStartTime = startTime;
         params.tranchesWithPercentages = tranches;
 
-        // Get CREATE2 address of the campaign.
+        // Precompute the deterministic address.
         address expectedMerkleLT = computeMerkleLTAddress(params, users.campaignCreator);
 
         // Expect a {CreateMerkleLT} event.
@@ -129,7 +127,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
                                 CLAIM-EVENT-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function expectClaimEvents(Allocation memory allocation) internal override {
+    function expectClaimEvent(Allocation memory allocation) internal override {
         uint40 totalDuration = getTotalDuration(merkleLT.getTranchesWithPercentages());
 
         // Calculate end time based on the start time.

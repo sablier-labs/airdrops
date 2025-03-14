@@ -21,7 +21,7 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
         Allocation[] memory allocation,
         uint128 clawbackAmount,
         uint256 feeForUser,
-        bool enabled,
+        bool enableCustomFee,
         uint40 expiration,
         uint256[] memory indexesToClaim,
         uint256 msgValue
@@ -35,31 +35,29 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
         if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
 
         // Set the custom fee if enabled.
-        feeForUser = enabled ? setCustomFee(merkleFactoryInstant, feeForUser) : MINIMUM_FEE;
+        feeForUser = enableCustomFee ? testSetCustomFee(merkleFactoryInstant, feeForUser) : MINIMUM_FEE;
 
-        // Generate merkle root for the given allocation data.
-        (uint256 aggregateAmount, bytes32 merkleRoot) = generateMerkleRoot(allocation);
+        // Construct merkle root for the given allocation data.
+        (uint256 aggregateAmount, bytes32 merkleRoot) = constructMerkleTree(allocation);
 
-        // Create the MerkleInstant campaign.
-        _createMerkleInstant(aggregateAmount, expiration, feeForUser, merkleRoot);
+        // Test creating the MerkleInstant campaign.
+        _testCreateMerkleInstant(aggregateAmount, expiration, feeForUser, merkleRoot);
 
-        firstClaimTime = getBlockTimestamp();
+        // Test claiming the airdrop for the given indexes.
+        testClaimMultipleAirdrops(merkleInstant, indexesToClaim, msgValue);
 
-        // Claim the airdrop for the given indexes.
-        claimMultipleAirdrops(merkleInstant, indexesToClaim, msgValue);
+        // Test clawbacking funds.
+        testClawback(merkleInstant, clawbackAmount);
 
-        // Clawback funds.
-        clawback(merkleInstant, clawbackAmount);
-
-        // Collect fees earned.
-        collectFee(merkleFactoryInstant, merkleInstant);
+        // Test collecting fees earned.
+        testCollectFees(merkleFactoryInstant, merkleInstant);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CREATE-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function _createMerkleInstant(
+    function _testCreateMerkleInstant(
         uint256 aggregateAmount,
         uint40 expiration,
         uint256 feeForUser,
@@ -67,7 +65,6 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
     )
         private
         givenCampaignNotExists
-        whenTotalPercentageNotGreaterThan100
     {
         // Set campaign creator as the caller.
         resetPrank(users.campaignCreator);
@@ -75,7 +72,7 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
         MerkleInstant.ConstructorParams memory params = merkleInstantConstructorParams(expiration);
         params.merkleRoot = merkleRoot;
 
-        // Get CREATE2 address of the campaign.
+        // Precompute the deterministic address.
         address expectedMerkleInstant = computeMerkleInstantAddress(params, users.campaignCreator);
 
         // Expect a {CreateMerkleInstant} event.
@@ -109,7 +106,7 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
                                 CLAIM-EVENT-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function expectClaimEvents(Allocation memory allocation) internal override {
+    function expectClaimEvent(Allocation memory allocation) internal override {
         // it should emit a {Claim} event.
         vm.expectEmit({ emitter: address(merkleInstant) });
         emit ISablierMerkleInstant.Claim(allocation.index, allocation.recipient, allocation.amount);

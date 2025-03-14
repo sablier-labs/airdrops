@@ -24,7 +24,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         Allocation[] memory allocation,
         uint128 clawbackAmount,
         uint256 feeForUser,
-        bool enabled,
+        bool enableCustomFee,
         uint40 expiration,
         uint256[] memory indexesToClaim,
         uint256 msgValue,
@@ -39,31 +39,29 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         if (expiration > 0) expiration = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
 
         // Set the custom fee if enabled.
-        feeForUser = enabled ? setCustomFee(merkleFactoryLL, feeForUser) : MINIMUM_FEE;
+        feeForUser = enableCustomFee ? testSetCustomFee(merkleFactoryLL, feeForUser) : MINIMUM_FEE;
 
-        // Generate merkle root for the given allocation data.
-        (uint256 aggregateAmount, bytes32 merkleRoot) = generateMerkleRoot(allocation);
+        // Construct merkle root for the given allocation data.
+        (uint256 aggregateAmount, bytes32 merkleRoot) = constructMerkleTree(allocation);
 
-        // Create the MerkleLL campaign.
-        _createMerkleLL(aggregateAmount, expiration, feeForUser, merkleRoot, schedule);
+        // Test creating the MerkleLL campaign.
+        _testCreateMerkleLL(aggregateAmount, expiration, feeForUser, merkleRoot, schedule);
 
-        firstClaimTime = getBlockTimestamp();
+        // Test claiming the airdrop for the given indexes.
+        testClaimMultipleAirdrops(merkleLL, indexesToClaim, msgValue);
 
-        // Claim the airdrop for the given indexes.
-        claimMultipleAirdrops(merkleLL, indexesToClaim, msgValue);
+        // Test clawbacking funds.
+        testClawback(merkleLL, clawbackAmount);
 
-        // Clawback funds.
-        clawback(merkleLL, clawbackAmount);
-
-        // Collect fees earned.
-        collectFee(merkleFactoryLL, merkleLL);
+        // Test collecting fees earned.
+        testCollectFees(merkleFactoryLL, merkleLL);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CREATE-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function _createMerkleLL(
+    function _testCreateMerkleLL(
         uint256 aggregateAmount,
         uint40 expiration,
         uint256 feeForUser,
@@ -102,7 +100,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         params.schedule = schedule;
         params.merkleRoot = merkleRoot;
 
-        // Get CREATE2 address of the campaign.
+        // Precompute the deterministic address.
         address expectedMerkleLL = computeMerkleLLAddress(params, users.campaignCreator);
 
         // Expect a {CreateMerkleLL} event.
@@ -137,7 +135,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
                                 CLAIM-EVENT-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function expectClaimEvents(Allocation memory allocation) internal override {
+    function expectClaimEvent(Allocation memory allocation) internal override {
         // It should emit {Claim} event based on the vesting end time.
         MerkleLL.Schedule memory schedule = merkleLL.getSchedule();
         uint40 expectedStartTime = schedule.startTime == 0 ? getBlockTimestamp() : schedule.startTime;
