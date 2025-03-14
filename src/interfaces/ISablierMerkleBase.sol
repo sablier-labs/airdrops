@@ -84,7 +84,7 @@ interface ISablierMerkleBase is IAdminable {
     /// - The campaign must not have expired.
     /// - The airdrop must not have been claimed already.
     /// - The Merkle proof must be valid.
-    /// - The `msg.value` must not be less than `minimumFee`.
+    /// - The `msg.value` must not be less than `minimumFeeInWei`.
     ///
     /// @param index The index of the recipient in the Merkle tree.
     /// @param recipient The address of the airdrop recipient.

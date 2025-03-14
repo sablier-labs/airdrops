@@ -80,14 +80,14 @@ abstract contract SablierMerkleFactoryBase is
     function setCustomFee(address campaignCreator, uint256 newFee) external override onlyAdmin {
         MerkleFactory.CustomFee storage customFeeByUser = _customFees[campaignCreator];
 
-        // Check: if the user is not in the custom fee list.
-        if (!customFeeByUser.enabled) {
-            customFeeByUser.enabled = true;
-        }
-
         // Check: the new fee is not greater than `MAX_FEE`.
         if (newFee > MAX_FEE) {
             revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_FEE);
+        }
+
+        // Effect: enable custom fee for the user if it is not already enabled.
+        if (!customFeeByUser.enabled) {
+            customFeeByUser.enabled = true;
         }
 
         // Effect: update the custom fee for the given campaign creator.
