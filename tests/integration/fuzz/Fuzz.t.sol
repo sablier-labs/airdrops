@@ -61,8 +61,9 @@ contract Shared_Fuzz_Test is Integration_Test {
                 // Bound msgValue so that its greater than the minimum fee.
                 msgValue = bound(msgValue, merkleBase.minimumFeeInWei(), 100 ether);
 
-                resetPrank(users.recipient);
-                vm.deal(users.recipient, msgValue);
+                address caller = makeAddr("philanthropist");
+                resetPrank(caller);
+                vm.deal(caller, msgValue);
 
                 // Call the expect claim event function, implemented by the child contract.
                 expectClaimEvent(allocation);
