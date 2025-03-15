@@ -59,6 +59,9 @@ contract SablierMerkleFactoryLT is ISablierMerkleFactoryLT, SablierMerkleFactory
         override
         returns (ISablierMerkleLT merkleLT)
     {
+        // Check: `params.tokens` is not native token.
+        _revertOnNativeToken(address(params.token));
+
         // Calculate the sum of percentages and durations across all tranches.
         uint256 count = params.tranchesWithPercentages.length;
         uint256 totalDuration;

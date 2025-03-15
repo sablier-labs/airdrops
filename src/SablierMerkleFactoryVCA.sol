@@ -38,6 +38,9 @@ contract SablierMerkleFactoryVCA is ISablierMerkleFactoryVCA, SablierMerkleFacto
         external
         returns (ISablierMerkleVCA merkleVCA)
     {
+        // Check: `params.tokens` is not native token.
+        _revertOnNativeToken(address(params.token));
+
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
 

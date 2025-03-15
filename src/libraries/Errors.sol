@@ -46,6 +46,9 @@ library Errors {
     /// @notice Thrown when trying to set native token address when it is already set.
     error SablierMerkleFactoryBase_NativeTokenAlreadySet(address nativeToken);
 
+    /// @notice Thrown when trying to create a campaign with native token.
+    error SablierMerkleFactoryBase_NativeTokenFound(address nativeToken);
+
     /// @notice Thrown when trying to set zero address as native token.
     error SablierMerkleFactoryBase_ZeroAddress();
 

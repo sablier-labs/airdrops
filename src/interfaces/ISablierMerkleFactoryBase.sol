@@ -30,7 +30,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     event SetMinimumFee(address indexed admin, uint256 minimumFee);
 
     /// @notice Emitted when the native token address is set by the admin.
-    event SetNativeToken(address indexed admin, address tokenAddress);
+    event SetNativeToken(address indexed admin, address nativeToken);
 
     /// @notice Emitted when the oracle contract address is set by the admin.
     event SetOracle(address indexed admin, address newOracle, address previousOracle);
