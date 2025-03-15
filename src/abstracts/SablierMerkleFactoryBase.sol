@@ -162,7 +162,7 @@ abstract contract SablierMerkleFactoryBase is
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
+    /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
     function _getFee(address campaignCreator) internal view returns (uint256) {
         return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : minimumFee;
     }
