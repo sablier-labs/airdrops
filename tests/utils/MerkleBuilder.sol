@@ -4,6 +4,13 @@ pragma solidity >=0.8.22;
 
 import { LibSort } from "solady/src/utils/LibSort.sol";
 
+/// @dev Encapsulates the data needed to compute a Merkle tree leaf.
+struct LeafData {
+    uint256 index;
+    address recipient;
+    uint128 amount;
+}
+
 /// @dev A helper library for building Merkle leaves, roots, and proofs.
 library MerkleBuilder {
     /// @dev Function that double hashes the data needed for a Merkle tree leaf.
@@ -31,7 +38,7 @@ library MerkleBuilder {
 
     /// @dev Function that convert a storage array to memory and sorts it in ascending order. We need this
     /// because `LibSort` does not support storage arrays.
-    function sortLeaves(uint256[] storage leaves) internal {
+    function sort(uint256[] storage leaves) internal {
         uint256 leavesCount = leaves.length;
 
         // Declare the memory array.

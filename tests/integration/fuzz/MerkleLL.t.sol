@@ -9,6 +9,7 @@ import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
 
 import { MerkleLL } from "src/types/DataTypes.sol";
 
+import { LeafData } from "../../utils/MerkleBuilder.sol";
 import { Shared_Fuzz_Test, Integration_Test } from "./Fuzz.t.sol";
 
 contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
@@ -30,26 +31,26 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     /// @dev Given enough fuzz runs, all of the following scenarios will be fuzzed:
     ///
     /// - Fuzzed custom fee.
-    /// - MerkleLL campaign with fuzzed allocations, expiration, and unlock schedule.
+    /// - MerkleLL campaign with fuzzed leaves data, expiration, and unlock schedule.
     /// - Both finite (only in future) and infinite expiration.
     /// - Claiming multiple airdrops with fuzzed claim fee at different point in time.
     /// - Fuzzed clawback amount.
     /// - Collect fees earned.
     function testFuzz_MerkleLL(
-        Allocation[] memory allocation,
         uint128 clawbackAmount,
         bool enableCustomFee,
         uint40 expiration,
         uint256 feeForUser,
         uint256[] memory indexesToClaim,
         uint256 msgValue,
+        LeafData[] memory rawLeavesData,
         MerkleLL.Schedule memory schedule
     )
         external
     {
         // Bound the fuzzed params and construct the Merkle tree.
         (uint256 aggregateAmount, uint40 expiration_, bytes32 merkleRoot) =
-            prepareCommonCreateParams(allocation, expiration, indexesToClaim.length);
+            prepareCommonCreateParams(rawLeavesData, expiration, indexesToClaim.length);
 
         // Set the custom fee if enabled.
         feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
@@ -119,13 +120,13 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
             merkleLL: ISablierMerkleLL(expectedMerkleLL),
             params: params,
             aggregateAmount: aggregateAmount,
-            recipientCount: allotment.length,
+            recipientCount: leavesData.length,
             fee: feeForUser,
             oracle: address(oracle)
         });
 
         // Create the campaign.
-        merkleLL = merkleFactoryLL.createMerkleLL(params, aggregateAmount, allotment.length);
+        merkleLL = merkleFactoryLL.createMerkleLL(params, aggregateAmount, leavesData.length);
 
         // It should deploy the contract at the correct address.
         assertGt(address(merkleLL).code.length, 0, "MerkleLL contract not created");
@@ -148,7 +149,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
                                 CLAIM-EVENT-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function expectClaimEvent(Allocation memory allocation) internal override {
+    function expectClaimEvent(LeafData memory leafData) internal override {
         // It should emit {Claim} event based on the vesting end time.
         MerkleLL.Schedule memory schedule = merkleLL.getSchedule();
         uint40 expectedStartTime = schedule.startTime == 0 ? getBlockTimestamp() : schedule.startTime;
@@ -156,22 +157,17 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         // If the vesting has ended, the claim should be transferred directly to the recipient.
         if (expectedStartTime + schedule.totalDuration <= getBlockTimestamp()) {
             vm.expectEmit({ emitter: address(merkleLL) });
-            emit ISablierMerkleLockup.Claim(allocation.index, allocation.recipient, allocation.amount);
+            emit ISablierMerkleLockup.Claim(leafData.index, leafData.recipient, leafData.amount);
 
-            expectCallToTransfer({ token: dai, to: allocation.recipient, value: allocation.amount });
+            expectCallToTransfer({ token: dai, to: leafData.recipient, value: leafData.amount });
         }
         // Otherwise, the claim should be transferred to the lockup contract.
         else {
             uint256 expectedStreamId = lockup.nextStreamId();
             vm.expectEmit({ emitter: address(merkleLL) });
-            emit ISablierMerkleLockup.Claim(allocation.index, allocation.recipient, allocation.amount, expectedStreamId);
+            emit ISablierMerkleLockup.Claim(leafData.index, leafData.recipient, leafData.amount, expectedStreamId);
 
-            expectCallToTransferFrom({
-                token: dai,
-                from: address(merkleLL),
-                to: address(lockup),
-                value: allocation.amount
-            });
+            expectCallToTransferFrom({ token: dai, from: address(merkleLL), to: address(lockup), value: leafData.amount });
         }
     }
 }

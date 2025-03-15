@@ -2,12 +2,11 @@
 pragma solidity >=0.8.22 <0.9.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
 
-import { MerkleBuilder } from "./../../utils/MerkleBuilder.sol";
+import { LeafData, MerkleBuilder } from "./../../utils/MerkleBuilder.sol";
 import { Fork_Test } from "./../Fork.t.sol";
 
 abstract contract MerkleBase_Fork_Test is Fork_Test {
@@ -16,13 +15,6 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
     /*//////////////////////////////////////////////////////////////////////////
                                       STRUCTS
     //////////////////////////////////////////////////////////////////////////*/
-
-    /// @dev Encapsulates the data needed to compute a Merkle tree leaf.
-    struct LeafData {
-        uint256 index;
-        uint256 recipientSeed;
-        uint128 amount;
-    }
 
     struct Params {
         address campaignCreator;
@@ -94,18 +86,18 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
             vars.aggregateAmount += vars.amounts[i];
 
             // Avoid zero recipient addresses.
-            uint256 boundedRecipientSeed = _bound(params.leafData[i].recipientSeed, 1, type(uint160).max);
+            vars.recipients[i] =
+                address(uint160(bound(uint256(uint160(params.leafData[i].recipient)), 1, type(uint160).max)));
             // Avoid recipient to be the protocol admin.
-            vars.recipients[i] = address(uint160(boundedRecipientSeed)) != factoryAdmin
-                ? address(uint160(boundedRecipientSeed))
-                : address(uint160(boundedRecipientSeed) + 1);
+            vars.recipients[i] =
+                vars.recipients[i] != factoryAdmin ? vars.recipients[i] : address(uint160(vars.recipients[i]) + 1);
         }
 
         leaves = new uint256[](vars.recipientCount);
         leaves = MerkleBuilder.computeLeaves(vars.indexes, vars.recipients, vars.amounts);
 
         // Sort the leaves in ascending order to match the production environment.
-        MerkleBuilder.sortLeaves(leaves);
+        leaves.sort();
 
         // Compute the Merkle root.
         if (leaves.length == 1) {
@@ -141,18 +133,9 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
 
         assertFalse(merkleBase.hasClaimed(vars.indexToClaim));
 
-        // Compute the Merkle proof.
-        if (leaves.length == 1) {
-            // If there is only one leaf, the Merkle proof should be an empty array as no proof is needed because the
-            // leaf is the root.
-        } else {
-            vars.merkleProof = getProof({
-                data: leaves.toBytes32(),
-                node: Arrays.findUpperBound(
-                    leaves, MerkleBuilder.computeLeaf(vars.indexToClaim, vars.recipientToClaim, vars.amountToClaim)
-                )
-            });
-        }
+        vars.merkleProof = computeMerkleProof(
+            LeafData({ index: vars.indexToClaim, recipient: vars.recipientToClaim, amount: vars.amountToClaim }), leaves
+        );
 
         vars.initialAdminBalance = factoryAdmin.balance;
         vars.minimumFeeInWei = merkleBase.minimumFeeInWei();

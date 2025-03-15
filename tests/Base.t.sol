@@ -35,7 +35,7 @@ import { ChainlinkOracleMock } from "./utils/ChainlinkOracleMock.sol";
 import { Constants } from "./utils/Constants.sol";
 import { DeployOptimized } from "./utils/DeployOptimized.sol";
 import { Fuzzers } from "./utils/Fuzzers.sol";
-import { MerkleBuilder } from "./utils/MerkleBuilder.sol";
+import { LeafData, MerkleBuilder } from "./utils/MerkleBuilder.sol";
 import { Users } from "./utils/Types.sol";
 
 /// @notice Base test contract with common logic needed by all tests.
@@ -142,6 +142,21 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
                                     MERKLE-BUILDER
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @dev Computes the Merkle proof for the given leaf data and an array of leaves.
+    function computeMerkleProof(
+        LeafData memory leafData,
+        uint256[] storage leaves
+    )
+        internal
+        view
+        returns (bytes32[] memory merkleProof)
+    {
+        uint256 leaf = MerkleBuilder.computeLeaf(leafData.index, leafData.recipient, leafData.amount);
+        uint256 pos = Arrays.findUpperBound(leaves, leaf);
+
+        merkleProof = leaves.length == 1 ? new bytes32[](0) : getProof(leaves.toBytes32(), pos);
+    }
+
     function index1Proof() public view returns (bytes32[] memory) {
         return indexProof(INDEX1, users.recipient1);
     }
@@ -159,9 +174,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     }
 
     function indexProof(uint256 index, address recipient) public view returns (bytes32[] memory) {
-        uint256 leaf = MerkleBuilder.computeLeaf(index, recipient, CLAIM_AMOUNT);
-        uint256 pos = Arrays.findUpperBound(LEAVES, leaf);
-        return getProof(LEAVES.toBytes32(), pos);
+        return computeMerkleProof(LeafData({ index: index, recipient: recipient, amount: CLAIM_AMOUNT }), LEAVES);
     }
 
     /// @dev We need a separate function to initialize the Merkle tree because, at the construction time, the users are
@@ -171,7 +184,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         LEAVES[1] = MerkleBuilder.computeLeaf(INDEX2, users.recipient2, CLAIM_AMOUNT);
         LEAVES[2] = MerkleBuilder.computeLeaf(INDEX3, users.recipient3, CLAIM_AMOUNT);
         LEAVES[3] = MerkleBuilder.computeLeaf(INDEX4, users.recipient4, CLAIM_AMOUNT);
-        MerkleBuilder.sortLeaves(LEAVES);
+        LEAVES.sort();
         MERKLE_ROOT = getRoot(LEAVES.toBytes32());
     }
 

@@ -6,6 +6,7 @@ import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol"
 
 import { MerkleInstant } from "src/types/DataTypes.sol";
 
+import { LeafData } from "../../utils/MerkleBuilder.sol";
 import { Shared_Fuzz_Test, Integration_Test } from "./Fuzz.t.sol";
 
 contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
@@ -27,25 +28,25 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
     /// @dev Given enough fuzz runs, all of the following scenarios will be fuzzed:
     ///
     /// - Fuzzed custom fee.
-    /// - MerkleInstant campaign with fuzzed allocations, and expiration.
+    /// - MerkleInstant campaign with fuzzed leaves data, and expiration.
     /// - Both finite (only in future) and infinite expiration.
     /// - Claiming multiple airdrops with fuzzed claim fee at different point in time.
     /// - Fuzzed clawback amount.
     /// - Collect fees earned.
     function testFuzz_MerkleInstant(
-        Allocation[] memory allocation,
         uint128 clawbackAmount,
         bool enableCustomFee,
         uint40 expiration,
         uint256 feeForUser,
         uint256[] memory indexesToClaim,
-        uint256 msgValue
+        uint256 msgValue,
+        LeafData[] memory rawLeavesData
     )
         external
     {
         // Bound the fuzzed params and construct the Merkle tree.
         (uint256 aggregateAmount, uint40 expiration_, bytes32 merkleRoot) =
-            prepareCommonCreateParams(allocation, expiration, indexesToClaim.length);
+            prepareCommonCreateParams(rawLeavesData, expiration, indexesToClaim.length);
 
         // Set the custom fee if enabled.
         feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
@@ -91,13 +92,13 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             params: params,
             aggregateAmount: aggregateAmount,
-            recipientCount: allotment.length,
+            recipientCount: leavesData.length,
             fee: feeForUser,
             oracle: address(oracle)
         });
 
         // Create the campaign.
-        merkleInstant = merkleFactoryInstant.createMerkleInstant(params, aggregateAmount, allotment.length);
+        merkleInstant = merkleFactoryInstant.createMerkleInstant(params, aggregateAmount, leavesData.length);
 
         // It should deploy the contract at the correct address.
         assertGt(address(merkleInstant).code.length, 0, "MerkleInstant contract not created");
@@ -119,12 +120,12 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
                                 CLAIM-EVENT-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function expectClaimEvent(Allocation memory allocation) internal override {
+    function expectClaimEvent(LeafData memory leafData) internal override {
         // it should emit a {Claim} event.
         vm.expectEmit({ emitter: address(merkleInstant) });
-        emit ISablierMerkleInstant.Claim(allocation.index, allocation.recipient, allocation.amount);
+        emit ISablierMerkleInstant.Claim(leafData.index, leafData.recipient, leafData.amount);
 
-        // It should transfer the allocation amount to the recipient.
-        expectCallToTransfer({ token: dai, to: allocation.recipient, value: allocation.amount });
+        // It should transfer the claim amount to the recipient.
+        expectCallToTransfer({ token: dai, to: leafData.recipient, value: leafData.amount });
     }
 }

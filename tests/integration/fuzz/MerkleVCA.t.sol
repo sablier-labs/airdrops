@@ -5,6 +5,7 @@ import { ISablierMerkleFactoryVCA } from "src/interfaces/ISablierMerkleFactoryVC
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { MerkleVCA } from "src/types/DataTypes.sol";
 
+import { LeafData } from "../../utils/MerkleBuilder.sol";
 import { Shared_Fuzz_Test, Integration_Test } from "./Fuzz.t.sol";
 
 contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
@@ -26,27 +27,27 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
     /// @dev Given enough fuzz runs, all of the following scenarios will be fuzzed:
     ///
     /// - Fuzzed custom fee.
-    /// - MerkleVCA campaign with fuzzed allocations, expiration, and unlock timestamps.
+    /// - MerkleVCA campaign with fuzzed leaves data, expiration, and unlock timestamps.
     /// - Finite (only in future) expiration.
     /// - Unlock start time in the past.
     /// - Claiming airdrops for multiple indexes with fuzzed claim fee.
     /// - Fuzzed clawback amount.
     /// - Collect fees earned.
     function testFuzz_MerkleVCA(
-        Allocation[] memory allocation,
         uint128 clawbackAmount,
         bool enableCustomFee,
         uint40 expiration,
         uint256 feeForUser,
         uint256[] memory indexesToClaim,
         uint256 msgValue,
+        LeafData[] memory rawLeavesData,
         MerkleVCA.Timestamps memory timestamps
     )
         external
     {
         // Bound the fuzzed params and construct the Merkle tree.
         (uint256 aggregateAmount,, bytes32 merkleRoot) =
-            prepareCommonCreateParams(allocation, expiration, indexesToClaim.length);
+            prepareCommonCreateParams(rawLeavesData, expiration, indexesToClaim.length);
 
         // Bound expiration so that its not zero. Unlike other campaigns, MerkleVCA requires a non-zero expiration.
         expiration = boundUint40(expiration, getBlockTimestamp() + 365 days + 1 weeks, MAX_UNIX_TIMESTAMP);
@@ -105,13 +106,13 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
             merkleVCA: ISablierMerkleVCA(expectedMerkleVCA),
             params: params,
             aggregateAmount: aggregateAmount,
-            recipientCount: allotment.length,
+            recipientCount: leavesData.length,
             fee: feeForUser,
             oracle: address(oracle)
         });
 
         // Create the campaign.
-        merkleVCA = merkleFactoryVCA.createMerkleVCA(params, aggregateAmount, allotment.length);
+        merkleVCA = merkleFactoryVCA.createMerkleVCA(params, aggregateAmount, leavesData.length);
 
         // Verify that the contract is deployed at the correct address.
         assertGt(address(merkleVCA).code.length, 0, "MerkleVCA contract not created");
@@ -135,21 +136,19 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
                                 CLAIM-EVENT-HELPER
     //////////////////////////////////////////////////////////////////////////*/
 
-    function expectClaimEvent(Allocation memory allocation) internal override {
+    function expectClaimEvent(LeafData memory leafData) internal override {
         MerkleVCA.Timestamps memory timestamps = merkleVCA.timestamps();
 
         // Calculate claimable amount based on the vesting schedule.
         uint256 claimableAmount = getBlockTimestamp() < timestamps.end
-            ? (uint256(allocation.amount) * (getBlockTimestamp() - timestamps.start)) / (timestamps.end - timestamps.start)
-            : allocation.amount;
+            ? (uint256(leafData.amount) * (getBlockTimestamp() - timestamps.start)) / (timestamps.end - timestamps.start)
+            : leafData.amount;
 
         // It should emit a {Claim} event.
         vm.expectEmit({ emitter: address(merkleVCA) });
-        emit ISablierMerkleVCA.Claim(
-            allocation.index, allocation.recipient, uint128(claimableAmount), allocation.amount
-        );
+        emit ISablierMerkleVCA.Claim(leafData.index, leafData.recipient, uint128(claimableAmount), leafData.amount);
 
         // It should transfer the claimable amount to the recipient.
-        expectCallToTransfer({ token: dai, to: allocation.recipient, value: claimableAmount });
+        expectCallToTransfer({ token: dai, to: leafData.recipient, value: claimableAmount });
     }
 }

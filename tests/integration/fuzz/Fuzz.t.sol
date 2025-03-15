@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { Errors } from "src/libraries/Errors.sol";
-import { MerkleBuilder } from "../../utils/MerkleBuilder.sol";
+import { LeafData, MerkleBuilder } from "../../utils/MerkleBuilder.sol";
 import { Integration_Test } from "../Integration.t.sol";
 
 /// @notice Common logic needed by all fuzz tests.
@@ -15,44 +14,37 @@ contract Shared_Fuzz_Test is Integration_Test {
                                  STATE-VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
 
-    // Struct to store the airdrop allocation data for the test.
-    struct Allocation {
-        uint256 index;
-        address recipient;
-        uint128 amount;
-    }
-
-    // Storing leaves as `uint256`in storage so that we can use OpenZeppelin's {Arrays.findUpperBound}.
-    uint256[] internal leaves;
-
-    // Storing airdrop allotment in storage so that we can use it across functions.
-    Allocation[] internal allotment;
+    // Track claim fee earned in native tokens.
+    uint256 internal feeEarned;
 
     // Store the first claim time to be used in clawback.
     uint40 internal firstClaimTime;
 
-    // Track claim fee earned in native tokens.
-    uint256 internal feeEarned;
+    // Storing leaves as `uint256`in storage so that we can use OpenZeppelin's {Arrays.findUpperBound}.
+    uint256[] internal leaves;
+
+    // Storing leaves data in storage so that we can use it across functions.
+    LeafData[] internal leavesData;
 
     /*//////////////////////////////////////////////////////////////////////////
                              COMMON-CAMPAIGN-FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     function prepareCommonCreateParams(
-        Allocation[] memory allocation,
+        LeafData[] memory rawLeavesData,
         uint40 expiration,
         uint256 indexesCount
     )
         internal
         returns (uint256 aggregateAmount, uint40 expiration_, bytes32 merkleRoot)
     {
-        vm.assume(allocation.length > 0 && indexesCount < allocation.length);
+        vm.assume(rawLeavesData.length > 0 && indexesCount < rawLeavesData.length);
 
         // Bound expiration so that the campaign is still active at the creation.
         if (expiration > 0) expiration_ = boundUint40(expiration, getBlockTimestamp() + 365 days, MAX_UNIX_TIMESTAMP);
 
-        // Construct merkle root for the given allocation data.
-        (aggregateAmount, merkleRoot) = constructMerkleTree(allocation);
+        // Construct merkle root for the given tree leaves.
+        (aggregateAmount, merkleRoot) = constructMerkleTree(rawLeavesData);
     }
 
     // Helper function to test claiming multiple airdrops.
@@ -67,12 +59,12 @@ contract Shared_Fuzz_Test is Integration_Test {
 
         for (uint256 i; i < indexesToClaim.length; ++i) {
             // Bound lead index so its valid.
-            uint256 leafIndex = bound(indexesToClaim[i], 0, allotment.length - 1);
+            uint256 leafIndex = bound(indexesToClaim[i], 0, leavesData.length - 1);
 
-            Allocation memory allocation = allotment[leafIndex];
+            LeafData memory leafData = leavesData[leafIndex];
 
             // Claim the airdrop if it has not been claimed.
-            if (!merkleBase.hasClaimed(allotment[leafIndex].index)) {
+            if (!merkleBase.hasClaimed(leavesData[leafIndex].index)) {
                 // Bound msgValue so that its greater than the minimum fee.
                 msgValue = bound(msgValue, merkleBase.minimumFeeInWei(), 100 ether);
 
@@ -81,26 +73,26 @@ contract Shared_Fuzz_Test is Integration_Test {
                 vm.deal(caller, msgValue);
 
                 // Call the expect claim event function, implemented by the child contract.
-                expectClaimEvent(allocation);
+                expectClaimEvent(leafData);
 
-                bytes32[] memory merkleProof = computeMerkleProof(allocation);
+                bytes32[] memory merkleProof = computeMerkleProof(leafData, leaves);
 
                 // Claim the airdrop.
                 merkleBase.claim{ value: msgValue }({
-                    index: allocation.index,
-                    recipient: allocation.recipient,
-                    amount: allocation.amount,
+                    index: leafData.index,
+                    recipient: leafData.recipient,
+                    amount: leafData.amount,
                     merkleProof: merkleProof
                 });
 
-                // It should mark the allocation as claimed.
-                assertTrue(merkleBase.hasClaimed(allocation.index));
+                // It should mark the leaf index as claimed.
+                assertTrue(merkleBase.hasClaimed(leafData.index));
 
                 // Update the fee earned.
                 feeEarned += msgValue;
 
                 // Warp to a new time.
-                uint40 timeJumpSeed = uint40(uint256(keccak256(abi.encode(allocation))));
+                uint40 timeJumpSeed = uint40(uint256(keccak256(abi.encode(leafData))));
                 timeJumpSeed = boundUint40(timeJumpSeed, 0, 7 days);
                 vm.warp(getBlockTimestamp() + timeJumpSeed);
 
@@ -158,7 +150,7 @@ contract Shared_Fuzz_Test is Integration_Test {
     }
 
     // Helper function to expect claim event. This function should be overridden in the child contract.
-    function expectClaimEvent(Allocation memory allocation) internal virtual { }
+    function expectClaimEvent(LeafData memory leafData) internal virtual { }
 
     // Helper function to test setting custom fee.
     function testSetCustomFee(uint256 newFee) internal returns (uint256 feeForUser) {
@@ -174,44 +166,38 @@ contract Shared_Fuzz_Test is Integration_Test {
                                      HELPERS
     //////////////////////////////////////////////////////////////////////////*/
 
-    function computeMerkleProof(Allocation memory allocation) internal view returns (bytes32[] memory merkleProof) {
-        uint256 leafToClaim = MerkleBuilder.computeLeaf(allocation.index, allocation.recipient, allocation.amount);
-        uint256 leafPos = Arrays.findUpperBound(leaves, leafToClaim);
-
-        merkleProof = leaves.length == 1 ? new bytes32[](0) : getProof(leaves.toBytes32(), leafPos);
-    }
-
-    function constructMerkleTree(Allocation[] memory allocation)
+    function constructMerkleTree(LeafData[] memory rawLeavesData)
         internal
         returns (uint256 aggregateAmount, bytes32 merkleRoot)
     {
-        uint128[] memory amounts = new uint128[](allocation.length);
-        uint256[] memory indexes = new uint256[](allocation.length);
-        address[] memory recipients = new address[](allocation.length);
+        uint128[] memory amounts = new uint128[](rawLeavesData.length);
+        uint256[] memory indexes = new uint256[](rawLeavesData.length);
+        address[] memory recipients = new address[](rawLeavesData.length);
 
-        // Generate Merkle data with the given allocation data.
-        for (uint256 i = 0; i < allocation.length; ++i) {
-            indexes[i] = allocation[i].index;
+        // Generate Merkle data with the given data.
+        for (uint256 i = 0; i < rawLeavesData.length; ++i) {
+            indexes[i] = rawLeavesData[i].index;
             // Avoid zero recipient addresses.
-            allocation[i].recipient =
-                address(uint160(bound(uint256(uint160(allocation[i].recipient)), 1, type(uint160).max)));
-            recipients[i] = allocation[i].recipient;
+            rawLeavesData[i].recipient =
+                address(uint160(bound(uint256(uint160(rawLeavesData[i].recipient)), 1, type(uint160).max)));
+            recipients[i] = rawLeavesData[i].recipient;
 
             // Bound each leaf amount so that `aggregateAmount` does not overflow.
-            allocation[i].amount = boundUint128(allocation[i].amount, 1, uint128(MAX_UINT128 / allocation.length - 1));
-            amounts[i] = allocation[i].amount;
-            aggregateAmount += allocation[i].amount;
+            rawLeavesData[i].amount =
+                boundUint128(rawLeavesData[i].amount, 1, uint128(MAX_UINT128 / rawLeavesData.length - 1));
+            amounts[i] = rawLeavesData[i].amount;
+            aggregateAmount += rawLeavesData[i].amount;
 
-            // Store the allotment in storage.
-            allotment.push(allocation[i]);
+            // Store the merkle tree leaves in storage.
+            leavesData.push(rawLeavesData[i]);
         }
 
         // Compute the Merkle leaves.
-        leaves = new uint256[](allocation.length);
+        leaves = new uint256[](rawLeavesData.length);
         leaves = MerkleBuilder.computeLeaves(indexes, recipients, amounts);
 
         // Sort the leaves in ascending order to match the production environment.
-        leaves.sortLeaves();
+        leaves.sort();
 
         // If there is only one leaf, the Merkle root is the hash of the leaf itself.
         merkleRoot = leaves.length == 1 ? bytes32(leaves[0]) : getRoot(leaves.toBytes32());
