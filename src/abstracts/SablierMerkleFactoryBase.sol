@@ -28,6 +28,9 @@ abstract contract SablierMerkleFactoryBase is
     /// @inheritdoc ISablierMerkleFactoryBase
     uint256 public override minimumFee;
 
+    /// @inheritdoc ISablierMerkleFactoryBase
+    address public override nativeToken;
+
     /// @dev A mapping of custom fees mapped by campaign creator addresses.
     mapping(address campaignCreator => MerkleFactory.CustomFee customFee) private _customFees;
 
@@ -109,6 +112,25 @@ abstract contract SablierMerkleFactoryBase is
 
         // Log the update.
         emit SetMinimumFee({ admin: msg.sender, minimumFee: newFee });
+    }
+
+    /// @inheritdoc ISablierMerkleFactoryBase
+    function setNativeToken(address tokenAddress) external override onlyAdmin {
+        // Check: tokenAddress is not zero.
+        if (tokenAddress == address(0)) {
+            revert Errors.SablierMerkleFactoryBase_ZeroAddress();
+        }
+
+        // Check: nativeToken is not set already.
+        if (nativeToken != address(0)) {
+            revert Errors.SablierMerkleFactoryBase_NativeTokenAlreadySet(nativeToken);
+        }
+
+        // Effect: update the native token.
+        nativeToken = tokenAddress;
+
+        // Log the update.
+        emit SetNativeToken({ admin: msg.sender, tokenAddress: tokenAddress });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase

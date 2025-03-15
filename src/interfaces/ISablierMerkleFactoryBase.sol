@@ -29,6 +29,9 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @notice Emitted when the minimum fee is set by the admin.
     event SetMinimumFee(address indexed admin, uint256 minimumFee);
 
+    /// @notice Emitted when the native token address is set by the admin.
+    event SetNativeToken(address indexed admin, address tokenAddress);
+
     /// @notice Emitted when the oracle contract address is set by the admin.
     event SetOracle(address indexed admin, address newOracle, address previousOracle);
 
@@ -49,6 +52,10 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// chain, e.g., ETH for Ethereum Mainnet.
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
     function minimumFee() external view returns (uint256);
+
+    /// @notice Retrieves the address of the native token.
+    /// @dev If the native token has implemented an ERC20 interface, it returns the token address.
+    function nativeToken() external view returns (address);
 
     /// @notice Retrieves the oracle contract address.
     function oracle() external view returns (address);
@@ -103,6 +110,15 @@ interface ISablierMerkleFactoryBase is IAdminable {
     ///
     /// @param newFee The new minimum fee to be set.
     function setMinimumFee(uint256 newFee) external;
+
+    /// @notice Sets the native token address, if its non-zero. Once set, it cannot be changed.
+    /// @dev Emits a {SetNativeToken} event.
+    ///
+    /// Requirements:
+    /// - `msg.sender` must be the admin.
+    /// - `tokenAddress` must not be zero address.
+    /// - `nativeToken` must be zero address.
+    function setNativeToken(address tokenAddress) external;
 
     /// @notice Sets the oracle contract address.
     /// @dev Emits a {SetOracle} event.
