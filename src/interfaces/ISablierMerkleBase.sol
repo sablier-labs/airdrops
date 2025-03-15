@@ -64,6 +64,14 @@ interface ISablierMerkleBase is IAdminable {
 
     /// @notice Calculates the minimum fee in wei required to claim the airdrop.
     /// @dev It uses the `minimumFee` and the oracle price to calculate the fee in wei.
+    ///
+    /// Returns 0 if:
+    /// 1. The oracle is not set.
+    /// 2. The minimum fee is 0.
+    /// 3. The oracle price is not greater than 0.
+    /// 4. The oracle price is not updated within the last 24 hours.
+    /// 5. The oracle's last updated timestamp is in the future.
+    ///
     /// @return The minimum fee required to claim the airdrop, as an 18-decimal number, where 1e18 is 1 native token.
     function minimumFeeInWei() external view returns (uint256);
 

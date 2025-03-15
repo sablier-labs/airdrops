@@ -3,9 +3,9 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import {
-    ChainlinkOracleMockWith18Decimals,
-    ChainlinkOracleMockWith6Decimals,
-    ChainlinkOracleMockWithZeroPrice
+    ChainlinkOracleWith18Decimals,
+    ChainlinkOracleWith6Decimals,
+    ChainlinkOracleWithZeroPrice
 } from "tests/utils/ChainlinkOracleMock.sol";
 import { Integration_Test } from "../../../../Integration.t.sol";
 
@@ -35,7 +35,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
 
     function test_WhenOracleReturnsZeroPrice() external givenOracleNotZero givenMinimumFeeNotZero {
         // Deploy campaign with with an oracle that returns 0 price.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleMockWithZeroPrice()));
+        merkleFactoryBase.setOracle(address(new ChainlinkOracleWithZeroPrice()));
         _deployCampaign();
 
         // It should return zero.
@@ -60,7 +60,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         whenOracleReturnsNonZeroPrice
     {
         // Deploy campaign with an oracle that returns 18 decimals.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleMockWith18Decimals()));
+        merkleFactoryBase.setOracle(address(new ChainlinkOracleWith18Decimals()));
         _deployCampaign();
 
         // It should calculate the minimum fee in wei.
@@ -74,7 +74,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         whenOracleReturnsNonZeroPrice
     {
         // Deploy campaign with an oracle that returns 6 decimals.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleMockWith6Decimals()));
+        merkleFactoryBase.setOracle(address(new ChainlinkOracleWith6Decimals()));
         _deployCampaign();
 
         // It should calculate the minimum fee in wei.

@@ -156,8 +156,10 @@ contract SablierMerkleLT is
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev Calculates the start time, and the tranches based on the claim amount and the unlock percentages for each
-    /// tranche.
+    /// @notice Calculates the start time, and the tranches based on the claim amount and the unlock percentages for
+    /// each tranche.
+    /// @dev Safe to use unchecked for all calculations except timestamps. Because in case of an overflow, the end time
+    /// might become earlier than the start time, resulting in the claim amount being sent directly to the recipient.
     function _calculateStartTimeAndTranches(uint128 claimAmount)
         internal
         view
@@ -175,38 +177,41 @@ contract SablierMerkleLT is
 
         // Declare the variables needed for calculation.
         uint128 calculatedAmountsSum;
+        uint128 calculatedAmount;
         UD60x18 claimAmountUD = ud60x18(claimAmount);
+        UD60x18 percentage;
         uint256 trancheCount = tranchesWithPercentages.length;
         tranches = new LockupTranched.Tranche[](trancheCount);
 
         unchecked {
             // Convert the tranche's percentage from the `UD2x18` to the `UD60x18` type.
-            UD60x18 percentage = (tranchesWithPercentages[0].unlockPercentage).intoUD60x18();
+            percentage = (tranchesWithPercentages[0].unlockPercentage).intoUD60x18();
 
             // Calculate the tranche's amount by multiplying the claim amount by the unlock percentage.
-            uint128 calculatedAmount = claimAmountUD.mul(percentage).intoUint128();
-
-            // The first tranche is precomputed because it is needed in the for loop below.
-            tranches[0] = LockupTranched.Tranche({
-                amount: calculatedAmount,
-                timestamp: startTime + tranchesWithPercentages[0].duration
-            });
+            calculatedAmount = claimAmountUD.mul(percentage).intoUint128();
 
             // Add the calculated tranche amount.
             calculatedAmountsSum += calculatedAmount;
+        }
 
-            // Iterate over each tranche to calculate its timestamp and unlock amount.
-            for (uint256 i = 1; i < trancheCount; ++i) {
+        // The first tranche is precomputed because it is needed in the for loop below.
+        tranches[0] = LockupTranched.Tranche({
+            amount: calculatedAmount,
+            timestamp: startTime + tranchesWithPercentages[0].duration
+        });
+
+        // Iterate over each tranche to calculate its timestamp and unlock amount.
+        for (uint256 i = 1; i < trancheCount; ++i) {
+            unchecked {
                 percentage = (tranchesWithPercentages[i].unlockPercentage).intoUD60x18();
                 calculatedAmount = claimAmountUD.mul(percentage).intoUint128();
-
-                tranches[i] = LockupTranched.Tranche({
-                    amount: calculatedAmount,
-                    timestamp: tranches[i - 1].timestamp + tranchesWithPercentages[i].duration
-                });
-
                 calculatedAmountsSum += calculatedAmount;
             }
+
+            tranches[i] = LockupTranched.Tranche({
+                amount: calculatedAmount,
+                timestamp: tranches[i - 1].timestamp + tranchesWithPercentages[i].duration
+            });
         }
 
         // Since there can be rounding errors, the last tranche amount needs to be adjusted to ensure the sum of all
