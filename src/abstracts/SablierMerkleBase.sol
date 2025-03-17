@@ -223,13 +223,7 @@ abstract contract SablierMerkleBase is
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Calculates the minimum fee in the native token with 18 decimals.
-    /// @dev Returns 0 if:
-    /// 1. The oracle is not set.
-    /// 2. The minimum fee is 0.
-    /// 3. The oracle price is not greater than 0.
-    /// 4. The oracle price is not updated within the last 24 hours.
-    /// 5. The oracle's last updated timestamp is in the future.
+    /// @dev See the documentation for the user-facing functions that call this internal function.
     function _minimumFeeInWei() internal view returns (uint256) {
         // If the oracle is not set, return 0.
         if (ORACLE == address(0)) {
@@ -244,8 +238,19 @@ abstract contract SablierMerkleBase is
         // Retrieve the latest price from the oracle.
         (, int256 price,, uint256 lastUpdatedAt,) = AggregatorV3Interface(ORACLE).latestRoundData();
 
-        // If the price is not greater than 0 or the oracle is outdated or set in the future, return 0.
-        if (price <= 0 || block.timestamp < lastUpdatedAt || block.timestamp - lastUpdatedAt > 86_400 seconds) {
+        // If oracle's price is not greater than 0, return 0.
+        if (price <= 0) {
+            return 0;
+        }
+
+        // If the oracle's `lastUpdatedAt`is greater than the block time, return 0.
+        if (block.timestamp < lastUpdatedAt) {
+            return 0;
+        }
+
+        // If the oracle's `lastUpdatedAt` is within the last 24 hours, return 0. This is a safety check to prevent the
+        // contract from using the outdated price, which may lead to incorrect fee calculation.
+        if (block.timestamp - lastUpdatedAt > 24 hours) {
             return 0;
         }
 

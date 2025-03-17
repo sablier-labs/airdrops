@@ -20,7 +20,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         merkleFactoryVCA.setNativeToken(newNativeToken);
 
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_NativeTokenFound.selector, newNativeToken)
+            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_AirdropNativeToken.selector, newNativeToken)
         );
         merkleFactoryVCA.createMerkleVCA(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
     }

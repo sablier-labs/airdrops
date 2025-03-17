@@ -117,7 +117,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// Requirements:
     /// - `msg.sender` must be the admin.
     /// - `tokenAddress` must not be zero address.
-    /// - `nativeToken` must not have been set already.
+    /// - `nativeToken` must not be set.
     function setNativeToken(address tokenAddress) external;
 
     /// @notice Sets the oracle contract address.

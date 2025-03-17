@@ -88,7 +88,7 @@ abstract contract SablierMerkleFactoryBase is
             revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_FEE);
         }
 
-        // Effect: enable custom fee for the user if it is not already enabled.
+        // Effect: enable the custom fee for the user if it is not already enabled.
         if (!customFeeByUser.enabled) {
             customFeeByUser.enabled = true;
         }
@@ -121,9 +121,9 @@ abstract contract SablierMerkleFactoryBase is
             revert Errors.SablierMerkleFactoryBase_ZeroAddress();
         }
 
-        // Check: `nativeToken` is not set already.
+        // Check: native token is not set.
         if (nativeToken != address(0)) {
-            revert Errors.SablierMerkleFactoryBase_NativeTokenAlreadySet(nativeToken);
+            revert Errors.SablierMerkleFactoryBase_NativeTokenSet(nativeToken);
         }
 
         // Effect: update the native token.
@@ -162,16 +162,16 @@ abstract contract SablierMerkleFactoryBase is
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Checks that the provided token is not the native token.
+    /// @dev Reverts if the provided token is the native token.
+    function _forbidNativeToken(address token) internal view {
+        if (token == nativeToken) {
+            revert Errors.SablierMerkleFactoryBase_AirdropNativeToken(token);
+        }
+    }
+
     /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
     function _getFee(address campaignCreator) internal view returns (uint256) {
         return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : minimumFee;
-    }
-
-    /// @notice Checks that the provided token is not the native token.
-    /// @dev Reverts if the provided token is the native token.
-    function _revertOnNativeToken(address token) internal view {
-        if (token == nativeToken) {
-            revert Errors.SablierMerkleFactoryBase_NativeTokenFound(token);
-        }
     }
 }

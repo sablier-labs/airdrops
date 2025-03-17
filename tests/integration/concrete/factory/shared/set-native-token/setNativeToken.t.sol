@@ -26,9 +26,7 @@ abstract contract SetNativeToken_Integration_Test is Integration_Test {
         merkleFactoryBase.setNativeToken(nativeToken);
 
         // It should revert.
-        vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_NativeTokenAlreadySet.selector, nativeToken)
-        );
+        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_NativeTokenSet.selector, nativeToken));
 
         // Set native token again with a different address.
         merkleFactoryBase.setNativeToken(address(usdc));

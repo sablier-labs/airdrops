@@ -18,7 +18,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         merkleFactoryLT.setNativeToken(newNativeToken);
 
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_NativeTokenFound.selector, newNativeToken)
+            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_AirdropNativeToken.selector, newNativeToken)
         );
         merkleFactoryLT.createMerkleLT(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
     }
