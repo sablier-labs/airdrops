@@ -243,12 +243,12 @@ abstract contract SablierMerkleBase is
             return 0;
         }
 
-        // If the oracle's `lastUpdatedAt` is greater than the block time, return 0.
+        // If the oracle's last time update is greater than the block time, return 0.
         if (block.timestamp < lastUpdatedAt) {
             return 0;
         }
 
-        // If the oracle's `lastUpdatedAt` is within the last 24 hours, return 0. This is a safety check to prevent the
+        // If the oracle's last time update is within the last 24 hours, return 0. This is a safety check to prevent the
         // contract from using the outdated price, which may lead to incorrect fee calculation.
         if (block.timestamp - lastUpdatedAt > 24 hours) {
             return 0;
