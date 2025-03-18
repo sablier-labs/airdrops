@@ -38,7 +38,7 @@ contract SablierMerkleFactoryVCA is ISablierMerkleFactoryVCA, SablierMerkleFacto
         external
         returns (ISablierMerkleVCA merkleVCA)
     {
-        // Check: `params.tokens` is not the native token.
+        // Check: user-provided token is not the native token.
         _forbidNativeToken(address(params.token));
 
         // Hash the parameters to generate a salt.

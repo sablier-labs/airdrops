@@ -39,7 +39,7 @@ contract SablierMerkleFactoryLL is ISablierMerkleFactoryLL, SablierMerkleFactory
         override
         returns (ISablierMerkleLL merkleLL)
     {
-        // Check: `params.tokens` is not the native token.
+        // Check: user-provided token is not the native token.
         _forbidNativeToken(address(params.token));
 
         // Hash the parameters to generate a salt.
