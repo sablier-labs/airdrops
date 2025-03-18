@@ -19,35 +19,29 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
     struct Params {
         address campaignCreator;
         uint40 expiration;
-        LeafData[] leafData;
-        uint256 posBeforeSort;
+        LeafData[] leavesData;
+        uint256 leafIndex;
     }
 
     struct Vars {
+        uint256[] leaves;
+        LeafData[] leavesData;
+        LeafData leafToClaim;
         uint256 initialAdminBalance;
         uint256 aggregateAmount;
-        uint128[] amounts;
         uint128 clawbackAmount;
         address expectedMerkleCampaign;
-        uint256[] indexes;
-        uint128 amountToClaim;
-        uint256 indexToClaim;
-        address recipientToClaim;
         bytes32[] merkleProof;
         bytes32 merkleRoot;
         uint256 minimumFee;
         uint256 minimumFeeInWei;
         address oracle;
-        uint256 recipientCount;
-        address[] recipients;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                                   STATE VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
 
-    // We need the leaves as a storage variable so that we can use OpenZeppelin's {Arrays.findUpperBound}.
-    uint256[] public leaves;
     Vars internal vars;
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -62,9 +56,9 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
 
     function preCreateCampaign(Params memory params) internal {
         vm.assume(params.campaignCreator != address(0));
-        vm.assume(params.leafData.length > 0);
+        vm.assume(params.leavesData.length > 0);
         assumeNoBlacklisted({ token: address(FORK_TOKEN), addr: params.campaignCreator });
-        params.posBeforeSort = _bound(params.posBeforeSort, 0, params.leafData.length - 1);
+        params.leafIndex = _bound(params.leafIndex, 0, params.leavesData.length - 1);
 
         // The expiration must be either zero or greater than the block timestamp.
         if (params.expiration != 0) {
@@ -74,38 +68,18 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
         // Load the factory admin from mainnet.
         factoryAdmin = merkleFactoryBase.admin();
 
-        vars.recipientCount = params.leafData.length;
-        vars.amounts = new uint128[](vars.recipientCount);
-        vars.indexes = new uint256[](vars.recipientCount);
-        vars.recipients = new address[](vars.recipientCount);
-        for (uint256 i = 0; i < vars.recipientCount; ++i) {
-            vars.indexes[i] = params.leafData[i].index;
+        // Fuzz the leaves data.
+        vars.aggregateAmount = fuzzMerkleData(params.leavesData);
 
-            // Bound each leaf amount so that `aggregateAmount` does not overflow.
-            vars.amounts[i] = boundUint128(params.leafData[i].amount, 1, uint128(MAX_UINT128 / vars.recipientCount - 1));
-            vars.aggregateAmount += vars.amounts[i];
-
-            // Avoid zero recipient addresses.
-            vars.recipients[i] =
-                address(uint160(bound(uint256(uint160(params.leafData[i].recipient)), 1, type(uint160).max)));
-            // Avoid recipient to be the protocol admin.
-            vars.recipients[i] =
-                vars.recipients[i] != factoryAdmin ? vars.recipients[i] : address(uint160(vars.recipients[i]) + 1);
+        // Store the merkle tree leaves in storage.
+        for (uint256 i = 0; i < params.leavesData.length; ++i) {
+            vars.leavesData.push(params.leavesData[i]);
         }
 
-        leaves = new uint256[](vars.recipientCount);
-        leaves = MerkleBuilder.computeLeaves(vars.indexes, vars.recipients, vars.amounts);
+        MerkleBuilder.computeLeaves(vars.leaves, params.leavesData);
 
-        // Sort the leaves in ascending order to match the production environment.
-        leaves.sort();
-
-        // Compute the Merkle root.
-        if (leaves.length == 1) {
-            // If there is only one leaf, the Merkle root is the hash of the leaf itself.
-            vars.merkleRoot = bytes32(leaves[0]);
-        } else {
-            vars.merkleRoot = getRoot(leaves.toBytes32());
-        }
+        // If there is only one leaf, the Merkle root is the hash of the leaf itself.
+        vars.merkleRoot = vars.leaves.length == 1 ? bytes32(vars.leaves[0]) : getRoot(vars.leaves.toBytes32());
 
         // Make the campaign creator as the caller.
         resetPrank({ msgSender: params.campaignCreator });
@@ -123,19 +97,15 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
         // Fund the Merkle contract.
         deal({ token: address(FORK_TOKEN), to: address(merkleBase), give: vars.aggregateAmount });
 
-        vars.amountToClaim = vars.amounts[params.posBeforeSort];
-        vars.indexToClaim = vars.indexes[params.posBeforeSort];
-        vars.recipientToClaim = vars.recipients[params.posBeforeSort];
+        vars.leafToClaim = params.leavesData[params.leafIndex];
 
         // Make the recipient as the caller.
-        resetPrank({ msgSender: vars.recipientToClaim });
-        vm.deal(vars.recipientToClaim, 1 ether);
+        resetPrank({ msgSender: vars.leafToClaim.recipient });
+        vm.deal(vars.leafToClaim.recipient, 1 ether);
 
-        assertFalse(merkleBase.hasClaimed(vars.indexToClaim));
+        assertFalse(merkleBase.hasClaimed(vars.leafToClaim.index));
 
-        vars.merkleProof = computeMerkleProof(
-            LeafData({ index: vars.indexToClaim, recipient: vars.recipientToClaim, amount: vars.amountToClaim }), leaves
-        );
+        vars.merkleProof = computeMerkleProof(vars.leafToClaim, vars.leaves);
 
         vars.initialAdminBalance = factoryAdmin.balance;
         vars.minimumFeeInWei = merkleBase.minimumFeeInWei();

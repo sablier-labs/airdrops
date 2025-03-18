@@ -5,9 +5,24 @@ import { ud2x18 } from "@prb/math/src/UD2x18.sol";
 import { PRBMathUtils } from "@prb/math/test/utils/Utils.sol";
 import { MerkleLT } from "src/types/DataTypes.sol";
 
+import { LeafData } from "./MerkleBuilder.sol";
+
 import { Modifiers } from "./Modifiers.sol";
 
 abstract contract Fuzzers is Modifiers, PRBMathUtils {
+    function fuzzMerkleData(LeafData[] memory leavesData) internal pure returns (uint256 aggregateAmount) {
+        for (uint256 i = 0; i < leavesData.length; ++i) {
+            // Avoid zero recipient addresses.
+            leavesData[i].recipient =
+                address(uint160(bound(uint256(uint160(leavesData[i].recipient)), 1, type(uint160).max)));
+
+            // Bound each leaf amount so that `aggregateAmount` does not overflow.
+            leavesData[i].amount = boundUint128(leavesData[i].amount, 1, uint128(MAX_UINT128 / leavesData.length - 1));
+
+            aggregateAmount += leavesData[i].amount;
+        }
+    }
+
     // Fuzz tranches by making sure that total unlock percentage is 1e18 and total duration does not overflow the
     // maximum timestamp.
     function fuzzTranchesMerkleLT(
@@ -42,16 +57,6 @@ abstract contract Fuzzers is Modifiers, PRBMathUtils {
         if (upperBoundPercentage > 0) {
             tranches[tranches.length - 1].unlockPercentage =
                 ud2x18(tranches[tranches.length - 1].unlockPercentage.unwrap() + upperBoundPercentage);
-        }
-    }
-
-    function getTotalDuration(MerkleLT.TrancheWithPercentage[] memory tranches)
-        internal
-        pure
-        returns (uint40 totalDuration)
-    {
-        for (uint256 i; i < tranches.length; ++i) {
-            totalDuration += tranches[i].duration;
         }
     }
 }

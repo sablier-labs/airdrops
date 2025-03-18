@@ -151,7 +151,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         view
         returns (bytes32[] memory merkleProof)
     {
-        uint256 leaf = MerkleBuilder.computeLeaf(leafData.index, leafData.recipient, leafData.amount);
+        uint256 leaf = MerkleBuilder.computeLeaf(leafData);
         uint256 pos = Arrays.findUpperBound(leaves, leaf);
 
         merkleProof = leaves.length == 1 ? new bytes32[](0) : getProof(leaves.toBytes32(), pos);
@@ -180,11 +180,12 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     /// @dev We need a separate function to initialize the Merkle tree because, at the construction time, the users are
     /// not yet set.
     function initMerkleTree() public {
-        LEAVES[0] = MerkleBuilder.computeLeaf(INDEX1, users.recipient1, CLAIM_AMOUNT);
-        LEAVES[1] = MerkleBuilder.computeLeaf(INDEX2, users.recipient2, CLAIM_AMOUNT);
-        LEAVES[2] = MerkleBuilder.computeLeaf(INDEX3, users.recipient3, CLAIM_AMOUNT);
-        LEAVES[3] = MerkleBuilder.computeLeaf(INDEX4, users.recipient4, CLAIM_AMOUNT);
-        LEAVES.sort();
+        LeafData[] memory leafData = new LeafData[](RECIPIENT_COUNT);
+        leafData[0] = LeafData({ index: INDEX1, recipient: users.recipient1, amount: CLAIM_AMOUNT });
+        leafData[1] = LeafData({ index: INDEX2, recipient: users.recipient2, amount: CLAIM_AMOUNT });
+        leafData[2] = LeafData({ index: INDEX3, recipient: users.recipient3, amount: CLAIM_AMOUNT });
+        leafData[3] = LeafData({ index: INDEX4, recipient: users.recipient4, amount: CLAIM_AMOUNT });
+        MerkleBuilder.computeLeaves(LEAVES, leafData);
         MERKLE_ROOT = getRoot(LEAVES.toBytes32());
     }
 
@@ -441,6 +442,16 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             initCodeHash: creationBytecodeHash,
             deployer: address(merkleFactoryLT)
         });
+    }
+
+    function getTotalDuration(MerkleLT.TrancheWithPercentage[] memory tranches)
+        internal
+        pure
+        returns (uint40 totalDuration)
+    {
+        for (uint256 i; i < tranches.length; ++i) {
+            totalDuration += tranches[i].duration;
+        }
     }
 
     function merkleLTConstructorParams() public view returns (MerkleLT.ConstructorParams memory) {
