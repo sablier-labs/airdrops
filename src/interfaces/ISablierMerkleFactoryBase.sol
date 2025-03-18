@@ -55,6 +55,12 @@ interface ISablierMerkleFactoryBase is IAdminable {
 
     /// @notice Retrieves the address of the native token.
     /// @dev If the native token has implemented an ERC20 interface, it returns the token address.
+    ///
+    /// Notes:
+    /// - Some chains like Polygon, Metis, Celo have native tokens with the ERC20 interface. As a result, a call to
+    /// `address(this).balance` would return the same result as a call to `balanceOf(address(this))` function. To avoid
+    /// any unintended behavior if someone uses the protocol with such tokens, the admin can block the use of protocol
+    /// with such tokens by setting the native token address in the contract state.
     function nativeToken() external view returns (address);
 
     /// @notice Retrieves the oracle contract address.
