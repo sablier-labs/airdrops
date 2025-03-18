@@ -243,7 +243,7 @@ abstract contract SablierMerkleBase is
             return 0;
         }
 
-        // If the oracle's `lastUpdatedAt`is greater than the block time, return 0.
+        // If the oracle's `lastUpdatedAt` is greater than the block time, return 0.
         if (block.timestamp < lastUpdatedAt) {
             return 0;
         }
