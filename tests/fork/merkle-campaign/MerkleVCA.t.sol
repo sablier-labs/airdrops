@@ -70,12 +70,12 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
             merkleVCA: ISablierMerkleVCA(vars.expectedMerkleCampaign),
             params: constructorParams,
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount,
+            recipientCount: vars.leavesData.length,
             fee: vars.minimumFee,
             oracle: vars.oracle
         });
 
-        merkleVCA = merkleFactoryVCA.createMerkleVCA(constructorParams, vars.aggregateAmount, vars.recipientCount);
+        merkleVCA = merkleFactoryVCA.createMerkleVCA(constructorParams, vars.aggregateAmount, vars.leavesData.length);
 
         assertGt(address(merkleVCA).code.length, 0, "MerkleVCA contract not created");
         assertEq(address(merkleVCA), vars.expectedMerkleCampaign, "MerkleVCA contract does not match computed address");
@@ -92,38 +92,40 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         uint128 claimableAmount;
 
         if (getBlockTimestamp() >= timestamps.end) {
-            claimableAmount = vars.amountToClaim;
+            claimableAmount = vars.leafToClaim.amount;
         } else {
             // Calculate the claimable amount based on the elapsed time.
             uint40 elapsedTime = getBlockTimestamp() - timestamps.start;
             uint40 totalDuration = timestamps.end - timestamps.start;
-            claimableAmount = uint128((uint256(vars.amountToClaim) * elapsedTime) / totalDuration);
+            claimableAmount = uint128((uint256(vars.leafToClaim.amount) * elapsedTime) / totalDuration);
         }
 
         vm.expectEmit({ emitter: address(merkleVCA) });
-        emit ISablierMerkleVCA.Claim(vars.indexToClaim, vars.recipientToClaim, claimableAmount, vars.amountToClaim);
+        emit ISablierMerkleVCA.Claim(
+            vars.leafToClaim.index, vars.leafToClaim.recipient, claimableAmount, vars.leafToClaim.amount
+        );
 
         expectCallToClaimWithData({
             merkleLockup: address(merkleVCA),
             feeInWei: vars.minimumFeeInWei,
-            index: vars.indexToClaim,
-            recipient: vars.recipientToClaim,
-            amount: vars.amountToClaim,
+            index: vars.leafToClaim.index,
+            recipient: vars.leafToClaim.recipient,
+            amount: vars.leafToClaim.amount,
             merkleProof: vars.merkleProof
         });
 
-        expectCallToTransfer({ token: FORK_TOKEN, to: vars.recipientToClaim, value: claimableAmount });
+        expectCallToTransfer({ token: FORK_TOKEN, to: vars.leafToClaim.recipient, value: claimableAmount });
 
         merkleVCA.claim{ value: vars.minimumFeeInWei }({
-            index: vars.indexToClaim,
-            recipient: vars.recipientToClaim,
-            amount: vars.amountToClaim,
+            index: vars.leafToClaim.index,
+            recipient: vars.leafToClaim.recipient,
+            amount: vars.leafToClaim.amount,
             merkleProof: vars.merkleProof
         });
 
-        assertTrue(merkleVCA.hasClaimed(vars.indexToClaim));
+        assertTrue(merkleVCA.hasClaimed(vars.leafToClaim.index));
 
-        uint256 expectedForgoneAmount = vars.amountToClaim - claimableAmount;
+        uint256 expectedForgoneAmount = vars.leafToClaim.amount - claimableAmount;
         assertEq(merkleVCA.forgoneAmount(), expectedForgoneAmount, "forgoneAmount");
 
         /*//////////////////////////////////////////////////////////////////////////

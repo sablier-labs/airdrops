@@ -170,34 +170,16 @@ contract Shared_Fuzz_Test is Integration_Test {
         internal
         returns (uint256 aggregateAmount, bytes32 merkleRoot)
     {
-        uint128[] memory amounts = new uint128[](rawLeavesData.length);
-        uint256[] memory indexes = new uint256[](rawLeavesData.length);
-        address[] memory recipients = new address[](rawLeavesData.length);
+        // Fuzz the leaves data.
+        aggregateAmount = fuzzMerkleData(rawLeavesData);
 
-        // Generate Merkle data with the given data.
+        // Store the merkle tree leaves in storage.
         for (uint256 i = 0; i < rawLeavesData.length; ++i) {
-            indexes[i] = rawLeavesData[i].index;
-            // Avoid zero recipient addresses.
-            rawLeavesData[i].recipient =
-                address(uint160(bound(uint256(uint160(rawLeavesData[i].recipient)), 1, type(uint160).max)));
-            recipients[i] = rawLeavesData[i].recipient;
-
-            // Bound each leaf amount so that `aggregateAmount` does not overflow.
-            rawLeavesData[i].amount =
-                boundUint128(rawLeavesData[i].amount, 1, uint128(MAX_UINT128 / rawLeavesData.length - 1));
-            amounts[i] = rawLeavesData[i].amount;
-            aggregateAmount += rawLeavesData[i].amount;
-
-            // Store the merkle tree leaves in storage.
             leavesData.push(rawLeavesData[i]);
         }
 
         // Compute the Merkle leaves.
-        leaves = new uint256[](rawLeavesData.length);
-        leaves = MerkleBuilder.computeLeaves(indexes, recipients, amounts);
-
-        // Sort the leaves in ascending order to match the production environment.
-        leaves.sort();
+        MerkleBuilder.computeLeaves(leaves, rawLeavesData);
 
         // If there is only one leaf, the Merkle root is the hash of the leaf itself.
         merkleRoot = leaves.length == 1 ? bytes32(leaves[0]) : getRoot(leaves.toBytes32());

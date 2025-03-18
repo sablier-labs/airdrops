@@ -55,13 +55,13 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
             merkleInstant: ISablierMerkleInstant(vars.expectedMerkleCampaign),
             params: constructorParams,
             aggregateAmount: vars.aggregateAmount,
-            recipientCount: vars.recipientCount,
+            recipientCount: vars.leavesData.length,
             fee: vars.minimumFee,
             oracle: vars.oracle
         });
 
         merkleInstant =
-            merkleFactoryInstant.createMerkleInstant(constructorParams, vars.aggregateAmount, vars.recipientCount);
+            merkleFactoryInstant.createMerkleInstant(constructorParams, vars.aggregateAmount, vars.leavesData.length);
 
         assertGt(address(merkleInstant).code.length, 0, "MerkleInstant contract not created");
         assertEq(
@@ -82,26 +82,22 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
         expectCallToClaimWithData({
             merkleLockup: address(merkleInstant),
             feeInWei: vars.minimumFeeInWei,
-            index: vars.indexToClaim,
-            recipient: vars.recipients[params.posBeforeSort],
-            amount: vars.amounts[params.posBeforeSort],
+            index: vars.leafToClaim.index,
+            recipient: vars.leafToClaim.recipient,
+            amount: vars.leafToClaim.amount,
             merkleProof: vars.merkleProof
         });
 
-        expectCallToTransfer({
-            token: FORK_TOKEN,
-            to: vars.recipients[params.posBeforeSort],
-            value: vars.amounts[params.posBeforeSort]
-        });
+        expectCallToTransfer({ token: FORK_TOKEN, to: vars.leafToClaim.recipient, value: vars.leafToClaim.amount });
 
         merkleInstant.claim{ value: vars.minimumFeeInWei }({
-            index: vars.indexToClaim,
-            recipient: vars.recipients[params.posBeforeSort],
-            amount: vars.amounts[params.posBeforeSort],
+            index: vars.leafToClaim.index,
+            recipient: vars.leafToClaim.recipient,
+            amount: vars.leafToClaim.amount,
             merkleProof: vars.merkleProof
         });
 
-        assertTrue(merkleInstant.hasClaimed(vars.indexToClaim));
+        assertTrue(merkleInstant.hasClaimed(vars.leafToClaim.index));
 
         /*//////////////////////////////////////////////////////////////////////////
                                         CLAWBACK
