@@ -10,6 +10,7 @@ import { LeafData } from "./MerkleBuilder.sol";
 import { Modifiers } from "./Modifiers.sol";
 
 abstract contract Fuzzers is Modifiers, PRBMathUtils {
+    /// @dev Fuzz merkle data and return the aggregate amount.
     function fuzzMerkleData(LeafData[] memory leavesData) internal pure returns (uint256 aggregateAmount) {
         for (uint256 i = 0; i < leavesData.length; ++i) {
             // Avoid zero recipient addresses.
@@ -23,8 +24,8 @@ abstract contract Fuzzers is Modifiers, PRBMathUtils {
         }
     }
 
-    // Fuzz tranches by making sure that total unlock percentage is 1e18 and total duration does not overflow the
-    // maximum timestamp.
+    /// @dev Fuzz tranches by making sure that total unlock percentage is 1e18 and total duration does not overflow the
+    /// maximum timestamp.
     function fuzzTranchesMerkleLT(
         uint40 startTime,
         MerkleLT.TrancheWithPercentage[] memory tranches

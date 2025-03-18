@@ -13,23 +13,24 @@ struct LeafData {
 
 /// @dev A helper library for building Merkle leaves, roots, and proofs.
 library MerkleBuilder {
-    /// @dev Function that double hashes the data needed for a Merkle tree leaf.
+    /// @dev Double hashes the data needed for a Merkle tree leaf.
     function computeLeaf(LeafData memory leafData) internal pure returns (uint256 leaf) {
         leaf =
             uint256(keccak256(bytes.concat(keccak256(abi.encode(leafData.index, leafData.recipient, leafData.amount)))));
     }
 
-    /// @dev A function to compute the `leaves` using `computeLeaf`.
+    /// @dev Compute leaves for given data and sort them in ascending order.
     function computeLeaves(uint256[] storage leaves, LeafData[] memory leafData) internal {
         for (uint256 i = 0; i < leafData.length; ++i) {
             leaves.push(computeLeaf(leafData[i]));
         }
+
         // Sort the leaves in ascending order to match the production environment.
         sort(leaves);
     }
 
-    /// @dev Function that convert a storage array to memory and sorts it in ascending order. We need this
-    /// because `LibSort` does not support storage arrays.
+    /// @dev Convert a storage array to memory and sorts it in ascending order. We need this because `LibSort` does not
+    /// support storage arrays.
     function sort(uint256[] storage leaves) internal {
         uint256 leavesCount = leaves.length;
 
@@ -48,7 +49,7 @@ library MerkleBuilder {
         }
     }
 
-    /// @dev Function that converts an array of `uint256` to an array of `bytes32`.
+    /// @dev Converts an array of `uint256` to an array of `bytes32`.
     function toBytes32(uint256[] storage arr_) internal view returns (bytes32[] memory arr) {
         arr = new bytes32[](arr_.length);
         for (uint256 i = 0; i < arr_.length; ++i) {
