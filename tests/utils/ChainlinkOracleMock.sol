@@ -76,9 +76,6 @@ contract ChainlinkOracleWith6Decimals {
     }
 }
 
-/// @notice A mock Chainlink oracle that does not implement the `latestRoundData` function.
-contract ChainlinkOracleWithoutImpl { }
-
 /// @notice A mock Chainlink oracle contract that returns a 0 price.
 contract ChainlinkOracleWithZeroPrice {
     function decimals() external pure returns (uint8) {

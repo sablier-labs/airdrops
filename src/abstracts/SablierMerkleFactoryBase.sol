@@ -149,7 +149,7 @@ abstract contract SablierMerkleFactoryBase is
 
     /// @dev See the documentation for the user-facing functions that call this internal function.
     function _setOracle(address newOracle) private {
-        // Check: oracle has implemented `latestRoundData` function.
+        // Check: oracle implements the `latestRoundData` function.
         if (newOracle != address(0)) {
             AggregatorV3Interface(newOracle).latestRoundData();
         }
