@@ -18,7 +18,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         merkleFactoryLL.setNativeToken(newNativeToken);
 
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_AirdropNativeToken.selector, newNativeToken)
+            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_ForbidNativeToken.selector, newNativeToken)
         );
         merkleFactoryLL.createMerkleLL(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
     }

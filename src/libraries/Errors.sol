@@ -41,7 +41,7 @@ library Errors {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Thrown when trying to create a campaign with native token.
-    error SablierMerkleFactoryBase_AirdropNativeToken(address nativeToken);
+    error SablierMerkleFactoryBase_ForbidNativeToken(address nativeToken);
 
     /// @notice Thrown when trying to set fee to a value that exceeds the maximum fee.
     error SablierMerkleFactoryBase_MaximumFeeExceeded(uint256 newFee, uint256 maxFee);
