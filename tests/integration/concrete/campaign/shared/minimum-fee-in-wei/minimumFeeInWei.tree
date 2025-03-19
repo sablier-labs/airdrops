@@ -5,9 +5,9 @@ MinimumFeeInWei_Integration_Test
    ├── given minimum fee zero
    │  └── it should return zero
    └── given minimum fee not zero
-      ├── when oracle last updated time in future
+      ├── when oracle updated time in future
       │  └── it should return zero
-      └── when oracle last updated time not in future
+      └── when oracle updated time not in future
          ├── when oracle price outdated
          │  └── it should return zero
          └── when oracle price not outdated

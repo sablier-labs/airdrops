@@ -35,7 +35,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         assertEq(merkleBase.minimumFeeInWei(), 0, "minimum fee in wei");
     }
 
-    function test_WhenOracleLastUpdatedTimeInFuture() external givenOracleNotZero givenMinimumFeeNotZero {
+    function test_WhenOracleUpdatedTimeInFuture() external givenOracleNotZero givenMinimumFeeNotZero {
         // Deploy campaign with an oracle that has `updatedAt` timestamp in the future.
         merkleFactoryBase.setOracle(address(new ChainlinkOracleFuture()));
         _deployCampaign();
@@ -48,7 +48,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         external
         givenOracleNotZero
         givenMinimumFeeNotZero
-        whenOracleLastUpdatedTimeNotInFuture
+        whenOracleUpdatedTimeNotInFuture
     {
         // Deploy campaign with an oracle that has `updatedAt` timestamp older than 24 hours.
         merkleFactoryBase.setOracle(address(new ChainlinkOracleOutdated()));
@@ -62,7 +62,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         external
         givenOracleNotZero
         givenMinimumFeeNotZero
-        whenOracleLastUpdatedTimeNotInFuture
+        whenOracleUpdatedTimeNotInFuture
         whenOraclePriceNotOutdated
     {
         // Deploy campaign with with an oracle that returns 0 price.
@@ -78,7 +78,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         view
         givenOracleNotZero
         givenMinimumFeeNotZero
-        whenOracleLastUpdatedTimeNotInFuture
+        whenOracleUpdatedTimeNotInFuture
         whenOraclePriceNotOutdated
         whenOraclePriceNotZero
     {
@@ -90,7 +90,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         external
         givenOracleNotZero
         givenMinimumFeeNotZero
-        whenOracleLastUpdatedTimeNotInFuture
+        whenOracleUpdatedTimeNotInFuture
         whenOraclePriceNotOutdated
         whenOraclePriceNotZero
     {
@@ -106,7 +106,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         external
         givenOracleNotZero
         givenMinimumFeeNotZero
-        whenOracleLastUpdatedTimeNotInFuture
+        whenOracleUpdatedTimeNotInFuture
         whenOraclePriceNotOutdated
         whenOraclePriceNotZero
     {
