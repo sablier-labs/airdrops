@@ -4,11 +4,11 @@ pragma solidity >=0.8.22 <0.9.0;
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import {
     ChainlinkOracleOutdated,
-    ChainlinkOracleUpdatedInFuture,
+    ChainlinkOracleFuture,
     ChainlinkOracleWith18Decimals,
     ChainlinkOracleWith6Decimals,
-    ChainlinkOracleWithZeroPrice
-} from "tests/utils/ChainlinkOracleMock.sol";
+    ChainlinkOracleZeroPrice
+} from "tests/utils/ChainlinkMocks.sol";
 import { Integration_Test } from "../../../../Integration.t.sol";
 
 abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
@@ -37,7 +37,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
 
     function test_WhenOracleLastUpdatedTimeInFuture() external givenOracleNotZero givenMinimumFeeNotZero {
         // Deploy campaign with an oracle that has `updatedAt` timestamp in the future.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleUpdatedInFuture()));
+        merkleFactoryBase.setOracle(address(new ChainlinkOracleFuture()));
         _deployCampaign();
 
         // It should return zero.
@@ -66,7 +66,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         whenOraclePriceNotOutdated
     {
         // Deploy campaign with with an oracle that returns 0 price.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleWithZeroPrice()));
+        merkleFactoryBase.setOracle(address(new ChainlinkOracleZeroPrice()));
         _deployCampaign();
 
         // It should return zero.

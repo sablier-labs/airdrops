@@ -5,7 +5,7 @@ import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Error
 import { Noop } from "@sablier/evm-utils/src/mocks/Noop.sol";
 
 import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
-import { ChainlinkOracleMock } from "tests/utils/ChainlinkOracleMock.sol";
+import { ChainlinkOracleMock } from "tests/utils/ChainlinkMocks.sol";
 
 import { Integration_Test } from "../../../../Integration.t.sol";
 
