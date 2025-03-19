@@ -258,7 +258,7 @@ abstract contract SablierMerkleBase is
         }
 
         // Interactions: query the oracle decimals.
-        uint256 oracleDecimals = AggregatorV3Interface(ORACLE).decimals();
+        uint8 oracleDecimals = AggregatorV3Interface(ORACLE).decimals();
 
         // Adjust the price to match 8 decimals format.
         uint256 price8D;
