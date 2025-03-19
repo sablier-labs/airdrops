@@ -260,19 +260,14 @@ abstract contract SablierMerkleBase is
         // Interactions: query the oracle decimals.
         uint8 oracleDecimals = AggregatorV3Interface(ORACLE).decimals();
 
-        // Adjust the price to match 8 decimals format.
+        // Adjust the price so that it has 8 decimals.
         uint256 price8D;
         if (oracleDecimals == 8) {
             price8D = uint256(price);
-        }
-        // If there are not 8 decimals, adjust the price to match 8 decimals format and return.
-        else if (oracleDecimals < 8) {
+        } else if (oracleDecimals < 8) {
             price8D = uint256(price) * 10 ** (8 - oracleDecimals);
         } else {
-            // This is safe because the divisor cannot be zero.
-            unchecked {
-                price8D = uint256(price) / 10 ** (oracleDecimals - 8);
-            }
+            price8D = uint256(price) / 10 ** (oracleDecimals - 8);
         }
 
         // Multiply by 10^18 because the native token is assumed to have 18 decimals.
