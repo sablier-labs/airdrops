@@ -65,14 +65,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         assertEq(actualLT.minimumFee(), customFee, "minimum fee");
     }
 
-    function test_GivenCustomFeeNotSet(
-        address campaignOwner,
-        uint40 expiration
-    )
-        external
-        whenNativeTokenNotFound
-        givenCampaignNotExists
-    {
+    function test_GivenCustomFeeNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
         params.campaignName = "Merkle LT campaign with default fee set";
 

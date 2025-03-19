@@ -32,21 +32,8 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         createMerkleInstant(params);
     }
 
-<<<<<<< HEAD
-    function test_GivenCustomFeeSet() external givenCampaignNotExists {
+    function test_GivenCustomFeeSet() external whenNativeTokenNotFound givenCampaignNotExists {
         uint256 customFee = 0;
-=======
-    function test_GivenCustomFeeSet(
-        address campaignOwner,
-        uint40 expiration,
-        uint256 customFee
-    )
-        external
-        whenNativeTokenNotFound
-        givenCampaignNotExists
-    {
-        vm.assume(customFee <= MAX_FEE);
->>>>>>> 2563ae7 (test: setNativeToken)
 
         // Set the custom fee for this test.
         resetPrank(users.admin);
@@ -81,23 +68,11 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         assertEq(actualInstant.minimumFee(), customFee, "minimum fee");
     }
 
-<<<<<<< HEAD
-    function test_GivenCustomFeeNotSet() external givenCampaignNotExists {
+    function test_GivenCustomFeeNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
         MerkleInstant.ConstructorParams memory params = merkleInstantConstructorParams();
         params.campaignName = "Merkle Instant campaign with default fee set";
 
         address expectedMerkleInstant = computeMerkleInstantAddress(params, users.campaignCreator);
-=======
-    function test_GivenCustomFeeNotSet(
-        address campaignOwner,
-        uint40 expiration
-    )
-        external
-        whenNativeTokenNotFound
-        givenCampaignNotExists
-    {
-        address expectedMerkleInstant = computeMerkleInstantAddress(campaignOwner, expiration);
->>>>>>> 2563ae7 (test: setNativeToken)
 
         // It should emit a {CreateMerkleInstant} event.
         vm.expectEmit({ emitter: address(merkleFactoryInstant) });
