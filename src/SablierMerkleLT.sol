@@ -156,10 +156,8 @@ contract SablierMerkleLT is
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Calculates the start time and the tranches based on the claim amount and the unlock percentages.
-    /// @dev It is safe to use unchecked for all calculations except for the timestamps. If there's an overflow,
-    /// the end time might become earlier than the start time, resulting in the claim amount being sent directly to
-    /// the recipient.
+    /// @dev Calculates the start time, and the tranches based on the claim amount and the unlock percentages for each
+    /// tranche.
     function _calculateStartTimeAndTranches(uint128 claimAmount)
         internal
         view
