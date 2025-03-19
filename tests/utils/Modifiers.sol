@@ -123,7 +123,7 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
-    modifier WhenOracleLastUpdatedTimeNotInFuture() {
+    modifier whenOracleLastUpdatedTimeNotInFuture() {
         _;
     }
 

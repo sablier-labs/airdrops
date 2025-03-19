@@ -16,7 +16,7 @@ abstract contract SetNativeToken_Integration_Test is Integration_Test {
     function test_RevertWhen_ProvidedAddressZero() external whenCallerAdmin {
         address newNativeToken = address(0);
 
-        vm.expectRevert(Errors.SablierMerkleFactoryBase_SetNativeTokenZeroAddress.selector);
+        vm.expectRevert(Errors.SablierMerkleFactoryBase_NativeTokenZeroAddress.selector);
         merkleFactoryBase.setNativeToken(newNativeToken);
     }
 
@@ -26,7 +26,9 @@ abstract contract SetNativeToken_Integration_Test is Integration_Test {
         merkleFactoryBase.setNativeToken(nativeToken);
 
         // It should revert.
-        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_NativeTokenSet.selector, nativeToken));
+        vm.expectRevert(
+            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_NativeTokenAlreadySet.selector, nativeToken)
+        );
 
         // Set native token again with a different address.
         merkleFactoryBase.setNativeToken(address(usdc));

@@ -63,16 +63,16 @@ interface ISablierMerkleBase is IAdminable {
     function minimumFee() external view returns (uint256);
 
     /// @notice Calculates the minimum fee in wei required to claim the airdrop.
-    /// @dev It uses the `minimumFee` and the oracle price to calculate the fee in wei.
+    /// @dev Uses {minimumFee} and the oracle price to calculate the fee in wei.
     ///
-    /// Notes:
-    /// 1. If the oracle is not set, return 0.
-    /// 2. If the minimum fee is 0, return 0.
-    /// 3. If the oracle price is not greater than 0, return 0.
-    /// 4. If the oracle price was not updated within the last 24 hours, return 0.
-    /// 5. If the oracle's last updated timestamp is in the future, return 0.
+    /// The price is considered to be 0 if:
+    /// 1. The oracle is not set.
+    /// 2. The minimum fee is 0.
+    /// 3. The oracle price is ≤ 0.
+    /// 4. The oracle's update timestamp is in the future.
+    /// 5. The oracle price hasn't been updated in the last 24 hours.
     ///
-    /// @return The minimum fee required to claim the airdrop, as an 18-decimal number, where 1e18 is 1 native token.
+    /// @return The minimum fee in wei, as an 18-decimal number (1e18 = 1 native token).
     function minimumFeeInWei() external view returns (uint256);
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ interface ISablierMerkleBase is IAdminable {
     /// @param merkleProof The proof of inclusion in the Merkle tree.
     function claim(uint256 index, address recipient, uint128 amount, bytes32[] calldata merkleProof) external payable;
 
-    /// @notice Claws back the unclaimed tokens from the campaign.
+    /// @notice Claws back the unclaimed tokens.
     ///
     /// @dev Emits a {Clawback} event.
     ///

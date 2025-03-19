@@ -48,7 +48,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         external
         givenOracleNotZero
         givenMinimumFeeNotZero
-        WhenOracleLastUpdatedTimeNotInFuture
+        whenOracleLastUpdatedTimeNotInFuture
     {
         // Deploy campaign with an oracle that has `updatedAt` timestamp older than 24 hours.
         merkleFactoryBase.setOracle(address(new ChainlinkOracleOutdated()));
@@ -62,7 +62,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         external
         givenOracleNotZero
         givenMinimumFeeNotZero
-        WhenOracleLastUpdatedTimeNotInFuture
+        whenOracleLastUpdatedTimeNotInFuture
         whenOraclePriceNotOutdated
     {
         // Deploy campaign with with an oracle that returns 0 price.
@@ -78,7 +78,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         view
         givenOracleNotZero
         givenMinimumFeeNotZero
-        WhenOracleLastUpdatedTimeNotInFuture
+        whenOracleLastUpdatedTimeNotInFuture
         whenOraclePriceNotOutdated
         whenOraclePriceNotZero
     {
@@ -90,7 +90,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         external
         givenOracleNotZero
         givenMinimumFeeNotZero
-        WhenOracleLastUpdatedTimeNotInFuture
+        whenOracleLastUpdatedTimeNotInFuture
         whenOraclePriceNotOutdated
         whenOraclePriceNotZero
     {
@@ -106,7 +106,7 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
         external
         givenOracleNotZero
         givenMinimumFeeNotZero
-        WhenOracleLastUpdatedTimeNotInFuture
+        whenOracleLastUpdatedTimeNotInFuture
         whenOraclePriceNotOutdated
         whenOraclePriceNotZero
     {
