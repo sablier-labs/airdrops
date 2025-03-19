@@ -99,7 +99,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// - `msg.sender` must be the admin.
     ///
     /// @param campaignCreator The user for whom the fee is set.
-    /// @param newFee The new fee to be set.
+    /// @param newFee The new fee to set.
     function setCustomFee(address campaignCreator, uint256 newFee) external;
 
     /// @notice Sets the minimum fee to be applied when claiming airdrops.
@@ -112,17 +112,20 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// Requirements:
     /// - `msg.sender` must be the admin.
     ///
-    /// @param newFee The new minimum fee to be set.
+    /// @param newFee The new minimum fee to set.
     function setMinimumFee(uint256 newFee) external;
 
-    /// @notice Sets the native token address, if its non-zero. Once set, it cannot be changed.
-    /// @dev Emits a {SetNativeToken} event.
+    /// @notice Sets the native token address. Once set, it cannot be changed.
+    /// @dev For more information, see the documentation for {nativeToken}.
+    ///
+    /// Emits a {SetNativeToken} event.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
-    /// - `tokenAddress` must not be zero address.
-    /// - `nativeToken` must not be set.
-    function setNativeToken(address tokenAddress) external;
+    /// - `newNativeToken` must not be zero address.
+    /// - The native token must not be already set.
+    /// @param newNativeToken The address of the native token.
+    function setNativeToken(address newNativeToken) external;
 
     /// @notice Sets the oracle contract address.
     /// @dev Emits a {SetOracle} event.

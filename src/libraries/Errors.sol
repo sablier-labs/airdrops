@@ -50,7 +50,7 @@ library Errors {
     error SablierMerkleFactoryBase_NativeTokenSet(address nativeToken);
 
     /// @notice Thrown when trying to set zero address as native token.
-    error SablierMerkleFactoryBase_NewNativeTokenZeroAddress();
+    error SablierMerkleFactoryBase_SetNativeTokenZeroAddress();
 
     /*//////////////////////////////////////////////////////////////////////////
                                  SABLIER-MERKLE-LT

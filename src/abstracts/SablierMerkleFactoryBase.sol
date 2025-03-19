@@ -118,7 +118,7 @@ abstract contract SablierMerkleFactoryBase is
     function setNativeToken(address newNativeToken) external override onlyAdmin {
         // Check: provided token is not zero address.
         if (newNativeToken == address(0)) {
-            revert Errors.SablierMerkleFactoryBase_NewNativeTokenZeroAddress();
+            revert Errors.SablierMerkleFactoryBase_SetNativeTokenZeroAddress();
         }
 
         // Check: native token is not set.
@@ -126,7 +126,7 @@ abstract contract SablierMerkleFactoryBase is
             revert Errors.SablierMerkleFactoryBase_NativeTokenSet(nativeToken);
         }
 
-        // Effect: update the native token.
+        // Effect: set the native token.
         nativeToken = newNativeToken;
 
         // Log the update.
