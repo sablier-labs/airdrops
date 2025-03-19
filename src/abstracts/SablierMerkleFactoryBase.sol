@@ -147,17 +147,21 @@ abstract contract SablierMerkleFactoryBase is
                             INTERNAL CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
+    function _getFee(address campaignCreator) internal view returns (uint256) {
+        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : minimumFee;
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                          INTERNAL NON-CONSTANT FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
     /// @notice Checks that the provided token is not the native token.
     /// @dev Reverts if the provided token is the native token.
     function _forbidNativeToken(address token) internal view {
         if (token == nativeToken) {
             revert Errors.SablierMerkleFactoryBase_ForbidNativeToken(token);
         }
-    }
-
-    /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
-    function _getFee(address campaignCreator) internal view returns (uint256) {
-        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : minimumFee;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
