@@ -89,17 +89,16 @@ contract SablierMerkleLL is
         // Load schedule from storage into memory.
         MerkleLL.Schedule memory schedule = _schedule;
 
-        // Calculate the timestamps for the stream.
+        // Calculate the timestamps. Zero is used a sentinel value for `block.timestamp`.
         Lockup.Timestamps memory timestamps;
         if (schedule.startTime == 0) {
             timestamps.start = uint40(block.timestamp);
         } else {
             timestamps.start = schedule.startTime;
         }
-
         timestamps.end = timestamps.start + schedule.totalDuration;
 
-        // If the stream end time is not in the future, transfer the amount directly to the recipient.
+        // If the end time is not in the future, transfer the amount directly to the recipient.
         if (timestamps.end <= block.timestamp) {
             // Interaction: transfer the token.
             TOKEN.safeTransfer(recipient, amount);
@@ -107,11 +106,10 @@ contract SablierMerkleLL is
             // Log the claim.
             emit Claim(index, recipient, amount);
         }
-        // Otherwise, create the Lockup stream.
+        // Otherwise, create the Lockup stream to start the vesting.
         else {
+            // Calculate cliff time.
             uint40 cliffTime;
-
-            // Calculate cliff time if the cliff duration is greater than 0.
             if (schedule.cliffDuration > 0) {
                 cliffTime = timestamps.start + schedule.cliffDuration;
             }
@@ -121,7 +119,7 @@ contract SablierMerkleLL is
             unlockAmounts.start = ud60x18(amount).mul(schedule.startPercentage.intoUD60x18()).intoUint128();
             unlockAmounts.cliff = ud60x18(amount).mul(schedule.cliffPercentage.intoUD60x18()).intoUint128();
 
-            // Interaction: create the stream via {SablierLockup}.
+            // Interaction: create the stream via the {Lockup} contract.
             uint256 streamId = LOCKUP.createWithTimestampsLL(
                 Lockup.CreateWithTimestamps({
                     sender: admin,
@@ -137,7 +135,7 @@ contract SablierMerkleLL is
                 cliffTime
             );
 
-            // Effect: push the stream ID into the `_claimedStreams` array for the recipient.
+            // Effect: push the stream ID into the claimed streams array.
             _claimedStreams[recipient].push(streamId);
 
             // Log the claim.

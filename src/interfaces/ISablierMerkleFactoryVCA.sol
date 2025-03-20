@@ -37,11 +37,11 @@ interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
     /// the campaign deployment will revert.
     ///
     /// Requirements:
-    /// - The value of `params.expiration` must not be zero.
+    /// - The value of `params.expiration` must not be 0.
     /// - The value of `params.expiration` must be at least 1 week beyond the unlock end time to ensure loyal recipients
     /// have enough time to claim.
     /// - `params.schedule.end` must be greater than `params.schedule.start`.
-    /// - Both `params.schedule.start` and `params.timestamps.end` must be non-zero.
+    /// - Both `params.schedule.start` and `params.timestamps.end` must not be 0.
     ///
     /// @param params Struct encapsulating the {SablierMerkleVCA} parameters, which are documented in {DataTypes}.
     /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.

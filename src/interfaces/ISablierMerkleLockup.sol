@@ -33,8 +33,9 @@ interface ISablierMerkleLockup is ISablierMerkleBase {
     function STREAM_TRANSFERABLE() external returns (bool);
 
     /// @notice Retrieves the stream IDs associated with the airdrops claimed by the provided recipient.
+    /// In practice, most campaigns will only have one stream per recipient.
     function claimedStreams(address recipient) external view returns (uint256[] memory);
 
-    /// @notice Retrieves the shape of the lockup stream that the campaign produces upon claiming.
+    /// @notice Retrieves the shape of the Lockup stream that the campaign produces upon claiming.
     function shape() external view returns (string memory);
 }

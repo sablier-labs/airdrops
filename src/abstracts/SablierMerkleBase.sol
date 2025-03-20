@@ -128,7 +128,7 @@ abstract contract SablierMerkleBase is
         // Calculate the minimum claim fee in wei.
         uint256 minClaimFee = _minimumFeeInWei();
 
-        // Check: `msg.value` is more than the minimum claim fee.
+        // Check: the minimum fee was paid.
         if (msg.value < minClaimFee) {
             revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, minClaimFee);
         }
@@ -138,8 +138,7 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_StreamClaimed(index);
         }
 
-        // Generate the Merkle tree leaf by hashing the corresponding parameters. Hashing twice prevents second
-        // preimage attacks.
+        // Generate the Merkle tree leaf. Hashing twice prevents second preimage attacks.
         bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(index, recipient, amount))));
 
         // Check: the input claim is included in the Merkle tree.
@@ -161,7 +160,7 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     function clawback(address to, uint128 amount) external override onlyAdmin {
-        // Check: current timestamp is over the grace period and the campaign has not expired.
+        // Check: the grace period has passed and the campaign has not expired.
         if (_hasGracePeriodPassed() && !hasExpired()) {
             revert Errors.SablierMerkleBase_ClawbackNotAllowed({
                 blockTimestamp: block.timestamp,
@@ -181,7 +180,7 @@ abstract contract SablierMerkleBase is
     function collectFees(address factoryAdmin) external override returns (uint256 feeAmount) {
         // Check: the caller is the FACTORY.
         if (msg.sender != FACTORY) {
-            revert Errors.SablierMerkleBase_CallerNotFactory(FACTORY, msg.sender);
+            revert Errors.SablierMerkleBase_CallerNotFactory({ factory: FACTORY, caller: msg.sender });
         }
 
         feeAmount = address(this).balance;
