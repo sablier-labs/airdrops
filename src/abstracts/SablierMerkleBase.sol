@@ -62,10 +62,10 @@ abstract contract SablierMerkleBase is
     /// @notice Constructs the contract by initializing the immutable state variables.
     constructor(
         address campaignCreator,
-        string memory _campaignName,
+        string memory campaignName_,
         uint40 expiration,
         address initialAdmin,
-        string memory _ipfsCID,
+        string memory ipfsCID_,
         bytes32 merkleRoot,
         IERC20 token
     )
@@ -76,8 +76,8 @@ abstract contract SablierMerkleBase is
         MERKLE_ROOT = merkleRoot;
         ORACLE = ISablierMerkleFactoryBase(FACTORY).oracle();
         TOKEN = token;
-        campaignName = _campaignName;
-        ipfsCID = _ipfsCID;
+        campaignName = campaignName_;
+        ipfsCID = ipfsCID_;
         minimumFee = ISablierMerkleFactoryBase(FACTORY).getFee(campaignCreator);
     }
 
