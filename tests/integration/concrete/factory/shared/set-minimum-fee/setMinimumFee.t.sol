@@ -26,7 +26,11 @@ abstract contract SetMinimumFee_Integration_Test is Integration_Test {
 
         // It should emit a {SetMinimumFee} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetMinimumFee({ admin: users.admin, minimumFee: newFee });
+        emit ISablierMerkleFactoryBase.SetMinimumFee({
+            admin: users.admin,
+            newMinimumFee: newFee,
+            previousMinimumFee: MINIMUM_FEE
+        });
 
         merkleFactoryBase.setMinimumFee(newFee);
 

@@ -33,7 +33,7 @@ abstract contract SetCustomFee_Integration_Test is Integration_Test {
         emit ISablierMerkleFactoryBase.SetCustomFee({
             admin: users.admin,
             campaignCreator: users.campaignCreator,
-            customFee: customFee
+            newCustomFee: customFee
         });
 
         // Set the custom fee.
@@ -60,7 +60,7 @@ abstract contract SetCustomFee_Integration_Test is Integration_Test {
         emit ISablierMerkleFactoryBase.SetCustomFee({
             admin: users.admin,
             campaignCreator: users.campaignCreator,
-            customFee: customFee
+            newCustomFee: customFee
         });
 
         // Set the custom fee.

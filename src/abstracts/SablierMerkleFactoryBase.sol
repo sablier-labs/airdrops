@@ -80,12 +80,12 @@ abstract contract SablierMerkleFactoryBase is
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function setCustomFee(address campaignCreator, uint256 newFee) external override onlyAdmin {
+    function setCustomFee(address campaignCreator, uint256 newCustomFee) external override onlyAdmin {
         MerkleFactory.CustomFee storage customFeeByUser = _customFees[campaignCreator];
 
         // Check: the new fee is not greater than `MAX_FEE`.
-        if (newFee > MAX_FEE) {
-            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_FEE);
+        if (newCustomFee > MAX_FEE) {
+            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newCustomFee, MAX_FEE);
         }
 
         // Effect: enable the custom fee for the user if it is not already enabled.
@@ -94,24 +94,25 @@ abstract contract SablierMerkleFactoryBase is
         }
 
         // Effect: update the custom fee for the given campaign creator.
-        customFeeByUser.fee = newFee;
+        customFeeByUser.fee = newCustomFee;
 
         // Log the update.
-        emit SetCustomFee({ admin: msg.sender, campaignCreator: campaignCreator, customFee: newFee });
+        emit SetCustomFee({ admin: msg.sender, campaignCreator: campaignCreator, newCustomFee: newCustomFee });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function setMinimumFee(uint256 newFee) external override onlyAdmin {
+    function setMinimumFee(uint256 newMinimumFee) external override onlyAdmin {
         // Check: the new fee is not greater than `MAX_FEE`.
-        if (newFee > MAX_FEE) {
-            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_FEE);
+        if (newMinimumFee > MAX_FEE) {
+            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newMinimumFee, MAX_FEE);
         }
 
         // Effect: update the minimum fee.
-        minimumFee = newFee;
+        uint256 previousMinimumFee = minimumFee;
+        minimumFee = newMinimumFee;
 
         // Log the update.
-        emit SetMinimumFee({ admin: msg.sender, minimumFee: newFee });
+        emit SetMinimumFee({ admin: msg.sender, newMinimumFee: newMinimumFee, previousMinimumFee: previousMinimumFee });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase

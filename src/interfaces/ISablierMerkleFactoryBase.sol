@@ -24,10 +24,10 @@ interface ISablierMerkleFactoryBase is IAdminable {
     event ResetCustomFee(address indexed admin, address indexed campaignCreator);
 
     /// @notice Emitted when the admin sets a custom fee for the provided campaign creator.
-    event SetCustomFee(address indexed admin, address indexed campaignCreator, uint256 customFee);
+    event SetCustomFee(address indexed admin, address indexed campaignCreator, uint256 newCustomFee);
 
     /// @notice Emitted when the minimum fee is set by the admin.
-    event SetMinimumFee(address indexed admin, uint256 minimumFee);
+    event SetMinimumFee(address indexed admin, uint256 newMinimumFee, uint256 previousMinimumFee);
 
     /// @notice Emitted when the native token address is set by the admin.
     event SetNativeToken(address indexed admin, address nativeToken);
