@@ -41,7 +41,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
 
         uint40 expectedStartTime;
 
-        // If the start time is not zero, bound it to a reasonable range so that vesting end time can be in the past,
+        // If the start time is not zero, bound it to a reasonable range so that schedule end time can be in the past,
         // present and future.
         if (startTime != 0) {
             startTime =
@@ -93,7 +93,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
         uint256 expectedStreamId;
         uint256 initialRecipientTokenBalance = FORK_TOKEN.balanceOf(vars.leafToClaim.recipient);
 
-        // It should emit {Claim} event based on the vesting end time.
+        // It should emit {Claim} event based on the schedule end time.
         if (expectedStartTime + TOTAL_DURATION <= getBlockTimestamp()) {
             vm.expectEmit({ emitter: address(merkleLT) });
             emit ISablierMerkleLockup.Claim(vars.leafToClaim.index, vars.leafToClaim.recipient, vars.leafToClaim.amount);
@@ -123,7 +123,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
             merkleProof: vars.merkleProof
         });
 
-        // Assertions when vesting end time does not exceed the block time.
+        // Assertions when schedule end time does not exceed the block time.
         if (expectedStartTime + TOTAL_DURATION <= getBlockTimestamp()) {
             assertEq(
                 FORK_TOKEN.balanceOf(vars.leafToClaim.recipient),
@@ -131,7 +131,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
                 "recipient balance"
             );
         }
-        // Assertions when vesting end time exceeds the block time.
+        // Assertions when schedule end time exceeds the block time.
         else {
             Lockup.CreateWithTimestamps memory expectedLockup = Lockup.CreateWithTimestamps({
                 sender: params.campaignCreator,

@@ -70,11 +70,11 @@ library Errors {
     error SablierMerkleVCA_ExpiryTimeZero();
 
     /// @notice Thrown if expiry of a VCA campaign is within 1 week from the unlock end time.
-    error SablierMerkleVCA_ExpiryWithinOneWeekOfUnlockEndTime(uint40 endTime, uint40 expiration);
+    error SablierMerkleVCA_ExpirationTooEarly(uint40 endTime, uint40 expiration);
 
     /// @notice Thrown if end time of unlock is less than the start time.
-    error SablierMerkleVCA_StartTimeExceedsEndTime(uint40 startTime, uint40 endTime);
+    error SablierMerkleVCA_StartTimeGreaterThanEndTime(uint40 startTime, uint40 endTime);
 
     /// @notice Thrown if the unlock start time is zero.
-    error SablierMerkleVCA_StartTimeZero();
+    error SablierMerkleVCA_VestingStartTimeZero();
 }

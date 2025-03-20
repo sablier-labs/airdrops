@@ -139,15 +139,15 @@ library MerkleVCA {
         address initialAdmin;
         string ipfsCID;
         bytes32 merkleRoot;
-        Timestamps timestamps;
+        Schedule schedule;
         IERC20 token;
     }
 
     /// @notice Struct encapsulating the start time and end time of the airdrop unlocks.
-    /// @param start The timestamp when the airdrop token begins to unlock.
-    /// @param end The timestamp when the airdrop token unlocks 100%.
-    struct Timestamps {
-        uint40 start;
-        uint40 end;
+    /// @param startTime The timestamp when the airdrop token begins to unlock.
+    /// @param endTime The timestamp when the airdrop token unlocks 100%.
+    struct Schedule {
+        uint40 startTime;
+        uint40 endTime;
     }
 }

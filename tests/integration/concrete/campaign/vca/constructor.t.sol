@@ -25,8 +25,8 @@ contract Constructor_MerkleVCA_Integration_Test is MerkleVCA_Integration_Shared_
         assertEq(address(constructedVCA.TOKEN()), address(dai), "token");
 
         // SablierMerkleVCA
-        assertEq(constructedVCA.forgoneAmount(), 0, "forgoneAmount");
-        assertEq(constructedVCA.timestamps().start, RANGED_STREAM_START_TIME, "unlock start");
-        assertEq(constructedVCA.timestamps().end, RANGED_STREAM_END_TIME, "unlock end");
+        assertEq(constructedVCA.getSchedule().endTime, RANGED_STREAM_END_TIME, "schedule end time");
+        assertEq(constructedVCA.getSchedule().startTime, RANGED_STREAM_START_TIME, "schedule start time");
+        assertEq(constructedVCA.totalForgoneAmount(), 0, "total forgone amount");
     }
 }

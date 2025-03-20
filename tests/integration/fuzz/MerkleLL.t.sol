@@ -150,7 +150,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function expectClaimEvent(LeafData memory leafData) internal override {
-        // It should emit {Claim} event based on the vesting end time.
+        // It should emit {Claim} event based on the schedule end time.
         MerkleLL.Schedule memory schedule = merkleLL.getSchedule();
         uint40 expectedStartTime = schedule.startTime == 0 ? getBlockTimestamp() : schedule.startTime;
 

@@ -37,10 +37,10 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
     function test_RevertWhen_StartTimeZero() external whenNativeTokenNotFound givenCampaignNotExists {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
-        params.timestamps.start = 0;
+        params.schedule.startTime = 0;
 
         // It should revert.
-        vm.expectRevert(Errors.SablierMerkleVCA_StartTimeZero.selector);
+        vm.expectRevert(Errors.SablierMerkleVCA_VestingStartTimeZero.selector);
         createMerkleVCA(params);
     }
 
@@ -52,12 +52,14 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
     {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
         // Set the end time to be less than the start time.
-        params.timestamps.end = RANGED_STREAM_START_TIME - 1;
+        params.schedule.endTime = RANGED_STREAM_START_TIME - 1 seconds;
 
         // It should revert.
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleVCA_StartTimeExceedsEndTime.selector, params.timestamps.start, params.timestamps.end
+                Errors.SablierMerkleVCA_StartTimeGreaterThanEndTime.selector,
+                params.schedule.startTime,
+                params.schedule.endTime
             )
         );
         createMerkleVCA(params);
@@ -71,12 +73,14 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
     {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
         // Set the end time equal to the start time.
-        params.timestamps.end = RANGED_STREAM_START_TIME;
+        params.schedule.endTime = RANGED_STREAM_START_TIME;
 
         // It should revert.
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleVCA_StartTimeExceedsEndTime.selector, params.timestamps.start, params.timestamps.end
+                Errors.SablierMerkleVCA_StartTimeGreaterThanEndTime.selector,
+                params.schedule.startTime,
+                params.schedule.endTime
             )
         );
         createMerkleVCA(params);
@@ -106,14 +110,12 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         whenNotZeroExpiry
     {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
-        params.expiration = RANGED_STREAM_END_TIME + 1 weeks - 1;
+        params.expiration = RANGED_STREAM_END_TIME + 1 weeks - 1 seconds;
 
         // It should revert.
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleVCA_ExpiryWithinOneWeekOfUnlockEndTime.selector,
-                params.timestamps.end,
-                params.expiration
+                Errors.SablierMerkleVCA_ExpirationTooEarly.selector, params.schedule.endTime, params.expiration
             )
         );
         createMerkleVCA(params);
@@ -161,9 +163,9 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
 
-        // It should set return the correct unlock timestamps.
-        assertEq(actualVCA.timestamps().start, RANGED_STREAM_START_TIME, "unlock start");
-        assertEq(actualVCA.timestamps().end, RANGED_STREAM_END_TIME, "unlock end");
+        // It should set return the correct schedule.
+        assertEq(actualVCA.getSchedule().startTime, RANGED_STREAM_START_TIME, "schedule start time");
+        assertEq(actualVCA.getSchedule().endTime, RANGED_STREAM_END_TIME, "schedule end time");
     }
 
     function test_GivenCustomFeeNotSet()
@@ -201,7 +203,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
 
         // It should set return the correct unlock timestamps.
-        assertEq(actualVCA.timestamps().start, RANGED_STREAM_START_TIME, "unlock start");
-        assertEq(actualVCA.timestamps().end, RANGED_STREAM_END_TIME, "unlock end");
+        assertEq(actualVCA.getSchedule().startTime, RANGED_STREAM_START_TIME, "schedule start time");
+        assertEq(actualVCA.getSchedule().endTime, RANGED_STREAM_END_TIME, "schedule end time");
     }
 }

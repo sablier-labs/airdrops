@@ -33,22 +33,22 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
                                    TEST-FUNCTION
     //////////////////////////////////////////////////////////////////////////*/
 
-    function testForkFuzz_MerkleVCA(Params memory params, MerkleVCA.Timestamps memory timestamps) external {
+    function testForkFuzz_MerkleVCA(Params memory params, MerkleVCA.Schedule memory schedule) external {
         /*//////////////////////////////////////////////////////////////////////////
                                           CREATE
         //////////////////////////////////////////////////////////////////////////*/
 
         preCreateCampaign(params);
 
-        vm.assume(timestamps.end > 0 && timestamps.start > 0);
+        vm.assume(schedule.endTime > 0 && schedule.startTime > 0);
 
         // Bound unlock start and end times.
-        timestamps.start = boundUint40(timestamps.start, 1, getBlockTimestamp() - 1);
-        timestamps.end = boundUint40(timestamps.end, timestamps.start + 1, MAX_UNIX_TIMESTAMP - 2 weeks);
+        schedule.startTime = boundUint40(schedule.startTime, 1 seconds, getBlockTimestamp() - 1 seconds);
+        schedule.endTime = boundUint40(schedule.endTime, schedule.startTime + 1 seconds, MAX_UNIX_TIMESTAMP - 2 weeks);
 
         // The expiration must exceed the unlock end time by at least 1 week.
-        if (timestamps.end > getBlockTimestamp() - 1 weeks) {
-            params.expiration = boundUint40(params.expiration, timestamps.end + 1 weeks, MAX_UNIX_TIMESTAMP);
+        if (schedule.endTime > getBlockTimestamp() - 1 weeks) {
+            params.expiration = boundUint40(params.expiration, schedule.endTime + 1 weeks, MAX_UNIX_TIMESTAMP);
         } else {
             // If unlock end time is in the past, set expiration into the future to allow claiming.
             params.expiration = boundUint40(params.expiration, getBlockTimestamp() + 1, MAX_UNIX_TIMESTAMP);
@@ -58,7 +58,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
             campaignCreator: params.campaignCreator,
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
-            timestamps: timestamps,
+            schedule: schedule,
             tokenAddress: FORK_TOKEN
         });
 
@@ -89,21 +89,27 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
 
         preClaim(params);
 
-        uint128 claimableAmount;
+        uint128 claimAmount;
+        uint128 forgoneAmount;
 
-        if (getBlockTimestamp() >= timestamps.end) {
-            claimableAmount = vars.leafToClaim.amount;
+        if (getBlockTimestamp() >= schedule.endTime) {
+            claimAmount = vars.leafToClaim.amount;
+            forgoneAmount = 0;
         } else {
-            // Calculate the claimable amount based on the elapsed time.
-            uint40 elapsedTime = getBlockTimestamp() - timestamps.start;
-            uint40 totalDuration = timestamps.end - timestamps.start;
-            claimableAmount = uint128((uint256(vars.leafToClaim.amount) * elapsedTime) / totalDuration);
+            // Calculate the claim amount based on the elapsed time.
+            uint40 elapsedTime = getBlockTimestamp() - schedule.startTime;
+            uint40 totalDuration = schedule.endTime - schedule.startTime;
+            claimAmount = uint128((uint256(vars.leafToClaim.amount) * elapsedTime) / totalDuration);
+            forgoneAmount = vars.leafToClaim.amount - claimAmount;
         }
 
         vm.expectEmit({ emitter: address(merkleVCA) });
-        emit ISablierMerkleVCA.Claim(
-            vars.leafToClaim.index, vars.leafToClaim.recipient, claimableAmount, vars.leafToClaim.amount
-        );
+        emit ISablierMerkleVCA.Claim({
+            index: vars.leafToClaim.index,
+            recipient: vars.leafToClaim.recipient,
+            claimAmount: claimAmount,
+            forgoneAmount: forgoneAmount
+        });
 
         expectCallToClaimWithData({
             merkleLockup: address(merkleVCA),
@@ -114,7 +120,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
             merkleProof: vars.merkleProof
         });
 
-        expectCallToTransfer({ token: FORK_TOKEN, to: vars.leafToClaim.recipient, value: claimableAmount });
+        expectCallToTransfer({ token: FORK_TOKEN, to: vars.leafToClaim.recipient, value: claimAmount });
 
         merkleVCA.claim{ value: vars.minimumFeeInWei }({
             index: vars.leafToClaim.index,
@@ -125,8 +131,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
 
         assertTrue(merkleVCA.hasClaimed(vars.leafToClaim.index));
 
-        uint256 expectedForgoneAmount = vars.leafToClaim.amount - claimableAmount;
-        assertEq(merkleVCA.forgoneAmount(), expectedForgoneAmount, "forgoneAmount");
+        assertEq(merkleVCA.totalForgoneAmount(), forgoneAmount, "total forgone amount");
 
         /*//////////////////////////////////////////////////////////////////////////
                                         CLAWBACK

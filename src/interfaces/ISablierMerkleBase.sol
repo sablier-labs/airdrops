@@ -43,7 +43,7 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice Retrieves the name of the campaign.
     function campaignName() external view returns (string memory);
 
-    /// @notice Returns the timestamp when the first claim is made.
+    /// @notice Retrieves the timestamp when the first claim is made.
     function getFirstClaimTime() external view returns (uint40);
 
     /// @notice Returns a flag indicating whether a claim has been made for a given index.
@@ -85,7 +85,7 @@ interface ISablierMerkleBase is IAdminable {
     ///
     /// Notes:
     /// - For Merkle Instant and Merkle VCA campaigns, it transfers the tokens directly to the recipient.
-    /// - For Merkle Lockup campaigns, it creates a Lockup stream only if vesting end time is in the future. Otherwise,
+    /// - For Merkle Lockup campaigns, it creates a Lockup stream only if schedule end time is in the future. Otherwise,
     /// it transfers the tokens directly to the recipient.
     ///
     /// Requirements:

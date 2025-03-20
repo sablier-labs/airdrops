@@ -544,7 +544,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
                 campaignCreator: users.campaignCreator,
                 expiration: EXPIRATION,
                 merkleRoot: MERKLE_ROOT,
-                timestamps: merkleVCATimestamps(),
+                schedule: merkleVCASchedule(),
                 tokenAddress: dai
             }),
             users.campaignCreator
@@ -589,7 +589,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             campaignCreator: users.campaignCreator,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
-            timestamps: merkleVCATimestamps(),
+            schedule: merkleVCASchedule(),
             tokenAddress: dai
         });
     }
@@ -598,7 +598,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         address campaignCreator,
         uint40 expiration,
         bytes32 merkleRoot,
-        MerkleVCA.Timestamps memory timestamps,
+        MerkleVCA.Schedule memory schedule,
         IERC20 tokenAddress
     )
         public
@@ -611,12 +611,12 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             initialAdmin: campaignCreator,
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
-            timestamps: timestamps,
+            schedule: schedule,
             token: tokenAddress
         });
     }
 
-    function merkleVCATimestamps() public view returns (MerkleVCA.Timestamps memory) {
-        return MerkleVCA.Timestamps({ start: RANGED_STREAM_START_TIME, end: RANGED_STREAM_END_TIME });
+    function merkleVCASchedule() public view returns (MerkleVCA.Schedule memory) {
+        return MerkleVCA.Schedule({ startTime: RANGED_STREAM_START_TIME, endTime: RANGED_STREAM_END_TIME });
     }
 }
