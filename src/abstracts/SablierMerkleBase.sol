@@ -47,7 +47,7 @@ abstract contract SablierMerkleBase is
     string public override ipfsCID;
 
     /// @inheritdoc ISablierMerkleBase
-    uint256 public override minimumFee;
+    uint256 public override minFeeUSD;
 
     /// @dev Packed booleans that record the history of claims.
     BitMaps.BitMap internal _claimedBitMap;
@@ -62,10 +62,10 @@ abstract contract SablierMerkleBase is
     /// @notice Constructs the contract by initializing the immutable state variables.
     constructor(
         address campaignCreator,
-        string memory _campaignName,
+        string memory campaignName_,
         uint40 expiration,
         address initialAdmin,
-        string memory _ipfsCID,
+        string memory ipfsCID_,
         bytes32 merkleRoot,
         IERC20 token
     )
@@ -76,9 +76,9 @@ abstract contract SablierMerkleBase is
         MERKLE_ROOT = merkleRoot;
         ORACLE = ISablierMerkleFactoryBase(FACTORY).oracle();
         TOKEN = token;
-        campaignName = _campaignName;
-        ipfsCID = _ipfsCID;
-        minimumFee = ISablierMerkleFactoryBase(FACTORY).getFee(campaignCreator);
+        campaignName = campaignName_;
+        ipfsCID = ipfsCID_;
+        minFeeUSD = ISablierMerkleFactoryBase(FACTORY).minFeeUSDFor(campaignCreator);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -128,7 +128,7 @@ abstract contract SablierMerkleBase is
         // Calculate the minimum claim fee in wei.
         uint256 minClaimFee = _minimumFeeInWei();
 
-        // Check: `msg.value` is more than the minimum claim fee.
+        // Check: the minimum fee was paid.
         if (msg.value < minClaimFee) {
             revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, minClaimFee);
         }
@@ -138,8 +138,7 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_StreamClaimed(index);
         }
 
-        // Generate the Merkle tree leaf by hashing the corresponding parameters. Hashing twice prevents second
-        // preimage attacks.
+        // Generate the Merkle tree leaf. Hashing twice prevents second preimage attacks.
         bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(index, recipient, amount))));
 
         // Check: the input claim is included in the Merkle tree.
@@ -161,7 +160,7 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     function clawback(address to, uint128 amount) external override onlyAdmin {
-        // Check: current timestamp is over the grace period and the campaign has not expired.
+        // Check: the grace period has passed and the campaign has not expired.
         if (_hasGracePeriodPassed() && !hasExpired()) {
             revert Errors.SablierMerkleBase_ClawbackNotAllowed({
                 blockTimestamp: block.timestamp,
@@ -181,7 +180,7 @@ abstract contract SablierMerkleBase is
     function collectFees(address factoryAdmin) external override returns (uint256 feeAmount) {
         // Check: the caller is the FACTORY.
         if (msg.sender != FACTORY) {
-            revert Errors.SablierMerkleBase_CallerNotFactory(FACTORY, msg.sender);
+            revert Errors.SablierMerkleBase_CallerNotFactory({ factory: FACTORY, caller: msg.sender });
         }
 
         feeAmount = address(this).balance;
@@ -196,8 +195,8 @@ abstract contract SablierMerkleBase is
     }
 
     /// @inheritdoc ISablierMerkleBase
-    function lowerMinimumFee(uint256 newFee) external override {
-        // Retrieve the factory admin.
+    function lowerMinFeeUSD(uint256 newMinFeeUSD) external override {
+        // Safe Interactions: retrieve the factory admin.
         address factoryAdmin = ISablierMerkleFactoryBase(FACTORY).admin();
 
         // Check: the caller is the factory admin.
@@ -205,18 +204,18 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CallerNotFactoryAdmin({ factoryAdmin: factoryAdmin, caller: msg.sender });
         }
 
-        uint256 currentFee = minimumFee;
+        uint256 previousMinFeeUSD = minFeeUSD;
 
-        // Check: the new fee is less than the current fee.
-        if (newFee >= currentFee) {
-            revert Errors.SablierMerkleBase_NewFeeHigher(currentFee, newFee);
+        // Check: the new min USD fee is lower than the current min fee USD.
+        if (newMinFeeUSD >= previousMinFeeUSD) {
+            revert Errors.SablierMerkleBase_NewMinFeeUSDNotLower(previousMinFeeUSD, newMinFeeUSD);
         }
 
-        // Effect: update the minimum fee to new value.
-        minimumFee = newFee;
+        // Effect: update the minimum USD fee.
+        minFeeUSD = newMinFeeUSD;
 
         // Log the event.
-        emit LowerMinimumFee(factoryAdmin, newFee, currentFee);
+        emit LowerMinFeeUSD(factoryAdmin, newMinFeeUSD, previousMinFeeUSD);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -230,8 +229,8 @@ abstract contract SablierMerkleBase is
             return 0;
         }
 
-        // If the minimum fee is 0, skip the calculations.
-        if (minimumFee == 0) {
+        // If the minimum USD fee is 0, skip the calculations.
+        if (minFeeUSD == 0) {
             return 0;
         }
 
@@ -271,7 +270,7 @@ abstract contract SablierMerkleBase is
         }
 
         // Multiply by 10^18 because the native token is assumed to have 18 decimals.
-        return minimumFee * 1e18 / price8D;
+        return minFeeUSD * 1e18 / price8D;
     }
 
     /// @notice Returns a flag indicating whether the grace period has passed.

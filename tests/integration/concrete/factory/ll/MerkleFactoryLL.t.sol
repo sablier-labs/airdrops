@@ -5,10 +5,10 @@ import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
 import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
 import { Integration_Test } from "./../../../Integration.t.sol";
 import { CollectFees_Integration_Test } from "./../shared/collect-fees/collectFees.t.sol";
-import { GetFee_Integration_Test } from "./../shared/get-fee/getFee.t.sol";
-import { ResetCustomFee_Integration_Test } from "./../shared/reset-custom-fee/resetCustomFee.t.sol";
-import { SetCustomFee_Integration_Test } from "./../shared/set-custom-fee/setCustomFee.t.sol";
-import { SetMinimumFee_Integration_Test } from "./../shared/set-minimum-fee/setMinimumFee.t.sol";
+import { DisableCustomFeeUSD_Integration_Test } from "./../shared/disable-custom-fee-usd/disableCustomFeeUSD.t.sol";
+import { MinFeeUSDFor_Integration_Test } from "./../shared/min-fee-usd-for/minFeeUSDFor.t.sol";
+import { SetCustomFeeUSD_Integration_Test } from "./../shared/set-custom-fee-usd/setCustomFeeUSD.t.sol";
+import { SetMinFeeUSD_Integration_Test } from "./../shared/set-min-fee-usd/setMinFeeUSD.t.sol";
 import { SetNativeToken_Integration_Test } from "./../shared/set-native-token/setNativeToken.t.sol";
 import { SetOracle_Integration_Test } from "./../shared/set-oracle/setOracle.t.sol";
 /*//////////////////////////////////////////////////////////////////////////
@@ -44,33 +44,36 @@ contract CollectFees_MerkleFactoryLL_Integration_Test is
     }
 }
 
-contract GetFee_MerkleFactoryLL_Integration_Test is MerkleFactoryLL_Integration_Shared_Test, GetFee_Integration_Test {
-    function setUp() public override(MerkleFactoryLL_Integration_Shared_Test, Integration_Test) {
-        MerkleFactoryLL_Integration_Shared_Test.setUp();
-    }
-}
-
-contract ResetCustomFee_MerkleFactoryLL_Integration_Test is
+contract DisableCustomFeeUSD_MerkleFactoryLL_Integration_Test is
     MerkleFactoryLL_Integration_Shared_Test,
-    ResetCustomFee_Integration_Test
+    DisableCustomFeeUSD_Integration_Test
 {
     function setUp() public override(MerkleFactoryLL_Integration_Shared_Test, Integration_Test) {
         MerkleFactoryLL_Integration_Shared_Test.setUp();
     }
 }
 
-contract SetCustomFee_MerkleFactoryLL_Integration_Test is
+contract MinFeeUSDFor_MerkleFactoryLL_Integration_Test is
     MerkleFactoryLL_Integration_Shared_Test,
-    SetCustomFee_Integration_Test
+    MinFeeUSDFor_Integration_Test
 {
     function setUp() public override(MerkleFactoryLL_Integration_Shared_Test, Integration_Test) {
         MerkleFactoryLL_Integration_Shared_Test.setUp();
     }
 }
 
-contract SetMinimumFee_MerkleFactoryLL_Integration_Test is
+contract SetCustomFeeUSD_MerkleFactoryLL_Integration_Test is
     MerkleFactoryLL_Integration_Shared_Test,
-    SetMinimumFee_Integration_Test
+    SetCustomFeeUSD_Integration_Test
+{
+    function setUp() public override(MerkleFactoryLL_Integration_Shared_Test, Integration_Test) {
+        MerkleFactoryLL_Integration_Shared_Test.setUp();
+    }
+}
+
+contract SetMinFeeUSD_MerkleFactoryLL_Integration_Test is
+    MerkleFactoryLL_Integration_Shared_Test,
+    SetMinFeeUSD_Integration_Test
 {
     function setUp() public override(MerkleFactoryLL_Integration_Shared_Test, Integration_Test) {
         MerkleFactoryLL_Integration_Shared_Test.setUp();

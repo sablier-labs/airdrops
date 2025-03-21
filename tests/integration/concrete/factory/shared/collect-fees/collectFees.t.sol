@@ -57,11 +57,7 @@ abstract contract CollectFees_Integration_Test is Integration_Test {
 
         // It should emit a {CollectFees} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.CollectFees({
-            admin: admin,
-            merkleBase: merkleBase,
-            feeAmount: MINIMUM_FEE_IN_WEI
-        });
+        emit ISablierMerkleFactoryBase.CollectFees({ admin: admin, campaign: merkleBase, feeAmount: MINIMUM_FEE_IN_WEI });
 
         // Make Alice the caller.
         resetPrank({ msgSender: users.eve });

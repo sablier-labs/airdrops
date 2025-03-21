@@ -33,7 +33,7 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
         address expectedMerkleCampaign;
         bytes32[] merkleProof;
         bytes32 merkleRoot;
-        uint256 minimumFee;
+        uint256 minFeeUSD;
         uint256 minimumFeeInWei;
         address oracle;
     }
@@ -86,7 +86,7 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
 
         // Load the mainnet values from the deployed contract.
         vars.oracle = merkleFactoryBase.oracle();
-        vars.minimumFee = merkleFactoryBase.minimumFee();
+        vars.minFeeUSD = merkleFactoryBase.minFeeUSD();
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -142,10 +142,10 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
         emit ISablierMerkleFactoryBase.CollectFees({
             admin: factoryAdmin,
-            merkleBase: merkleBase,
+            campaign: merkleBase,
             feeAmount: vars.minimumFeeInWei
         });
-        merkleFactoryBase.collectFees({ merkleBase: merkleBase });
+        merkleFactoryBase.collectFees({ campaign: merkleBase });
 
         assertEq(address(merkleBase).balance, 0, "merkle ETH balance");
         assertEq(factoryAdmin.balance, vars.initialAdminBalance + vars.minimumFeeInWei, "admin ETH balance");

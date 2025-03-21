@@ -7,6 +7,24 @@ import { ISablierMerkleInstant } from "./interfaces/ISablierMerkleInstant.sol";
 import { SablierMerkleInstant } from "./SablierMerkleInstant.sol";
 import { MerkleInstant } from "./types/DataTypes.sol";
 
+/*
+
+███████╗ █████╗ ██████╗ ██╗     ██╗███████╗██████╗     ███╗   ███╗███████╗██████╗ ██╗  ██╗██╗     ███████╗
+██╔════╝██╔══██╗██╔══██╗██║     ██║██╔════╝██╔══██╗    ████╗ ████║██╔════╝██╔══██╗██║ ██╔╝██║     ██╔════╝
+███████╗███████║██████╔╝██║     ██║█████╗  ██████╔╝    ██╔████╔██║█████╗  ██████╔╝█████╔╝ ██║     █████╗
+╚════██║██╔══██║██╔══██╗██║     ██║██╔══╝  ██╔══██╗    ██║╚██╔╝██║██╔══╝  ██╔══██╗██╔═██╗ ██║     ██╔══╝
+███████║██║  ██║██████╔╝███████╗██║███████╗██║  ██║    ██║ ╚═╝ ██║███████╗██║  ██║██║  ██╗███████╗███████╗
+╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝╚══════╝╚═╝  ╚═╝    ╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
+
+███████╗ █████╗  ██████╗████████╗ ██████╗ ██████╗ ██╗   ██╗    ██╗███╗   ██╗███████╗████████╗ █████╗ ███╗   ██╗████████╗
+██╔════╝██╔══██╗██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗╚██╗ ██╔╝    ██║████╗  ██║██╔════╝╚══██╔══╝██╔══██╗████╗  ██║╚══██╔══╝
+█████╗  ███████║██║        ██║   ██║   ██║██████╔╝ ╚████╔╝     ██║██╔██╗ ██║███████╗   ██║   ███████║██╔██╗ ██║   ██║
+██╔══╝  ██╔══██║██║        ██║   ██║   ██║██╔══██╗  ╚██╔╝      ██║██║╚██╗██║╚════██║   ██║   ██╔══██║██║╚██╗██║   ██║
+██║     ██║  ██║╚██████╗   ██║   ╚██████╔╝██║  ██║   ██║       ██║██║ ╚████║███████║   ██║   ██║  ██║██║ ╚████║   ██║
+╚═╝     ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝
+
+*/
+
 /// @title SablierMerkleFactoryInstant
 /// @notice See the documentation in {ISablierMerkleFactoryInstant}.
 contract SablierMerkleFactoryInstant is ISablierMerkleFactoryInstant, SablierMerkleFactoryBase {
@@ -54,7 +72,7 @@ contract SablierMerkleFactoryInstant is ISablierMerkleFactoryInstant, SablierMer
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
-            fee: _getFee(msg.sender),
+            minFeeUSD: _minFeeUSDFor(msg.sender),
             oracle: oracle
         });
     }

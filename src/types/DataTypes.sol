@@ -6,11 +6,10 @@ import { UD2x18 } from "@prb/math/src/UD2x18.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 
 library MerkleFactory {
-    /// @notice Struct encapsulating the custom fee details for a given campaign creator.
-    /// @param enabled Whether the fee is enabled. If false, the minimum fee will be applied for campaigns created by
-    /// the given creator.
+    /// @notice Struct encapsulating the parameters of a custom USD fee.
+    /// @param enabled Whether the fee is enabled. If false, the minimum USD fee will apply instead.
     /// @param fee The fee amount.
-    struct CustomFee {
+    struct CustomFeeUSD {
         bool enabled;
         uint256 fee;
     }
@@ -139,15 +138,15 @@ library MerkleVCA {
         address initialAdmin;
         string ipfsCID;
         bytes32 merkleRoot;
-        Timestamps timestamps;
+        Schedule schedule;
         IERC20 token;
     }
 
     /// @notice Struct encapsulating the start time and end time of the airdrop unlocks.
-    /// @param start The timestamp when the airdrop token begins to unlock.
-    /// @param end The timestamp when the airdrop token unlocks 100%.
-    struct Timestamps {
-        uint40 start;
-        uint40 end;
+    /// @param startTime The timestamp when the airdrop token begins to unlock.
+    /// @param endTime The timestamp when the airdrop token unlocks 100%.
+    struct Schedule {
+        uint40 startTime;
+        uint40 endTime;
     }
 }

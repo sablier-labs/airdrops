@@ -6,10 +6,10 @@ Claim_MerkleVCA_Integration_Test
       ├── when end time in past
       │  ├── it should transfer the full amount
       │  ├── it should update the claimed status
-      │  ├── it should not update forgone amount
+      │  ├── it should not update total forgone amount
       │  └── it should emit a {Claim} event
       └── when end time not in past
          ├── it should transfer a portion of the amount
          ├── it should update the claimed status
-         ├── it should emit a {Claim} event
-         └── it should update forgone amount
+         ├── it should update total forgone amount
+         └── it should emit a {Claim} event

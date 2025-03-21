@@ -53,7 +53,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
             prepareCommonCreateParams(rawLeavesData, expiration, indexesToClaim.length);
 
         // Set the custom fee if enabled.
-        feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
+        feeForUser = enableCustomFee ? testSetCustomFeeUSD(feeForUser) : MIN_FEE_USD;
 
         // Test creating the MerkleLL campaign.
         _testCreateMerkleLL(aggregateAmount, expiration_, feeForUser, merkleRoot, schedule);
@@ -121,7 +121,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: leavesData.length,
-            fee: feeForUser,
+            minFeeUSD: feeForUser,
             oracle: address(oracle)
         });
 
@@ -150,7 +150,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function expectClaimEvent(LeafData memory leafData) internal override {
-        // It should emit {Claim} event based on the vesting end time.
+        // It should emit {Claim} event based on the schedule end time.
         MerkleLL.Schedule memory schedule = merkleLL.getSchedule();
         uint40 expectedStartTime = schedule.startTime == 0 ? getBlockTimestamp() : schedule.startTime;
 

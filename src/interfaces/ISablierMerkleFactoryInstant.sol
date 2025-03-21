@@ -18,7 +18,7 @@ interface ISablierMerkleFactoryInstant is ISablierMerkleFactoryBase {
         MerkleInstant.ConstructorParams params,
         uint256 aggregateAmount,
         uint256 recipientCount,
-        uint256 fee,
+        uint256 minFeeUSD,
         address oracle
     );
 

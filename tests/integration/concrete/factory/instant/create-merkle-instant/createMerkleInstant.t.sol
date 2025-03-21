@@ -33,11 +33,10 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
     }
 
     function test_GivenCustomFeeSet() external whenNativeTokenNotFound givenCampaignNotExists {
-        uint256 customFee = 0;
-
-        // Set the custom fee for this test.
+        // Set a custom fee.
         resetPrank(users.admin);
-        merkleFactoryInstant.setCustomFee(users.campaignCreator, customFee);
+        uint256 customFeeUSD = 0;
+        merkleFactoryInstant.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         resetPrank(users.campaignCreator);
 
@@ -53,7 +52,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: customFee,
+            minFeeUSD: customFeeUSD,
             oracle: address(oracle)
         });
 
@@ -65,12 +64,12 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant));
-        assertEq(actualInstant.minimumFee(), customFee, "minimum fee");
+        assertEq(actualInstant.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
     function test_GivenCustomFeeNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
         MerkleInstant.ConstructorParams memory params = merkleInstantConstructorParams();
-        params.campaignName = "Merkle Instant campaign with default fee set";
+        params.campaignName = "Merkle Instant campaign with minimum fee set";
 
         address expectedMerkleInstant = computeMerkleInstantAddress(params, users.campaignCreator);
 
@@ -81,7 +80,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: MINIMUM_FEE,
+            minFeeUSD: MIN_FEE_USD,
             oracle: address(oracle)
         });
 
@@ -93,6 +92,6 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant));
-        assertEq(actualInstant.minimumFee(), MINIMUM_FEE, "minimum fee");
+        assertEq(actualInstant.minFeeUSD(), MIN_FEE_USD, "min fee USD");
     }
 }

@@ -7,6 +7,24 @@ import { ISablierMerkleLL } from "./interfaces/ISablierMerkleLL.sol";
 import { SablierMerkleLL } from "./SablierMerkleLL.sol";
 import { MerkleLL } from "./types/DataTypes.sol";
 
+/*
+
+███████╗ █████╗ ██████╗ ██╗     ██╗███████╗██████╗     ███╗   ███╗███████╗██████╗ ██╗  ██╗██╗     ███████╗
+██╔════╝██╔══██╗██╔══██╗██║     ██║██╔════╝██╔══██╗    ████╗ ████║██╔════╝██╔══██╗██║ ██╔╝██║     ██╔════╝
+███████╗███████║██████╔╝██║     ██║█████╗  ██████╔╝    ██╔████╔██║█████╗  ██████╔╝█████╔╝ ██║     █████╗
+╚════██║██╔══██║██╔══██╗██║     ██║██╔══╝  ██╔══██╗    ██║╚██╔╝██║██╔══╝  ██╔══██╗██╔═██╗ ██║     ██╔══╝
+███████║██║  ██║██████╔╝███████╗██║███████╗██║  ██║    ██║ ╚═╝ ██║███████╗██║  ██║██║  ██╗███████╗███████╗
+╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝╚══════╝╚═╝  ╚═╝    ╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
+
+███████╗ █████╗  ██████╗████████╗ ██████╗ ██████╗ ██╗   ██╗    ██╗     ██╗
+██╔════╝██╔══██╗██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗╚██╗ ██╔╝    ██║     ██║
+█████╗  ███████║██║        ██║   ██║   ██║██████╔╝ ╚████╔╝     ██║     ██║
+██╔══╝  ██╔══██║██║        ██║   ██║   ██║██╔══██╗  ╚██╔╝      ██║     ██║
+██║     ██║  ██║╚██████╗   ██║   ╚██████╔╝██║  ██║   ██║       ███████╗███████╗
+╚═╝     ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚══════╝╚══════╝
+
+*/
+
 /// @title SablierMerkleFactoryLL
 /// @notice See the documentation in {ISablierMerkleFactoryLL}.
 contract SablierMerkleFactoryLL is ISablierMerkleFactoryLL, SablierMerkleFactoryBase {
@@ -54,7 +72,7 @@ contract SablierMerkleFactoryLL is ISablierMerkleFactoryLL, SablierMerkleFactory
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
-            fee: _getFee(msg.sender),
+            minFeeUSD: _minFeeUSDFor(msg.sender),
             oracle: oracle
         });
     }

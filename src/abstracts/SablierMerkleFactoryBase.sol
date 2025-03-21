@@ -20,29 +20,29 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    uint256 public constant override MAX_FEE = 100e8;
+    uint256 public constant override MAX_FEE_USD = 100e8;
 
     /// @inheritdoc ISablierMerkleFactoryBase
     address public override oracle;
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    uint256 public override minimumFee;
+    uint256 public override minFeeUSD;
 
     /// @inheritdoc ISablierMerkleFactoryBase
     address public override nativeToken;
 
     /// @dev A mapping of custom fees mapped by campaign creator addresses.
-    mapping(address campaignCreator => MerkleFactory.CustomFee customFee) private _customFees;
+    mapping(address campaignCreator => MerkleFactory.CustomFeeUSD customFeeUSD) private _customFeesUSD;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
-    /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
+    /// @param initialMinFeeUSD The initial minimum fee charged for claiming an airdrop.
     /// @param initialOracle The initial oracle contract address.
-    constructor(address initialAdmin, uint256 initialMinimumFee, address initialOracle) Adminable(initialAdmin) {
-        minimumFee = initialMinimumFee;
+    constructor(address initialAdmin, uint256 initialMinFeeUSD, address initialOracle) Adminable(initialAdmin) {
+        minFeeUSD = initialMinFeeUSD;
 
         if (initialOracle != address(0)) {
             _setOracle(initialOracle);
@@ -54,8 +54,8 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function getFee(address campaignCreator) external view returns (uint256) {
-        return _getFee(campaignCreator);
+    function minFeeUSDFor(address campaignCreator) external view returns (uint256) {
+        return _minFeeUSDFor(campaignCreator);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -63,55 +63,56 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function collectFees(ISablierMerkleBase merkleBase) external override {
-        // Effect: collect the fees from the MerkleBase contract.
-        uint256 feeAmount = merkleBase.collectFees(admin);
+    function collectFees(ISablierMerkleBase campaign) external override {
+        // Effect: collect the fees from the campaign contract.
+        uint256 feeAmount = campaign.collectFees(admin);
 
         // Log the fee withdrawal.
-        emit CollectFees({ admin: admin, merkleBase: merkleBase, feeAmount: feeAmount });
+        emit CollectFees({ admin: admin, campaign: campaign, feeAmount: feeAmount });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function resetCustomFee(address campaignCreator) external override onlyAdmin {
-        delete _customFees[campaignCreator];
+    function disableCustomFeeUSD(address campaignCreator) external override onlyAdmin {
+        delete _customFeesUSD[campaignCreator];
 
         // Log the reset.
-        emit ResetCustomFee({ admin: msg.sender, campaignCreator: campaignCreator });
+        emit DisableCustomFeeUSD({ admin: msg.sender, campaignCreator: campaignCreator });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function setCustomFee(address campaignCreator, uint256 newFee) external override onlyAdmin {
-        MerkleFactory.CustomFee storage customFeeByUser = _customFees[campaignCreator];
+    function setCustomFeeUSD(address campaignCreator, uint256 customFeeUSD) external override onlyAdmin {
+        MerkleFactory.CustomFeeUSD storage customFee = _customFeesUSD[campaignCreator];
 
-        // Check: the new fee is not greater than `MAX_FEE`.
-        if (newFee > MAX_FEE) {
-            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_FEE);
+        // Check: the new fee is not greater than the maximum
+        if (customFeeUSD > MAX_FEE_USD) {
+            revert Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded(customFeeUSD, MAX_FEE_USD);
         }
 
         // Effect: enable the custom fee for the user if it is not already enabled.
-        if (!customFeeByUser.enabled) {
-            customFeeByUser.enabled = true;
+        if (!customFee.enabled) {
+            customFee.enabled = true;
         }
 
-        // Effect: update the custom fee for the given campaign creator.
-        customFeeByUser.fee = newFee;
+        // Effect: update the custom fee for the provided campaign creator.
+        customFee.fee = customFeeUSD;
 
         // Log the update.
-        emit SetCustomFee({ admin: msg.sender, campaignCreator: campaignCreator, customFee: newFee });
+        emit SetCustomFeeUSD({ admin: msg.sender, campaignCreator: campaignCreator, customFeeUSD: customFeeUSD });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function setMinimumFee(uint256 newFee) external override onlyAdmin {
-        // Check: the new fee is not greater than `MAX_FEE`.
-        if (newFee > MAX_FEE) {
-            revert Errors.SablierMerkleFactoryBase_MaximumFeeExceeded(newFee, MAX_FEE);
+    function setMinFeeUSD(uint256 newMinFeeUSD) external override onlyAdmin {
+        // Check: the new fee is not greater than the maximum allowed.
+        if (newMinFeeUSD > MAX_FEE_USD) {
+            revert Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded(newMinFeeUSD, MAX_FEE_USD);
         }
 
         // Effect: update the minimum fee.
-        minimumFee = newFee;
+        uint256 previousMinFeeUSD = minFeeUSD;
+        minFeeUSD = newMinFeeUSD;
 
         // Log the update.
-        emit SetMinimumFee({ admin: msg.sender, minimumFee: newFee });
+        emit SetMinFeeUSD({ admin: msg.sender, newMinFeeUSD: newMinFeeUSD, previousMinFeeUSD: previousMinFeeUSD });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
@@ -135,25 +136,17 @@ abstract contract SablierMerkleFactoryBase is
 
     /// @inheritdoc ISablierMerkleFactoryBase
     function setOracle(address newOracle) external override onlyAdmin {
-        address currentOracle = oracle;
+        address previousOracle = oracle;
 
+        // Effects: set the new oracle.
         _setOracle(newOracle);
 
         // Log the update.
-        emit SetOracle({ admin: msg.sender, newOracle: newOracle, previousOracle: currentOracle });
+        emit SetOracle({ admin: msg.sender, newOracle: newOracle, previousOracle: previousOracle });
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                             INTERNAL CONSTANT FUNCTIONS
-    //////////////////////////////////////////////////////////////////////////*/
-
-    /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
-    function _getFee(address campaignCreator) internal view returns (uint256) {
-        return _customFees[campaignCreator].enabled ? _customFees[campaignCreator].fee : minimumFee;
-    }
-
-    /*//////////////////////////////////////////////////////////////////////////
-                          INTERNAL NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Checks that the provided token is not the native token.
@@ -162,6 +155,12 @@ abstract contract SablierMerkleFactoryBase is
         if (token == nativeToken) {
             revert Errors.SablierMerkleFactoryBase_ForbidNativeToken(token);
         }
+    }
+
+    /// @dev See the documentation for the user-facing functions that call this internal function.
+    function _minFeeUSDFor(address campaignCreator) internal view returns (uint256) {
+        MerkleFactory.CustomFeeUSD memory customFee = _customFeesUSD[campaignCreator];
+        return customFee.enabled ? customFee.fee : minFeeUSD;
     }
 
     /*//////////////////////////////////////////////////////////////////////////

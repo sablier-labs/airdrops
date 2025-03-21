@@ -7,6 +7,24 @@ import { ISablierMerkleVCA } from "./interfaces/ISablierMerkleVCA.sol";
 import { SablierMerkleVCA } from "./SablierMerkleVCA.sol";
 import { MerkleVCA } from "./types/DataTypes.sol";
 
+/*
+
+███████╗ █████╗ ██████╗ ██╗     ██╗███████╗██████╗     ███╗   ███╗███████╗██████╗ ██╗  ██╗██╗     ███████╗
+██╔════╝██╔══██╗██╔══██╗██║     ██║██╔════╝██╔══██╗    ████╗ ████║██╔════╝██╔══██╗██║ ██╔╝██║     ██╔════╝
+███████╗███████║██████╔╝██║     ██║█████╗  ██████╔╝    ██╔████╔██║█████╗  ██████╔╝█████╔╝ ██║     █████╗
+╚════██║██╔══██║██╔══██╗██║     ██║██╔══╝  ██╔══██╗    ██║╚██╔╝██║██╔══╝  ██╔══██╗██╔═██╗ ██║     ██╔══╝
+███████║██║  ██║██████╔╝███████╗██║███████╗██║  ██║    ██║ ╚═╝ ██║███████╗██║  ██║██║  ██╗███████╗███████╗
+╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝╚══════╝╚═╝  ╚═╝    ╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
+
+███████╗ █████╗  ██████╗████████╗ ██████╗ ██████╗ ██╗   ██╗    ██╗   ██╗ ██████╗ █████╗
+██╔════╝██╔══██╗██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗╚██╗ ██╔╝    ██║   ██║██╔════╝██╔══██╗
+█████╗  ███████║██║        ██║   ██║   ██║██████╔╝ ╚████╔╝     ██║   ██║██║     ███████║
+██╔══╝  ██╔══██║██║        ██║   ██║   ██║██╔══██╗  ╚██╔╝      ╚██╗ ██╔╝██║     ██╔══██║
+██║     ██║  ██║╚██████╗   ██║   ╚██████╔╝██║  ██║   ██║        ╚████╔╝ ╚██████╗██║  ██║
+╚═╝     ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝         ╚═══╝   ╚═════╝╚═╝  ╚═╝
+
+*/
+
 /// @title SablierMerkleFactoryVCA
 /// @notice See the documentation in {ISablierMerkleFactoryVCA}.
 contract SablierMerkleFactoryVCA is ISablierMerkleFactoryVCA, SablierMerkleFactoryBase {
@@ -53,7 +71,7 @@ contract SablierMerkleFactoryVCA is ISablierMerkleFactoryVCA, SablierMerkleFacto
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
-            fee: _getFee(msg.sender),
+            minFeeUSD: _minFeeUSDFor(msg.sender),
             oracle: oracle
         });
     }

@@ -10,11 +10,13 @@ abstract contract Constants {
     uint128 public constant CLAIM_AMOUNT = 10_000e18;
     uint128 public constant CLIFF_AMOUNT = (CLAIM_AMOUNT * CLIFF_DURATION) / TOTAL_DURATION;
     UD2x18 public immutable CLIFF_PERCENTAGE = (ud(CLIFF_AMOUNT).div(ud(CLAIM_AMOUNT)).intoUD2x18());
-    uint256 public constant MAX_FEE = 100e8; // $100
-    uint256 public constant MINIMUM_FEE = 3e8; // $3 fee
-    uint256 public constant MINIMUM_FEE_IN_WEI = (1e18 * MINIMUM_FEE) / 3000e8; // at $3000 per ETH price
+    uint256 public constant MAX_FEE_USD = 100e8; // $100
+    uint256 public constant MIN_FEE_USD = 3e8; // $3 fee
+    uint256 public constant MINIMUM_FEE_IN_WEI = (1e18 * MIN_FEE_USD) / 3000e8; // at $3000 per ETH price
     uint128 public constant START_AMOUNT = 100e18;
     UD2x18 public immutable START_PERCENTAGE = (ud(START_AMOUNT).div(ud(CLAIM_AMOUNT)).intoUD2x18());
+    uint128 public constant VCA_FORGONE_AMOUNT = 10_000e18;
+    uint128 public constant VCA_FULL_AMOUNT = 10_000e18;
 
     // Durations and Timestamps
     uint40 public constant CLIFF_DURATION = 2 days;
@@ -23,6 +25,10 @@ abstract contract Constants {
     uint40 public immutable RANGED_STREAM_START_TIME = FEB_1_2025 - 2 days;
     uint40 public immutable RANGED_STREAM_END_TIME = RANGED_STREAM_START_TIME + TOTAL_DURATION;
     uint40 public constant TOTAL_DURATION = 10 days;
+
+    // Global
+    uint40 internal constant FEB_1_2025 = 1_738_368_000;
+    uint64 public constant TOTAL_PERCENTAGE = uUNIT;
 
     // Merkle Campaigns
     string public CAMPAIGN_NAME = "Airdrop Campaign";
@@ -37,8 +43,4 @@ abstract contract Constants {
     bytes32 public MERKLE_ROOT;
     string public SHAPE = "A custom stream shape";
     bool public constant TRANSFERABLE = false;
-
-    // Global
-    uint40 internal constant FEB_1_2025 = 1_738_368_000;
-    uint64 public constant TOTAL_PERCENTAGE = uUNIT;
 }
