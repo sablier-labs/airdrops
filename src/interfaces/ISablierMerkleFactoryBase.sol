@@ -18,7 +18,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Emitted when the accrued fees are collected.
-    event CollectFees(address indexed admin, ISablierMerkleBase indexed merkleBase, uint256 feeAmount);
+    event CollectFees(address indexed admin, ISablierMerkleBase indexed campaign, uint256 feeAmount);
 
     /// @notice Emitted when the admin resets the custom fee for the provided campaign creator to the minimum fee.
     event DisableCustomFeeUSD(address indexed admin, address indexed campaignCreator);
@@ -69,14 +69,14 @@ interface ISablierMerkleFactoryBase is IAdminable {
                                NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Collects the fees accrued in the given `merkleBase` contract, and transfers them to the factory admin.
+    /// @notice Collects the fees accrued in the given campaign contract, and transfers them to the factory admin.
     /// @dev Emits a {CollectFees} event.
     ///
     /// Notes:
     /// - If the admin is a contract, it must be able to receive native token payments, e.g., ETH for Ethereum Mainnet.
     ///
-    /// @param merkleBase The address of the Merkle contract where the fees are collected from.
-    function collectFees(ISablierMerkleBase merkleBase) external;
+    /// @param campaign The address of the Merkle contract to collect the fees from.
+    function collectFees(ISablierMerkleBase campaign) external;
 
     /// @notice Disables the custom USD fee for the provided campaign creator, who will now pay the minimum USD fee.
     /// @dev Emits a {DisableCustomFee} event.

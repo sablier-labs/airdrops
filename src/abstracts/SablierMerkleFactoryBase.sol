@@ -63,12 +63,12 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function collectFees(ISablierMerkleBase merkleBase) external override {
-        // Effect: collect the fees from the MerkleBase contract.
-        uint256 feeAmount = merkleBase.collectFees(admin);
+    function collectFees(ISablierMerkleBase campaign) external override {
+        // Effect: collect the fees from the campaign contract.
+        uint256 feeAmount = campaign.collectFees(admin);
 
         // Log the fee withdrawal.
-        emit CollectFees({ admin: admin, merkleBase: merkleBase, feeAmount: feeAmount });
+        emit CollectFees({ admin: admin, campaign: campaign, feeAmount: feeAmount });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
