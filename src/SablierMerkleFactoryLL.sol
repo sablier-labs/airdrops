@@ -72,7 +72,7 @@ contract SablierMerkleFactoryLL is ISablierMerkleFactoryLL, SablierMerkleFactory
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
-            minFeeUSD: _getFee(msg.sender),
+            minFeeUSD: _minFeeUSDFor(msg.sender),
             oracle: oracle
         });
     }

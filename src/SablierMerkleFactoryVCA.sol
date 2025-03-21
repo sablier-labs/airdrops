@@ -71,7 +71,7 @@ contract SablierMerkleFactoryVCA is ISablierMerkleFactoryVCA, SablierMerkleFacto
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
-            minFeeUSD: _getFee(msg.sender),
+            minFeeUSD: _minFeeUSDFor(msg.sender),
             oracle: oracle
         });
     }

@@ -78,7 +78,7 @@ abstract contract SablierMerkleBase is
         TOKEN = token;
         campaignName = campaignName_;
         ipfsCID = ipfsCID_;
-        minFeeUSD = ISablierMerkleFactoryBase(FACTORY).getFee(campaignCreator);
+        minFeeUSD = ISablierMerkleFactoryBase(FACTORY).minFeeUSDFor(campaignCreator);
     }
 
     /*//////////////////////////////////////////////////////////////////////////

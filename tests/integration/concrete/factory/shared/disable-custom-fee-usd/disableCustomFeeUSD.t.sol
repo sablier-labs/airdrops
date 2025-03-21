@@ -16,7 +16,9 @@ abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
     function test_WhenNotEnabled() external whenCallerAdmin {
         // Check that custom fee is not enabled.
         assertEq(
-            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee USD enabled"
+            merkleFactoryBase.minFeeUSDFor(users.campaignCreator),
+            merkleFactoryBase.minFeeUSD(),
+            "custom fee USD enabled"
         );
 
         // It should emit a {DisableCustomFeeUSD} event.
@@ -28,7 +30,9 @@ abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
 
         // It should return the min fee.
         assertEq(
-            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee USD changed"
+            merkleFactoryBase.minFeeUSDFor(users.campaignCreator),
+            merkleFactoryBase.minFeeUSD(),
+            "custom fee USD changed"
         );
     }
 
@@ -38,7 +42,9 @@ abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
 
         // Check that custom fee is enabled.
         assertNotEq(
-            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee USD not enabled"
+            merkleFactoryBase.minFeeUSDFor(users.campaignCreator),
+            merkleFactoryBase.minFeeUSD(),
+            "custom fee USD not enabled"
         );
 
         // It should emit a {DisableCustomFeeUSD} event.
@@ -48,9 +54,11 @@ abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
         // Disable the custom fee.
         merkleFactoryBase.disableCustomFeeUSD({ campaignCreator: users.campaignCreator });
 
-        // It should return the minimum USD fee.
+        // It should return the min USD fee.
         assertEq(
-            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee USD not changed"
+            merkleFactoryBase.minFeeUSDFor(users.campaignCreator),
+            merkleFactoryBase.minFeeUSD(),
+            "custom fee USD not changed"
         );
     }
 }

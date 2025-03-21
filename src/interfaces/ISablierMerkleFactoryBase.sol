@@ -43,10 +43,11 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @dev The returned value is 100e8, which is equivalent to $100.
     function MAX_FEE_USD() external view returns (uint256);
 
-    /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
-    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
+    /// @notice Determines the minimum USD fee applicable for the provided campaign creator. The default minimum fee is
+    /// applied unless there is a custom fee set.
     /// @param campaignCreator The address of the campaign creator.
-    function getFee(address campaignCreator) external view returns (uint256);
+    /// @return The minimum USD fee, denominated in Chainlink's 8-decimal format for USD prices.
+    function minFeeUSDFor(address campaignCreator) external view returns (uint256);
 
     /// @notice Retrieves the minimum fee required to claim the airdrop, paid in the native token of the
     /// chain, e.g., ETH for Ethereum Mainnet.

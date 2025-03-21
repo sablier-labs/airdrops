@@ -54,8 +54,8 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleFactoryBase
-    function getFee(address campaignCreator) external view returns (uint256) {
-        return _getFee(campaignCreator);
+    function minFeeUSDFor(address campaignCreator) external view returns (uint256) {
+        return _minFeeUSDFor(campaignCreator);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ abstract contract SablierMerkleFactoryBase is
     function setCustomFeeUSD(address campaignCreator, uint256 customFeeUSD) external override onlyAdmin {
         MerkleFactory.CustomFeeUSD storage customFee = _customFeesUSD[campaignCreator];
 
-        // Check: the new fee is not greater than the maximum fee.
+        // Check: the new fee is not greater than the maximum
         if (customFeeUSD > MAX_FEE_USD) {
             revert Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded(customFeeUSD, MAX_FEE_USD);
         }
@@ -93,7 +93,7 @@ abstract contract SablierMerkleFactoryBase is
             customFee.enabled = true;
         }
 
-        // Effect: update the custom fee for the given campaign creator.
+        // Effect: update the custom fee for the provided campaign creator.
         customFee.fee = customFeeUSD;
 
         // Log the update.
@@ -157,8 +157,8 @@ abstract contract SablierMerkleFactoryBase is
         }
     }
 
-    /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
-    function _getFee(address campaignCreator) internal view returns (uint256) {
+    /// @dev See the documentation for the user-facing functions that call this internal function.
+    function _minFeeUSDFor(address campaignCreator) internal view returns (uint256) {
         MerkleFactory.CustomFeeUSD memory customFee = _customFeesUSD[campaignCreator];
         return customFee.enabled ? customFee.fee : minFeeUSD;
     }

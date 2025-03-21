@@ -158,7 +158,7 @@ contract Shared_Fuzz_Test is Integration_Test {
 
         resetPrank(users.admin);
         merkleFactoryBase.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
-        assertEq(merkleFactoryBase.getFee(users.campaignCreator), customFeeUSD, "custom fee");
+        assertEq(merkleFactoryBase.minFeeUSDFor(users.campaignCreator), customFeeUSD, "custom fee");
 
         return customFeeUSD;
     }
