@@ -21,7 +21,7 @@ abstract contract SablierMerkleLockup is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleLockup
-    ISablierLockup public immutable override LOCKUP;
+    ISablierLockup public immutable override SABLIER_LOCKUP;
 
     /// @inheritdoc ISablierMerkleLockup
     bool public immutable override STREAM_CANCELABLE;
@@ -44,7 +44,7 @@ abstract contract SablierMerkleLockup is
         address campaignCreator,
         string memory campaignName,
         bool cancelable,
-        ISablierLockup lockup,
+        ISablierLockup sablierLockup,
         uint40 expiration,
         address initialAdmin,
         string memory ipfsCID,
@@ -55,13 +55,13 @@ abstract contract SablierMerkleLockup is
     )
         SablierMerkleBase(campaignCreator, campaignName, expiration, initialAdmin, ipfsCID, merkleRoot, token)
     {
-        LOCKUP = lockup;
+        SABLIER_LOCKUP = sablierLockup;
         shape = shape_;
         STREAM_CANCELABLE = cancelable;
         STREAM_TRANSFERABLE = transferable;
 
         // Max approve the Lockup contract to spend funds from the Merkle Lockup campaigns.
-        TOKEN.forceApprove({ spender: address(LOCKUP), value: type(uint256).max });
+        TOKEN.forceApprove({ spender: address(SABLIER_LOCKUP), value: type(uint256).max });
     }
 
     /*//////////////////////////////////////////////////////////////////////////

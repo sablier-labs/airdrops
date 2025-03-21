@@ -25,14 +25,14 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         assertEq(constructedLT.campaignName(), CAMPAIGN_NAME, "campaign name");
         assertEq(constructedLT.EXPIRATION(), EXPIRATION, "expiration");
         assertEq(address(constructedLT.FACTORY()), address(merkleFactoryLT), "factory");
-        assertEq(constructedLT.ipfsCID(), IPFS_CID, "ipfsCID");
+        assertEq(constructedLT.ipfsCID(), IPFS_CID, "IPFS CID");
         assertEq(constructedLT.MERKLE_ROOT(), MERKLE_ROOT, "Merkle root");
         assertEq(constructedLT.minFeeUSD(), MIN_FEE_USD, "min fee USD");
         assertEq(constructedLT.ORACLE(), address(oracle), "oracle");
         assertEq(address(constructedLT.TOKEN()), address(dai), "token");
 
         // SablierMerkleLockup
-        assertEq(address(constructedLT.LOCKUP()), address(lockup), "lockup");
+        assertEq(address(constructedLT.SABLIER_LOCKUP()), address(lockup), "Sablier Lockup");
         assertEq(constructedLT.shape(), SHAPE, "shape");
         assertEq(constructedLT.STREAM_CANCELABLE(), CANCELABLE, "stream cancelable");
         assertEq(constructedLT.STREAM_TRANSFERABLE(), TRANSFERABLE, "stream transferable");

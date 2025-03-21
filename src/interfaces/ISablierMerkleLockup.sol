@@ -22,7 +22,7 @@ interface ISablierMerkleLockup is ISablierMerkleBase {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice The address of the {SablierLockup} contract.
-    function LOCKUP() external view returns (ISablierLockup);
+    function SABLIER_LOCKUP() external view returns (ISablierLockup);
 
     /// @notice A flag indicating whether the streams can be canceled.
     /// @dev This is an immutable state variable.

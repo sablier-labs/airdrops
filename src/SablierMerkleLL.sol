@@ -120,7 +120,7 @@ contract SablierMerkleLL is
             unlockAmounts.cliff = ud60x18(amount).mul(schedule.cliffPercentage.intoUD60x18()).intoUint128();
 
             // Interaction: create the stream via the {Lockup} contract.
-            uint256 streamId = LOCKUP.createWithTimestampsLL(
+            uint256 streamId = SABLIER_LOCKUP.createWithTimestampsLL(
                 Lockup.CreateWithTimestamps({
                     sender: admin,
                     recipient: recipient,
