@@ -10,11 +10,11 @@ abstract contract GetFee_Integration_Test is Integration_Test {
     }
 
     function test_GivenCustomFeeSet() external {
-        // Set the custom fee.
+        // Set a custom fee.
         resetPrank({ msgSender: users.admin });
-        merkleFactoryBase.setCustomFee({ campaignCreator: users.campaignCreator, newFee: 0 });
+        merkleFactoryBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: 0 });
 
-        // It should return custom fee.
+        // It should return the custom fee.
         assertEq(merkleFactoryBase.getFee(users.campaignCreator), 0, "custom fee");
     }
 }

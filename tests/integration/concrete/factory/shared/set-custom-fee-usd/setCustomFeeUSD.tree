@@ -1,4 +1,4 @@
-SetCustomFee_Integration_Test
+SetCustomFeeUSD_Integration_Test
 ├── when caller not admin
 │  └── it should revert
 └── when caller admin

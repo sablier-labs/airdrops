@@ -52,7 +52,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
             prepareCommonCreateParams(rawLeavesData, expiration, indexesToClaim.length);
 
         // Set the custom fee if enabled.
-        feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MIN_FEE_USD;
+        feeForUser = enableCustomFee ? testSetCustomFeeUSD(feeForUser) : MIN_FEE_USD;
 
         // Test creating the MerkleLT campaign.
         _testCreateMerkleLT(aggregateAmount, expiration_, feeForUser, merkleRoot, startTime, tranches);
@@ -110,7 +110,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
             aggregateAmount: aggregateAmount,
             recipientCount: leavesData.length,
             totalDuration: streamDuration,
-            fee: feeForUser,
+            minFeeUSD: feeForUser,
             oracle: address(oracle)
         });
 

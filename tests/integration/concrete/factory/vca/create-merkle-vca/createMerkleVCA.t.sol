@@ -130,11 +130,11 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         whenNotZeroExpiry
         whenExpiryExceedsOneWeekFromEndTime
     {
-        // Set the custom fee to 0 for this test.
-        uint256 customFee = 0;
+        // Set the custom fee to 0.
+        uint256 customFeeUSD = 0;
 
         resetPrank(users.admin);
-        merkleFactoryVCA.setCustomFee(users.campaignCreator, customFee);
+        merkleFactoryVCA.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         resetPrank(users.campaignCreator);
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
@@ -149,7 +149,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: customFee,
+            minFeeUSD: customFeeUSD,
             oracle: address(oracle)
         });
 
@@ -158,7 +158,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
         // It should create the campaign with 0 custom fee.
-        assertEq(actualVCA.minFeeUSD(), customFee, "custom fee");
+        assertEq(actualVCA.minFeeUSD(), customFeeUSD, "custom fee USD");
 
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
@@ -189,7 +189,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: MIN_FEE_USD,
+            minFeeUSD: MIN_FEE_USD,
             oracle: address(oracle)
         });
 

@@ -153,12 +153,14 @@ contract Shared_Fuzz_Test is Integration_Test {
     function expectClaimEvent(LeafData memory leafData) internal virtual { }
 
     // Helper function to test setting custom fee.
-    function testSetCustomFee(uint256 newFee) internal returns (uint256 feeForUser) {
-        feeForUser = bound(newFee, 0, MAX_FEE_USD);
+    function testSetCustomFeeUSD(uint256 customFeeUSD) internal returns (uint256) {
+        customFeeUSD = bound(customFeeUSD, 0, MAX_FEE_USD);
 
         resetPrank(users.admin);
-        merkleFactoryBase.setCustomFee(users.campaignCreator, feeForUser);
-        assertEq(merkleFactoryBase.getFee(users.campaignCreator), feeForUser, "custom fee");
+        merkleFactoryBase.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
+        assertEq(merkleFactoryBase.getFee(users.campaignCreator), customFeeUSD, "custom fee");
+
+        return customFeeUSD;
     }
 
     /*//////////////////////////////////////////////////////////////////////////

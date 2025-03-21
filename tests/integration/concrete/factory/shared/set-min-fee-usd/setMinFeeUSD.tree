@@ -5,5 +5,5 @@ SetMinFeeUSD_Integration_Test
    ├── when new min fee exceeds max fee
    │  └── it should revert
    └── when new min fee not exceed max fee
-      ├── it should set the minimum USD fee
+      ├── it should set the min fee
       └── it should emit a {SetMinFeeUSD} event

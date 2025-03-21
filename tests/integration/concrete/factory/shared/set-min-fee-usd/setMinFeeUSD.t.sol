@@ -26,9 +26,9 @@ abstract contract SetMinFeeUSD_Integration_Test is Integration_Test {
     function test_WhenNewMinFeeNotExceedMaxFee() external whenCallerAdmin {
         uint256 newMinFeeUSD = MAX_FEE_USD;
 
-        // It should emit a {SetMinimumFee} event.
+        // It should emit a {SetMinFeeUSD} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetMinimumFee({
+        emit ISablierMerkleFactoryBase.SetMinFeeUSD({
             admin: users.admin,
             newMinFeeUSD: newMinFeeUSD,
             previousMinFeeUSD: MIN_FEE_USD

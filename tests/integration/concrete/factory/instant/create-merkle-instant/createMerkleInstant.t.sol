@@ -33,11 +33,10 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
     }
 
     function test_GivenCustomFeeSet() external whenNativeTokenNotFound givenCampaignNotExists {
-        uint256 customFee = 0;
-
-        // Set the custom fee for this test.
+        // Set a custom fee.
         resetPrank(users.admin);
-        merkleFactoryInstant.setCustomFee(users.campaignCreator, customFee);
+        uint256 customFeeUSD = 0;
+        merkleFactoryInstant.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         resetPrank(users.campaignCreator);
 
@@ -53,7 +52,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: customFee,
+            minFeeUSD: customFeeUSD,
             oracle: address(oracle)
         });
 
@@ -65,7 +64,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant));
-        assertEq(actualInstant.minFeeUSD(), customFee, "min fee USD");
+        assertEq(actualInstant.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
     function test_GivenCustomFeeNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
@@ -81,7 +80,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: MIN_FEE_USD,
+            minFeeUSD: MIN_FEE_USD,
             oracle: address(oracle)
         });
 

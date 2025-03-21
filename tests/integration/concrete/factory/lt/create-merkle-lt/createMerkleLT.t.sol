@@ -32,11 +32,10 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
     }
 
     function test_GivenCustomFeeSet() external whenNativeTokenNotFound givenCampaignNotExists {
-        uint256 customFee = 0;
-
-        // Set the custom fee for this test.
+        // Set a custom fee.
         resetPrank(users.admin);
-        merkleFactoryLT.setCustomFee(users.campaignCreator, customFee);
+        uint256 customFeeUSD = 0;
+        merkleFactoryLT.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         resetPrank(users.campaignCreator);
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
@@ -52,7 +51,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
             totalDuration: TOTAL_DURATION,
-            fee: customFee,
+            minFeeUSD: customFeeUSD,
             oracle: address(oracle)
         });
 
@@ -62,7 +61,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(actualLT.FACTORY(), address(merkleFactoryLT), "factory");
-        assertEq(actualLT.minFeeUSD(), customFee, "min fee USD");
+        assertEq(actualLT.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
     function test_GivenCustomFeeNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
@@ -78,7 +77,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
             totalDuration: TOTAL_DURATION,
-            fee: MIN_FEE_USD,
+            minFeeUSD: MIN_FEE_USD,
             oracle: address(oracle)
         });
 

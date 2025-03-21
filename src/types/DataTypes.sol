@@ -6,11 +6,10 @@ import { UD2x18 } from "@prb/math/src/UD2x18.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 
 library MerkleFactory {
-    /// @notice Struct encapsulating the custom fee details for a given campaign creator.
-    /// @param enabled Whether the fee is enabled. If false, the minimum fee will be applied for campaigns created by
-    /// the given creator.
+    /// @notice Struct encapsulating the parameters of a custom USD fee for a given campaign creator.
+    /// @param enabled Whether the fee is enabled. If false, the minimum USD fee will apply instead.
     /// @param fee The fee amount.
-    struct CustomFee {
+    struct CustomFeeUSD {
         bool enabled;
         uint256 fee;
     }

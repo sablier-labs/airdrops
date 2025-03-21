@@ -21,13 +21,13 @@ interface ISablierMerkleFactoryBase is IAdminable {
     event CollectFees(address indexed admin, ISablierMerkleBase indexed merkleBase, uint256 feeAmount);
 
     /// @notice Emitted when the admin resets the custom fee for the provided campaign creator to the minimum fee.
-    event ResetCustomFee(address indexed admin, address indexed campaignCreator);
+    event DisableCustomFeeUSD(address indexed admin, address indexed campaignCreator);
 
-    /// @notice Emitted when the admin sets a custom fee for the provided campaign creator.
-    event SetCustomFee(address indexed admin, address indexed campaignCreator, uint256 newCustomFee);
+    /// @notice Emitted when the admin sets a custom USD fee for the provided campaign creator.
+    event SetCustomFeeUSD(address indexed admin, address indexed campaignCreator, uint256 customFeeUSD);
 
-    /// @notice Emitted when the minimum fee is set by the admin.
-    event SetMinimumFee(address indexed admin, uint256 newMinFeeUSD, uint256 previousMinFeeUSD);
+    /// @notice Emitted when the minimum USD fee is set by the admin.
+    event SetMinFeeUSD(address indexed admin, uint256 newMinFeeUSD, uint256 previousMinFeeUSD);
 
     /// @notice Emitted when the native token address is set by the admin.
     event SetNativeToken(address indexed admin, address nativeToken);
@@ -68,7 +68,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
                                NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Collects the fees accrued in the `merkleBase` contract, and transfers them to the factory admin.
+    /// @notice Collects the fees accrued in the given `merkleBase` contract, and transfers them to the factory admin.
     /// @dev Emits a {CollectFees} event.
     ///
     /// Notes:
@@ -77,36 +77,36 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @param merkleBase The address of the Merkle contract where the fees are collected from.
     function collectFees(ISablierMerkleBase merkleBase) external;
 
-    /// @notice Resets the custom fee for the provided campaign creator to the minimum fee.
-    /// @dev Emits a {ResetCustomFee} event.
+    /// @notice Disables the custom USD fee for the provided campaign creator, who will now pay the minimum USD fee.
+    /// @dev Emits a {DisableCustomFee} event.
     ///
     /// Notes:
-    /// - The minimum fee will only be applied to future campaigns.
+    /// - The minimum fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
     ///
     /// @param campaignCreator The user for whom the fee is reset for.
-    function resetCustomFee(address campaignCreator) external;
+    function disableCustomFeeUSD(address campaignCreator) external;
 
-    /// @notice Sets a custom fee for the provided campaign creator.
+    /// @notice Sets a custom USD fee for the provided campaign creator.
     /// @dev Emits a {SetCustomFee} event.
     ///
     /// Notes:
-    /// - The new fee will only be applied to future campaigns.
+    /// - The custom fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
     ///
     /// @param campaignCreator The user for whom the fee is set.
-    /// @param newFee The new fee to set.
-    function setCustomFee(address campaignCreator, uint256 newFee) external;
+    /// @param customFeeUSD The custom USD fee to set.
+    function setCustomFeeUSD(address campaignCreator, uint256 customFeeUSD) external;
 
     /// @notice Sets the minimum USD fee for upcoming campaigns.
     /// @dev Emits a {SetMinimumFee} event.
     ///
     /// Notes:
-    /// - The new minimum fee will not affect previously deployed campaigns.
+    /// - The new fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
@@ -126,13 +126,13 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @param newNativeToken The address of the native token.
     function setNativeToken(address newNativeToken) external;
 
-    /// @notice Sets the oracle contract address.
+    /// @notice Sets the oracle contract address. The zero address can be used to disable the oracle.
     /// @dev Emits a {SetOracle} event.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
     /// - If `newOracle` is not the zero address, the call to it must not fail.
     ///
-    /// @param newOracle The new oracle contract address.
+    /// @param newOracle The new oracle contract address. It can be the zero address.
     function setOracle(address newOracle) external;
 }
