@@ -15,16 +15,16 @@ abstract contract SetCustomFee_Integration_Test is Integration_Test {
     }
 
     function test_RevertWhen_NewFeeExceedsMaxFee() external whenCallerAdmin {
-        uint256 newFee = MAX_FEE + 1;
+        uint256 newFee = MAX_FEE_USD + 1;
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_MaximumFeeExceeded.selector, newFee, MAX_FEE)
+            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded.selector, newFee, MAX_FEE_USD)
         );
         merkleFactoryBase.setCustomFee({ campaignCreator: users.campaignCreator, newFee: newFee });
     }
 
     function test_WhenNotEnabled() external whenCallerAdmin {
         // Check that custom fee is not enabled for user.
-        assertEq(merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minimumFee(), "custom fee enabled");
+        assertEq(merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee enabled");
 
         uint256 customFee = 0;
 
@@ -49,7 +49,7 @@ abstract contract SetCustomFee_Integration_Test is Integration_Test {
 
         // Check that custom fee is enabled for user by checking that it is not equal to the minimum fee.
         assertNotEq(
-            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minimumFee(), "custom fee not enabled"
+            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee not enabled"
         );
 
         // Now set the custom fee to a different value.

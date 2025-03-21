@@ -15,7 +15,7 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
 
     function test_WhenNotEnabled() external whenCallerAdmin {
         // Check that custom fee is not enabled for user.
-        assertEq(merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minimumFee(), "custom fee enabled");
+        assertEq(merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee enabled");
 
         // It should emit a {ResetCustomFee} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
@@ -25,7 +25,7 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
         merkleFactoryBase.resetCustomFee({ campaignCreator: users.campaignCreator });
 
         // It should return the minimum fee in `getFee`.
-        assertEq(merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minimumFee(), "custom fee changed");
+        assertEq(merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee changed");
     }
 
     function test_WhenEnabled() external whenCallerAdmin {
@@ -34,7 +34,7 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
 
         // Check that custom fee is enabled for user by checking that it is not equal to the minimum fee.
         assertNotEq(
-            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minimumFee(), "custom fee not enabled"
+            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee not enabled"
         );
 
         // It should emit a {ResetCustomFee} event.
@@ -46,7 +46,7 @@ abstract contract ResetCustomFee_Integration_Test is Integration_Test {
 
         // It should return the minimum fee in `getFee`.
         assertEq(
-            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minimumFee(), "custom fee not changed"
+            merkleFactoryBase.getFee(users.campaignCreator), merkleFactoryBase.minFeeUSD(), "custom fee not changed"
         );
     }
 }

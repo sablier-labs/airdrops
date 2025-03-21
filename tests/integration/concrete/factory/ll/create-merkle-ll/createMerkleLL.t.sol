@@ -62,7 +62,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(actualLL.FACTORY(), address(merkleFactoryLL), "factory");
-        assertEq(actualLL.minimumFee(), customFee, "minimum fee");
+        assertEq(actualLL.minFeeUSD(), customFee, "min fee USD");
     }
 
     function test_GivenCustomFeeNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
@@ -78,7 +78,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: MINIMUM_FEE,
+            fee: MIN_FEE_USD,
             oracle: address(oracle)
         });
 
@@ -91,6 +91,6 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(actualLL.FACTORY(), address(merkleFactoryLL), "factory");
-        assertEq(actualLL.minimumFee(), MINIMUM_FEE, "minimum fee");
+        assertEq(actualLL.minFeeUSD(), MIN_FEE_USD, "min fee USD");
     }
 }

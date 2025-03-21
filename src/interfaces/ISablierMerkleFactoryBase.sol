@@ -27,7 +27,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     event SetCustomFee(address indexed admin, address indexed campaignCreator, uint256 newCustomFee);
 
     /// @notice Emitted when the minimum fee is set by the admin.
-    event SetMinimumFee(address indexed admin, uint256 newMinimumFee, uint256 previousMinimumFee);
+    event SetMinimumFee(address indexed admin, uint256 newMinFeeUSD, uint256 previousMinFeeUSD);
 
     /// @notice Emitted when the native token address is set by the admin.
     event SetNativeToken(address indexed admin, address nativeToken);
@@ -41,7 +41,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
 
     /// @notice Retrieves the maximum value that can be set for claim fee.
     /// @dev The returned value is 100e8, which is equivalent to $100.
-    function MAX_FEE() external view returns (uint256);
+    function MAX_FEE_USD() external view returns (uint256);
 
     /// @notice Retrieves the fee for the provided campaign creator, using the minimum fee if no custom fee is set.
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
@@ -51,7 +51,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @notice Retrieves the minimum fee required to claim the airdrop, paid in the native token of the
     /// chain, e.g., ETH for Ethereum Mainnet.
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
-    function minimumFee() external view returns (uint256);
+    function minFeeUSD() external view returns (uint256);
 
     /// @notice Retrieves the address of the ERC-20 interface of the native token, if it exists.
     /// @dev The native tokens on some chains have a dual interface as ERC-20. For example, on Polygon the $POL token
@@ -102,18 +102,17 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @param newFee The new fee to set.
     function setCustomFee(address campaignCreator, uint256 newFee) external;
 
-    /// @notice Sets the minimum fee to be applied when claiming airdrops.
+    /// @notice Sets the minimum USD fee for upcoming campaigns.
     /// @dev Emits a {SetMinimumFee} event.
     ///
     /// Notes:
-    /// - The new minimum fee will only be applied to the future campaigns and will not affect the ones already
-    /// deployed.
+    /// - The new minimum fee will not affect previously deployed campaigns.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
     ///
-    /// @param newFee The new minimum fee to set.
-    function setMinimumFee(uint256 newFee) external;
+    /// @param newMinFeeUSD The new minimum USD fee to set.
+    function setMinFeeUSD(uint256 newMinFeeUSD) external;
 
     /// @notice Sets the native token address. Once set, it cannot be changed.
     /// @dev For more information, see the documentation for {nativeToken}.

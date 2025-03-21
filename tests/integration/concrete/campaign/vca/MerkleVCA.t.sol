@@ -7,7 +7,7 @@ import { CollectFees_Integration_Test } from "./../shared/collect-fees/collectFe
 import { GetFirstClaimTime_Integration_Test } from "./../shared/get-first-claim-time/getFirstClaimTime.t.sol";
 import { HasClaimed_Integration_Test } from "./../shared/has-claimed/hasClaimed.t.sol";
 import { HasExpired_Integration_Test } from "./../shared/has-expired/hasExpired.t.sol";
-import { LowerMinimumFee_Integration_Test } from "./../shared/lower-minimum-fee/lowerMinimumFee.t.sol";
+import { LowerMinFeeUSD_Integration_Test } from "./../shared/lower-min-fee-usd/lowerMinFeeUSD.t.sol";
 import { MinimumFeeInWei_Integration_Test } from "./../shared/minimum-fee-in-wei/minimumFeeInWei.t.sol";
 /*//////////////////////////////////////////////////////////////////////////
                              NON-SHARED TESTS
@@ -64,9 +64,9 @@ contract HasExpired_MerkleVCA_Integration_Test is MerkleVCA_Integration_Shared_T
     }
 }
 
-contract LowerMinimumFee_MerkleVCA_Integration_Test is
+contract LowerMinFeeUSD_MerkleVCA_Integration_Test is
     MerkleVCA_Integration_Shared_Test,
-    LowerMinimumFee_Integration_Test
+    LowerMinFeeUSD_Integration_Test
 {
     function setUp() public override(MerkleVCA_Integration_Shared_Test, Integration_Test) {
         MerkleVCA_Integration_Shared_Test.setUp();

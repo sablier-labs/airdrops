@@ -158,7 +158,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
         // It should create the campaign with 0 custom fee.
-        assertEq(actualVCA.minimumFee(), customFee, "custom fee");
+        assertEq(actualVCA.minFeeUSD(), customFee, "custom fee");
 
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
@@ -189,7 +189,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            fee: MINIMUM_FEE,
+            fee: MIN_FEE_USD,
             oracle: address(oracle)
         });
 
@@ -198,7 +198,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
         // It should create the campaign with custom fee.
-        assertEq(actualVCA.minimumFee(), MINIMUM_FEE, "minimum fee");
+        assertEq(actualVCA.minFeeUSD(), MIN_FEE_USD, "min fee USD");
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");
 

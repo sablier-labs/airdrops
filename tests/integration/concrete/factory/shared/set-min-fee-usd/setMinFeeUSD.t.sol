@@ -6,35 +6,37 @@ import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryB
 import { Errors } from "src/libraries/Errors.sol";
 import { Integration_Test } from "./../../../../Integration.t.sol";
 
-abstract contract SetMinimumFee_Integration_Test is Integration_Test {
+abstract contract SetMinFeeUSD_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotAdmin() external {
         resetPrank({ msgSender: users.eve });
         vm.expectRevert(abi.encodeWithSelector(EvmUtilsErrors.CallerNotAdmin.selector, users.admin, users.eve));
-        merkleFactoryBase.setMinimumFee(0.001e18);
+        merkleFactoryBase.setMinFeeUSD(0.001e18);
     }
 
-    function test_RevertWhen_NewFeeExceedsMaxFee() external whenCallerAdmin {
-        uint256 newFee = MAX_FEE + 1;
+    function test_RevertWhen_NewMinFeeExceedsMaxFee() external whenCallerAdmin {
+        uint256 newMinFeeUSD = MAX_FEE_USD + 1;
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_MaximumFeeExceeded.selector, newFee, MAX_FEE)
+            abi.encodeWithSelector(
+                Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded.selector, newMinFeeUSD, MAX_FEE_USD
+            )
         );
-        merkleFactoryBase.setMinimumFee(newFee);
+        merkleFactoryBase.setMinFeeUSD(newMinFeeUSD);
     }
 
-    function test_WhenNewFeeNotExceedMaxFee() external whenCallerAdmin {
-        uint256 newFee = MAX_FEE;
+    function test_WhenNewMinFeeNotExceedMaxFee() external whenCallerAdmin {
+        uint256 newMinFeeUSD = MAX_FEE_USD;
 
         // It should emit a {SetMinimumFee} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
         emit ISablierMerkleFactoryBase.SetMinimumFee({
             admin: users.admin,
-            newMinimumFee: newFee,
-            previousMinimumFee: MINIMUM_FEE
+            newMinFeeUSD: newMinFeeUSD,
+            previousMinFeeUSD: MIN_FEE_USD
         });
 
-        merkleFactoryBase.setMinimumFee(newFee);
+        merkleFactoryBase.setMinFeeUSD(newMinFeeUSD);
 
-        // It should set the minimum fee.
-        assertEq(merkleFactoryBase.minimumFee(), newFee, "minimum fee");
+        // It should set the minimum USD fee.
+        assertEq(merkleFactoryBase.minFeeUSD(), newMinFeeUSD, "min fee USD");
     }
 }

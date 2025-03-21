@@ -33,7 +33,7 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
         address expectedMerkleCampaign;
         bytes32[] merkleProof;
         bytes32 merkleRoot;
-        uint256 minimumFee;
+        uint256 minFeeUSD;
         uint256 minimumFeeInWei;
         address oracle;
     }
@@ -86,7 +86,7 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
 
         // Load the mainnet values from the deployed contract.
         vars.oracle = merkleFactoryBase.oracle();
-        vars.minimumFee = merkleFactoryBase.minimumFee();
+        vars.minFeeUSD = merkleFactoryBase.minFeeUSD();
     }
 
     /*//////////////////////////////////////////////////////////////////////////

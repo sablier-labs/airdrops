@@ -14,8 +14,8 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice Emitted when the admin claws back the unclaimed tokens.
     event Clawback(address indexed admin, address indexed to, uint128 amount);
 
-    /// @notice Emitted when the minimum fee is reduced.
-    event LowerMinimumFee(address indexed factoryAdmin, uint256 newFee, uint256 previousFee);
+    /// @notice Emitted when the minimum USD fee is lowered by the admin.
+    event LowerMinFeeUSD(address indexed factoryAdmin, uint256 newMinFeeUSD, uint256 previousMinFeeUSD);
 
     /*//////////////////////////////////////////////////////////////////////////
                                  CONSTANT FUNCTIONS
@@ -57,13 +57,12 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice The content identifier for indexing the campaign on IPFS.
     function ipfsCID() external view returns (string memory);
 
-    /// @notice Retrieves the minimum fee, in USD (8 decimals), required to claim the airdrop, to be paid in the native
-    /// token of the chain.
-    /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
-    function minimumFee() external view returns (uint256);
+    /// @notice Retrieves the minimum USD fee required to claim the airdrop, denominated in 8 decimals.
+    /// @dev The denomination is based on Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
+    function minFeeUSD() external view returns (uint256);
 
     /// @notice Calculates the minimum fee in wei required to claim the airdrop.
-    /// @dev Uses {minimumFee} and the oracle price to calculate the fee in wei.
+    /// @dev Uses {minFeeUSD} and the oracle price to calculate the fee in wei.
     ///
     /// The price is considered to be 0 if:
     /// 1. The oracle is not set.
@@ -114,21 +113,22 @@ interface ISablierMerkleBase is IAdminable {
     /// @param amount The amount of tokens to claw back.
     function clawback(address to, uint128 amount) external;
 
-    /// @notice Collects the accrued fees by transferring them to `FACTORY` admin.
+    /// @notice Collects the accrued fees by transferring them to {FACTORY}.
     ///
     /// Requirements:
-    /// - `msg.sender` must be the `FACTORY` contract.
+    /// - `msg.sender` must be {FACTORY}.
     ///
-    /// @param factoryAdmin The address of the `FACTORY` admin.
+    /// @param factoryAdmin The address of the admin of {FACTORY}.
     /// @return feeAmount The amount of native tokens (e.g., ETH) collected as fees.
     function collectFees(address factoryAdmin) external returns (uint256 feeAmount);
 
-    /// @notice Sets the minimum fee to a new value lower than the current fee.
+    /// @notice Lowers the minimum USD fee.
     ///
-    /// @dev Emits a {LowerMinimumFee} event.
+    /// @dev Emits a {LowerMinFeeUSD} event.
     ///
     /// Requirements:
-    /// - `msg.sender` must be the `FACTORY` admin.
-    /// - The new fee must be less than the current `minimumFee`.
-    function lowerMinimumFee(uint256 newFee) external;
+    /// - `msg.sender` must be the admin of {FACTORY}.
+    /// - The new fee must be less than the current {minFeeUSD}.
+    /// @param newMinFeeUSD The new minimum USD fee to set, denominated in 8 decimals.
+    function lowerMinFeeUSD(uint256 newMinFeeUSD) external;
 }

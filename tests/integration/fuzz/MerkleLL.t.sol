@@ -53,7 +53,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
             prepareCommonCreateParams(rawLeavesData, expiration, indexesToClaim.length);
 
         // Set the custom fee if enabled.
-        feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
+        feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MIN_FEE_USD;
 
         // Test creating the MerkleLL campaign.
         _testCreateMerkleLL(aggregateAmount, expiration_, feeForUser, merkleRoot, schedule);

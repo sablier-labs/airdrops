@@ -154,8 +154,7 @@ contract Shared_Fuzz_Test is Integration_Test {
 
     // Helper function to test setting custom fee.
     function testSetCustomFee(uint256 newFee) internal returns (uint256 feeForUser) {
-        // Bound the custom fee between 0 and MAX_FEE.
-        feeForUser = bound(newFee, 0, MAX_FEE);
+        feeForUser = bound(newFee, 0, MAX_FEE_USD);
 
         resetPrank(users.admin);
         merkleFactoryBase.setCustomFee(users.campaignCreator, feeForUser);

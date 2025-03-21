@@ -30,8 +30,8 @@ library Errors {
     /// @notice Thrown when trying to claim with an invalid Merkle proof.
     error SablierMerkleBase_InvalidProof();
 
-    /// @notice Thrown when trying to set a fee that is higher than the current fee.
-    error SablierMerkleBase_NewFeeHigher(uint256 currentFee, uint256 newFee);
+    /// @notice Thrown when trying to set a new minimum USD fee that is higher than the current fee.
+    error SablierMerkleBase_NewMinFeeUSDNotLower(uint256 currentMinFeeUSD, uint256 newMinFeeUSD);
 
     /// @notice Thrown when trying to claim the same stream more than once.
     error SablierMerkleBase_StreamClaimed(uint256 index);
@@ -43,8 +43,8 @@ library Errors {
     /// @notice Thrown when trying to create a campaign with native token.
     error SablierMerkleFactoryBase_ForbidNativeToken(address nativeToken);
 
-    /// @notice Thrown when trying to set fee to a value that exceeds the maximum fee.
-    error SablierMerkleFactoryBase_MaximumFeeExceeded(uint256 newFee, uint256 maxFee);
+    /// @notice Thrown when trying to set fee to a value that exceeds the maximum USD fee.
+    error SablierMerkleFactoryBase_MaxFeeUSDExceeded(uint256 newFeeUSD, uint256 maxFeeUSD);
 
     /// @notice Thrown when trying to set the native token address when it is already set.
     error SablierMerkleFactoryBase_NativeTokenAlreadySet(address nativeToken);

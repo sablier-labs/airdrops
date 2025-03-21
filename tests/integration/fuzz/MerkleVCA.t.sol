@@ -53,7 +53,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         expiration = boundUint40(expiration, getBlockTimestamp() + 365 days + 1 weeks, MAX_UNIX_TIMESTAMP);
 
         // Set the custom fee if enabled.
-        feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MINIMUM_FEE;
+        feeForUser = enableCustomFee ? testSetCustomFee(feeForUser) : MIN_FEE_USD;
 
         // Test creating the MerkleVCA campaign.
         _testCreateMerkleVCA(aggregateAmount, expiration, feeForUser, merkleRoot, schedule);

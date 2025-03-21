@@ -26,8 +26,8 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         assertEq(constructedLT.EXPIRATION(), EXPIRATION, "expiration");
         assertEq(address(constructedLT.FACTORY()), address(merkleFactoryLT), "factory");
         assertEq(constructedLT.ipfsCID(), IPFS_CID, "ipfsCID");
-        assertEq(constructedLT.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
-        assertEq(constructedLT.minimumFee(), MINIMUM_FEE, "minimum fee");
+        assertEq(constructedLT.MERKLE_ROOT(), MERKLE_ROOT, "Merkle root");
+        assertEq(constructedLT.minFeeUSD(), MIN_FEE_USD, "min fee USD");
         assertEq(constructedLT.ORACLE(), address(oracle), "oracle");
         assertEq(address(constructedLT.TOKEN()), address(dai), "token");
 

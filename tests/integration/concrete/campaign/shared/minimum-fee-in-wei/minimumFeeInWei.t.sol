@@ -27,8 +27,8 @@ abstract contract MinimumFeeInWei_Integration_Test is Integration_Test {
     }
 
     function test_GivenMinimumFeeZero() external givenOracleNotZero {
-        // Deploy campaign with zero minimum fee.
-        merkleFactoryBase.setMinimumFee(0);
+        // Deploy campaign with zero minimum USD fee.
+        merkleFactoryBase.setMinFeeUSD(0);
         _deployCampaign();
 
         // It should return zero.

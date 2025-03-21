@@ -124,13 +124,13 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     /// @dev Deploys the Merkle Factory contracts conditionally based on the test profile.
     function deployMerkleFactoriesConditionally() internal {
         if (!isTestOptimizedProfile()) {
-            merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, MINIMUM_FEE, address(oracle));
-            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, MINIMUM_FEE, address(oracle));
-            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, MINIMUM_FEE, address(oracle));
-            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, MINIMUM_FEE, address(oracle));
+            merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, MIN_FEE_USD, address(oracle));
+            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, MIN_FEE_USD, address(oracle));
+            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, MIN_FEE_USD, address(oracle));
+            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, MIN_FEE_USD, address(oracle));
         } else {
             (merkleFactoryInstant, merkleFactoryLL, merkleFactoryLT, merkleFactoryVCA) =
-                deployOptimizedMerkleFactories(users.admin, MINIMUM_FEE, address(oracle));
+                deployOptimizedMerkleFactories(users.admin, MIN_FEE_USD, address(oracle));
         }
         vm.label({ account: address(merkleFactoryInstant), newLabel: "MerkleFactoryInstant" });
         vm.label({ account: address(merkleFactoryLL), newLabel: "MerkleFactoryLL" });
