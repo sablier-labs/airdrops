@@ -22,10 +22,12 @@ CreateMerkleVCA_Integration_Test
                   ├── given custom fee set
                   │  ├── it should create the campaign with custom fee
                   │  ├── it should set the current factory address
-                  │  ├── it should set return the correct unlock timestamps
+                  │  ├── it should set return the correct start time
+                  │  ├── it should set return the correct end time
                   │  └── it should emit a {CreateMerkleVCA} event
                   └── given custom fee not set
                      ├── it should create the campaign with minimum fee
                      ├── it should set the current factory address
-                     ├── it should set return the correct unlock timestamps
+                     ├── it should set return the correct start time
+                     ├── it should set return the correct end time
                      └── it should emit a {CreateMerkleVCA} event

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.22;
 
-import { MerkleVCA } from "../types/DataTypes.sol";
 import { ISablierMerkleBase } from "./ISablierMerkleBase.sol";
 
 /// @title ISablierMerkleVCA
@@ -19,9 +18,12 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Returns the timestamp when the airdrop token unlocks 100%.
+    function END_TIME() external view returns (uint40);
+
+    /// @notice Returns the timestamp when the airdrop token begins to unlock.
+    function START_TIME() external view returns (uint40);
+
     /// @notice Returns the amount of tokens forgone by the early claimers.
     function forgoneAmount() external view returns (uint256);
-
-    /// @notice Returns the start time and end time of the airdrop unlock.
-    function timestamps() external view returns (MerkleVCA.Timestamps memory);
 }
