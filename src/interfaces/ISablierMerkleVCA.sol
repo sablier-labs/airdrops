@@ -19,6 +19,18 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Calculates the claimable amount at `block.timestamp` for a given maturity amount.
+    /// @param maturityAmount The amount of tokens that will be distributed to the recipient if they wait
+    /// until the unlock end time.
+    /// @return claimAmount The amount of tokens that the recipient can claim.
+    function calculateClaimAmount(uint128 maturityAmount) external view returns (uint128 claimAmount);
+
+    /// @notice Calculates the forgone amount at `block.timestamp` for a given maturity amount.
+    /// @param maturityAmount The amount of tokens that will be distributed to the recipient if they wait
+    /// until the unlock end time.
+    /// @return forgoneAmount_ The amount of tokens that the recipient will give up by claiming early.
+    function calculateForgoneAmount(uint128 maturityAmount) external view returns (uint128 forgoneAmount_);
+
     /// @notice Returns the amount of tokens forgone by the early claimers.
     function forgoneAmount() external view returns (uint256);
 

@@ -98,6 +98,21 @@ contract SablierMerkleVCA is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleVCA
+    function calculateClaimAmount(uint128 maturityAmount) public view override returns (uint128 claimAmount) {
+        // If the unlock start time is in the future, the recipient cannot claim any tokens.
+        if (_timestamp.start >= block.timestamp) {
+            return 0;
+        }
+        // Otherwise, calculate the claimable amount.
+        claimAmount = _calculateClaimAmount(maturityAmount);
+    }
+
+    /// @inheritdoc ISablierMerkleVCA
+    function calculateForgoneAmount(uint128 maturityAmount) external view override returns (uint128 forgoneAmount_) {
+        forgoneAmount_ = maturityAmount - calculateClaimAmount(maturityAmount);
+    }
+
+    /// @inheritdoc ISablierMerkleVCA
     function timestamps() external view override returns (MerkleVCA.Timestamps memory) {
         return _timestamp;
     }
@@ -106,32 +121,39 @@ contract SablierMerkleVCA is
                           INTERNAL NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc SablierMerkleBase
-    function _claim(uint256 index, address recipient, uint128 amount) internal override {
+    /// @dev See the documentation for the user-facing functions that call this internal function.
+    function _calculateClaimAmount(uint128 maturityAmount) internal view returns (uint128 claimAmount) {
         uint40 blockTimestamp = uint40(block.timestamp);
 
+        // Load the timestamps in memory.
+        MerkleVCA.Timestamps memory timestamp = _timestamp;
+
+        // Calculate the claimable amount.
+        if (timestamp.end <= blockTimestamp) {
+            // If the unlock period has ended, the recipient can claim the full amount.
+            return maturityAmount;
+        } else {
+            // Otherwise, calculate the claimable amount based on the elapsed time.
+            uint40 elapsedTime = blockTimestamp - timestamp.start;
+            uint40 totalDuration = timestamp.end - timestamp.start;
+
+            // Safe to cast because the division results into a value less than `amount` which is already an `uint128`.
+            claimAmount = uint128((uint256(maturityAmount) * elapsedTime) / totalDuration);
+        }
+    }
+
+    /// @inheritdoc SablierMerkleBase
+    function _claim(uint256 index, address recipient, uint128 amount) internal override {
         // Check: unlock start time is in the past.
-        if (_timestamp.start >= blockTimestamp) {
+        if (_timestamp.start >= block.timestamp) {
             revert Errors.SablierMerkleVCA_ClaimNotStarted(_timestamp.start);
         }
 
-        uint128 claimableAmount;
-
         // Calculate the claimable amount.
-        if (_timestamp.end <= blockTimestamp) {
-            // If the unlock period has ended, the recipient can claim the full amount.
-            claimableAmount = amount;
-        } else {
-            // Otherwise, calculate the claimable amount based on the elapsed time.
-            uint40 elapsedTime = blockTimestamp - _timestamp.start;
-            uint40 totalDuration = _timestamp.end - _timestamp.start;
+        uint128 claimableAmount = _calculateClaimAmount(amount);
 
-            // Safe to cast because the division results into a value less than `amount` which is already an `uint128`.
-            claimableAmount = uint128((uint256(amount) * elapsedTime) / totalDuration);
-
-            // Effect: update the forgone amount.
-            forgoneAmount += (amount - claimableAmount);
-        }
+        // Effect: update the forgone amount.
+        forgoneAmount += (amount - claimableAmount);
 
         // Interaction: transfer the tokens to the recipient.
         TOKEN.safeTransfer({ to: recipient, value: claimableAmount });
