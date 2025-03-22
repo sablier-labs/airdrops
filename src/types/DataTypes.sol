@@ -127,27 +127,22 @@ library MerkleLT {
 library MerkleVCA {
     /// @notice Struct encapsulating the constructor parameters of Merkle VCA campaigns.
     /// @param campaignName The name of the campaign.
+    /// @param endTime The timestamp when the airdrop token unlocks 100%.
     /// @param expiration The expiration of the campaign, as a Unix timestamp.
     /// @param initialAdmin The initial admin of the campaign.
     /// @param ipfsCID The content identifier for indexing the contract on IPFS.
     /// @param merkleRoot The Merkle root of the claim data.
+    /// @param startTime The timestamp when the airdrop token begins to unlock.
     /// @param timestamps Struct encapsulating the start time and end time of the airdrop unlocks.
     /// @param token The contract address of the ERC-20 token to be distributed.
     struct ConstructorParams {
         string campaignName;
+        uint40 endTime;
         uint40 expiration;
         address initialAdmin;
         string ipfsCID;
         bytes32 merkleRoot;
-        Timestamps timestamps;
+        uint40 startTime;
         IERC20 token;
-    }
-
-    /// @notice Struct encapsulating the start time and end time of the airdrop unlocks.
-    /// @param start The timestamp when the airdrop token begins to unlock.
-    /// @param end The timestamp when the airdrop token unlocks 100%.
-    struct Timestamps {
-        uint40 start;
-        uint40 end;
     }
 }

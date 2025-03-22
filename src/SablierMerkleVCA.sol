@@ -40,10 +40,13 @@ contract SablierMerkleVCA is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleVCA
-    uint256 public override forgoneAmount;
+    uint40 public immutable override END_TIME;
 
-    /// @dev The timestamps variable encapsulates the start time and end time of the airdrop unlock.
-    MerkleVCA.Timestamps private _timestamp;
+    /// @inheritdoc ISablierMerkleVCA
+    uint40 public immutable override START_TIME;
+
+    /// @inheritdoc ISablierMerkleVCA
+    uint256 public override forgoneAmount;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
@@ -64,16 +67,16 @@ contract SablierMerkleVCA is
             params.token
         )
     {
-        // Check: unlock start time is not zero.
-        if (params.timestamps.start == 0) {
+        // Check: start time is not zero.
+        if (params.startTime == 0) {
             revert Errors.SablierMerkleVCA_StartTimeZero();
         }
 
-        // Check: unlock end time is greater than the start time.
-        if (params.timestamps.end <= params.timestamps.start) {
+        // Check: end time is greater than the start time.
+        if (params.endTime <= params.startTime) {
             revert Errors.SablierMerkleVCA_StartTimeExceedsEndTime({
-                startTime: params.timestamps.start,
-                endTime: params.timestamps.end
+                startTime: params.startTime,
+                endTime: params.endTime
             });
         }
 
@@ -82,24 +85,19 @@ contract SablierMerkleVCA is
             revert Errors.SablierMerkleVCA_ExpiryTimeZero();
         }
 
-        // Check: campaign expiration exceeds the timestamps end time by at least 1 week.
-        if (params.expiration < params.timestamps.end + 1 weeks) {
+        // Check: campaign expiration exceeds the end time by at least 1 week.
+        if (params.expiration < params.endTime + 1 weeks) {
             revert Errors.SablierMerkleVCA_ExpiryWithinOneWeekOfUnlockEndTime({
-                endTime: params.timestamps.end,
+                endTime: params.endTime,
                 expiration: params.expiration
             });
         }
 
-        _timestamp = params.timestamps;
-    }
+        // Effect: set the end time.
+        END_TIME = params.endTime;
 
-    /*//////////////////////////////////////////////////////////////////////////
-                           USER-FACING CONSTANT FUNCTIONS
-    //////////////////////////////////////////////////////////////////////////*/
-
-    /// @inheritdoc ISablierMerkleVCA
-    function timestamps() external view override returns (MerkleVCA.Timestamps memory) {
-        return _timestamp;
+        // Effect: set the start time.
+        START_TIME = params.startTime;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -110,21 +108,21 @@ contract SablierMerkleVCA is
     function _claim(uint256 index, address recipient, uint128 amount) internal override {
         uint40 blockTimestamp = uint40(block.timestamp);
 
-        // Check: unlock start time is in the past.
-        if (_timestamp.start >= blockTimestamp) {
-            revert Errors.SablierMerkleVCA_ClaimNotStarted(_timestamp.start);
+        // Check: start time is in the past.
+        if (START_TIME >= blockTimestamp) {
+            revert Errors.SablierMerkleVCA_ClaimNotStarted(START_TIME);
         }
 
         uint128 claimableAmount;
 
         // Calculate the claimable amount.
-        if (_timestamp.end <= blockTimestamp) {
-            // If the unlock period has ended, the recipient can claim the full amount.
+        if (END_TIME <= blockTimestamp) {
+            // If end time is not in the future, the recipient can claim the full amount.
             claimableAmount = amount;
         } else {
             // Otherwise, calculate the claimable amount based on the elapsed time.
-            uint40 elapsedTime = blockTimestamp - _timestamp.start;
-            uint40 totalDuration = _timestamp.end - _timestamp.start;
+            uint40 elapsedTime = blockTimestamp - START_TIME;
+            uint40 totalDuration = END_TIME - START_TIME;
 
             // Safe to cast because the division results into a value less than `amount` which is already an `uint128`.
             claimableAmount = uint128((uint256(amount) * elapsedTime) / totalDuration);

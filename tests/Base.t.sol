@@ -542,9 +542,10 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         return computeMerkleVCAAddress(
             merkleVCAConstructorParams({
                 campaignCreator: users.campaignCreator,
+                endTime: RANGED_STREAM_END_TIME,
                 expiration: EXPIRATION,
                 merkleRoot: MERKLE_ROOT,
-                timestamps: merkleVCATimestamps(),
+                startTime: RANGED_STREAM_START_TIME,
                 tokenAddress: dai
             }),
             users.campaignCreator
@@ -587,18 +588,20 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     function merkleVCAConstructorParams(uint40 expiration) public view returns (MerkleVCA.ConstructorParams memory) {
         return merkleVCAConstructorParams({
             campaignCreator: users.campaignCreator,
+            endTime: RANGED_STREAM_END_TIME,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
-            timestamps: merkleVCATimestamps(),
+            startTime: RANGED_STREAM_START_TIME,
             tokenAddress: dai
         });
     }
 
     function merkleVCAConstructorParams(
         address campaignCreator,
+        uint40 endTime,
         uint40 expiration,
         bytes32 merkleRoot,
-        MerkleVCA.Timestamps memory timestamps,
+        uint40 startTime,
         IERC20 tokenAddress
     )
         public
@@ -607,16 +610,13 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     {
         return MerkleVCA.ConstructorParams({
             campaignName: CAMPAIGN_NAME,
+            endTime: endTime,
             expiration: expiration,
             initialAdmin: campaignCreator,
             ipfsCID: IPFS_CID,
             merkleRoot: merkleRoot,
-            timestamps: timestamps,
+            startTime: startTime,
             token: tokenAddress
         });
-    }
-
-    function merkleVCATimestamps() public view returns (MerkleVCA.Timestamps memory) {
-        return MerkleVCA.Timestamps({ start: RANGED_STREAM_START_TIME, end: RANGED_STREAM_END_TIME });
     }
 }
