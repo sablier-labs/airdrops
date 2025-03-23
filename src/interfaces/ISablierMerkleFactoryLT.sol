@@ -6,7 +6,8 @@ import { ISablierMerkleFactoryBase } from "./ISablierMerkleFactoryBase.sol";
 import { ISablierMerkleLT } from "./ISablierMerkleLT.sol";
 
 /// @title ISablierMerkleFactoryLT
-/// @notice A contract that deploys MerkleLT campaigns.
+/// @notice A factory that deploys MerkleLT campaign contracts.
+/// @dev See the documentation in {ISablierMerkleLT}.
 interface ISablierMerkleFactoryLT is ISablierMerkleFactoryBase {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
@@ -45,7 +46,7 @@ interface ISablierMerkleFactoryLT is ISablierMerkleFactoryBase {
     /// @dev Emits a {CreateMerkleLT} event.
     ///
     /// Notes:
-    /// - The MerkleLT contract is created with CREATE2.
+    /// - The contract is created with CREATE2.
     /// - The immutable fee will be set to the minimum fee value unless a custom fee is set.
     /// - A value of zero for `params.expiration` means the campaign does not expire.
     ///

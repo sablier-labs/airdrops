@@ -6,7 +6,8 @@ import { ISablierMerkleFactoryBase } from "./ISablierMerkleFactoryBase.sol";
 import { ISablierMerkleInstant } from "./ISablierMerkleInstant.sol";
 
 /// @title ISablierMerkleFactoryInstant
-/// @notice A contract that deploys MerkleInstant campaigns.
+/// @notice A factory that deploys MerkleInstant campaign contracts.
+/// @dev See the documentation in {ISablierMerkleInstant}.
 interface ISablierMerkleFactoryInstant is ISablierMerkleFactoryBase {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
@@ -31,7 +32,7 @@ interface ISablierMerkleFactoryInstant is ISablierMerkleFactoryBase {
     /// @dev Emits a {CreateMerkleInstant} event.
     ///
     /// Notes:
-    /// - The MerkleInstant contract is created with CREATE2.
+    /// - The contract is created with CREATE2.
     /// - The immutable fee will be set to the minimum fee value unless a custom fee is set.
     /// - A value of zero for `params.expiration` means the campaign does not expire.
     ///

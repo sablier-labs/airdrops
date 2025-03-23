@@ -6,12 +6,7 @@ import { IAdminable } from "@sablier/evm-utils/src/interfaces/IAdminable.sol";
 import { ISablierMerkleBase } from "../interfaces/ISablierMerkleBase.sol";
 
 /// @title ISablierMerkleFactoryBase
-/// @dev Common interface between Merkle factories. All contracts deployed use Merkle proofs for token distribution.
-/// Merkle Lockup enables Airstreams, a portmanteau of "airdrop" and "stream," an airdrop model where the tokens are
-/// distributed over time, as opposed to all at once. Merkle Instant enables instant airdrops where tokens are unlocked
-/// and distributed immediately. Merkle VCA enables a new flavor of airdrop model where the claim amount depends on how
-/// late a user claims their airdrop. See the Sablier docs for more guidance: https://docs.sablier.com
-/// @dev The contracts are deployed using CREATE2.
+/// @dev Common interface between factories that deploy campaign contracts. The contracts are deployed using CREATE2.
 interface ISablierMerkleFactoryBase is IAdminable {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS

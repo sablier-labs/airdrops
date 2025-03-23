@@ -5,7 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IAdminable } from "@sablier/evm-utils/src/interfaces/IAdminable.sol";
 
 /// @title ISablierMerkleBase
-/// @dev Common interface between Merkle campaigns.
+/// @dev Common interface between campaign contracts.
 interface ISablierMerkleBase is IAdminable {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS

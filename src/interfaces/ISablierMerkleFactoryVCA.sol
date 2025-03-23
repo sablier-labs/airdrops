@@ -6,7 +6,8 @@ import { ISablierMerkleFactoryBase } from "./ISablierMerkleFactoryBase.sol";
 import { ISablierMerkleVCA } from "./ISablierMerkleVCA.sol";
 
 /// @title ISablierMerkleFactoryVCA
-/// @notice A contract that deploys MerkleVCA campaigns.
+/// @notice A factory that deploys MerkleVCA campaign contracts.
+/// @dev See the documentation in {ISablierMerkleVCA}.
 interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
@@ -31,7 +32,7 @@ interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
     /// @dev Emits a {CreateMerkleVCA} event.
     ///
     /// Notes:
-    /// - The MerkleVCA contract is created with CREATE2.
+    /// - The contract is created with CREATE2.
     /// - The immutable fee will be set to the minimum fee value unless a custom fee is set.
     /// - Users interested into funding the campaign before its deployment must meet the below requirements, otherwise
     /// the campaign deployment will revert.

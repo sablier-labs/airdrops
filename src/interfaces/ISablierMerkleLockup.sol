@@ -5,7 +5,9 @@ import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.so
 import { ISablierMerkleBase } from "./ISablierMerkleBase.sol";
 
 /// @title ISablierMerkleLockup
-/// @dev Common interface between MerkleLL and MerkleLT campaigns.
+/// @notice MerkleLockup enables Airstreams (a portmanteau of "airdrop" and "stream"), an airdrop model where the
+/// tokens are vested over time, as opposed to being unlocked at once. The vesting is provided by Sablier Lockup.
+/// @dev Common interface between MerkleLL and MerkleLT.
 interface ISablierMerkleLockup is ISablierMerkleBase {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
