@@ -43,8 +43,8 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice Retrieves the name of the campaign.
     function campaignName() external view returns (string memory);
 
-    /// @notice Retrieves the timestamp when the first claim is made.
-    function getFirstClaimTime() external view returns (uint40);
+    /// @notice Retrieves the timestamp when the first claim is made, and zero if no claim was made yet.
+    function firstClaimTime() external view returns (uint40);
 
     /// @notice Returns a flag indicating whether a claim has been made for a given index.
     /// @dev Uses a bitmap to save gas.

@@ -44,6 +44,9 @@ abstract contract SablierMerkleBase is
     string public override campaignName;
 
     /// @inheritdoc ISablierMerkleBase
+    uint40 public override firstClaimTime;
+
+    /// @inheritdoc ISablierMerkleBase
     string public override ipfsCID;
 
     /// @inheritdoc ISablierMerkleBase
@@ -51,9 +54,6 @@ abstract contract SablierMerkleBase is
 
     /// @dev Packed booleans that record the history of claims.
     BitMaps.BitMap internal _claimedBitMap;
-
-    /// @dev The timestamp when the first claim is made.
-    uint40 internal _firstClaimTime;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
@@ -84,11 +84,6 @@ abstract contract SablierMerkleBase is
     /*//////////////////////////////////////////////////////////////////////////
                            USER-FACING CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
-
-    /// @inheritdoc ISablierMerkleBase
-    function getFirstClaimTime() external view override returns (uint40) {
-        return _firstClaimTime;
-    }
 
     /// @inheritdoc ISablierMerkleBase
     function hasClaimed(uint256 index) public view override returns (bool) {
@@ -146,9 +141,9 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_InvalidProof();
         }
 
-        // Effect: set the `_firstClaimTime` if its zero.
-        if (_firstClaimTime == 0) {
-            _firstClaimTime = uint40(block.timestamp);
+        // Effect: if this is the first time claim, take a record of the block timestamp.
+        if (firstClaimTime == 0) {
+            firstClaimTime = uint40(block.timestamp);
         }
 
         // Effect: mark the index as claimed.
@@ -165,7 +160,7 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_ClawbackNotAllowed({
                 blockTimestamp: block.timestamp,
                 expiration: EXPIRATION,
-                firstClaimTime: _firstClaimTime
+                firstClaimTime: firstClaimTime
             });
         }
 
@@ -276,7 +271,7 @@ abstract contract SablierMerkleBase is
     /// @notice Returns a flag indicating whether the grace period has passed.
     /// @dev The grace period is 7 days after the first claim.
     function _hasGracePeriodPassed() internal view returns (bool) {
-        return _firstClaimTime > 0 && block.timestamp > _firstClaimTime + 7 days;
+        return firstClaimTime > 0 && block.timestamp > firstClaimTime + 7 days;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
