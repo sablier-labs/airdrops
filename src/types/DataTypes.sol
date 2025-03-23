@@ -7,7 +7,7 @@ import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.so
 
 library MerkleFactory {
     /// @notice Struct encapsulating the parameters of a custom USD fee.
-    /// @param enabled Whether the fee is enabled. If false, the minimum USD fee will apply instead.
+    /// @param enabled Whether the fee is enabled. If false, the min USD fee will apply instead.
     /// @param fee The fee amount.
     struct CustomFeeUSD {
         bool enabled;
@@ -45,7 +45,7 @@ library MerkleLL {
     /// @param lockup The address of the {SablierLockup} contract.
     /// @param merkleRoot The Merkle root of the claim data.
     /// @param schedule Struct encapsulating the unlocks schedule, which are documented in {MerkleLL.Schedule}.
-    /// @param shape The shape of Lockup stream, used for differentiating between streams in the  UI.
+    /// @param shape The shape of Lockup stream, which is used for differentiating between streams in the UI.
     /// @param token The contract address of the ERC-20 token to be distributed.
     /// @param transferable Indicates if the Lockup stream will be transferable after claiming.
     struct ConstructorParams {
@@ -130,7 +130,7 @@ library MerkleVCA {
     /// @param initialAdmin The initial admin of the campaign.
     /// @param ipfsCID The content identifier for indexing the contract on IPFS.
     /// @param merkleRoot The Merkle root of the claim data.
-    /// @param timestamps Struct encapsulating the start time and end time of the airdrop unlocks.
+    /// @param schedule Struct encapsulating the vesting start time and end time.
     /// @param token The contract address of the ERC-20 token to be distributed.
     struct ConstructorParams {
         string campaignName;
@@ -142,7 +142,7 @@ library MerkleVCA {
         IERC20 token;
     }
 
-    /// @notice Struct encapsulating the start time and end time of the airdrop unlocks.
+    /// @notice Struct encapsulating the vesting start time and end time.
     /// @param startTime The timestamp when the airdrop token begins to unlock.
     /// @param endTime The timestamp when the airdrop token unlocks 100%.
     struct Schedule {

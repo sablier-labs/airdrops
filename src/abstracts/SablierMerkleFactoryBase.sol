@@ -39,7 +39,7 @@ abstract contract SablierMerkleFactoryBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
-    /// @param initialMinFeeUSD The initial minimum fee charged for claiming an airdrop.
+    /// @param initialMinFeeUSD The initial min USD fee charged for claiming an airdrop.
     /// @param initialOracle The initial oracle contract address.
     constructor(address initialAdmin, uint256 initialMinFeeUSD, address initialOracle) Adminable(initialAdmin) {
         minFeeUSD = initialMinFeeUSD;
@@ -112,7 +112,7 @@ abstract contract SablierMerkleFactoryBase is
         minFeeUSD = newMinFeeUSD;
 
         // Log the update.
-        emit SetMinFeeUSD({ admin: msg.sender, newMinFeeUSD: newMinFeeUSD, currentMinFeeUSD: currentMinFeeUSD });
+        emit SetMinFeeUSD({ admin: msg.sender, newMinFeeUSD: newMinFeeUSD, previousMinFeeUSD: currentMinFeeUSD });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase

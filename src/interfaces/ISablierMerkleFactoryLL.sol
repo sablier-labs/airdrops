@@ -33,12 +33,12 @@ interface ISablierMerkleFactoryLL is ISablierMerkleFactoryBase {
     ///
     /// Notes:
     /// - The contract is created with CREATE2.
-    /// - The immutable fee will be set to the minimum fee value unless a custom fee is set.
+    /// - The campaign's fee will be set to the min USD fee unless a custom fee is set for `msg.sender`.
     /// - A value of zero for `params.expiration` means the campaign does not expire.
     ///
     /// @param params Struct encapsulating the input parameters, which are documented in {DataTypes}.
     /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
-    /// @param recipientCount The total number of recipients who are eligible to claim.
+    /// @param recipientCount The total number of recipient addresses eligible for the airdrop.
     /// @return merkleLL The address of the newly created Merkle Lockup contract.
     function createMerkleLL(
         MerkleLL.ConstructorParams memory params,

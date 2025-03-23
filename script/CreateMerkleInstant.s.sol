@@ -11,10 +11,10 @@ import { BaseScript } from "./Base.sol";
 contract CreateMerkleInstant is BaseScript {
     /// @dev Deploy via Forge.
     function run() public broadcast returns (ISablierMerkleInstant merkleInstant) {
-        // TODO: Load deployed addresses from Ethereum mainnet.
+        // TODO: Load deployed addresses from Ethereum Mainnet.
         SablierMerkleFactoryInstant merkleFactory = new SablierMerkleFactoryInstant({
             initialAdmin: DEFAULT_SABLIER_ADMIN,
-            initialMinimumFee: 0,
+            initialMinFeeUSD: 0,
             initialOracle: address(0)
         });
 

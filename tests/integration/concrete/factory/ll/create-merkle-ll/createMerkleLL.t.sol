@@ -32,7 +32,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         createMerkleLL(params);
     }
 
-    function test_GivenCustomFeeSet() external whenNativeTokenNotFound givenCampaignNotExists {
+    function test_GivenCustomFeeUSDSet() external whenNativeTokenNotFound givenCampaignNotExists {
         // Set the custom fee for this test.
         resetPrank(users.admin);
         uint256 customFeeUSD = 0;
@@ -40,7 +40,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
 
         resetPrank(users.campaignCreator);
         MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
-        params.campaignName = "Merkle LL campaign with custom fee set";
+        params.campaignName = "Merkle LL campaign with custom fee USD";
 
         address expectedLL = computeMerkleLLAddress(params, users.campaignCreator);
 
@@ -56,7 +56,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(params);
-        assertGt(address(actualLL).code.length, 0, "MerkleLL contract not created");
+        assertLt(0, address(actualLL).code.length, "MerkleLL contract not created");
         assertEq(address(actualLL), expectedLL, "MerkleLL contract does not match computed address");
 
         // It should set the current factory address.
@@ -64,9 +64,9 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         assertEq(actualLL.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
-    function test_GivenCustomFeeNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
+    function test_GivenCustomFeeUSDNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
         MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
-        params.campaignName = "Merkle LL campaign with default fee set";
+        params.campaignName = "Merkle LL campaign with no custom fee USD";
 
         address expectedLL = computeMerkleLLAddress(params, users.campaignCreator);
 
@@ -82,11 +82,11 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         });
 
         ISablierMerkleLL actualLL = createMerkleLL(params);
-        assertGt(address(actualLL).code.length, 0, "MerkleLL contract not created");
+        assertLt(0, address(actualLL).code.length, "MerkleLL contract not created");
         assertEq(address(actualLL), expectedLL, "MerkleLL contract does not match computed address");
 
-        // It should set the correct shape.
-        assertEq(actualLL.shape(), SHAPE, "shape");
+        // It should set the correct stream shape.
+        assertEq(actualLL.streamShape(), STREAM_SHAPE, "stream shape");
 
         // It should set the current factory address.
         assertEq(actualLL.FACTORY(), address(merkleFactoryLL), "factory");

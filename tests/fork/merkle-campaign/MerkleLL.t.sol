@@ -78,7 +78,7 @@ abstract contract MerkleLL_Fork_Test is MerkleBase_Fork_Test {
 
         merkleLL = merkleFactoryLL.createMerkleLL(constructorParams, vars.aggregateAmount, vars.leavesData.length);
 
-        assertGt(address(merkleLL).code.length, 0, "MerkleLL contract not created");
+        assertLt(0, address(merkleLL).code.length, "MerkleLL contract not created");
         assertEq(address(merkleLL), vars.expectedMerkleCampaign, "MerkleLL contract does not match computed address");
 
         // Cast the {MerkleLL} contract as {ISablierMerkleBase}
@@ -114,7 +114,7 @@ abstract contract MerkleLL_Fork_Test is MerkleBase_Fork_Test {
 
         expectCallToClaimWithData({
             merkleLockup: address(merkleLL),
-            feeInWei: vars.minimumFeeInWei,
+            feeInWei: vars.minFeeWei,
             index: vars.leafToClaim.index,
             recipient: vars.leafToClaim.recipient,
             amount: vars.leafToClaim.amount,
@@ -122,7 +122,7 @@ abstract contract MerkleLL_Fork_Test is MerkleBase_Fork_Test {
         });
 
         // Claim the airdrop.
-        merkleLL.claim{ value: vars.minimumFeeInWei }({
+        merkleLL.claim{ value: vars.minFeeWei }({
             index: vars.leafToClaim.index,
             recipient: vars.leafToClaim.recipient,
             amount: vars.leafToClaim.amount,
@@ -149,10 +149,10 @@ abstract contract MerkleLL_Fork_Test is MerkleBase_Fork_Test {
                 recipient: vars.leafToClaim.recipient,
                 depositAmount: vars.leafToClaim.amount,
                 token: FORK_TOKEN,
-                cancelable: CANCELABLE,
-                transferable: TRANSFERABLE,
+                cancelable: STREAM_CANCELABLE,
+                transferable: STREAM_TRANSFERABLE,
                 timestamps: Lockup.Timestamps({ start: expectedStartTime, end: expectedStartTime + TOTAL_DURATION }),
-                shape: SHAPE
+                shape: STREAM_SHAPE
             });
 
             // Assert that the stream has been created successfully.

@@ -22,7 +22,7 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
         );
 
         // Claim the airdrop.
-        merkleVCA.claim{ value: MINIMUM_FEE_IN_WEI }({
+        merkleVCA.claim{ value: MIN_FEE_WEI }({
             index: 1,
             recipient: users.recipient1,
             amount: VCA_FULL_AMOUNT,
@@ -45,9 +45,9 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
 
         // It should transfer the full amount.
         expectCallToTransfer({ to: users.recipient1, value: VCA_FULL_AMOUNT });
-        expectCallToClaimWithMsgValue(address(merkleVCA), MINIMUM_FEE_IN_WEI);
+        expectCallToClaimWithMsgValue(address(merkleVCA), MIN_FEE_WEI);
 
-        merkleVCA.claim{ value: MINIMUM_FEE_IN_WEI }({
+        merkleVCA.claim{ value: MIN_FEE_WEI }({
             index: 1,
             recipient: users.recipient1,
             amount: VCA_FULL_AMOUNT,
@@ -76,9 +76,9 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
 
         // It should transfer a portion of the amount.
         expectCallToTransfer({ to: users.recipient1, value: claimAmount });
-        expectCallToClaimWithMsgValue(address(merkleVCA), MINIMUM_FEE_IN_WEI);
+        expectCallToClaimWithMsgValue(address(merkleVCA), MIN_FEE_WEI);
 
-        merkleVCA.claim{ value: MINIMUM_FEE_IN_WEI }({
+        merkleVCA.claim{ value: MIN_FEE_WEI }({
             index: 1,
             recipient: users.recipient1,
             amount: VCA_FULL_AMOUNT,

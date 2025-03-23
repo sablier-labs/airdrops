@@ -63,7 +63,7 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
         merkleInstant =
             merkleFactoryInstant.createMerkleInstant(constructorParams, vars.aggregateAmount, vars.leavesData.length);
 
-        assertGt(address(merkleInstant).code.length, 0, "MerkleInstant contract not created");
+        assertLt(0, address(merkleInstant).code.length, "MerkleInstant contract not created");
         assertEq(
             address(merkleInstant),
             vars.expectedMerkleCampaign,
@@ -81,7 +81,7 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
 
         expectCallToClaimWithData({
             merkleLockup: address(merkleInstant),
-            feeInWei: vars.minimumFeeInWei,
+            feeInWei: vars.minFeeWei,
             index: vars.leafToClaim.index,
             recipient: vars.leafToClaim.recipient,
             amount: vars.leafToClaim.amount,
@@ -90,7 +90,7 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
 
         expectCallToTransfer({ token: FORK_TOKEN, to: vars.leafToClaim.recipient, value: vars.leafToClaim.amount });
 
-        merkleInstant.claim{ value: vars.minimumFeeInWei }({
+        merkleInstant.claim{ value: vars.minFeeWei }({
             index: vars.leafToClaim.index,
             recipient: vars.leafToClaim.recipient,
             amount: vars.leafToClaim.amount,

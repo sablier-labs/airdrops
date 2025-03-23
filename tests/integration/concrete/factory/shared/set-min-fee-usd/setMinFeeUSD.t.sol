@@ -36,7 +36,7 @@ abstract contract SetMinFeeUSD_Integration_Test is Integration_Test {
 
         merkleFactoryBase.setMinFeeUSD(newMinFeeUSD);
 
-        // It should set the minimum USD fee.
+        // It should set the min USD fee.
         assertEq(merkleFactoryBase.minFeeUSD(), newMinFeeUSD, "min fee USD");
     }
 }

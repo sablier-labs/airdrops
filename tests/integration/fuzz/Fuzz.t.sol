@@ -57,7 +57,7 @@ contract Shared_Fuzz_Test is Integration_Test {
     {
         firstClaimTime = getBlockTimestamp();
 
-        for (uint256 i; i < indexesToClaim.length; ++i) {
+        for (uint256 i = 0; i < indexesToClaim.length; ++i) {
             // Bound lead index so its valid.
             uint256 leafIndex = bound(indexesToClaim[i], 0, leavesData.length - 1);
 
@@ -65,8 +65,8 @@ contract Shared_Fuzz_Test is Integration_Test {
 
             // Claim the airdrop if it has not been claimed.
             if (!merkleBase.hasClaimed(leavesData[leafIndex].index)) {
-                // Bound msgValue so that its greater than the minimum fee.
-                msgValue = bound(msgValue, merkleBase.minimumFeeInWei(), 100 ether);
+                // Bound `msgValue` so that it's >= min USD fee.
+                msgValue = bound(msgValue, merkleBase.calculateMinFeeWei(), 100 ether);
 
                 address caller = makeAddr("philanthropist");
                 resetPrank(caller);

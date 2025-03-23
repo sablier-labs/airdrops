@@ -377,7 +377,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     {
         return MerkleLL.ConstructorParams({
             campaignName: CAMPAIGN_NAME,
-            cancelable: CANCELABLE,
+            cancelable: STREAM_CANCELABLE,
             expiration: expiration,
             initialAdmin: campaignCreator,
             ipfsCID: IPFS_CID,
@@ -390,9 +390,9 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
                 cliffPercentage: CLIFF_PERCENTAGE,
                 totalDuration: TOTAL_DURATION
             }),
-            shape: SHAPE,
+            shape: STREAM_SHAPE,
             token: tokenAddress,
-            transferable: TRANSFERABLE
+            transferable: STREAM_TRANSFERABLE
         });
     }
 
@@ -489,17 +489,17 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
 
         return MerkleLT.ConstructorParams({
             campaignName: CAMPAIGN_NAME,
-            cancelable: CANCELABLE,
+            cancelable: STREAM_CANCELABLE,
             expiration: expiration,
             initialAdmin: campaignCreator,
             ipfsCID: IPFS_CID,
             lockup: lockupAddress,
             merkleRoot: merkleRoot,
-            shape: SHAPE,
+            shape: STREAM_SHAPE,
             streamStartTime: startTime,
             token: tokenAddress,
             tranchesWithPercentages: tranchesWithPercentages_,
-            transferable: TRANSFERABLE
+            transferable: STREAM_TRANSFERABLE
         });
     }
 

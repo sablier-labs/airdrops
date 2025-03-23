@@ -32,7 +32,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         createMerkleInstant(params);
     }
 
-    function test_GivenCustomFeeSet() external whenNativeTokenNotFound givenCampaignNotExists {
+    function test_GivenCustomFeeUSDSet() external whenNativeTokenNotFound givenCampaignNotExists {
         // Set a custom fee.
         resetPrank(users.admin);
         uint256 customFeeUSD = 0;
@@ -41,7 +41,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         resetPrank(users.campaignCreator);
 
         MerkleInstant.ConstructorParams memory params = merkleInstantConstructorParams();
-        params.campaignName = "Merkle Instant campaign with custom fee set";
+        params.campaignName = "Merkle Instant campaign with custom fee USD";
 
         address expectedMerkleInstant = computeMerkleInstantAddress(params, users.campaignCreator);
 
@@ -57,7 +57,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(params);
-        assertGt(address(actualInstant).code.length, 0, "MerkleInstant contract not created");
+        assertLt(0, address(actualInstant).code.length, "MerkleInstant contract not created");
         assertEq(
             address(actualInstant), expectedMerkleInstant, "MerkleInstant contract does not match computed address"
         );
@@ -67,9 +67,9 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         assertEq(actualInstant.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
-    function test_GivenCustomFeeNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
+    function test_GivenCustomFeeUSDNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
         MerkleInstant.ConstructorParams memory params = merkleInstantConstructorParams();
-        params.campaignName = "Merkle Instant campaign with minimum fee set";
+        params.campaignName = "Merkle Instant campaign with no custom fee USD";
 
         address expectedMerkleInstant = computeMerkleInstantAddress(params, users.campaignCreator);
 

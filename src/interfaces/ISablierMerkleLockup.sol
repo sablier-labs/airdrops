@@ -38,6 +38,6 @@ interface ISablierMerkleLockup is ISablierMerkleBase {
     /// In practice, most campaigns will only have one stream per recipient.
     function claimedStreams(address recipient) external view returns (uint256[] memory);
 
-    /// @notice Retrieves the shape of the Lockup stream that the campaign produces upon claiming.
-    function shape() external view returns (string memory);
+    /// @notice Retrieves the shape of the Lockup stream created upon claiming.
+    function streamShape() external view returns (string memory);
 }

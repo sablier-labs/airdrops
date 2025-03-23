@@ -13,6 +13,6 @@ interface ISablierMerkleLL is ISablierMerkleLockup {
 
     /// @notice A tuple containing the start time, start unlock percentage, cliff duration, cliff unlock percentage, and
     /// end duration. These values are used to calculate the vesting schedule in `Lockup.CreateWithTimestampsLL`.
-    /// @dev A start time value of zero will be considered as `block.timestamp`.
+    /// @dev A start time value of zero is used as a sentinel value for `block.timestamp`.
     function getSchedule() external view returns (MerkleLL.Schedule memory);
 }

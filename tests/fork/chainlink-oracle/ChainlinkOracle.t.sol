@@ -13,13 +13,13 @@ contract ChainlinkOracle_Fork_Test is BaseScript, Base_Test {
         vm.createSelectFork({ urlOrAlias: chainName });
 
         // Deploy the Merkle Instant factory and create a new campaign.
-        merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, initialMinimumFee(), chainlinkOracle());
+        merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, initialMinFeeUSD(), chainlinkOracle());
         merkleInstant = merkleFactoryInstant.createMerkleInstant(
             merkleInstantConstructorParams(), AGGREGATE_AMOUNT, RECIPIENT_COUNT
         );
 
-        // Assert that the Chainlink returns a non-zero price by checking the value of minimum fee in wei.
-        assertGt(merkleInstant.minimumFeeInWei(), 0, "minimum fee in wei");
+        // Assert that the Chainlink returns a non-zero price by checking the value of min fee in wei.
+        assertLt(0, merkleInstant.calculateMinFeeWei(), "min fee wei");
 
         _;
     }

@@ -121,7 +121,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         createMerkleVCA(params);
     }
 
-    function test_GivenCustomFeeSet()
+    function test_GivenCustomFeeUSDSet()
         external
         whenNativeTokenNotFound
         givenCampaignNotExists
@@ -138,7 +138,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
         resetPrank(users.campaignCreator);
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
-        params.campaignName = "Merkle VCA campaign with custom fee set";
+        params.campaignName = "Merkle VCA campaign with custom fee USD";
 
         address expectedMerkleVCA = computeMerkleVCAAddress(params, users.campaignCreator);
 
@@ -168,7 +168,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         assertEq(actualVCA.getSchedule().endTime, RANGED_STREAM_END_TIME, "schedule end time");
     }
 
-    function test_GivenCustomFeeNotSet()
+    function test_GivenCustomFeeUSDNotSet()
         external
         whenNativeTokenNotFound
         givenCampaignNotExists
@@ -178,7 +178,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         whenExpiryExceedsOneWeekFromEndTime
     {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
-        params.campaignName = "Merkle VCA campaign with default fee set";
+        params.campaignName = "Merkle VCA campaign with custom fee USD";
 
         address expectedMerkleVCA = computeMerkleVCAAddress(params, users.campaignCreator);
 
@@ -197,7 +197,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         assertGt(address(actualVCA).code.length, 0, "MerkleVCA contract not created");
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
-        // It should create the campaign with custom fee.
+        // It should create the campaign.
         assertEq(actualVCA.minFeeUSD(), MIN_FEE_USD, "min fee USD");
         // It should set the current factory address.
         assertEq(actualVCA.FACTORY(), address(merkleFactoryVCA), "factory");

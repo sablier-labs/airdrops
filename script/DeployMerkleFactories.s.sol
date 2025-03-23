@@ -20,11 +20,11 @@ contract DeployMerkleFactories is BaseScript {
         )
     {
         address initialAdmin = protocolAdmin();
-        uint256 initialMinimumFee = initialMinimumFee();
+        uint256 initialMinFeeUSD = initialMinFeeUSD();
         address initialOracle = chainlinkOracle();
-        merkleFactoryInstant = new SablierMerkleFactoryInstant(initialAdmin, initialMinimumFee, initialOracle);
-        merkleFactoryLL = new SablierMerkleFactoryLL(initialAdmin, initialMinimumFee, initialOracle);
-        merkleFactoryLT = new SablierMerkleFactoryLT(initialAdmin, initialMinimumFee, initialOracle);
-        merkleFactoryVCA = new SablierMerkleFactoryVCA(initialAdmin, initialMinimumFee, initialOracle);
+        merkleFactoryInstant = new SablierMerkleFactoryInstant(initialAdmin, initialMinFeeUSD, initialOracle);
+        merkleFactoryLL = new SablierMerkleFactoryLL(initialAdmin, initialMinFeeUSD, initialOracle);
+        merkleFactoryLT = new SablierMerkleFactoryLT(initialAdmin, initialMinFeeUSD, initialOracle);
+        merkleFactoryVCA = new SablierMerkleFactoryVCA(initialAdmin, initialMinFeeUSD, initialOracle);
     }
 }

@@ -2,12 +2,12 @@
 pragma solidity >=0.8.22 <0.9.0;
 
 import { Integration_Test } from "./../../../Integration.t.sol";
+import { CalculateMinFeeWei_Integration_Test } from "./../shared/calculate-min-fee-wei/calculateMinFeeWei.t.sol";
 import { Clawback_Integration_Test } from "./../shared/clawback/clawback.t.sol";
 import { CollectFees_Integration_Test } from "./../shared/collect-fees/collectFees.t.sol";
 import { HasClaimed_Integration_Test } from "./../shared/has-claimed/hasClaimed.t.sol";
 import { HasExpired_Integration_Test } from "./../shared/has-expired/hasExpired.t.sol";
 import { LowerMinFeeUSD_Integration_Test } from "./../shared/lower-min-fee-usd/lowerMinFeeUSD.t.sol";
-import { MinimumFeeInWei_Integration_Test } from "./../shared/minimum-fee-in-wei/minimumFeeInWei.t.sol";
 /*//////////////////////////////////////////////////////////////////////////
                              NON-SHARED TESTS
 //////////////////////////////////////////////////////////////////////////*/
@@ -29,6 +29,16 @@ abstract contract MerkleLT_Integration_Shared_Test is Integration_Test {
 /*//////////////////////////////////////////////////////////////////////////
                                 SHARED TESTS
 //////////////////////////////////////////////////////////////////////////*/
+
+contract CalculateMinFeeWei_MerkleLT_Integration_Test is
+    MerkleLT_Integration_Shared_Test,
+    CalculateMinFeeWei_Integration_Test
+{
+    function setUp() public override(MerkleLT_Integration_Shared_Test, CalculateMinFeeWei_Integration_Test) {
+        MerkleLT_Integration_Shared_Test.setUp();
+        CalculateMinFeeWei_Integration_Test.setUp();
+    }
+}
 
 contract Clawback_MerkleLT_Integration_Test is MerkleLT_Integration_Shared_Test, Clawback_Integration_Test {
     function setUp() public override(MerkleLT_Integration_Shared_Test, Integration_Test) {
@@ -63,15 +73,5 @@ contract LowerMinFeeUSD_MerkleLT_Integration_Test is
 {
     function setUp() public override(MerkleLT_Integration_Shared_Test, Integration_Test) {
         MerkleLT_Integration_Shared_Test.setUp();
-    }
-}
-
-contract MinimumFeeInWei_MerkleLT_Integration_Test is
-    MerkleLT_Integration_Shared_Test,
-    MinimumFeeInWei_Integration_Test
-{
-    function setUp() public override(MerkleLT_Integration_Shared_Test, MinimumFeeInWei_Integration_Test) {
-        MerkleLT_Integration_Shared_Test.setUp();
-        MinimumFeeInWei_Integration_Test.setUp();
     }
 }

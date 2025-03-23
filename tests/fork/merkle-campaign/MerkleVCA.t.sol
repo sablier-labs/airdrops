@@ -77,7 +77,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
 
         merkleVCA = merkleFactoryVCA.createMerkleVCA(constructorParams, vars.aggregateAmount, vars.leavesData.length);
 
-        assertGt(address(merkleVCA).code.length, 0, "MerkleVCA contract not created");
+        assertLt(0, address(merkleVCA).code.length, "MerkleVCA contract not created");
         assertEq(address(merkleVCA), vars.expectedMerkleCampaign, "MerkleVCA contract does not match computed address");
 
         // Cast the {MerkleVCA} contract as {ISablierMerkleBase}
@@ -113,7 +113,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
 
         expectCallToClaimWithData({
             merkleLockup: address(merkleVCA),
-            feeInWei: vars.minimumFeeInWei,
+            feeInWei: vars.minFeeWei,
             index: vars.leafToClaim.index,
             recipient: vars.leafToClaim.recipient,
             amount: vars.leafToClaim.amount,
@@ -122,7 +122,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
 
         expectCallToTransfer({ token: FORK_TOKEN, to: vars.leafToClaim.recipient, value: claimAmount });
 
-        merkleVCA.claim{ value: vars.minimumFeeInWei }({
+        merkleVCA.claim{ value: vars.minFeeWei }({
             index: vars.leafToClaim.index,
             recipient: vars.leafToClaim.recipient,
             amount: vars.leafToClaim.amount,

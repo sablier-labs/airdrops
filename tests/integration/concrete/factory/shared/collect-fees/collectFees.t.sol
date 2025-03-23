@@ -57,7 +57,7 @@ abstract contract CollectFees_Integration_Test is Integration_Test {
 
         // It should emit a {CollectFees} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.CollectFees({ admin: admin, campaign: merkleBase, feeAmount: MINIMUM_FEE_IN_WEI });
+        emit ISablierMerkleFactoryBase.CollectFees({ admin: admin, campaign: merkleBase, feeAmount: MIN_FEE_WEI });
 
         // Make Alice the caller.
         resetPrank({ msgSender: users.eve });
@@ -68,6 +68,6 @@ abstract contract CollectFees_Integration_Test is Integration_Test {
         assertEq(address(merkleBase).balance, 0, "merkle lockup ETH balance");
 
         // It should transfer fee to the factory admin.
-        assertEq(admin.balance, initialAdminBalance + MINIMUM_FEE_IN_WEI, "admin ETH balance");
+        assertEq(admin.balance, initialAdminBalance + MIN_FEE_WEI, "admin ETH balance");
     }
 }

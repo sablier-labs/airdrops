@@ -33,14 +33,14 @@ contract SablierMerkleFactoryVCA is ISablierMerkleFactoryVCA, SablierMerkleFacto
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @param initialAdmin The address of the initial contract admin.
-    /// @param initialMinimumFee The initial minimum fee charged for claiming an airdrop.
+    /// @param initialMinFeeUSD The initial min USD fee charged for claiming an airdrop.
     /// @param initialOracle The initial oracle contract address.
     constructor(
         address initialAdmin,
-        uint256 initialMinimumFee,
+        uint256 initialMinFeeUSD,
         address initialOracle
     )
-        SablierMerkleFactoryBase(initialAdmin, initialMinimumFee, initialOracle)
+        SablierMerkleFactoryBase(initialAdmin, initialMinFeeUSD, initialOracle)
     { }
 
     /*//////////////////////////////////////////////////////////////////////////

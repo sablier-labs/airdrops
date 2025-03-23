@@ -24,17 +24,17 @@ library Errors {
     /// @notice Thrown if the fees withdrawal failed.
     error SablierMerkleBase_FeeTransferFail(address factoryAdmin, uint256 feeAmount);
 
-    /// @notice Thrown when trying to claim with an insufficient fee payment.
-    error SablierMerkleBase_InsufficientFeePayment(uint256 feePaid, uint256 fee);
+    /// @notice Thrown when trying to claim without paying the min fee.
+    error SablierMerkleBase_InsufficientFeePayment(uint256 feePaid, uint256 minFeeWei);
 
     /// @notice Thrown when trying to claim with an invalid Merkle proof.
     error SablierMerkleBase_InvalidProof();
 
-    /// @notice Thrown when trying to set a new minimum USD fee that is higher than the current fee.
+    /// @notice Thrown when trying to set a new min USD fee that is higher than the current fee.
     error SablierMerkleBase_NewMinFeeUSDNotLower(uint256 currentMinFeeUSD, uint256 newMinFeeUSD);
 
     /// @notice Thrown when trying to claim the same stream more than once.
-    error SablierMerkleBase_StreamClaimed(uint256 index);
+    error SablierMerkleBase_IndexClaimed(uint256 index);
 
     /*//////////////////////////////////////////////////////////////////////////
                             SABLIER-MERKLE-FACTORY-BASE

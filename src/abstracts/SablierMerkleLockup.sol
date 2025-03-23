@@ -30,7 +30,7 @@ abstract contract SablierMerkleLockup is
     bool public immutable override STREAM_TRANSFERABLE;
 
     /// @inheritdoc ISablierMerkleLockup
-    string public override shape;
+    string public override streamShape;
 
     /// @dev A mapping between recipient addresses and Lockup streams created through the claim function.
     mapping(address recipient => uint256[] streamIds) internal _claimedStreams;
@@ -56,7 +56,7 @@ abstract contract SablierMerkleLockup is
         SablierMerkleBase(campaignCreator, campaignName, expiration, initialAdmin, ipfsCID, merkleRoot, token)
     {
         SABLIER_LOCKUP = sablierLockup;
-        shape = shape_;
+        streamShape = shape_;
         STREAM_CANCELABLE = cancelable;
         STREAM_TRANSFERABLE = transferable;
 

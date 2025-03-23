@@ -40,7 +40,7 @@ abstract contract LowerMinFeeUSD_Integration_Test is Integration_Test {
 
         merkleBase.lowerMinFeeUSD(newMinFeeUSD);
 
-        // It should set the minimum USD fee to the new lower value.
+        // It should set the min USD fee to the new lower value.
         assertEq(merkleBase.minFeeUSD(), newMinFeeUSD);
     }
 
@@ -53,7 +53,7 @@ abstract contract LowerMinFeeUSD_Integration_Test is Integration_Test {
 
         merkleBase.lowerMinFeeUSD(0);
 
-        // It should set the new minimum USD fee to zero.
+        // It should set the new min USD fee to zero.
         assertEq(merkleBase.minFeeUSD(), 0);
     }
 }

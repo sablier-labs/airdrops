@@ -31,9 +31,9 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
 
         // SablierMerkleLockup
         assertEq(address(constructedLL.SABLIER_LOCKUP()), address(lockup), "Sablier Lockup");
-        assertEq(constructedLL.shape(), SHAPE, "shape");
-        assertEq(constructedLL.STREAM_CANCELABLE(), CANCELABLE, "stream cancelable");
-        assertEq(constructedLL.STREAM_TRANSFERABLE(), TRANSFERABLE, "stream transferable");
+        assertEq(constructedLL.streamShape(), STREAM_SHAPE, "stream shape");
+        assertEq(constructedLL.STREAM_CANCELABLE(), STREAM_CANCELABLE, "stream cancelable");
+        assertEq(constructedLL.STREAM_TRANSFERABLE(), STREAM_TRANSFERABLE, "stream transferable");
 
         // SablierMerkleLL
         MerkleLL.Schedule memory actualSchedule = constructedLL.getSchedule();

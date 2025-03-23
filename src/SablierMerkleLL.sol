@@ -89,8 +89,9 @@ contract SablierMerkleLL is
         // Load schedule from storage into memory.
         MerkleLL.Schedule memory schedule = _schedule;
 
-        // Calculate the timestamps. Zero is used a sentinel value for `block.timestamp`.
+        // Calculate the timestamps.
         Lockup.Timestamps memory timestamps;
+        // Zero is used a sentinel value for `block.timestamp`.
         if (schedule.startTime == 0) {
             timestamps.start = uint40(block.timestamp);
         } else {
@@ -129,7 +130,7 @@ contract SablierMerkleLL is
                     cancelable: STREAM_CANCELABLE,
                     transferable: STREAM_TRANSFERABLE,
                     timestamps: timestamps,
-                    shape: shape
+                    shape: streamShape
                 }),
                 unlockAmounts,
                 cliffTime

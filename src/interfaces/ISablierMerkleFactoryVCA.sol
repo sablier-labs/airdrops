@@ -33,7 +33,7 @@ interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
     ///
     /// Notes:
     /// - The contract is created with CREATE2.
-    /// - The immutable fee will be set to the minimum fee value unless a custom fee is set.
+    /// - The campaign's fee will be set to the min USD fee unless a custom fee is set for `msg.sender`.
     /// - Users interested into funding the campaign before its deployment must meet the below requirements, otherwise
     /// the campaign deployment will revert.
     ///
@@ -42,11 +42,11 @@ interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
     /// - The value of `params.expiration` must be at least 1 week beyond the unlock end time to ensure loyal recipients
     /// have enough time to claim.
     /// - `params.schedule.end` must be greater than `params.schedule.start`.
-    /// - Both `params.schedule.start` and `params.timestamps.end` must not be 0.
+    /// - Both `params.schedule.start` and `params.schedule.end` must not be 0.
     ///
     /// @param params Struct encapsulating the {SablierMerkleVCA} parameters, which are documented in {DataTypes}.
     /// @param aggregateAmount The total amount of ERC-20 tokens to be distributed to all recipients.
-    /// @param recipientCount The total number of recipients who are eligible to claim.
+    /// @param recipientCount The total number of recipient addresses eligible for the airdrop.
     /// @return merkleVCA The address of the newly created MerkleVCA campaign.
     function createMerkleVCA(
         MerkleVCA.ConstructorParams memory params,

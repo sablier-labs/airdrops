@@ -96,8 +96,8 @@ abstract contract SablierMerkleBase is
     }
 
     /// @inheritdoc ISablierMerkleBase
-    function minimumFeeInWei() external view override returns (uint256) {
-        return _minimumFeeInWei();
+    function calculateMinFeeWei() external view override returns (uint256) {
+        return _calculateMinFeeWei();
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -120,17 +120,17 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CampaignExpired({ blockTimestamp: block.timestamp, expiration: EXPIRATION });
         }
 
-        // Calculate the minimum claim fee in wei.
-        uint256 minClaimFee = _minimumFeeInWei();
+        // Calculate the min fee in wei.
+        uint256 minFeeWei = _calculateMinFeeWei();
 
-        // Check: the minimum fee was paid.
-        if (msg.value < minClaimFee) {
-            revert Errors.SablierMerkleBase_InsufficientFeePayment(msg.value, minClaimFee);
+        // Check: the min fee was paid.
+        if (msg.value < minFeeWei) {
+            revert Errors.SablierMerkleBase_InsufficientFeePayment({ feePaid: msg.value, minFeeWei: minFeeWei });
         }
 
         // Check: the index has not been claimed.
         if (_claimedBitMap.get(index)) {
-            revert Errors.SablierMerkleBase_StreamClaimed(index);
+            revert Errors.SablierMerkleBase_IndexClaimed(index);
         }
 
         // Generate the Merkle tree leaf. Hashing twice prevents second preimage attacks.
@@ -222,13 +222,13 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev See the documentation for the user-facing functions that call this internal function.
-    function _minimumFeeInWei() internal view returns (uint256) {
+    function _calculateMinFeeWei() internal view returns (uint256) {
         // If the oracle is not set, return 0.
         if (ORACLE == address(0)) {
             return 0;
         }
 
-        // If the minimum USD fee is 0, skip the calculations.
+        // If the min USD fee is 0, skip the calculations.
         if (minFeeUSD == 0) {
             return 0;
         }
@@ -282,6 +282,7 @@ abstract contract SablierMerkleBase is
                            INTERNAL NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev This function is implemented by child contracts, so the logic varies depending on the model.
+    /// @dev This function is implemented by child contracts, so the logic varies with the airdrop model. This is where
+    /// the tokens are transferred to the recipient, or a vesting stream is created.
     function _claim(uint256 index, address recipient, uint128 amount) internal virtual;
 }

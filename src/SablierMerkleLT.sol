@@ -139,7 +139,7 @@ contract SablierMerkleLT is
                     cancelable: STREAM_CANCELABLE,
                     transferable: STREAM_TRANSFERABLE,
                     timestamps: Lockup.Timestamps({ start: startTime, end: endTime }),
-                    shape: shape
+                    shape: streamShape
                 }),
                 tranches
             );

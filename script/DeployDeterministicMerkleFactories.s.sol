@@ -22,12 +22,12 @@ contract DeployDeterministicMerkleFactories is BaseScript {
         )
     {
         address initialAdmin = protocolAdmin();
-        uint256 initialMinimumFee = initialMinimumFee();
+        uint256 initialMinFeeUSD = initialMinFeeUSD();
         address initialOracle = chainlinkOracle();
         merkleFactoryInstant =
-            new SablierMerkleFactoryInstant{ salt: SALT }(initialAdmin, initialMinimumFee, initialOracle);
-        merkleFactoryLL = new SablierMerkleFactoryLL{ salt: SALT }(initialAdmin, initialMinimumFee, initialOracle);
-        merkleFactoryLT = new SablierMerkleFactoryLT{ salt: SALT }(initialAdmin, initialMinimumFee, initialOracle);
-        merkleFactoryVCA = new SablierMerkleFactoryVCA{ salt: SALT }(initialAdmin, initialMinimumFee, initialOracle);
+            new SablierMerkleFactoryInstant{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
+        merkleFactoryLL = new SablierMerkleFactoryLL{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
+        merkleFactoryLT = new SablierMerkleFactoryLT{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
+        merkleFactoryVCA = new SablierMerkleFactoryVCA{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
     }
 }

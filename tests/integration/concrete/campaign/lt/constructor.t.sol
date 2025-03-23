@@ -33,9 +33,9 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
 
         // SablierMerkleLockup
         assertEq(address(constructedLT.SABLIER_LOCKUP()), address(lockup), "Sablier Lockup");
-        assertEq(constructedLT.shape(), SHAPE, "shape");
-        assertEq(constructedLT.STREAM_CANCELABLE(), CANCELABLE, "stream cancelable");
-        assertEq(constructedLT.STREAM_TRANSFERABLE(), TRANSFERABLE, "stream transferable");
+        assertEq(constructedLT.streamShape(), STREAM_SHAPE, "stream shape");
+        assertEq(constructedLT.STREAM_CANCELABLE(), STREAM_CANCELABLE, "stream cancelable");
+        assertEq(constructedLT.STREAM_TRANSFERABLE(), STREAM_TRANSFERABLE, "stream transferable");
 
         // SablierMerkleLT
         assertEq(constructedLT.STREAM_START_TIME(), RANGED_STREAM_START_TIME, "stream start time");

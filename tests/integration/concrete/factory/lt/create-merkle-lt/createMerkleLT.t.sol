@@ -31,7 +31,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         createMerkleLT(params);
     }
 
-    function test_GivenCustomFeeSet() external whenNativeTokenNotFound givenCampaignNotExists {
+    function test_GivenCustomFeeUSDSet() external whenNativeTokenNotFound givenCampaignNotExists {
         // Set a custom fee.
         resetPrank(users.admin);
         uint256 customFeeUSD = 0;
@@ -39,7 +39,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
 
         resetPrank(users.campaignCreator);
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
-        params.campaignName = "Merkle LT campaign with custom fee set";
+        params.campaignName = "Merkle LT campaign with custom fee USD";
 
         address expectedLT = computeMerkleLTAddress(params, users.campaignCreator);
 
@@ -64,9 +64,9 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         assertEq(actualLT.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
-    function test_GivenCustomFeeNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
+    function test_GivenCustomFeeUSDNotSet() external whenNativeTokenNotFound givenCampaignNotExists {
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
-        params.campaignName = "Merkle LT campaign with default fee set";
+        params.campaignName = "Merkle LT campaign with no custom fee USD";
 
         address expectedLT = computeMerkleLTAddress(params, users.campaignCreator);
 
@@ -85,8 +85,8 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         assertGt(address(actualLT).code.length, 0, "MerkleLT contract not created");
         assertEq(address(actualLT), expectedLT, "MerkleLT contract does not match computed address");
 
-        // It should set the correct shape.
-        assertEq(actualLT.shape(), SHAPE, "shape");
+        // It should set the correct stream shape.
+        assertEq(actualLT.streamShape(), STREAM_SHAPE, "stream shape");
 
         // It should set the current factory address.
         assertEq(actualLT.FACTORY(), address(merkleFactoryLT), "factory");

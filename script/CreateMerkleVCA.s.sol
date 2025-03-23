@@ -11,10 +11,10 @@ import { BaseScript } from "./Base.sol";
 contract CreateMerkleVCA is BaseScript {
     /// @dev Deploy via Forge.
     function run() public broadcast returns (ISablierMerkleVCA merkleVCA) {
-        // TODO: Load deployed addresses from Ethereum mainnet.
+        // TODO: Load deployed addresses from Ethereum Mainnet.
         SablierMerkleFactoryVCA merkleFactory = new SablierMerkleFactoryVCA({
             initialAdmin: DEFAULT_SABLIER_ADMIN,
-            initialMinimumFee: 0,
+            initialMinFeeUSD: 0,
             initialOracle: address(0)
         });
 
