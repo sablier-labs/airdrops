@@ -107,12 +107,12 @@ abstract contract SablierMerkleFactoryBase is
             revert Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded(newMinFeeUSD, MAX_FEE_USD);
         }
 
-        // Effect: update the minimum fee.
-        uint256 previousMinFeeUSD = minFeeUSD;
+        // Effect: update the min USD fee.
+        uint256 currentMinFeeUSD = minFeeUSD;
         minFeeUSD = newMinFeeUSD;
 
         // Log the update.
-        emit SetMinFeeUSD({ admin: msg.sender, newMinFeeUSD: newMinFeeUSD, previousMinFeeUSD: previousMinFeeUSD });
+        emit SetMinFeeUSD({ admin: msg.sender, newMinFeeUSD: newMinFeeUSD, currentMinFeeUSD: currentMinFeeUSD });
     }
 
     /// @inheritdoc ISablierMerkleFactoryBase
@@ -136,13 +136,13 @@ abstract contract SablierMerkleFactoryBase is
 
     /// @inheritdoc ISablierMerkleFactoryBase
     function setOracle(address newOracle) external override onlyAdmin {
-        address previousOracle = oracle;
+        address currentOracle = oracle;
 
         // Effects: set the new oracle.
         _setOracle(newOracle);
 
         // Log the update.
-        emit SetOracle({ admin: msg.sender, newOracle: newOracle, previousOracle: previousOracle });
+        emit SetOracle({ admin: msg.sender, newOracle: newOracle, previousOracle: currentOracle });
     }
 
     /*//////////////////////////////////////////////////////////////////////////

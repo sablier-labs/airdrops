@@ -183,7 +183,7 @@ abstract contract SablierMerkleBase is
         // Effect: transfer the fees to the factory admin.
         (bool success,) = factoryAdmin.call{ value: feeAmount }("");
 
-        // Revert if the call failed.
+        // Revert if the transfer failed.
         if (!success) {
             revert Errors.SablierMerkleBase_FeeTransferFail(factoryAdmin, feeAmount);
         }
@@ -199,18 +199,22 @@ abstract contract SablierMerkleBase is
             revert Errors.SablierMerkleBase_CallerNotFactoryAdmin({ factoryAdmin: factoryAdmin, caller: msg.sender });
         }
 
-        uint256 previousMinFeeUSD = minFeeUSD;
+        uint256 currentMinFeeUSD = minFeeUSD;
 
         // Check: the new min USD fee is lower than the current min fee USD.
-        if (newMinFeeUSD >= previousMinFeeUSD) {
-            revert Errors.SablierMerkleBase_NewMinFeeUSDNotLower(previousMinFeeUSD, newMinFeeUSD);
+        if (newMinFeeUSD >= currentMinFeeUSD) {
+            revert Errors.SablierMerkleBase_NewMinFeeUSDNotLower(currentMinFeeUSD, newMinFeeUSD);
         }
 
-        // Effect: update the minimum USD fee.
+        // Effect: update the min USD fee.
         minFeeUSD = newMinFeeUSD;
 
         // Log the event.
-        emit LowerMinFeeUSD(factoryAdmin, newMinFeeUSD, previousMinFeeUSD);
+        emit LowerMinFeeUSD({
+            factoryAdmin: factoryAdmin,
+            newMinFeeUSD: newMinFeeUSD,
+            previousMinFeeUSD: currentMinFeeUSD
+        });
     }
 
     /*//////////////////////////////////////////////////////////////////////////
