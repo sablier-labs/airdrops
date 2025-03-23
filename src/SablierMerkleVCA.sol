@@ -137,7 +137,7 @@ contract SablierMerkleVCA is
         uint128 forgoneAmount;
 
         if (vestingSchedule.endTime <= blockTimestamp) {
-            // If the vesting period has ended, the recipient can claim the maturity amount.
+            // If the vesting period has ended, the recipient can claim the full amount.
             claimAmount = fullAmount;
         } else {
             // Otherwise, calculate the claimable amount based on the elapsed time.
@@ -157,6 +157,6 @@ contract SablierMerkleVCA is
         TOKEN.safeTransfer({ to: recipient, value: claimAmount });
 
         // Log the claim.
-        emit Claim({ index: index, recipient: recipient, claimAmount: claimAmount, forgoneAmount: forgoneAmount });
+        emit Claim(index, recipient, claimAmount, forgoneAmount);
     }
 }

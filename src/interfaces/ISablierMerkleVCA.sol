@@ -20,14 +20,14 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Retrieves the amount that would be claimed if the claim was made now.
+    /// @notice Calculates the amount that would be claimed if the claim was made now.
     /// @dev This is for informational purposes only. To actually claim the airdrop, a Merkle proof is required.
-    /// @param fullAmount The total amount of tokens claimable after the vesting schedule ends.
+    /// @param fullAmount The amount of tokens allocated to a user, denominated in the token's decimals.
     function calculateClaimAmount(uint128 fullAmount) external view returns (uint128);
 
-    /// @notice Retrieves the amount that would be forgone if the claim was made now.
+    /// @notice Calculates the amount that would be forgone if the claim was made now.
     /// @dev This is for informational purposes only. To actually claim the airdrop, a Merkle proof is required.
-    /// @param fullAmount The total amount of tokens claimable after the vesting schedule ends.
+    /// @param fullAmount The amount of tokens allocated to a user, denominated in the token's decimals.
     function calculateForgoneAmount(uint128 fullAmount) external view returns (uint128);
 
     /// @notice Retrieves the start time and end time of the vesting schedule.

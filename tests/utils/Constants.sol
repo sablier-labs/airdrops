@@ -15,7 +15,6 @@ abstract contract Constants {
     uint256 public constant MINIMUM_FEE_IN_WEI = (1e18 * MIN_FEE_USD) / 3000e8; // at $3000 per ETH price
     uint128 public constant START_AMOUNT = 100e18;
     UD2x18 public immutable START_PERCENTAGE = (ud(START_AMOUNT).div(ud(CLAIM_AMOUNT)).intoUD2x18());
-    uint128 public constant VCA_FORGONE_AMOUNT = 10_000e18;
     uint128 public constant VCA_FULL_AMOUNT = 10_000e18;
 
     // Durations and Timestamps

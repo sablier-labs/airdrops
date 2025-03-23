@@ -75,6 +75,6 @@ library Errors {
     /// @notice Thrown if end time of unlock is less than the start time.
     error SablierMerkleVCA_StartTimeGreaterThanEndTime(uint40 startTime, uint40 endTime);
 
-    /// @notice Thrown if the unlock start time is zero.
+    /// @notice Thrown if the vesting start time is zero.
     error SablierMerkleVCA_VestingStartTimeZero();
 }

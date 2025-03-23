@@ -84,7 +84,7 @@ interface ISablierMerkleBase is IAdminable {
     ///
     /// Notes:
     /// - For Merkle Instant and Merkle VCA campaigns, it transfers the tokens directly to the recipient.
-    /// - For Merkle Lockup campaigns, it creates a Lockup stream only if schedule end time is in the future. Otherwise,
+    /// - For Merkle Lockup campaigns, it creates a Lockup stream only if the end time is still in the future. Otherwise,
     /// it transfers the tokens directly to the recipient.
     ///
     /// Requirements:

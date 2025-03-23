@@ -121,7 +121,7 @@ contract SablierMerkleLT is
 
         // If the stream end time is not in the future, transfer the amount directly to the recipient.
         if (endTime <= block.timestamp) {
-            // Interaction: transfer the token.
+            // Interaction: transfer the tokens to the recipient.
             TOKEN.safeTransfer(recipient, amount);
 
             // Log the claim.
@@ -129,7 +129,7 @@ contract SablierMerkleLT is
         }
         // Otherwise, create the Lockup stream.
         else {
-            // Interaction: create the stream via {SablierLockup} contract.
+            // Safe Interaction: create the stream.
             uint256 streamId = SABLIER_LOCKUP.createWithTimestampsLT(
                 Lockup.CreateWithTimestamps({
                     sender: admin,

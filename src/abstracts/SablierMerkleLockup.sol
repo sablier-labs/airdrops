@@ -32,7 +32,7 @@ abstract contract SablierMerkleLockup is
     /// @inheritdoc ISablierMerkleLockup
     string public override shape;
 
-    /// @dev A mapping between recipient addresses and airdrops claimed through Lockup streams.
+    /// @dev A mapping between recipient addresses and Lockup streams created through the claim function.
     mapping(address recipient => uint256[] streamIds) internal _claimedStreams;
 
     /*//////////////////////////////////////////////////////////////////////////
