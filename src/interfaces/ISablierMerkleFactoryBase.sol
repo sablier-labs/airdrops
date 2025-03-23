@@ -20,7 +20,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @notice Emitted when the accrued fees are collected.
     event CollectFees(address indexed admin, ISablierMerkleBase indexed campaign, uint256 feeAmount);
 
-    /// @notice Emitted when the admin resets the custom fee for the provided campaign creator to the minimum fee.
+    /// @notice Emitted when the admin resets the custom USD fee for the provided campaign creator to the minimum fee.
     event DisableCustomFeeUSD(address indexed admin, address indexed campaignCreator);
 
     /// @notice Emitted when the admin sets a custom USD fee for the provided campaign creator.
@@ -39,18 +39,18 @@ interface ISablierMerkleFactoryBase is IAdminable {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Retrieves the maximum value that can be set for claim fee.
+    /// @notice Retrieves the maximum USD fee that can be set for claim fee.
     /// @dev The returned value is 100e8, which is equivalent to $100.
     function MAX_FEE_USD() external view returns (uint256);
 
-    /// @notice Determines the minimum USD fee applicable for the provided campaign creator. The default minimum fee is
-    /// applied unless there is a custom fee set.
+    /// @notice Determines the minimum USD fee applicable for the provided campaign creator. The default minimum USD fee
+    /// is applied unless there is a custom USD fee set.
     /// @param campaignCreator The address of the campaign creator.
     /// @return The minimum USD fee, denominated in Chainlink's 8-decimal format for USD prices.
     function minFeeUSDFor(address campaignCreator) external view returns (uint256);
 
-    /// @notice Retrieves the minimum fee required to claim the airdrop, paid in the native token of the
-    /// chain, e.g., ETH for Ethereum Mainnet.
+    /// @notice Retrieves the minimum USD fee required to claim the airdrop, paid in the native token of the chain,
+    /// e.g., ETH for Ethereum Mainnet.
     /// @dev The fee is denominated in Chainlink's 8-decimal format for USD prices, where 1e8 is $1.
     function minFeeUSD() external view returns (uint256);
 
@@ -94,7 +94,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @dev Emits a {SetCustomFee} event.
     ///
     /// Notes:
-    /// - The custom fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
+    /// - The custom USD fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.
@@ -107,7 +107,7 @@ interface ISablierMerkleFactoryBase is IAdminable {
     /// @dev Emits a {SetMinimumFee} event.
     ///
     /// Notes:
-    /// - The new fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
+    /// - The new USD fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
     ///
     /// Requirements:
     /// - `msg.sender` must be the admin.

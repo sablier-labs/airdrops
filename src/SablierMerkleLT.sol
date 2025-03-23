@@ -129,7 +129,7 @@ contract SablierMerkleLT is
         }
         // Otherwise, create the Lockup stream.
         else {
-            // Interaction: create the stream via {SablierLockup-createWithTimestampsLT}.
+            // Interaction: create the stream via {SablierLockup} contract.
             uint256 streamId = SABLIER_LOCKUP.createWithTimestampsLT(
                 Lockup.CreateWithTimestamps({
                     sender: admin,

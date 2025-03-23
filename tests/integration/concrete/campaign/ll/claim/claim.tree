@@ -1,9 +1,9 @@
 Claim_MerkleLL_Integration_Test
 └── when Merkle proof valid
-   ├── when schedule end time not exceed claim time
+   ├── when vesting end time not exceed claim time
    │  ├── it should transfer the tokens to the recipient
    │  └── it should emit a {Claim} event
-   └── when schedule end time exceeds claim time
+   └── when vesting end time exceeds claim time
       ├── when total percentage greater than 100
       │  └── it should revert
       └── when total percentage not greater than 100

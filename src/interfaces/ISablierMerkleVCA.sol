@@ -5,9 +5,9 @@ import { MerkleVCA } from "../types/DataTypes.sol";
 import { ISablierMerkleBase } from "./ISablierMerkleBase.sol";
 
 /// @title ISablierMerkleVCA
-/// @notice VCA (Variable Claim Amount) is an airdrop model where the claimable amount increases linearly
-/// until the airdrop period ends. Claiming early results in forgoing the remaining amount, whereas claiming
-/// after the period grants the full allocation.
+/// @notice VCA (Variable Claim Amount) is an airdrop model where the claimable amount increases linearly until the
+/// airdrop period ends. Claiming early results in forgoing the remaining amount, whereas claiming after the period
+/// grants the full allocation.
 interface ISablierMerkleVCA is ISablierMerkleBase {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS

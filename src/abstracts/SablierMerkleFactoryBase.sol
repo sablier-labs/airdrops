@@ -83,7 +83,7 @@ abstract contract SablierMerkleFactoryBase is
     function setCustomFeeUSD(address campaignCreator, uint256 customFeeUSD) external override onlyAdmin {
         MerkleFactory.CustomFeeUSD storage customFee = _customFeesUSD[campaignCreator];
 
-        // Check: the new fee is not greater than the maximum
+        // Check: the new fee is not greater than the maximum allowed.
         if (customFeeUSD > MAX_FEE_USD) {
             revert Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded(customFeeUSD, MAX_FEE_USD);
         }
