@@ -26,7 +26,7 @@ abstract contract CollectFees_Integration_Test is Integration_Test {
         factoryMerkleBase.transferAdmin(address(contractWithoutReceive));
 
         // Make the contract the caller.
-        setMsgSender({ msgSender: address(contractWithoutReceive) });
+        setMsgSender(address(contractWithoutReceive));
 
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -59,7 +59,7 @@ abstract contract CollectFees_Integration_Test is Integration_Test {
         emit ISablierFactoryMerkleBase.CollectFees({ admin: admin, campaign: merkleBase, feeAmount: MIN_FEE_WEI });
 
         // Make Alice the caller.
-        setMsgSender({ msgSender: users.eve });
+        setMsgSender(users.eve);
 
         factoryMerkleBase.collectFees(merkleBase);
 

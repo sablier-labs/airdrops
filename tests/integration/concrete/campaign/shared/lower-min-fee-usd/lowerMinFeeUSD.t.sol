@@ -8,7 +8,7 @@ import { Integration_Test } from "../../../../Integration.t.sol";
 
 abstract contract LowerMinFeeUSD_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotFactoryAdmin() external {
-        setMsgSender({ msgSender: users.campaignCreator });
+        setMsgSender(users.campaignCreator);
 
         // It should revert.
         vm.expectRevert(
