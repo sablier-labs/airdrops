@@ -23,12 +23,16 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
     /// @notice Calculates the amount that would be claimed if the claim was made now.
     /// @dev This is for informational purposes only. To actually claim the airdrop, a Merkle proof is required.
     /// @param fullAmount The amount of tokens allocated to a user, denominated in the token's decimals.
-    function calculateClaimAmount(uint128 fullAmount) external view returns (uint128);
+    /// @param claimTime The time at which the claim amount is calculated, a value of zero will be considered as
+    /// `block.timestamp`.
+    function calculateClaimAmount(uint128 fullAmount, uint40 claimTime) external view returns (uint128);
 
     /// @notice Calculates the amount that would be forgone if the claim was made now.
     /// @dev This is for informational purposes only. To actually claim the airdrop, a Merkle proof is required.
     /// @param fullAmount The amount of tokens allocated to a user, denominated in the token's decimals.
-    function calculateForgoneAmount(uint128 fullAmount) external view returns (uint128);
+    /// @param claimTime The time at which the claim amount is calculated, a value of zero will be considered as
+    /// `block.timestamp`.
+    function calculateForgoneAmount(uint128 fullAmount, uint40 claimTime) external view returns (uint128);
 
     /// @notice Retrieves the start time and end time of the vesting schedule.
     function getSchedule() external view returns (MerkleVCA.Schedule memory);

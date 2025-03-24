@@ -24,7 +24,7 @@ abstract contract Clawback_Integration_Test is Integration_Test {
         // Make the first claim to set `firstClaimTime`.
         claim();
 
-        // Reset the prank back to the campaign creator.
+        // Change the caller back to the campaign creator.
         setMsgSender(users.campaignCreator);
         _;
     }
