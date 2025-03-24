@@ -3,7 +3,7 @@ CalculateForgoneAmount_MerkleVCA_Integration_Test
 │  └── it should return the correct amount
 └── when claim time not zero
    ├── when claim time not greater than start time
-   │  └── it should return the full amount
+   │  └── it should return 0
    └── when claim time greater than start time
       ├── when claim time not less than end time
       │  └── it should return 0

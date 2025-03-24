@@ -98,10 +98,15 @@ contract SablierMerkleVCA is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleVCA
-    function calculateClaimAmount(uint128 fullAmount, uint40 claimTime) public view returns (uint128) {
+    function calculateClaimAmount(uint128 fullAmount, uint40 claimTime) external view returns (uint128) {
         // Zero is used a sentinel value for `block.timestamp`.
         if (claimTime == 0) {
             claimTime = uint40(block.timestamp);
+        }
+
+        // If claim time is not greater than schedule start time, return 0.
+        if (claimTime <= _schedule.startTime) {
+            return 0;
         }
 
         // Calculate and return the claimable amount.
@@ -110,7 +115,17 @@ contract SablierMerkleVCA is
 
     /// @inheritdoc ISablierMerkleVCA
     function calculateForgoneAmount(uint128 fullAmount, uint40 claimTime) external view returns (uint128) {
-        return fullAmount - calculateClaimAmount(fullAmount, claimTime);
+        // Zero is used a sentinel value for `block.timestamp`.
+        if (claimTime == 0) {
+            claimTime = uint40(block.timestamp);
+        }
+
+        // If claim time is not greater than schedule start time, return 0.
+        if (claimTime <= _schedule.startTime) {
+            return 0;
+        }
+
+        return fullAmount - _calculateClaimAmount(fullAmount, claimTime);
     }
 
     /// @inheritdoc ISablierMerkleVCA
@@ -126,11 +141,6 @@ contract SablierMerkleVCA is
     function _calculateClaimAmount(uint128 fullAmount, uint40 claimTime) internal view returns (uint128) {
         // Load the vesting schedule into memory to avoid multiple SLOADs.
         MerkleVCA.Schedule memory vestingSchedule = _schedule;
-
-        // If the schedule start time is not less than the claim time, return 0.
-        if (claimTime <= vestingSchedule.startTime) {
-            return 0;
-        }
 
         // Calculate the claim amount.
         uint40 elapsedTime;
@@ -159,14 +169,13 @@ contract SablierMerkleVCA is
     function _claim(uint256 index, address recipient, uint128 fullAmount) internal override {
         uint40 blockTimestamp = uint40(block.timestamp);
 
-        // Calculate the claim.
-        uint128 claimAmount = _calculateClaimAmount(fullAmount, blockTimestamp);
-
-        // Check: claim amount is not 0.
-        if (claimAmount == 0) {
+        // Check: schedule start time is in the past.
+        if (blockTimestamp <= _schedule.startTime) {
             revert Errors.SablierMerkleVCA_ClaimNotStarted(_schedule.startTime);
         }
 
+        // Calculate the claim.
+        uint128 claimAmount = _calculateClaimAmount(fullAmount, blockTimestamp);
         uint128 forgoneAmount;
 
         // Effect: update the total forgone amount.
