@@ -17,7 +17,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         MerkleLL_Integration_Shared_Test.setUp();
     }
 
-    function test_WhenVestingEndTimeNotExceedClaimTime() external whenMerkleProofValid {
+    function test_WhenVestingEndTimeNotExceedClaimTime() external whenValidMerkleProof {
         // Forward in time to the end of the vesting period.
         vm.warp({ newTimestamp: RANGED_STREAM_END_TIME });
 
@@ -38,7 +38,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
     function test_RevertWhen_TotalPercentageGreaterThan100()
         external
-        whenMerkleProofValid
+        whenValidMerkleProof
         whenVestingEndTimeExceedsClaimTime
     {
         MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
@@ -71,7 +71,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
     function test_WhenScheduledStartTimeZero()
         external
-        whenMerkleProofValid
+        whenValidMerkleProof
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentageNotGreaterThan100
     {
@@ -86,7 +86,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
     function test_WhenScheduledCliffDurationZero()
         external
-        whenMerkleProofValid
+        whenValidMerkleProof
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentageNotGreaterThan100
         whenScheduledStartTimeNotZero
@@ -104,7 +104,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
     function test_WhenScheduledCliffDurationNotZero()
         external
-        whenMerkleProofValid
+        whenValidMerkleProof
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentageNotGreaterThan100
         whenScheduledStartTimeNotZero

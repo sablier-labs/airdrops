@@ -16,7 +16,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         MerkleLT_Integration_Shared_Test.setUp();
     }
 
-    function test_WhenVestingEndTimeNotExceedClaimTime() external whenMerkleProofValid {
+    function test_WhenVestingEndTimeNotExceedClaimTime() external whenValidMerkleProof {
         // Forward in time to the end of the vesting period.
         vm.warp({ newTimestamp: RANGED_STREAM_END_TIME });
 
@@ -37,7 +37,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
     function test_RevertWhen_TotalPercentageLessThan100()
         external
-        whenMerkleProofValid
+        whenValidMerkleProof
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentageNot100
     {
@@ -61,7 +61,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
     function test_RevertWhen_TotalPercentageGreaterThan100()
         external
-        whenMerkleProofValid
+        whenValidMerkleProof
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentageNot100
     {
@@ -85,7 +85,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
     function test_WhenStreamStartTimeZero()
         external
-        whenMerkleProofValid
+        whenValidMerkleProof
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentage100
     {
@@ -100,7 +100,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
     function test_WhenStreamStartTimeNotZero()
         external
-        whenMerkleProofValid
+        whenValidMerkleProof
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentage100
     {

@@ -81,9 +81,9 @@ abstract contract Claim_Integration_Test is Integration_Test {
         merkleBase.claim{ value: MIN_FEE_WEI }(INDEX1, users.recipient1, CLAIM_AMOUNT, index2Proof());
     }
 
-    /// @dev Since the implementation of `_claim()` differs in each Merkle campaign, we declare this dummy test and
-    /// the Child contracts implement the actual claim test functions.
-    function test_WhenMerkleProofValid()
+    /// @dev Since the implementation of `_claim()` differs in each Merkle campaign, we declare this dummy test. The
+    /// child contracts implement the rest of the tests.
+    function test_WhenValidMerkleProof()
         external
         givenCampaignNotExpired
         givenMsgValueNotLessThanFee
