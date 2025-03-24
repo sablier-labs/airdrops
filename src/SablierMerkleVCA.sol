@@ -184,6 +184,10 @@ contract SablierMerkleVCA is
                 forgoneAmount = fullAmount - claimAmount;
                 totalForgoneAmount += forgoneAmount;
             }
+        } else {
+            // Although the claim amount should never exceed the full amount, this assertion is added to avoid excessive
+            // claiming in case of a bug.
+            assert(claimAmount == fullAmount);
         }
 
         // Interaction: transfer the tokens to the recipient.
