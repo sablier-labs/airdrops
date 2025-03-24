@@ -71,7 +71,7 @@ contract SablierMerkleVCA is
 
         // Check: vesting end time is greater than the schedule start time.
         if (params.schedule.endTime <= params.schedule.startTime) {
-            revert Errors.SablierMerkleVCA_StartTimeGreaterThanEndTime({
+            revert Errors.SablierMerkleVCA_EndTimeNotGreaterThanStartTime({
                 startTime: params.schedule.startTime,
                 endTime: params.schedule.endTime
             });
@@ -79,7 +79,7 @@ contract SablierMerkleVCA is
 
         // Check: campaign expiration is not zero.
         if (params.expiration == 0) {
-            revert Errors.SablierMerkleVCA_ExpiryTimeZero();
+            revert Errors.SablierMerkleVCA_ExpirationTimeZero();
         }
 
         // Check: campaign expiration is at least 1 week later than the vesting end time.
@@ -120,7 +120,8 @@ contract SablierMerkleVCA is
             claimTime = uint40(block.timestamp);
         }
 
-        // If claim time is not greater than schedule start time, return 0.
+        // If the claim time is not greater than schedule start time, no amount can be forgone since the claim
+        // cannot be made, so we return 0.
         if (claimTime <= _schedule.startTime) {
             return 0;
         }
@@ -142,21 +143,24 @@ contract SablierMerkleVCA is
         // Load the vesting schedule into memory to avoid multiple SLOADs.
         MerkleVCA.Schedule memory vestingSchedule = _schedule;
 
-        // Calculate the claim amount.
         uint40 elapsedTime;
         uint40 totalDuration;
+
+        // If the vesting period has ended, the claim amount is the full amount.
         if (claimTime >= vestingSchedule.endTime) {
-            // If the vesting period has ended, the recipient can claim the full amount.
             return fullAmount;
-        } else {
-            // Otherwise, calculate the claimable amount based on the elapsed time.
+        }
+        // Otherwise, calculate the claim amount based on the elapsed time.
+        else {
             unchecked {
+                // Safe due to the checks in the functions calling this.
                 elapsedTime = claimTime - vestingSchedule.startTime;
+
+                // Safe due to the check in the constructor.
                 totalDuration = vestingSchedule.endTime - vestingSchedule.startTime;
             }
 
-            // Safe to cast because the division results into a value less than `fullAmount`, which is already an
-            // `uint128`.
+            // Safe to cast because the result in a value less than `fullAmount`, which is already an `uint128`.
             return uint128((uint256(fullAmount) * elapsedTime) / totalDuration);
         }
     }
@@ -174,7 +178,7 @@ contract SablierMerkleVCA is
             revert Errors.SablierMerkleVCA_ClaimNotStarted(_schedule.startTime);
         }
 
-        // Calculate the claim.
+        // Calculate the claim amount and the forgone amount.
         uint128 claimAmount = _calculateClaimAmount(fullAmount, blockTimestamp);
         uint128 forgoneAmount;
 
@@ -185,8 +189,8 @@ contract SablierMerkleVCA is
                 totalForgoneAmount += forgoneAmount;
             }
         } else {
-            // Although the claim amount should never exceed the full amount, this assertion is added to avoid excessive
-            // claiming in case of a bug.
+            // Although the claim amount should never exceed the full amount, this assertion avoids excessive claiming
+            // in case of a calculation error.
             assert(claimAmount == fullAmount);
         }
 

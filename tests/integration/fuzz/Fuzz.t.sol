@@ -57,49 +57,51 @@ contract Shared_Fuzz_Test is Integration_Test {
     {
         firstClaimTime = getBlockTimestamp();
 
+        address caller = makeAddr("philanthropist");
+        setMsgSender(caller);
+
         for (uint256 i = 0; i < indexesToClaim.length; ++i) {
             // Bound lead index so its valid.
             uint256 leafIndex = bound(indexesToClaim[i], 0, leavesData.length - 1);
 
             LeafData memory leafData = leavesData[leafIndex];
 
-            // Claim the airdrop if it has not been claimed.
-            if (!merkleBase.hasClaimed(leavesData[leafIndex].index)) {
-                // Bound `msgValue` so that it's >= min USD fee.
-                msgValue = bound(msgValue, merkleBase.calculateMinFeeWei(), 100 ether);
+            // Claim the airdrop only if it has not been claimed.
+            if (merkleBase.hasClaimed(leavesData[leafIndex].index)) {
+                return;
+            }
 
-                address caller = makeAddr("philanthropist");
-                setMsgSender(caller);
-                vm.deal(caller, msgValue);
+            // Bound `msgValue` so that it's >= min USD fee.
+            msgValue = bound(msgValue, merkleBase.calculateMinFeeWei(), 100 ether);
+            vm.deal(caller, msgValue);
 
-                // Call the expect claim event function, implemented by the child contract.
-                expectClaimEvent(leafData);
+            // Call the expect claim event function, implemented by the child contract.
+            expectClaimEvent(leafData);
 
-                bytes32[] memory merkleProof = computeMerkleProof(leafData, leaves);
+            bytes32[] memory merkleProof = computeMerkleProof(leafData, leaves);
 
-                // Claim the airdrop.
-                merkleBase.claim{ value: msgValue }({
-                    index: leafData.index,
-                    recipient: leafData.recipient,
-                    amount: leafData.amount,
-                    merkleProof: merkleProof
-                });
+            // Claim the airdrop.
+            merkleBase.claim{ value: msgValue }({
+                index: leafData.index,
+                recipient: leafData.recipient,
+                amount: leafData.amount,
+                merkleProof: merkleProof
+            });
 
-                // It should mark the leaf index as claimed.
-                assertTrue(merkleBase.hasClaimed(leafData.index));
+            // It should mark the leaf index as claimed.
+            assertTrue(merkleBase.hasClaimed(leafData.index));
 
-                // Update the fee earned.
-                feeEarned += msgValue;
+            // Update the fee earned.
+            feeEarned += msgValue;
 
-                // Warp to a new time.
-                uint40 timeJumpSeed = uint40(uint256(keccak256(abi.encode(leafData))));
-                timeJumpSeed = boundUint40(timeJumpSeed, 0, 7 days);
-                vm.warp(getBlockTimestamp() + timeJumpSeed);
+            // Warp to a new time.
+            uint40 timeJumpSeed = uint40(uint256(keccak256(abi.encode(leafData))));
+            uint40 timeJump = boundUint40(timeJumpSeed, 0, 7 days);
+            vm.warp(getBlockTimestamp() + timeJump);
 
-                // Break loop if the campaign has expired.
-                if (merkleBase.EXPIRATION() > 0 && getBlockTimestamp() >= merkleBase.EXPIRATION()) {
-                    break;
-                }
+            // Break loop if the campaign has expired.
+            if (merkleBase.EXPIRATION() > 0 && getBlockTimestamp() >= merkleBase.EXPIRATION()) {
+                break;
             }
         }
     }
