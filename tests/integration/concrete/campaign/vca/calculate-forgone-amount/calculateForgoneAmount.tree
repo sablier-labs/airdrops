@@ -1,6 +1,6 @@
 CalculateForgoneAmount_MerkleVCA_Integration_Test
 ├── when claim time is 0
-│  └── it should return the corect amount
+│  └── it should return the correct amount
 └── when claim time not 0
    ├── when start time in future
    │  └── it should return 0
