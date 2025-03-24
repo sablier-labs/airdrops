@@ -538,14 +538,35 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
                                     MERKLE-VCA
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @dev Mirrors the logic from {SablierMerkleVCA._calculateClaimAmount}.
+    function calculateMerkleVCAAmounts(
+        uint128 fullAmount,
+        uint40 endTime,
+        uint40 startTime
+    )
+        public
+        view
+        returns (uint128 claimAmount, uint128 forgoneAmount)
+    {
+        if (getBlockTimestamp() < endTime) {
+            uint40 elapsedTime = (getBlockTimestamp() - startTime);
+            uint40 totalTime = endTime - startTime;
+
+            claimAmount = uint128((uint256(fullAmount) * elapsedTime) / totalTime);
+            forgoneAmount = fullAmount - claimAmount;
+        } else {
+            claimAmount = fullAmount;
+        }
+    }
+
     function computeMerkleVCAAddress() internal view returns (address) {
         return computeMerkleVCAAddress(
             merkleVCAConstructorParams({
                 campaignCreator: users.campaignCreator,
-                endTime: RANGED_STREAM_END_TIME,
+                endTime: VCA_END_TIME,
                 expiration: EXPIRATION,
                 merkleRoot: MERKLE_ROOT,
-                startTime: RANGED_STREAM_START_TIME,
+                startTime: VCA_START_TIME,
                 tokenAddress: dai
             }),
             users.campaignCreator
@@ -588,10 +609,10 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     function merkleVCAConstructorParams(uint40 expiration) public view returns (MerkleVCA.ConstructorParams memory) {
         return merkleVCAConstructorParams({
             campaignCreator: users.campaignCreator,
-            endTime: RANGED_STREAM_END_TIME,
+            endTime: VCA_END_TIME,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
-            startTime: RANGED_STREAM_START_TIME,
+            startTime: VCA_START_TIME,
             tokenAddress: dai
         });
     }

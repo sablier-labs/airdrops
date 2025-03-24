@@ -40,8 +40,6 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
 
         preCreateCampaign(params);
 
-        vm.assume(endTime > 0 && startTime > 0);
-
         // Bound the start time.
         startTime = boundUint40(startTime, 1 seconds, getBlockTimestamp() - 1 seconds);
 
@@ -92,18 +90,9 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
 
         preClaim(params);
 
-        uint128 claimAmount;
-        uint128 forgoneAmount;
-
-        if (getBlockTimestamp() >= endTime) {
-            claimAmount = vars.leafToClaim.amount;
-        } else {
-            // Calculate the claim amount based on the elapsed time.
-            uint40 elapsedTime = getBlockTimestamp() - startTime;
-            uint40 totalDuration = endTime - startTime;
-            claimAmount = uint128((uint256(vars.leafToClaim.amount) * elapsedTime) / totalDuration);
-            forgoneAmount = vars.leafToClaim.amount - claimAmount;
-        }
+        // Calculate claim and forgone amount based on the vesting start and end time.
+        (uint128 claimAmount, uint128 forgoneAmount) =
+            calculateMerkleVCAAmounts({ fullAmount: vars.leafToClaim.amount, endTime: endTime, startTime: startTime });
 
         vm.expectEmit({ emitter: address(merkleVCA) });
         emit ISablierMerkleVCA.Claim({

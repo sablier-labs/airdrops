@@ -145,18 +145,11 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
 
     function expectClaimEvent(LeafData memory leafData) internal override {
         // Calculate claim and forgone amount based on the vesting start and end time.
-        uint256 claimAmount;
-        uint256 forgoneAmount;
-
-        if (getBlockTimestamp() < merkleVCA.END_TIME()) {
-            uint40 elapsedTime = (getBlockTimestamp() - merkleVCA.START_TIME());
-            uint40 totalTime = merkleVCA.END_TIME() - merkleVCA.START_TIME();
-
-            claimAmount = (uint256(leafData.amount) * elapsedTime) / totalTime;
-            forgoneAmount = leafData.amount - claimAmount;
-        } else {
-            claimAmount = leafData.amount;
-        }
+        (uint256 claimAmount, uint256 forgoneAmount) = calculateMerkleVCAAmounts({
+            fullAmount: leafData.amount,
+            endTime: merkleVCA.END_TIME(),
+            startTime: merkleVCA.START_TIME()
+        });
 
         // It should emit a {Claim} event.
         vm.expectEmit({ emitter: address(merkleVCA) });
