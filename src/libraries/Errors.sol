@@ -33,7 +33,7 @@ library Errors {
     /// @notice Thrown when trying to set a new min USD fee that is higher than the current fee.
     error SablierMerkleBase_NewMinFeeUSDNotLower(uint256 currentMinFeeUSD, uint256 newMinFeeUSD);
 
-    /// @notice Thrown when trying to claim the same stream more than once.
+    /// @notice Thrown when trying to claim the same index more than once.
     error SablierMerkleBase_IndexClaimed(uint256 index);
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -63,16 +63,16 @@ library Errors {
                                  SABLIER-MERKLE-VCA
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Thrown while claiming when unlock start time is in the future.
+    /// @notice Thrown while claiming when vesting start time is in the future.
     error SablierMerkleVCA_ClaimNotStarted(uint40 startTime);
 
-    /// @notice Thrown if expiry of a VCA campaign is within 1 week from the schedule end time.
+    /// @notice Thrown if expiry of a VCA campaign is within 1 week from the vesting end time.
     error SablierMerkleVCA_ExpirationTooEarly(uint40 endTime, uint40 expiration);
 
     /// @notice Thrown if expiry of a VCA campaign is zero.
     error SablierMerkleVCA_ExpiryTimeZero();
 
-    /// @notice Thrown if end time of unlock is less than the start time.
+    /// @notice Thrown if vesting end time is less than the start time.
     error SablierMerkleVCA_StartTimeGreaterThanEndTime(uint40 startTime, uint40 endTime);
 
     /// @notice Thrown if the vesting start time is zero.

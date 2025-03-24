@@ -86,6 +86,11 @@ abstract contract SablierMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleBase
+    function calculateMinFeeWei() external view override returns (uint256) {
+        return _calculateMinFeeWei();
+    }
+
+    /// @inheritdoc ISablierMerkleBase
     function hasClaimed(uint256 index) public view override returns (bool) {
         return _claimedBitMap.get(index);
     }
@@ -93,11 +98,6 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     function hasExpired() public view override returns (bool) {
         return EXPIRATION > 0 && EXPIRATION <= block.timestamp;
-    }
-
-    /// @inheritdoc ISablierMerkleBase
-    function calculateMinFeeWei() external view override returns (uint256) {
-        return _calculateMinFeeWei();
     }
 
     /*//////////////////////////////////////////////////////////////////////////

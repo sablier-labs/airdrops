@@ -42,15 +42,15 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
 
         vm.assume(schedule.endTime > 0 && schedule.startTime > 0);
 
-        // Bound unlock start and end times.
+        // Bound vesting start and end times.
         schedule.startTime = boundUint40(schedule.startTime, 1 seconds, getBlockTimestamp() - 1 seconds);
         schedule.endTime = boundUint40(schedule.endTime, schedule.startTime + 1 seconds, MAX_UNIX_TIMESTAMP - 2 weeks);
 
-        // The expiration must exceed the unlock end time by at least 1 week.
+        // The expiration must exceed the vesting end time by at least 1 week.
         if (schedule.endTime > getBlockTimestamp() - 1 weeks) {
             params.expiration = boundUint40(params.expiration, schedule.endTime + 1 weeks, MAX_UNIX_TIMESTAMP);
         } else {
-            // If unlock end time is in the past, set expiration into the future to allow claiming.
+            // If vesting end time is in the past, set expiration into the future to allow claiming.
             params.expiration = boundUint40(params.expiration, getBlockTimestamp() + 1, MAX_UNIX_TIMESTAMP);
         }
 

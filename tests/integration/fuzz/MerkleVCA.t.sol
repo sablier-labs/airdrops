@@ -29,7 +29,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
     /// - Fuzzed custom fee.
     /// - MerkleVCA campaign with fuzzed leaves data, expiration, and schedule.
     /// - Finite (only in future) expiration.
-    /// - Unlock start time in the past.
+    /// - Vesting start time in the past.
     /// - Claiming airdrops for multiple indexes with fuzzed claim fee.
     /// - Fuzzed clawback amount.
     /// - Collect fees earned.

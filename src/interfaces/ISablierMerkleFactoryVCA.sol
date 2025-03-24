@@ -38,9 +38,9 @@ interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
     /// the campaign deployment will revert.
     ///
     /// Requirements:
-    /// - The value of `params.expiration` must not be 0.
-    /// - The value of `params.expiration` must be at least 1 week beyond the unlock end time to ensure loyal recipients
-    /// have enough time to claim.
+    /// - `params.expiration` must not be 0.
+    /// - `params.expiration` must be at least 1 week beyond the vesting end time to ensure loyal recipients have enough
+    /// time to claim.
     /// - `params.schedule.end` must be greater than `params.schedule.start`.
     /// - Both `params.schedule.start` and `params.schedule.end` must not be 0.
     ///
