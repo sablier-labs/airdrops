@@ -14,7 +14,7 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
         MerkleVCA_Integration_Shared_Test.setUp();
     }
 
-    function test_RevertWhen_StartTimeInFuture() external whenValidMerkleProof {
+    function test_RevertWhen_StartTimeInFuture() external whenMerkleProofValid {
         // Move back in time so that the schedule start time is in the future.
         vm.warp({ newTimestamp: RANGED_STREAM_START_TIME - 1 seconds });
 
@@ -32,7 +32,7 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
         });
     }
 
-    function test_WhenEndTimeInPast() external whenValidMerkleProof whenStartTimeNotInFuture {
+    function test_WhenEndTimeInPast() external whenMerkleProofValid whenStartTimeNotInFuture {
         // Forward in time so that the schedule end time is in the past.
         vm.warp({ newTimestamp: RANGED_STREAM_END_TIME });
 
@@ -63,7 +63,7 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
         assertEq(merkleVCA.totalForgoneAmount(), 0, "total forgone amount");
     }
 
-    function test_WhenEndTimeNotInPast() external whenValidMerkleProof whenStartTimeNotInFuture {
+    function test_WhenEndTimeNotInPast() external whenMerkleProofValid whenStartTimeNotInFuture {
         uint128 claimAmount = (VCA_FULL_AMOUNT * 2 days) / TOTAL_DURATION;
         uint128 forgoneAmount = VCA_FULL_AMOUNT - claimAmount;
 

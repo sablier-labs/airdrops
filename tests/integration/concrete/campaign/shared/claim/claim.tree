@@ -19,7 +19,7 @@ Claim_Integration_Test
                └── when amount valid
                   ├── when Merkle proof not valid
                   │  └── it should revert
-                  └── when valid Merkle proof
+                  └── when Merkle proof valid
                      ├── it should mark the index as Claimed
                      ├── it should transfer the ETH to the merkle lockup
                      └── it should emit {Claim} event

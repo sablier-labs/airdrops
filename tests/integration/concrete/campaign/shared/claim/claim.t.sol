@@ -83,7 +83,7 @@ abstract contract Claim_Integration_Test is Integration_Test {
 
     /// @dev Since the implementation of `_claim()` differs in each Merkle campaign, we declare this dummy test. The
     /// child contracts implement the rest of the tests.
-    function test_WhenValidMerkleProof()
+    function test_WhenMerkleProofValid()
         external
         givenCampaignNotExpired
         givenMsgValueNotLessThanFee

@@ -19,7 +19,7 @@ contract Claim_MerkleInstant_Integration_Test is Claim_Integration_Test, MerkleI
         whenIndexValid
         whenRecipientValid
         whenAmountValid
-        whenValidMerkleProof
+        whenMerkleProofValid
     {
         uint256 previousFeeAccrued = address(merkleInstant).balance;
 

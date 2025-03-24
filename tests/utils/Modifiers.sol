@@ -99,7 +99,7 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
-    modifier whenValidMerkleProof() {
+    modifier whenMerkleProofValid() {
         _;
     }
 
