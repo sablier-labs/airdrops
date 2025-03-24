@@ -1,0 +1,7 @@
+CalculateForgoneAmount_MerkleVCA_Integration_Test
+├── when start time in the future
+│  └── it should return the full amount
+├── when end time in past
+│  └── it should return 0
+└── when end time not in past
+    └── it should calculate the forgone amount
