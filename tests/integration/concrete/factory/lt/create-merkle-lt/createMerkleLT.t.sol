@@ -15,12 +15,12 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         // Set dai as the native token.
         resetPrank(users.admin);
         address newNativeToken = address(dai);
-        merkleFactoryLT.setNativeToken(newNativeToken);
+        factoryMerkleLT.setNativeToken(newNativeToken);
 
         vm.expectRevert(
             abi.encodeWithSelector(Errors.SablierFactoryMerkleBase_ForbidNativeToken.selector, newNativeToken)
         );
-        merkleFactoryLT.createMerkleLT(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
+        factoryMerkleLT.createMerkleLT(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
     }
 
     /// @dev This test reverts because a default MerkleLT contract is deployed in {Integration_Test.setUp}
@@ -35,7 +35,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         // Set a custom fee.
         resetPrank(users.admin);
         uint256 customFeeUSD = 0;
-        merkleFactoryLT.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
+        factoryMerkleLT.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         resetPrank(users.campaignCreator);
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
@@ -44,7 +44,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         address expectedLT = computeMerkleLTAddress(params, users.campaignCreator);
 
         // It should emit a {CreateMerkleLT} event.
-        vm.expectEmit({ emitter: address(merkleFactoryLT) });
+        vm.expectEmit({ emitter: address(factoryMerkleLT) });
         emit ISablierFactoryMerkleLT.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedLT),
             params: params,
@@ -60,7 +60,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         assertEq(address(actualLT), expectedLT, "MerkleLT contract does not match computed address");
 
         // It should set the current factory address.
-        assertEq(actualLT.FACTORY(), address(merkleFactoryLT), "factory");
+        assertEq(actualLT.FACTORY(), address(factoryMerkleLT), "factory");
         assertEq(actualLT.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
@@ -70,7 +70,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
 
         address expectedLT = computeMerkleLTAddress(params, users.campaignCreator);
 
-        vm.expectEmit({ emitter: address(merkleFactoryLT) });
+        vm.expectEmit({ emitter: address(factoryMerkleLT) });
         emit ISablierFactoryMerkleLT.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedLT),
             params: params,
@@ -89,7 +89,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         assertEq(actualLT.streamShape(), STREAM_SHAPE, "stream shape");
 
         // It should set the current factory address.
-        assertEq(actualLT.FACTORY(), address(merkleFactoryLT), "factory");
+        assertEq(actualLT.FACTORY(), address(factoryMerkleLT), "factory");
         assertEq(actualLT.minFeeUSD(), MIN_FEE_USD, "min fee USD");
     }
 }

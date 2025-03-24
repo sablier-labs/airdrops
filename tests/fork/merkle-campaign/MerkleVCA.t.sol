@@ -25,8 +25,8 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
     function setUp() public virtual override {
         Fork_Test.setUp();
 
-        // Cast the {merkleFactoryVCA} contract as {ISablierFactoryMerkleBase}
-        merkleFactoryBase = merkleFactoryVCA;
+        // Cast the {FactoryMerkleVCA} contract as {ISablierFactoryMerkleBase}
+        factoryMerkleBase = factoryMerkleVCA;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         vars.expectedMerkleCampaign =
             computeMerkleVCAAddress({ params: constructorParams, campaignCreator: params.campaignCreator });
 
-        vm.expectEmit({ emitter: address(merkleFactoryVCA) });
+        vm.expectEmit({ emitter: address(factoryMerkleVCA) });
         emit ISablierFactoryMerkleVCA.CreateMerkleVCA({
             merkleVCA: ISablierMerkleVCA(vars.expectedMerkleCampaign),
             params: constructorParams,
@@ -75,7 +75,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
             oracle: vars.oracle
         });
 
-        merkleVCA = merkleFactoryVCA.createMerkleVCA(constructorParams, vars.aggregateAmount, vars.leavesData.length);
+        merkleVCA = factoryMerkleVCA.createMerkleVCA(constructorParams, vars.aggregateAmount, vars.leavesData.length);
 
         assertLt(0, address(merkleVCA).code.length, "MerkleVCA contract not created");
         assertEq(address(merkleVCA), vars.expectedMerkleCampaign, "MerkleVCA contract does not match computed address");

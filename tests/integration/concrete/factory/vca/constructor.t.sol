@@ -5,7 +5,7 @@ import { SablierFactoryMerkleVCA } from "src/SablierFactoryMerkleVCA.sol";
 
 import { Integration_Test } from "../../../Integration.t.sol";
 
-contract Constructor_MerkleFactoryVCA_Integration_Test is Integration_Test {
+contract Constructor_FactoryMerkleVCA_Integration_Test is Integration_Test {
     function test_Constructor() external {
         SablierFactoryMerkleVCA constructedFactory =
             new SablierFactoryMerkleVCA(users.admin, MIN_FEE_USD, address(oracle));

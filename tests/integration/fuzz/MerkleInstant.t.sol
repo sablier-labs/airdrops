@@ -17,8 +17,8 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryInstant} contract as {ISablierFactoryMerkleBase}
-        merkleFactoryBase = merkleFactoryInstant;
+        // Cast the {FactoryMerkleInstant} contract as {ISablierFactoryMerkleBase}
+        factoryMerkleBase = factoryMerkleInstant;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
         address expectedMerkleInstant = computeMerkleInstantAddress(params, users.campaignCreator);
 
         // Expect a {CreateMerkleInstant} event.
-        vm.expectEmit({ emitter: address(merkleFactoryInstant) });
+        vm.expectEmit({ emitter: address(factoryMerkleInstant) });
         emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             params: params,
@@ -98,7 +98,7 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
         });
 
         // Create the campaign.
-        merkleInstant = merkleFactoryInstant.createMerkleInstant(params, aggregateAmount, leavesData.length);
+        merkleInstant = factoryMerkleInstant.createMerkleInstant(params, aggregateAmount, leavesData.length);
 
         // It should deploy the contract at the correct address.
         assertGt(address(merkleInstant).code.length, 0, "MerkleInstant contract not created");

@@ -19,7 +19,7 @@ abstract contract CalculateMinFeeWei_Integration_Test is Integration_Test {
 
     function test_GivenOracleZero() external {
         // Deploy campaign with zero oracle address.
-        merkleFactoryBase.setOracle(address(0));
+        factoryMerkleBase.setOracle(address(0));
         _deployCampaign();
 
         // It should return zero.
@@ -28,7 +28,7 @@ abstract contract CalculateMinFeeWei_Integration_Test is Integration_Test {
 
     function test_GivenMinFeeUSDZero() external givenOracleNotZero {
         // Deploy campaign with zero min USD fee.
-        merkleFactoryBase.setMinFeeUSD(0);
+        factoryMerkleBase.setMinFeeUSD(0);
         _deployCampaign();
 
         // It should return zero.
@@ -37,7 +37,7 @@ abstract contract CalculateMinFeeWei_Integration_Test is Integration_Test {
 
     function test_WhenOracleUpdatedTimeInFuture() external givenOracleNotZero givenMinFeeUSDNotZero {
         // Deploy campaign with an oracle that has `updatedAt` timestamp in the future.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleFuture()));
+        factoryMerkleBase.setOracle(address(new ChainlinkOracleFuture()));
         _deployCampaign();
 
         // It should return zero.
@@ -51,7 +51,7 @@ abstract contract CalculateMinFeeWei_Integration_Test is Integration_Test {
         whenOracleUpdatedTimeNotInFuture
     {
         // Deploy campaign with an oracle that has `updatedAt` timestamp older than 24 hours.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleOutdated()));
+        factoryMerkleBase.setOracle(address(new ChainlinkOracleOutdated()));
         _deployCampaign();
 
         // It should return zero.
@@ -66,7 +66,7 @@ abstract contract CalculateMinFeeWei_Integration_Test is Integration_Test {
         whenOraclePriceNotOutdated
     {
         // Deploy campaign with with an oracle that returns 0 price.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleZeroPrice()));
+        factoryMerkleBase.setOracle(address(new ChainlinkOracleZeroPrice()));
         _deployCampaign();
 
         // It should return zero.
@@ -95,7 +95,7 @@ abstract contract CalculateMinFeeWei_Integration_Test is Integration_Test {
         whenOraclePriceNotZero
     {
         // Deploy campaign with an oracle that returns 18 decimals.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleWith18Decimals()));
+        factoryMerkleBase.setOracle(address(new ChainlinkOracleWith18Decimals()));
         _deployCampaign();
 
         // It should calculate the min fee in wei.
@@ -111,7 +111,7 @@ abstract contract CalculateMinFeeWei_Integration_Test is Integration_Test {
         whenOraclePriceNotZero
     {
         // Deploy campaign with an oracle that returns 6 decimals.
-        merkleFactoryBase.setOracle(address(new ChainlinkOracleWith6Decimals()));
+        factoryMerkleBase.setOracle(address(new ChainlinkOracleWith6Decimals()));
         _deployCampaign();
 
         // It should calculate the min fee in wei.

@@ -47,7 +47,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         params.schedule.startPercentage = ud2x18(0.5e18);
         params.schedule.cliffPercentage = ud2x18(0.6e18);
 
-        merkleLL = merkleFactoryLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
+        merkleLL = factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
         uint128 startUnlockAmount = ud60x18(CLAIM_AMOUNT).mul(ud60x18(0.5e18)).intoUint128();
         uint128 cliffUnlockAmount = ud60x18(CLAIM_AMOUNT).mul(ud60x18(0.6e18)).intoUint128();
 
@@ -78,7 +78,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
         params.schedule.startTime = 0;
 
-        merkleLL = merkleFactoryLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
+        merkleLL = factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
         // It should create a stream with block.timestamp as start time.
         _test_Claim({ startTime: getBlockTimestamp(), cliffTime: getBlockTimestamp() + CLIFF_DURATION });
@@ -95,7 +95,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         params.schedule.cliffDuration = 0;
         params.schedule.cliffPercentage = ud2x18(0);
 
-        merkleLL = merkleFactoryLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
+        merkleLL = factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
         // It should create a stream with block.timestamp as start time.
         // It should create a stream with cliff as zero.

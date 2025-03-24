@@ -11,7 +11,7 @@ abstract contract SetCustomFeeUSD_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotAdmin() external {
         resetPrank({ msgSender: users.eve });
         vm.expectRevert(abi.encodeWithSelector(EvmUtilsErrors.CallerNotAdmin.selector, users.admin, users.eve));
-        merkleFactoryBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: 0 });
+        factoryMerkleBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: 0 });
     }
 
     function test_RevertWhen_NewFeeExceedsMaxFee() external whenCallerAdmin {
@@ -21,21 +21,21 @@ abstract contract SetCustomFeeUSD_Integration_Test is Integration_Test {
                 Errors.SablierFactoryMerkleBase_MaxFeeUSDExceeded.selector, customFeeUSD, MAX_FEE_USD
             )
         );
-        merkleFactoryBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: customFeeUSD });
+        factoryMerkleBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: customFeeUSD });
     }
 
     function test_WhenNotEnabled() external whenCallerAdmin {
         // Check that custom fee is not enabled for user.
         assertEq(
-            merkleFactoryBase.minFeeUSDFor(users.campaignCreator),
-            merkleFactoryBase.minFeeUSD(),
+            factoryMerkleBase.minFeeUSDFor(users.campaignCreator),
+            factoryMerkleBase.minFeeUSD(),
             "custom fee USD enabled"
         );
 
         uint256 customFeeUSD = 0;
 
         // It should emit a {SetCustomFeeUSD} event.
-        vm.expectEmit({ emitter: address(merkleFactoryBase) });
+        vm.expectEmit({ emitter: address(factoryMerkleBase) });
         emit ISablierFactoryMerkleBase.SetCustomFeeUSD({
             admin: users.admin,
             campaignCreator: users.campaignCreator,
@@ -43,20 +43,20 @@ abstract contract SetCustomFeeUSD_Integration_Test is Integration_Test {
         });
 
         // Set the custom fee.
-        merkleFactoryBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: customFeeUSD });
+        factoryMerkleBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: customFeeUSD });
 
         // It should set the custom fee.
-        assertEq(merkleFactoryBase.minFeeUSDFor(users.campaignCreator), customFeeUSD, "custom fee USD");
+        assertEq(factoryMerkleBase.minFeeUSDFor(users.campaignCreator), customFeeUSD, "custom fee USD");
     }
 
     function test_WhenEnabled() external whenCallerAdmin whenNewFeeNotExceedMaxFee {
         // Enable the custom fee.
-        merkleFactoryBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: 0.5e8 });
+        factoryMerkleBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: 0.5e8 });
 
         // Check that custom fee is enabled.
         assertNotEq(
-            merkleFactoryBase.minFeeUSDFor(users.campaignCreator),
-            merkleFactoryBase.minFeeUSD(),
+            factoryMerkleBase.minFeeUSDFor(users.campaignCreator),
+            factoryMerkleBase.minFeeUSD(),
             "custom fee USD not enabled"
         );
 
@@ -64,7 +64,7 @@ abstract contract SetCustomFeeUSD_Integration_Test is Integration_Test {
         uint256 customFeeUSD = 0;
 
         // It should emit a {SetCustomFeeUSD} event.
-        vm.expectEmit({ emitter: address(merkleFactoryBase) });
+        vm.expectEmit({ emitter: address(factoryMerkleBase) });
         emit ISablierFactoryMerkleBase.SetCustomFeeUSD({
             admin: users.admin,
             campaignCreator: users.campaignCreator,
@@ -72,9 +72,9 @@ abstract contract SetCustomFeeUSD_Integration_Test is Integration_Test {
         });
 
         // Set the custom fee.
-        merkleFactoryBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: customFeeUSD });
+        factoryMerkleBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: customFeeUSD });
 
         // It should set the custom fee.
-        assertEq(merkleFactoryBase.minFeeUSDFor(users.campaignCreator), customFeeUSD, "custom fee USD");
+        assertEq(factoryMerkleBase.minFeeUSDFor(users.campaignCreator), customFeeUSD, "custom fee USD");
     }
 }

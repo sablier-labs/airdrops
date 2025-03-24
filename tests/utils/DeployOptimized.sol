@@ -9,38 +9,38 @@ import { ISablierFactoryMerkleLT } from "../../src/interfaces/ISablierFactoryMer
 import { ISablierFactoryMerkleVCA } from "../../src/interfaces/ISablierFactoryMerkleVCA.sol";
 
 abstract contract DeployOptimized is StdCheats {
-    function deployOptimizedMerkleFactories(
+    function deployOptimizedFactories(
         address initialAdmin,
         uint256 initialMinFeeUSD,
         address initialOracle
     )
         internal
         returns (
-            ISablierFactoryMerkleInstant merkleFactoryInstant,
-            ISablierFactoryMerkleLL merkleFactoryLL,
-            ISablierFactoryMerkleLT merkleFactoryLT,
-            ISablierFactoryMerkleVCA merkleFactoryVCA
+            ISablierFactoryMerkleInstant factoryMerkleInstant,
+            ISablierFactoryMerkleLL factoryMerkleLL,
+            ISablierFactoryMerkleLT factoryMerkleLT,
+            ISablierFactoryMerkleVCA factoryMerkleVCA
         )
     {
-        merkleFactoryInstant = ISablierFactoryMerkleInstant(
+        factoryMerkleInstant = ISablierFactoryMerkleInstant(
             deployCode(
                 "out-optimized/SablierFactoryMerkleInstant.sol/SablierFactoryMerkleInstant.json",
                 abi.encode(initialAdmin, initialMinFeeUSD, initialOracle)
             )
         );
-        merkleFactoryLL = ISablierFactoryMerkleLL(
+        factoryMerkleLL = ISablierFactoryMerkleLL(
             deployCode(
                 "out-optimized/SablierFactoryMerkleLL.sol/SablierFactoryMerkleLL.json",
                 abi.encode(initialAdmin, initialMinFeeUSD, initialOracle)
             )
         );
-        merkleFactoryLT = ISablierFactoryMerkleLT(
+        factoryMerkleLT = ISablierFactoryMerkleLT(
             deployCode(
                 "out-optimized/SablierFactoryMerkleLT.sol/SablierFactoryMerkleLT.json",
                 abi.encode(initialAdmin, initialMinFeeUSD, initialOracle)
             )
         );
-        merkleFactoryVCA = ISablierFactoryMerkleVCA(
+        factoryMerkleVCA = ISablierFactoryMerkleVCA(
             deployCode(
                 "out-optimized/SablierFactoryMerkleVCA.sol/SablierFactoryMerkleVCA.json",
                 abi.encode(initialAdmin, initialMinFeeUSD, initialOracle)

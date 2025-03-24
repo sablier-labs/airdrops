@@ -10,20 +10,20 @@ abstract contract SetNativeToken_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotAdmin() external {
         resetPrank({ msgSender: users.eve });
         vm.expectRevert(abi.encodeWithSelector(EvmUtilsErrors.CallerNotAdmin.selector, users.admin, users.eve));
-        merkleFactoryBase.setNativeToken(address(dai));
+        factoryMerkleBase.setNativeToken(address(dai));
     }
 
     function test_RevertWhen_ProvidedAddressZero() external whenCallerAdmin {
         address newNativeToken = address(0);
 
         vm.expectRevert(Errors.SablierFactoryMerkleBase_NativeTokenZeroAddress.selector);
-        merkleFactoryBase.setNativeToken(newNativeToken);
+        factoryMerkleBase.setNativeToken(newNativeToken);
     }
 
     function test_RevertGiven_NativeTokenAlreadySet() external whenCallerAdmin whenProvidedAddressNotZero {
         // Already set the native token for this test.
         address nativeToken = address(dai);
-        merkleFactoryBase.setNativeToken(nativeToken);
+        factoryMerkleBase.setNativeToken(nativeToken);
 
         // It should revert.
         vm.expectRevert(
@@ -31,20 +31,20 @@ abstract contract SetNativeToken_Integration_Test is Integration_Test {
         );
 
         // Set native token again with a different address.
-        merkleFactoryBase.setNativeToken(address(usdc));
+        factoryMerkleBase.setNativeToken(address(usdc));
     }
 
     function test_GivenNativeTokenNotSet() external whenCallerAdmin whenProvidedAddressNotZero {
         address nativeToken = address(dai);
 
         // It should emit a {SetNativeToken} event.
-        vm.expectEmit({ emitter: address(merkleFactoryBase) });
+        vm.expectEmit({ emitter: address(factoryMerkleBase) });
         emit ISablierFactoryMerkleBase.SetNativeToken({ admin: users.admin, nativeToken: nativeToken });
 
         // Set native token.
-        merkleFactoryBase.setNativeToken(nativeToken);
+        factoryMerkleBase.setNativeToken(nativeToken);
 
         // It should set native token.
-        assertEq(merkleFactoryBase.nativeToken(), nativeToken, "native token");
+        assertEq(factoryMerkleBase.nativeToken(), nativeToken, "native token");
     }
 }

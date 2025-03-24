@@ -26,8 +26,8 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
     function setUp() public virtual override {
         Fork_Test.setUp();
 
-        // Cast the {merkleFactoryLT} contract as {ISablierFactoryMerkleBase}
-        merkleFactoryBase = merkleFactoryLT;
+        // Cast the {FactoryMerkleLT} contract as {ISablierFactoryMerkleBase}
+        factoryMerkleBase = factoryMerkleLT;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
         vars.expectedMerkleCampaign =
             computeMerkleLTAddress({ params: constructorParams, campaignCreator: params.campaignCreator });
 
-        vm.expectEmit({ emitter: address(merkleFactoryLT) });
+        vm.expectEmit({ emitter: address(factoryMerkleLT) });
         emit ISablierFactoryMerkleLT.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(vars.expectedMerkleCampaign),
             params: constructorParams,
@@ -76,7 +76,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
             oracle: vars.oracle
         });
 
-        merkleLT = merkleFactoryLT.createMerkleLT(constructorParams, vars.aggregateAmount, vars.leavesData.length);
+        merkleLT = factoryMerkleLT.createMerkleLT(constructorParams, vars.aggregateAmount, vars.leavesData.length);
 
         assertLt(0, address(merkleLT).code.length, "MerkleLT contract not created");
         assertEq(address(merkleLT), vars.expectedMerkleCampaign, "MerkleLT contract does not match computed address");

@@ -18,8 +18,8 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryLT} contract as {ISablierFactoryMerkleBase}
-        merkleFactoryBase = merkleFactoryLT;
+        // Cast the {FactoryMerkleLT} contract as {ISablierFactoryMerkleBase}
+        factoryMerkleBase = factoryMerkleLT;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         address expectedMerkleLT = computeMerkleLTAddress(params, users.campaignCreator);
 
         // Expect a {CreateMerkleLT} event.
-        vm.expectEmit({ emitter: address(merkleFactoryLT) });
+        vm.expectEmit({ emitter: address(factoryMerkleLT) });
         emit ISablierFactoryMerkleLT.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedMerkleLT),
             params: params,
@@ -115,7 +115,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         });
 
         // Create the campaign.
-        merkleLT = merkleFactoryLT.createMerkleLT(params, aggregateAmount, leavesData.length);
+        merkleLT = factoryMerkleLT.createMerkleLT(params, aggregateAmount, leavesData.length);
 
         // It should deploy the contract at the correct address.
         assertGt(address(merkleLT).code.length, 0, "MerkleLT contract not created");

@@ -20,8 +20,8 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryLL} contract as {ISablierFactoryMerkleBase}
-        merkleFactoryBase = merkleFactoryLL;
+        // Cast the {FactoryMerkleLL} contract as {ISablierFactoryMerkleBase}
+        factoryMerkleBase = factoryMerkleLL;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -115,7 +115,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         address expectedMerkleLL = computeMerkleLLAddress(params, users.campaignCreator);
 
         // Expect a {CreateMerkleLL} event.
-        vm.expectEmit({ emitter: address(merkleFactoryLL) });
+        vm.expectEmit({ emitter: address(factoryMerkleLL) });
         emit ISablierFactoryMerkleLL.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedMerkleLL),
             params: params,
@@ -126,7 +126,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         });
 
         // Create the campaign.
-        merkleLL = merkleFactoryLL.createMerkleLL(params, aggregateAmount, leavesData.length);
+        merkleLL = factoryMerkleLL.createMerkleLL(params, aggregateAmount, leavesData.length);
 
         // It should deploy the contract at the correct address.
         assertGt(address(merkleLL).code.length, 0, "MerkleLL contract not created");

@@ -8,7 +8,7 @@ import { MerkleVCA_Integration_Shared_Test } from "./MerkleVCA.t.sol";
 contract Constructor_MerkleVCA_Integration_Test is MerkleVCA_Integration_Shared_Test {
     function test_Constructor() external {
         // Make Factory the caller for the constructor test.
-        resetPrank(address(merkleFactoryVCA));
+        resetPrank(address(factoryMerkleVCA));
 
         // Deploy the SablierMerkleVCA contract.
         SablierMerkleVCA constructedVCA = new SablierMerkleVCA(merkleVCAConstructorParams(), users.campaignCreator);
@@ -17,7 +17,7 @@ contract Constructor_MerkleVCA_Integration_Test is MerkleVCA_Integration_Shared_
         assertEq(constructedVCA.admin(), users.campaignCreator, "admin");
         assertEq(constructedVCA.campaignName(), CAMPAIGN_NAME, "campaign name");
         assertEq(constructedVCA.EXPIRATION(), EXPIRATION, "expiration");
-        assertEq(constructedVCA.FACTORY(), address(merkleFactoryVCA), "factory");
+        assertEq(constructedVCA.FACTORY(), address(factoryMerkleVCA), "factory");
         assertEq(constructedVCA.ipfsCID(), IPFS_CID, "IPFS CID");
         assertEq(constructedVCA.MERKLE_ROOT(), MERKLE_ROOT, "Merkle root");
         assertEq(constructedVCA.minFeeUSD(), MIN_FEE_USD, "min fee USD");

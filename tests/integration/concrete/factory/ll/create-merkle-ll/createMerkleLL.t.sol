@@ -15,12 +15,12 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         // Set dai as the native token.
         resetPrank(users.admin);
         address newNativeToken = address(dai);
-        merkleFactoryLL.setNativeToken(newNativeToken);
+        factoryMerkleLL.setNativeToken(newNativeToken);
 
         vm.expectRevert(
             abi.encodeWithSelector(Errors.SablierFactoryMerkleBase_ForbidNativeToken.selector, newNativeToken)
         );
-        merkleFactoryLL.createMerkleLL(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
+        factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
     }
 
     /// @dev This test reverts because a default MerkleLL contract is deployed in {Integration_Test.setUp}
@@ -36,7 +36,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         // Set the custom fee for this test.
         resetPrank(users.admin);
         uint256 customFeeUSD = 0;
-        merkleFactoryLL.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
+        factoryMerkleLL.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         resetPrank(users.campaignCreator);
         MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
@@ -45,7 +45,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         address expectedLL = computeMerkleLLAddress(params, users.campaignCreator);
 
         // It should emit a {CreateMerkleLL} event.
-        vm.expectEmit({ emitter: address(merkleFactoryLL) });
+        vm.expectEmit({ emitter: address(factoryMerkleLL) });
         emit ISablierFactoryMerkleLL.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedLL),
             params: params,
@@ -60,7 +60,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         assertEq(address(actualLL), expectedLL, "MerkleLL contract does not match computed address");
 
         // It should set the current factory address.
-        assertEq(actualLL.FACTORY(), address(merkleFactoryLL), "factory");
+        assertEq(actualLL.FACTORY(), address(factoryMerkleLL), "factory");
         assertEq(actualLL.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
@@ -71,7 +71,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         address expectedLL = computeMerkleLLAddress(params, users.campaignCreator);
 
         // It should emit a {CreateMerkleInstant} event.
-        vm.expectEmit({ emitter: address(merkleFactoryLL) });
+        vm.expectEmit({ emitter: address(factoryMerkleLL) });
         emit ISablierFactoryMerkleLL.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedLL),
             params: params,
@@ -89,7 +89,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         assertEq(actualLL.streamShape(), STREAM_SHAPE, "stream shape");
 
         // It should set the current factory address.
-        assertEq(actualLL.FACTORY(), address(merkleFactoryLL), "factory");
+        assertEq(actualLL.FACTORY(), address(factoryMerkleLL), "factory");
         assertEq(actualLL.minFeeUSD(), MIN_FEE_USD, "min fee USD");
     }
 }

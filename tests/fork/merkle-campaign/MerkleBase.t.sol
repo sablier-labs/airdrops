@@ -64,7 +64,7 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
         }
 
         // Load the factory admin from mainnet.
-        factoryAdmin = merkleFactoryBase.admin();
+        factoryAdmin = factoryMerkleBase.admin();
 
         // Fuzz the leaves data.
         vars.aggregateAmount = fuzzMerkleData(params.leavesData);
@@ -83,8 +83,8 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
         resetPrank({ msgSender: params.campaignCreator });
 
         // Load the mainnet values from the deployed contract.
-        vars.oracle = merkleFactoryBase.oracle();
-        vars.minFeeUSD = merkleFactoryBase.minFeeUSD();
+        vars.oracle = factoryMerkleBase.oracle();
+        vars.minFeeUSD = factoryMerkleBase.minFeeUSD();
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -137,13 +137,13 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function testCollectFees() internal {
-        vm.expectEmit({ emitter: address(merkleFactoryBase) });
+        vm.expectEmit({ emitter: address(factoryMerkleBase) });
         emit ISablierFactoryMerkleBase.CollectFees({
             admin: factoryAdmin,
             campaign: merkleBase,
             feeAmount: vars.minFeeWei
         });
-        merkleFactoryBase.collectFees({ campaign: merkleBase });
+        factoryMerkleBase.collectFees({ campaign: merkleBase });
 
         assertEq(address(merkleBase).balance, 0, "merkle ETH balance");
         assertEq(factoryAdmin.balance, vars.initialAdminBalance + vars.minFeeWei, "admin ETH balance");

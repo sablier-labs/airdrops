@@ -25,8 +25,8 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
     function setUp() public virtual override {
         Fork_Test.setUp();
 
-        // Cast the {merkleFactoryInstant} contract as {ISablierFactoryMerkleBase}
-        merkleFactoryBase = merkleFactoryInstant;
+        // Cast the {FactoryMerkleInstant} contract as {ISablierFactoryMerkleBase}
+        factoryMerkleBase = factoryMerkleInstant;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
         vars.expectedMerkleCampaign =
             computeMerkleInstantAddress({ params: constructorParams, campaignCreator: params.campaignCreator });
 
-        vm.expectEmit({ emitter: address(merkleFactoryInstant) });
+        vm.expectEmit({ emitter: address(factoryMerkleInstant) });
         emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(vars.expectedMerkleCampaign),
             params: constructorParams,
@@ -61,7 +61,7 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
         });
 
         merkleInstant =
-            merkleFactoryInstant.createMerkleInstant(constructorParams, vars.aggregateAmount, vars.leavesData.length);
+            factoryMerkleInstant.createMerkleInstant(constructorParams, vars.aggregateAmount, vars.leavesData.length);
 
         assertLt(0, address(merkleInstant).code.length, "MerkleInstant contract not created");
         assertEq(

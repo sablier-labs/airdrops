@@ -15,12 +15,12 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         // Set dai as the native token.
         resetPrank(users.admin);
         address newNativeToken = address(dai);
-        merkleFactoryInstant.setNativeToken(newNativeToken);
+        factoryMerkleInstant.setNativeToken(newNativeToken);
 
         vm.expectRevert(
             abi.encodeWithSelector(Errors.SablierFactoryMerkleBase_ForbidNativeToken.selector, newNativeToken)
         );
-        merkleFactoryInstant.createMerkleInstant(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
+        factoryMerkleInstant.createMerkleInstant(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
     }
 
     /// @dev This test reverts because a default MerkleInstant contract is deployed in {Integration_Test.setUp}
@@ -36,7 +36,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         // Set a custom fee.
         resetPrank(users.admin);
         uint256 customFeeUSD = 0;
-        merkleFactoryInstant.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
+        factoryMerkleInstant.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         resetPrank(users.campaignCreator);
 
@@ -46,7 +46,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         address expectedMerkleInstant = computeMerkleInstantAddress(params, users.campaignCreator);
 
         // It should emit a {CreateMerkleInstant} event.
-        vm.expectEmit({ emitter: address(merkleFactoryInstant) });
+        vm.expectEmit({ emitter: address(factoryMerkleInstant) });
         emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             params: params,
@@ -63,7 +63,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         );
 
         // It should set the current factory address.
-        assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant));
+        assertEq(actualInstant.FACTORY(), address(factoryMerkleInstant));
         assertEq(actualInstant.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
@@ -74,7 +74,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         address expectedMerkleInstant = computeMerkleInstantAddress(params, users.campaignCreator);
 
         // It should emit a {CreateMerkleInstant} event.
-        vm.expectEmit({ emitter: address(merkleFactoryInstant) });
+        vm.expectEmit({ emitter: address(factoryMerkleInstant) });
         emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             params: params,
@@ -91,7 +91,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         );
 
         // It should set the current factory address.
-        assertEq(actualInstant.FACTORY(), address(merkleFactoryInstant));
+        assertEq(actualInstant.FACTORY(), address(factoryMerkleInstant));
         assertEq(actualInstant.minFeeUSD(), MIN_FEE_USD, "min fee USD");
     }
 }

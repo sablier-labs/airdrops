@@ -13,8 +13,8 @@ contract ChainlinkOracle_Fork_Test is BaseScript, Base_Test {
         vm.createSelectFork({ urlOrAlias: chainName });
 
         // Deploy the Merkle Instant factory and create a new campaign.
-        merkleFactoryInstant = new SablierFactoryMerkleInstant(users.admin, initialMinFeeUSD(), chainlinkOracle());
-        merkleInstant = merkleFactoryInstant.createMerkleInstant(
+        factoryMerkleInstant = new SablierFactoryMerkleInstant(users.admin, initialMinFeeUSD(), chainlinkOracle());
+        merkleInstant = factoryMerkleInstant.createMerkleInstant(
             merkleInstantConstructorParams(), AGGREGATE_AMOUNT, RECIPIENT_COUNT
         );
 

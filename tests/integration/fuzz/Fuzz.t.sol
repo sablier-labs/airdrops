@@ -140,7 +140,7 @@ contract Shared_Fuzz_Test is Integration_Test {
         uint256 initialAdminBalance = users.admin.balance;
 
         // collect the fees earned.
-        merkleFactoryBase.collectFees(merkleBase);
+        factoryMerkleBase.collectFees(merkleBase);
 
         // It should decrease merkle contract balance to zero.
         assertEq(address(merkleBase).balance, 0, "merkle base ETH balance");
@@ -157,8 +157,8 @@ contract Shared_Fuzz_Test is Integration_Test {
         customFeeUSD = bound(customFeeUSD, 0, MAX_FEE_USD);
 
         resetPrank(users.admin);
-        merkleFactoryBase.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
-        assertEq(merkleFactoryBase.minFeeUSDFor(users.campaignCreator), customFeeUSD, "custom fee");
+        factoryMerkleBase.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
+        assertEq(factoryMerkleBase.minFeeUSDFor(users.campaignCreator), customFeeUSD, "custom fee");
 
         return customFeeUSD;
     }

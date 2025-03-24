@@ -47,7 +47,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         params.tranchesWithPercentages[0].unlockPercentage = ud2x18(0.05e18);
         params.tranchesWithPercentages[1].unlockPercentage = ud2x18(0.2e18);
 
-        merkleLT = merkleFactoryLT.createMerkleLT(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
+        merkleLT = factoryMerkleLT.createMerkleLT(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
         vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleLT_TotalPercentageNotOneHundred.selector, 0.25e18));
 
@@ -71,7 +71,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         params.tranchesWithPercentages[0].unlockPercentage = ud2x18(0.75e18);
         params.tranchesWithPercentages[1].unlockPercentage = ud2x18(0.8e18);
 
-        merkleLT = merkleFactoryLT.createMerkleLT(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
+        merkleLT = factoryMerkleLT.createMerkleLT(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
         vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleLT_TotalPercentageNotOneHundred.selector, 1.55e18));
 
@@ -92,7 +92,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
         params.streamStartTime = 0;
 
-        merkleLT = merkleFactoryLT.createMerkleLT(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
+        merkleLT = factoryMerkleLT.createMerkleLT(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
         // It should create a stream with `block.timestamp` as start time.
         _test_Claim({ streamStartTime: 0, startTime: getBlockTimestamp() });

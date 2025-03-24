@@ -10,7 +10,7 @@ abstract contract SetMinFeeUSD_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotAdmin() external {
         resetPrank({ msgSender: users.eve });
         vm.expectRevert(abi.encodeWithSelector(EvmUtilsErrors.CallerNotAdmin.selector, users.admin, users.eve));
-        merkleFactoryBase.setMinFeeUSD(0.001e18);
+        factoryMerkleBase.setMinFeeUSD(0.001e18);
     }
 
     function test_RevertWhen_NewMinFeeExceedsMaxFee() external whenCallerAdmin {
@@ -20,23 +20,23 @@ abstract contract SetMinFeeUSD_Integration_Test is Integration_Test {
                 Errors.SablierFactoryMerkleBase_MaxFeeUSDExceeded.selector, newMinFeeUSD, MAX_FEE_USD
             )
         );
-        merkleFactoryBase.setMinFeeUSD(newMinFeeUSD);
+        factoryMerkleBase.setMinFeeUSD(newMinFeeUSD);
     }
 
     function test_WhenNewMinFeeNotExceedMaxFee() external whenCallerAdmin {
         uint256 newMinFeeUSD = MAX_FEE_USD;
 
         // It should emit a {SetMinFeeUSD} event.
-        vm.expectEmit({ emitter: address(merkleFactoryBase) });
+        vm.expectEmit({ emitter: address(factoryMerkleBase) });
         emit ISablierFactoryMerkleBase.SetMinFeeUSD({
             admin: users.admin,
             newMinFeeUSD: newMinFeeUSD,
             previousMinFeeUSD: MIN_FEE_USD
         });
 
-        merkleFactoryBase.setMinFeeUSD(newMinFeeUSD);
+        factoryMerkleBase.setMinFeeUSD(newMinFeeUSD);
 
         // It should set the min USD fee.
-        assertEq(merkleFactoryBase.minFeeUSD(), newMinFeeUSD, "min fee USD");
+        assertEq(factoryMerkleBase.minFeeUSD(), newMinFeeUSD, "min fee USD");
     }
 }

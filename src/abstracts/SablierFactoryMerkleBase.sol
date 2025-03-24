@@ -6,7 +6,7 @@ import { Adminable } from "@sablier/evm-utils/src/Adminable.sol";
 import { ISablierFactoryMerkleBase } from "./../interfaces/ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleBase } from "./../interfaces/ISablierMerkleBase.sol";
 import { Errors } from "./../libraries/Errors.sol";
-import { MerkleFactory } from "./../types/DataTypes.sol";
+import { FactoryMerkle } from "./../types/DataTypes.sol";
 
 /// @title SablierFactoryMerkleBase
 /// @notice See the documentation in {ISablierFactoryMerkleBase}.
@@ -31,7 +31,7 @@ abstract contract SablierFactoryMerkleBase is
     address public override nativeToken;
 
     /// @dev A mapping of custom fees mapped by campaign creator addresses.
-    mapping(address campaignCreator => MerkleFactory.CustomFeeUSD customFeeUSD) private _customFeesUSD;
+    mapping(address campaignCreator => FactoryMerkle.CustomFeeUSD customFeeUSD) private _customFeesUSD;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
@@ -80,7 +80,7 @@ abstract contract SablierFactoryMerkleBase is
 
     /// @inheritdoc ISablierFactoryMerkleBase
     function setCustomFeeUSD(address campaignCreator, uint256 customFeeUSD) external override onlyAdmin {
-        MerkleFactory.CustomFeeUSD storage customFee = _customFeesUSD[campaignCreator];
+        FactoryMerkle.CustomFeeUSD storage customFee = _customFeesUSD[campaignCreator];
 
         // Check: the new fee is not greater than the maximum allowed.
         if (customFeeUSD > MAX_FEE_USD) {
@@ -158,7 +158,7 @@ abstract contract SablierFactoryMerkleBase is
 
     /// @dev See the documentation for the user-facing functions that call this internal function.
     function _minFeeUSDFor(address campaignCreator) internal view returns (uint256) {
-        MerkleFactory.CustomFeeUSD memory customFee = _customFeesUSD[campaignCreator];
+        FactoryMerkle.CustomFeeUSD memory customFee = _customFeesUSD[campaignCreator];
         return customFee.enabled ? customFee.fee : minFeeUSD;
     }
 

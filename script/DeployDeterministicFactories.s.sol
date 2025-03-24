@@ -7,27 +7,27 @@ import { SablierFactoryMerkleLT } from "../src/SablierFactoryMerkleLT.sol";
 import { SablierFactoryMerkleVCA } from "../src/SablierFactoryMerkleVCA.sol";
 import { BaseScript } from "./Base.sol";
 
-/// @notice Deploys Merkle factory contracts at deterministic address.
+/// @notice Deploys the FactoryMerkle contracts at deterministic addresses.
 /// @dev Reverts if any contract has already been deployed.
-contract DeployDeterministicMerkleFactories is BaseScript {
+contract DeployDeterministicFactories is BaseScript {
     /// @dev Deploy via Forge.
     function run()
         public
         broadcast
         returns (
-            SablierFactoryMerkleInstant merkleFactoryInstant,
-            SablierFactoryMerkleLL merkleFactoryLL,
-            SablierFactoryMerkleLT merkleFactoryLT,
-            SablierFactoryMerkleVCA merkleFactoryVCA
+            SablierFactoryMerkleInstant factoryMerkleInstant,
+            SablierFactoryMerkleLL factoryMerkleLL,
+            SablierFactoryMerkleLT factoryMerkleLT,
+            SablierFactoryMerkleVCA factoryMerkleVCA
         )
     {
         address initialAdmin = protocolAdmin();
         uint256 initialMinFeeUSD = initialMinFeeUSD();
         address initialOracle = chainlinkOracle();
-        merkleFactoryInstant =
+        factoryMerkleInstant =
             new SablierFactoryMerkleInstant{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
-        merkleFactoryLL = new SablierFactoryMerkleLL{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
-        merkleFactoryLT = new SablierFactoryMerkleLT{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
-        merkleFactoryVCA = new SablierFactoryMerkleVCA{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
+        factoryMerkleLL = new SablierFactoryMerkleLL{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
+        factoryMerkleLT = new SablierFactoryMerkleLT{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
+        factoryMerkleVCA = new SablierFactoryMerkleVCA{ salt: SALT }(initialAdmin, initialMinFeeUSD, initialOracle);
     }
 }

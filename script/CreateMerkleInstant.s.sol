@@ -12,7 +12,7 @@ contract CreateMerkleInstant is BaseScript {
     /// @dev Deploy via Forge.
     function run() public broadcast returns (ISablierMerkleInstant merkleInstant) {
         // TODO: Load deployed addresses from Ethereum Mainnet.
-        SablierFactoryMerkleInstant merkleFactory = new SablierFactoryMerkleInstant({
+        SablierFactoryMerkleInstant factory = new SablierFactoryMerkleInstant({
             initialAdmin: DEFAULT_SABLIER_ADMIN,
             initialMinFeeUSD: 0,
             initialOracle: address(0)
@@ -34,6 +34,6 @@ contract CreateMerkleInstant is BaseScript {
         uint256 recipientCount = 100;
 
         // Deploy the MerkleInstant contract.
-        merkleInstant = merkleFactory.createMerkleInstant(params, aggregateAmount, recipientCount);
+        merkleInstant = factory.createMerkleInstant(params, aggregateAmount, recipientCount);
     }
 }

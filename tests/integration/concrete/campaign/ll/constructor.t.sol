@@ -9,7 +9,7 @@ import { Integration_Test } from "./../../../Integration.t.sol";
 contract Constructor_MerkleLL_Integration_Test is Integration_Test {
     function test_Constructor() external {
         // Make Factory the caller for the constructor test.
-        resetPrank(address(merkleFactoryLL));
+        resetPrank(address(factoryMerkleLL));
 
         // Deploy the SablierMerkleLL contract.
         SablierMerkleLL constructedLL = new SablierMerkleLL(merkleLLConstructorParams(), users.campaignCreator);
@@ -22,7 +22,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         assertEq(constructedLL.admin(), users.campaignCreator, "admin");
         assertEq(constructedLL.campaignName(), CAMPAIGN_NAME, "campaign name");
         assertEq(constructedLL.EXPIRATION(), EXPIRATION, "expiration");
-        assertEq(constructedLL.FACTORY(), address(merkleFactoryLL), "factory");
+        assertEq(constructedLL.FACTORY(), address(factoryMerkleLL), "factory");
         assertEq(constructedLL.ipfsCID(), IPFS_CID, "IPFS CID");
         assertEq(constructedLL.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
         assertEq(constructedLL.minFeeUSD(), MIN_FEE_USD, "min fee USD");

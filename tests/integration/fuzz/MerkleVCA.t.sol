@@ -16,8 +16,8 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryVCA} contract as {ISablierFactoryMerkleBase}
-        merkleFactoryBase = merkleFactoryVCA;
+        // Cast the {FactoryMerkleVCA} contract as {ISablierFactoryMerkleBase}
+        factoryMerkleBase = factoryMerkleVCA;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         address expectedMerkleVCA = computeMerkleVCAAddress(params, users.campaignCreator);
 
         // Expect a {CreateMerkleVCA} event.
-        vm.expectEmit({ emitter: address(merkleFactoryVCA) });
+        vm.expectEmit({ emitter: address(factoryMerkleVCA) });
         emit ISablierFactoryMerkleVCA.CreateMerkleVCA({
             merkleVCA: ISablierMerkleVCA(expectedMerkleVCA),
             params: params,
@@ -112,7 +112,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         });
 
         // Create the campaign.
-        merkleVCA = merkleFactoryVCA.createMerkleVCA(params, aggregateAmount, leavesData.length);
+        merkleVCA = factoryMerkleVCA.createMerkleVCA(params, aggregateAmount, leavesData.length);
 
         // Verify that the contract is deployed at the correct address.
         assertGt(address(merkleVCA).code.length, 0, "MerkleVCA contract not created");
