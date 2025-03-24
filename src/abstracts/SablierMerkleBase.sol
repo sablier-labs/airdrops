@@ -148,7 +148,7 @@ abstract contract SablierMerkleBase is
         // Effect: mark the index as claimed.
         _claimedBitMap.set(index);
 
-        // Call the internal virtual function.
+        // Checks, Effects, and Interactions: run the model-specific claim logic.
         _claim(index, recipient, amount);
     }
 
