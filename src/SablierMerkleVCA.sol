@@ -98,23 +98,24 @@ contract SablierMerkleVCA is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleVCA
-    function calculateClaimAmount(uint128 fullAmount, uint40 claimTime) public view returns (uint128) {
-        // If zero is passed as the claim time, use the block time.
+    function calculateClaimAmount(uint128 fullAmount, uint40 claimTime) external view returns (uint128) {
+        // Zero is used a sentinel value for `block.timestamp`.
         if (claimTime == 0) {
             claimTime = uint40(block.timestamp);
         }
 
-        // If the schedule start time is greater than claim time, the claimable amount is zero.
-        if (_schedule.startTime >= claimTime) {
-            return 0;
-        }
-        // Otherwise, calculate the claimable amount.
+        // Calculate and return the claimable amount.
         return _calculateClaimAmount(fullAmount, claimTime);
     }
 
     /// @inheritdoc ISablierMerkleVCA
     function calculateForgoneAmount(uint128 fullAmount, uint40 claimTime) external view returns (uint128) {
-        return fullAmount - calculateClaimAmount(fullAmount, claimTime);
+        // Zero is used a sentinel value for `block.timestamp`.
+        if (claimTime == 0) {
+            claimTime = uint40(block.timestamp);
+        }
+
+        return fullAmount - _calculateClaimAmount(fullAmount, claimTime);
     }
 
     /// @inheritdoc ISablierMerkleVCA
@@ -131,14 +132,23 @@ contract SablierMerkleVCA is
         // Load the vesting schedule into memory to avoid multiple SLOADs.
         MerkleVCA.Schedule memory vestingSchedule = _schedule;
 
+        // If the schedule start time is not less than the claim time, return 0.
+        if (claimTime <= vestingSchedule.startTime) {
+            return 0;
+        }
+
         // Calculate the claim amount.
-        if (vestingSchedule.endTime <= claimTime) {
+        uint40 elapsedTime;
+        uint40 totalDuration;
+        if (claimTime >= vestingSchedule.endTime) {
             // If the vesting period has ended, the recipient can claim the full amount.
             return fullAmount;
         } else {
             // Otherwise, calculate the claimable amount based on the elapsed time.
-            uint40 elapsedTime = claimTime - vestingSchedule.startTime;
-            uint40 totalDuration = vestingSchedule.endTime - vestingSchedule.startTime;
+            unchecked {
+                elapsedTime = claimTime - vestingSchedule.startTime;
+                totalDuration = vestingSchedule.endTime - vestingSchedule.startTime;
+            }
 
             // Safe to cast because the division results into a value less than `fullAmount`, which is already an
             // `uint128`.
@@ -154,20 +164,22 @@ contract SablierMerkleVCA is
     function _claim(uint256 index, address recipient, uint128 fullAmount) internal override {
         uint40 blockTimestamp = uint40(block.timestamp);
 
-        // Check: schedule start time is in the past.
-        if (_schedule.startTime >= blockTimestamp) {
-            revert Errors.SablierMerkleVCA_ClaimNotStarted(_schedule.startTime);
-        }
-
         // Calculate the claim.
         uint128 claimAmount = _calculateClaimAmount(fullAmount, blockTimestamp);
+
+        // Check: claim amount is not 0.
+        if (claimAmount == 0) {
+            revert Errors.SablierMerkleVCA_ClaimNotStarted(_schedule.startTime);
+        }
 
         uint128 forgoneAmount;
 
         // Effect: update the total forgone amount.
         if (claimAmount < fullAmount) {
-            forgoneAmount = fullAmount - claimAmount;
-            totalForgoneAmount += forgoneAmount;
+            unchecked {
+                forgoneAmount = fullAmount - claimAmount;
+                totalForgoneAmount += forgoneAmount;
+            }
         }
 
         // Interaction: transfer the tokens to the recipient.

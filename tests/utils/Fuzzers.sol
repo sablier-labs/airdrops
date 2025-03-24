@@ -18,7 +18,8 @@ abstract contract Fuzzers is Modifiers, PRBMathUtils {
                 address(uint160(bound(uint256(uint160(leavesData[i].recipient)), 1, type(uint160).max)));
 
             // Bound each leaf amount so that `aggregateAmount` does not overflow.
-            leavesData[i].amount = boundUint128(leavesData[i].amount, 1, uint128(MAX_UINT128 / leavesData.length - 1));
+            leavesData[i].amount =
+                boundUint128(leavesData[i].amount, 1e18, uint128(MAX_UINT128 / leavesData.length - 1));
 
             aggregateAmount += leavesData[i].amount;
         }

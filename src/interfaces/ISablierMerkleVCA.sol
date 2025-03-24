@@ -20,17 +20,17 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Calculates the amount that would be claimed if the claim was made now.
+    /// @notice Calculates the amount that would be claimed if the claim were made at `claimTime`.
     /// @dev This is for informational purposes only. To actually claim the airdrop, a Merkle proof is required.
     /// @param fullAmount The amount of tokens allocated to a user, denominated in the token's decimals.
-    /// @param claimTime The time at which the claim amount is calculated, a value of zero will be considered as
+    /// @param claimTime The time at which the claim were made at. A value of zero will be considered as
     /// `block.timestamp`.
     function calculateClaimAmount(uint128 fullAmount, uint40 claimTime) external view returns (uint128);
 
-    /// @notice Calculates the amount that would be forgone if the claim was made now.
+    /// @notice Calculates the amount that would be forgone if the claim were made at `claimTime`.
     /// @dev This is for informational purposes only. To actually claim the airdrop, a Merkle proof is required.
     /// @param fullAmount The amount of tokens allocated to a user, denominated in the token's decimals.
-    /// @param claimTime The time at which the claim amount is calculated, a value of zero will be considered as
+    /// @param claimTime The time at which the claim were made at. A value of zero will be considered as
     /// `block.timestamp`.
     function calculateForgoneAmount(uint128 fullAmount, uint40 claimTime) external view returns (uint128);
 

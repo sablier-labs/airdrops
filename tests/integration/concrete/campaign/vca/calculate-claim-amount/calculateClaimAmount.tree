@@ -1,11 +1,11 @@
 CalculateClaimAmount_MerkleVCA_Integration_Test
-├── when claim time is 0
+├── when claim time zero
 │  └── it should return the correct amount
-└── when claim time not 0
-   ├── when start time in future
-   │  └── it should return 0
-   └── when start time not in future
-      ├── when end time in past
+└── when claim time not zero
+   ├── when claim time not greater than start time
+   │  └── it should return zero
+   └── when claim time greater than start time
+      ├── when claim time not less than end time
       │  └── it should return the full amount
-      └── when end time not in past
-         └── it should calculate the claim amount
+      └── when claim time less than end time
+         └── it should return the correct amount

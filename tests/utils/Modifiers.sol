@@ -71,7 +71,11 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
-    modifier whenClaimTimeNot0() {
+    modifier whenClaimTimeGreaterThanStartTime() {
+        _;
+    }
+
+    modifier whenClaimTimeNotZero() {
         _;
     }
 
