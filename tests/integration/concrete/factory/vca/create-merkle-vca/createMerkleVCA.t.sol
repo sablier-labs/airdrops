@@ -15,7 +15,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
 
         // Set dai as the native token.
-        resetPrank(users.admin);
+        setMsgSender(users.admin);
         address newNativeToken = address(dai);
         factoryMerkleVCA.setNativeToken(newNativeToken);
 
@@ -133,10 +133,10 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // Set the custom fee to 0.
         uint256 customFeeUSD = 0;
 
-        resetPrank(users.admin);
+        setMsgSender(users.admin);
         factoryMerkleVCA.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
-        resetPrank(users.campaignCreator);
+        setMsgSender(users.campaignCreator);
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
         params.campaignName = "Merkle VCA campaign with custom fee USD";
 

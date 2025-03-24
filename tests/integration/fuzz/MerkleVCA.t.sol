@@ -91,7 +91,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         schedule.endTime = boundUint40(schedule.endTime, schedule.startTime + 1 seconds, getBlockTimestamp() + 365 days);
 
         // Set campaign creator as the caller.
-        resetPrank(users.campaignCreator);
+        setMsgSender(users.campaignCreator);
 
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams(expiration);
         params.merkleRoot = merkleRoot;

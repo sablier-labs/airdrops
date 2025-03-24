@@ -58,12 +58,12 @@ abstract contract Modifiers is EvmUtilsBase {
 
     modifier whenCallerAdmin() {
         // Make the Admin the caller in the rest of this test suite.
-        resetPrank({ msgSender: users.admin });
+        setMsgSender({ msgSender: users.admin });
         _;
     }
 
     modifier whenCallerCampaignCreator() {
-        resetPrank({ msgSender: users.campaignCreator });
+        setMsgSender({ msgSender: users.campaignCreator });
         _;
     }
 

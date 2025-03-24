@@ -69,7 +69,7 @@ contract Shared_Fuzz_Test is Integration_Test {
                 msgValue = bound(msgValue, merkleBase.calculateMinFeeWei(), 100 ether);
 
                 address caller = makeAddr("philanthropist");
-                resetPrank(caller);
+                setMsgSender(caller);
                 vm.deal(caller, msgValue);
 
                 // Call the expect claim event function, implemented by the child contract.
@@ -108,7 +108,7 @@ contract Shared_Fuzz_Test is Integration_Test {
     function testClawback(uint128 amount) internal {
         amount = boundUint128(amount, 0, uint128(dai.balanceOf(address(merkleBase))));
 
-        resetPrank(users.campaignCreator);
+        setMsgSender(users.campaignCreator);
 
         // It should emit event if the campaign has not expired or is within the grace period of 7 days.
         if (merkleBase.EXPIRATION() > 0 || getBlockTimestamp() <= firstClaimTime + 7 days) {
@@ -156,7 +156,7 @@ contract Shared_Fuzz_Test is Integration_Test {
     function testSetCustomFeeUSD(uint256 customFeeUSD) internal returns (uint256) {
         customFeeUSD = bound(customFeeUSD, 0, MAX_FEE_USD);
 
-        resetPrank(users.admin);
+        setMsgSender(users.admin);
         factoryMerkleBase.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
         assertEq(factoryMerkleBase.minFeeUSDFor(users.campaignCreator), customFeeUSD, "custom fee");
 

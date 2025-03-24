@@ -9,7 +9,7 @@ import { Integration_Test } from "../../../../Integration.t.sol";
 
 abstract contract Clawback_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotCampaignCreator() external {
-        resetPrank({ msgSender: users.eve });
+        setMsgSender({ msgSender: users.eve });
         vm.expectRevert(
             abi.encodeWithSelector(EvmUtilsErrors.CallerNotAdmin.selector, users.campaignCreator, users.eve)
         );
@@ -25,7 +25,7 @@ abstract contract Clawback_Integration_Test is Integration_Test {
         claim();
 
         // Reset the prank back to the campaign creator.
-        resetPrank(users.campaignCreator);
+        setMsgSender(users.campaignCreator);
         _;
     }
 
