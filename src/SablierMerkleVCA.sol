@@ -167,9 +167,9 @@ contract SablierMerkleVCA is
     function _claim(uint256 index, address recipient, uint128 fullAmount) internal override {
         uint40 blockTimestamp = uint40(block.timestamp);
 
-        // Check: schedule start time is in the past.
+        // Check: start time is in the past.
         if (blockTimestamp <= START_TIME) {
-            revert Errors.SablierMerkleVCA_ClaimNotStarted(START_TIME);
+            revert Errors.SablierMerkleVCA_CampaignNotStarted(START_TIME);
         }
 
         // Calculate the claim amount and the forgone amount.

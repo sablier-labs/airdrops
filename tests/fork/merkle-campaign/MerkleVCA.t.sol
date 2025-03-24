@@ -43,7 +43,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         vm.assume(endTime > 0 && startTime > 0);
 
         // Bound the start time.
-        startTime = boundUint40(startTime, 1, getBlockTimestamp() - 1);
+        startTime = boundUint40(startTime, 1 seconds, getBlockTimestamp() - 1 seconds);
 
         // Bound the end time.
         endTime = boundUint40(endTime, startTime + 1, MAX_UNIX_TIMESTAMP - 2 weeks);
@@ -53,7 +53,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
             params.expiration = boundUint40(params.expiration, endTime + 1 weeks, MAX_UNIX_TIMESTAMP);
         } else {
             // If end time is in the past, set expiration into the future to allow claiming.
-            params.expiration = boundUint40(params.expiration, getBlockTimestamp() + 1, MAX_UNIX_TIMESTAMP);
+            params.expiration = boundUint40(params.expiration, getBlockTimestamp() + 1 seconds, MAX_UNIX_TIMESTAMP);
         }
 
         MerkleVCA.ConstructorParams memory constructorParams = merkleVCAConstructorParams({

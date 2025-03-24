@@ -18,7 +18,7 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
 
         // It should revert.
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleVCA_ClaimNotStarted.selector, RANGED_STREAM_START_TIME)
+            abi.encodeWithSelector(Errors.SablierMerkleVCA_CampaignNotStarted.selector, RANGED_STREAM_START_TIME)
         );
 
         // Claim the airdrop.

@@ -89,7 +89,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         whenExpirationExceedsOneWeekFromEndTime
     {
         // Bound start time to be in the past.
-        startTime = boundUint40(startTime, 1, getBlockTimestamp() - 1);
+        startTime = boundUint40(startTime, 1 seconds, getBlockTimestamp() - 1 seconds);
 
         // Bound end time to be greater than the start time but within than a year from now.
         endTime = boundUint40(endTime, startTime + 1, getBlockTimestamp() + 365 days);
@@ -144,7 +144,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function expectClaimEvent(LeafData memory leafData) internal override {
-        // Calculate claim and forgone amount based on the vesting schedule.
+        // Calculate claim and forgone amount based on the vesting start and end time.
         uint256 claimAmount;
         uint256 forgoneAmount;
 

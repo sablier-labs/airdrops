@@ -64,7 +64,7 @@ library Errors {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Thrown while claiming when start time is in the future.
-    error SablierMerkleVCA_ClaimNotStarted(uint40 startTime);
+    error SablierMerkleVCA_CampaignNotStarted(uint40 startTime);
 
     /// @notice Thrown if expiration time is within 1 week from the vesting end time.
     error SablierMerkleVCA_ExpirationTooEarly(uint40 endTime, uint40 expiration);

@@ -17,6 +17,7 @@ library FactoryMerkle {
 
 library MerkleInstant {
     /// @notice Struct encapsulating the constructor parameters of Merkle Instant campaigns.
+    /// @dev The fields are arranged alphabetically.
     /// @param campaignName The name of the campaign.
     /// @param expiration The expiration of the campaign, as a Unix timestamp. A value of zero means the campaign does
     /// not expire.
@@ -36,6 +37,7 @@ library MerkleInstant {
 
 library MerkleLL {
     /// @notice Struct encapsulating the constructor parameters of Merkle Lockup Linear campaigns.
+    /// @dev The fields are arranged alphabetically.
     /// @param campaignName The name of the campaign.
     /// @param cancelable Indicates if the Lockup stream will be cancelable after claiming.
     /// @param expiration The expiration of the campaign, as a Unix timestamp. A value of zero means the campaign does
@@ -81,6 +83,7 @@ library MerkleLL {
 
 library MerkleLT {
     /// @notice Struct encapsulating the constructor parameters of Merkle Lockup Tranched campaigns.
+    /// @dev The fields are arranged alphabetically.
     /// @param campaignName The name of the campaign.
     /// @param cancelable Indicates if the Lockup stream will be cancelable after claiming.
     /// @param expiration The expiration of the campaign, as a Unix timestamp. A value of zero means the campaign does
@@ -125,6 +128,7 @@ library MerkleLT {
 
 library MerkleVCA {
     /// @notice Struct encapsulating the constructor parameters of Merkle VCA campaigns.
+    /// @dev The fields are arranged alphabetically.
     /// @param campaignName The name of the campaign.
     /// @param endTime Vesting end time.
     /// @param expiration The expiration of the campaign, as a Unix timestamp.
