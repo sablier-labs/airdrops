@@ -2,7 +2,7 @@
 pragma solidity >=0.8.22 <0.9.0;
 
 import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Errors.sol";
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
+import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 import { Errors } from "src/libraries/Errors.sol";
 
 import { Integration_Test } from "./../../../../Integration.t.sol";
@@ -18,7 +18,7 @@ abstract contract SetCustomFeeUSD_Integration_Test is Integration_Test {
         uint256 customFeeUSD = MAX_FEE_USD + 1;
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded.selector, customFeeUSD, MAX_FEE_USD
+                Errors.SablierFactoryMerkleBase_MaxFeeUSDExceeded.selector, customFeeUSD, MAX_FEE_USD
             )
         );
         merkleFactoryBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: customFeeUSD });
@@ -36,7 +36,7 @@ abstract contract SetCustomFeeUSD_Integration_Test is Integration_Test {
 
         // It should emit a {SetCustomFeeUSD} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetCustomFeeUSD({
+        emit ISablierFactoryMerkleBase.SetCustomFeeUSD({
             admin: users.admin,
             campaignCreator: users.campaignCreator,
             customFeeUSD: customFeeUSD
@@ -65,7 +65,7 @@ abstract contract SetCustomFeeUSD_Integration_Test is Integration_Test {
 
         // It should emit a {SetCustomFeeUSD} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetCustomFeeUSD({
+        emit ISablierFactoryMerkleBase.SetCustomFeeUSD({
             admin: users.admin,
             campaignCreator: users.campaignCreator,
             customFeeUSD: customFeeUSD

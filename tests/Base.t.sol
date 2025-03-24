@@ -11,20 +11,20 @@ import { LockupNFTDescriptor } from "@sablier/lockup/src/LockupNFTDescriptor.sol
 import { SablierLockup } from "@sablier/lockup/src/SablierLockup.sol";
 import { LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol";
 import { Merkle } from "murky/src/Merkle.sol";
+import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
+import { ISablierFactoryMerkleInstant } from "src/interfaces/ISablierFactoryMerkleInstant.sol";
+import { ISablierFactoryMerkleLL } from "src/interfaces/ISablierFactoryMerkleLL.sol";
+import { ISablierFactoryMerkleLT } from "src/interfaces/ISablierFactoryMerkleLT.sol";
+import { ISablierFactoryMerkleVCA } from "src/interfaces/ISablierFactoryMerkleVCA.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
-import { ISablierMerkleFactoryInstant } from "src/interfaces/ISablierMerkleFactoryInstant.sol";
-import { ISablierMerkleFactoryLL } from "src/interfaces/ISablierMerkleFactoryLL.sol";
-import { ISablierMerkleFactoryLT } from "src/interfaces/ISablierMerkleFactoryLT.sol";
-import { ISablierMerkleFactoryVCA } from "src/interfaces/ISablierMerkleFactoryVCA.sol";
 import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
-import { SablierMerkleFactoryInstant } from "src/SablierMerkleFactoryInstant.sol";
-import { SablierMerkleFactoryLL } from "src/SablierMerkleFactoryLL.sol";
-import { SablierMerkleFactoryLT } from "src/SablierMerkleFactoryLT.sol";
-import { SablierMerkleFactoryVCA } from "src/SablierMerkleFactoryVCA.sol";
+import { SablierFactoryMerkleInstant } from "src/SablierFactoryMerkleInstant.sol";
+import { SablierFactoryMerkleLL } from "src/SablierFactoryMerkleLL.sol";
+import { SablierFactoryMerkleLT } from "src/SablierFactoryMerkleLT.sol";
+import { SablierFactoryMerkleVCA } from "src/SablierFactoryMerkleVCA.sol";
 import { SablierMerkleInstant } from "src/SablierMerkleInstant.sol";
 import { SablierMerkleLL } from "src/SablierMerkleLL.sol";
 import { SablierMerkleLT } from "src/SablierMerkleLT.sol";
@@ -56,11 +56,11 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     /// @dev A test contract meant to be overridden by the implementing Merkle campaign contracts.
     ISablierMerkleBase internal merkleBase;
     /// @dev A test contract meant to be overridden by the implementing Merkle factory contracts.
-    ISablierMerkleFactoryBase internal merkleFactoryBase;
-    ISablierMerkleFactoryInstant internal merkleFactoryInstant;
-    ISablierMerkleFactoryLL internal merkleFactoryLL;
-    ISablierMerkleFactoryLT internal merkleFactoryLT;
-    ISablierMerkleFactoryVCA internal merkleFactoryVCA;
+    ISablierFactoryMerkleBase internal merkleFactoryBase;
+    ISablierFactoryMerkleInstant internal merkleFactoryInstant;
+    ISablierFactoryMerkleLL internal merkleFactoryLL;
+    ISablierFactoryMerkleLT internal merkleFactoryLT;
+    ISablierFactoryMerkleVCA internal merkleFactoryVCA;
     ISablierMerkleInstant internal merkleInstant;
     ISablierMerkleLL internal merkleLL;
     ISablierMerkleLT internal merkleLT;
@@ -124,10 +124,10 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     /// @dev Deploys the Merkle Factory contracts conditionally based on the test profile.
     function deployMerkleFactoriesConditionally() internal {
         if (!isTestOptimizedProfile()) {
-            merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, MIN_FEE_USD, address(oracle));
-            merkleFactoryLL = new SablierMerkleFactoryLL(users.admin, MIN_FEE_USD, address(oracle));
-            merkleFactoryLT = new SablierMerkleFactoryLT(users.admin, MIN_FEE_USD, address(oracle));
-            merkleFactoryVCA = new SablierMerkleFactoryVCA(users.admin, MIN_FEE_USD, address(oracle));
+            merkleFactoryInstant = new SablierFactoryMerkleInstant(users.admin, MIN_FEE_USD, address(oracle));
+            merkleFactoryLL = new SablierFactoryMerkleLL(users.admin, MIN_FEE_USD, address(oracle));
+            merkleFactoryLT = new SablierFactoryMerkleLT(users.admin, MIN_FEE_USD, address(oracle));
+            merkleFactoryVCA = new SablierFactoryMerkleVCA(users.admin, MIN_FEE_USD, address(oracle));
         } else {
             (merkleFactoryInstant, merkleFactoryLL, merkleFactoryLT, merkleFactoryVCA) =
                 deployOptimizedMerkleFactories(users.admin, MIN_FEE_USD, address(oracle));

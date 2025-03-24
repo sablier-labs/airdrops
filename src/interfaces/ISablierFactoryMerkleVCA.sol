@@ -2,13 +2,13 @@
 pragma solidity >=0.8.22;
 
 import { MerkleVCA } from "./../types/DataTypes.sol";
-import { ISablierMerkleFactoryBase } from "./ISablierMerkleFactoryBase.sol";
+import { ISablierFactoryMerkleBase } from "./ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleVCA } from "./ISablierMerkleVCA.sol";
 
-/// @title ISablierMerkleFactoryVCA
+/// @title ISablierFactoryMerkleVCA
 /// @notice A factory that deploys MerkleVCA campaign contracts.
 /// @dev See the documentation in {ISablierMerkleVCA}.
-interface ISablierMerkleFactoryVCA is ISablierMerkleFactoryBase {
+interface ISablierFactoryMerkleVCA is ISablierFactoryMerkleBase {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
     //////////////////////////////////////////////////////////////////////////*/

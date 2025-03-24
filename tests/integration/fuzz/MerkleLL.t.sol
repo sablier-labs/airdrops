@@ -3,7 +3,7 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { ud2x18 } from "@prb/math/src/UD2x18.sol";
 
-import { ISablierMerkleFactoryLL } from "src/interfaces/ISablierMerkleFactoryLL.sol";
+import { ISablierFactoryMerkleLL } from "src/interfaces/ISablierFactoryMerkleLL.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
 
@@ -20,7 +20,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryLL} contract as {ISablierMerkleFactoryBase}
+        // Cast the {merkleFactoryLL} contract as {ISablierFactoryMerkleBase}
         merkleFactoryBase = merkleFactoryLL;
     }
 
@@ -116,7 +116,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
 
         // Expect a {CreateMerkleLL} event.
         vm.expectEmit({ emitter: address(merkleFactoryLL) });
-        emit ISablierMerkleFactoryLL.CreateMerkleLL({
+        emit ISablierFactoryMerkleLL.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedMerkleLL),
             params: params,
             aggregateAmount: aggregateAmount,

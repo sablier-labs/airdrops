@@ -2,13 +2,13 @@
 pragma solidity >=0.8.22;
 
 import { MerkleLT } from "./../types/DataTypes.sol";
-import { ISablierMerkleFactoryBase } from "./ISablierMerkleFactoryBase.sol";
+import { ISablierFactoryMerkleBase } from "./ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleLT } from "./ISablierMerkleLT.sol";
 
-/// @title ISablierMerkleFactoryLT
+/// @title ISablierFactoryMerkleLT
 /// @notice A factory that deploys MerkleLT campaign contracts.
 /// @dev See the documentation in {ISablierMerkleLT}.
-interface ISablierMerkleFactoryLT is ISablierMerkleFactoryBase {
+interface ISablierFactoryMerkleLT is ISablierFactoryMerkleBase {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
     //////////////////////////////////////////////////////////////////////////*/

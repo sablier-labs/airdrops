@@ -5,9 +5,9 @@ import { IAdminable } from "@sablier/evm-utils/src/interfaces/IAdminable.sol";
 
 import { ISablierMerkleBase } from "../interfaces/ISablierMerkleBase.sol";
 
-/// @title ISablierMerkleFactoryBase
+/// @title ISablierFactoryMerkleBase
 /// @dev Common interface between factories that deploy campaign contracts. The contracts are deployed using CREATE2.
-interface ISablierMerkleFactoryBase is IAdminable {
+interface ISablierFactoryMerkleBase is IAdminable {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
     //////////////////////////////////////////////////////////////////////////*/

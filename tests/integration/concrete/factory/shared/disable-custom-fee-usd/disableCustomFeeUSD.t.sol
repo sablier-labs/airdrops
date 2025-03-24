@@ -2,7 +2,7 @@
 pragma solidity >=0.8.22 <0.9.0;
 
 import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Errors.sol";
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
+import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 
 import { Integration_Test } from "../../../../Integration.t.sol";
 
@@ -23,7 +23,7 @@ abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
 
         // It should emit a {DisableCustomFeeUSD} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.DisableCustomFeeUSD({ admin: users.admin, campaignCreator: users.campaignCreator });
+        emit ISablierFactoryMerkleBase.DisableCustomFeeUSD({ admin: users.admin, campaignCreator: users.campaignCreator });
 
         // Reset the custom fee.
         merkleFactoryBase.disableCustomFeeUSD({ campaignCreator: users.campaignCreator });
@@ -49,7 +49,7 @@ abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
 
         // It should emit a {DisableCustomFeeUSD} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.DisableCustomFeeUSD({ admin: users.admin, campaignCreator: users.campaignCreator });
+        emit ISablierFactoryMerkleBase.DisableCustomFeeUSD({ admin: users.admin, campaignCreator: users.campaignCreator });
 
         // Disable the custom fee.
         merkleFactoryBase.disableCustomFeeUSD({ campaignCreator: users.campaignCreator });

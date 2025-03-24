@@ -16,7 +16,7 @@ abstract contract MerkleLT_Integration_Shared_Test is Integration_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryLT} contract as {ISablierMerkleFactoryBase}
+        // Cast the {merkleFactoryLT} contract as {ISablierFactoryMerkleBase}
         merkleFactoryBase = merkleFactoryLT;
         // Cast the {MerkleLT} contract as {ISablierMerkleBase}
         merkleBase = merkleLT;

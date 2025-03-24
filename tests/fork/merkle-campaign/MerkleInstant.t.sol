@@ -3,7 +3,7 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { ISablierMerkleFactoryInstant } from "src/interfaces/ISablierMerkleFactoryInstant.sol";
+import { ISablierFactoryMerkleInstant } from "src/interfaces/ISablierFactoryMerkleInstant.sol";
 import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
 
 import { MerkleInstant } from "src/types/DataTypes.sol";
@@ -25,7 +25,7 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
     function setUp() public virtual override {
         Fork_Test.setUp();
 
-        // Cast the {merkleFactoryInstant} contract as {ISablierMerkleFactoryBase}
+        // Cast the {merkleFactoryInstant} contract as {ISablierFactoryMerkleBase}
         merkleFactoryBase = merkleFactoryInstant;
     }
 
@@ -51,7 +51,7 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
             computeMerkleInstantAddress({ params: constructorParams, campaignCreator: params.campaignCreator });
 
         vm.expectEmit({ emitter: address(merkleFactoryInstant) });
-        emit ISablierMerkleFactoryInstant.CreateMerkleInstant({
+        emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(vars.expectedMerkleCampaign),
             params: constructorParams,
             aggregateAmount: vars.aggregateAmount,

@@ -3,10 +3,10 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { StdCheats } from "forge-std/src/StdCheats.sol";
 
-import { ISablierMerkleFactoryInstant } from "../../src/interfaces/ISablierMerkleFactoryInstant.sol";
-import { ISablierMerkleFactoryLL } from "../../src/interfaces/ISablierMerkleFactoryLL.sol";
-import { ISablierMerkleFactoryLT } from "../../src/interfaces/ISablierMerkleFactoryLT.sol";
-import { ISablierMerkleFactoryVCA } from "../../src/interfaces/ISablierMerkleFactoryVCA.sol";
+import { ISablierFactoryMerkleInstant } from "../../src/interfaces/ISablierFactoryMerkleInstant.sol";
+import { ISablierFactoryMerkleLL } from "../../src/interfaces/ISablierFactoryMerkleLL.sol";
+import { ISablierFactoryMerkleLT } from "../../src/interfaces/ISablierFactoryMerkleLT.sol";
+import { ISablierFactoryMerkleVCA } from "../../src/interfaces/ISablierFactoryMerkleVCA.sol";
 
 abstract contract DeployOptimized is StdCheats {
     function deployOptimizedMerkleFactories(
@@ -16,33 +16,33 @@ abstract contract DeployOptimized is StdCheats {
     )
         internal
         returns (
-            ISablierMerkleFactoryInstant merkleFactoryInstant,
-            ISablierMerkleFactoryLL merkleFactoryLL,
-            ISablierMerkleFactoryLT merkleFactoryLT,
-            ISablierMerkleFactoryVCA merkleFactoryVCA
+            ISablierFactoryMerkleInstant merkleFactoryInstant,
+            ISablierFactoryMerkleLL merkleFactoryLL,
+            ISablierFactoryMerkleLT merkleFactoryLT,
+            ISablierFactoryMerkleVCA merkleFactoryVCA
         )
     {
-        merkleFactoryInstant = ISablierMerkleFactoryInstant(
+        merkleFactoryInstant = ISablierFactoryMerkleInstant(
             deployCode(
-                "out-optimized/SablierMerkleFactoryInstant.sol/SablierMerkleFactoryInstant.json",
+                "out-optimized/SablierFactoryMerkleInstant.sol/SablierFactoryMerkleInstant.json",
                 abi.encode(initialAdmin, initialMinFeeUSD, initialOracle)
             )
         );
-        merkleFactoryLL = ISablierMerkleFactoryLL(
+        merkleFactoryLL = ISablierFactoryMerkleLL(
             deployCode(
-                "out-optimized/SablierMerkleFactoryLL.sol/SablierMerkleFactoryLL.json",
+                "out-optimized/SablierFactoryMerkleLL.sol/SablierFactoryMerkleLL.json",
                 abi.encode(initialAdmin, initialMinFeeUSD, initialOracle)
             )
         );
-        merkleFactoryLT = ISablierMerkleFactoryLT(
+        merkleFactoryLT = ISablierFactoryMerkleLT(
             deployCode(
-                "out-optimized/SablierMerkleFactoryLT.sol/SablierMerkleFactoryLT.json",
+                "out-optimized/SablierFactoryMerkleLT.sol/SablierFactoryMerkleLT.json",
                 abi.encode(initialAdmin, initialMinFeeUSD, initialOracle)
             )
         );
-        merkleFactoryVCA = ISablierMerkleFactoryVCA(
+        merkleFactoryVCA = ISablierFactoryMerkleVCA(
             deployCode(
-                "out-optimized/SablierMerkleFactoryVCA.sol/SablierMerkleFactoryVCA.json",
+                "out-optimized/SablierFactoryMerkleVCA.sol/SablierFactoryMerkleVCA.json",
                 abi.encode(initialAdmin, initialMinFeeUSD, initialOracle)
             )
         );

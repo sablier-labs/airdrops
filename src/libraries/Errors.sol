@@ -41,16 +41,16 @@ library Errors {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Thrown when trying to create a campaign with native token.
-    error SablierMerkleFactoryBase_ForbidNativeToken(address nativeToken);
+    error SablierFactoryMerkleBase_ForbidNativeToken(address nativeToken);
 
     /// @notice Thrown when trying to set fee to a value that exceeds the maximum USD fee.
-    error SablierMerkleFactoryBase_MaxFeeUSDExceeded(uint256 newFeeUSD, uint256 maxFeeUSD);
+    error SablierFactoryMerkleBase_MaxFeeUSDExceeded(uint256 newFeeUSD, uint256 maxFeeUSD);
 
     /// @notice Thrown when trying to set the native token address when it is already set.
-    error SablierMerkleFactoryBase_NativeTokenAlreadySet(address nativeToken);
+    error SablierFactoryMerkleBase_NativeTokenAlreadySet(address nativeToken);
 
     /// @notice Thrown when trying to set zero address as native token.
-    error SablierMerkleFactoryBase_NativeTokenZeroAddress();
+    error SablierFactoryMerkleBase_NativeTokenZeroAddress();
 
     /*//////////////////////////////////////////////////////////////////////////
                                  SABLIER-MERKLE-LT

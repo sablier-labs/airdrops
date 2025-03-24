@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ISablierMerkleFactoryInstant } from "src/interfaces/ISablierMerkleFactoryInstant.sol";
+import { ISablierFactoryMerkleInstant } from "src/interfaces/ISablierFactoryMerkleInstant.sol";
 import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
 
 import { MerkleInstant } from "src/types/DataTypes.sol";
@@ -17,7 +17,7 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryInstant} contract as {ISablierMerkleFactoryBase}
+        // Cast the {merkleFactoryInstant} contract as {ISablierFactoryMerkleBase}
         merkleFactoryBase = merkleFactoryInstant;
     }
 
@@ -88,7 +88,7 @@ contract MerkleInstant_Fuzz_Test is Shared_Fuzz_Test {
 
         // Expect a {CreateMerkleInstant} event.
         vm.expectEmit({ emitter: address(merkleFactoryInstant) });
-        emit ISablierMerkleFactoryInstant.CreateMerkleInstant({
+        emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             params: params,
             aggregateAmount: aggregateAmount,

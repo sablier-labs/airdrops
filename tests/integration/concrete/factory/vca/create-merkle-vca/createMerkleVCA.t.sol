@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ISablierMerkleFactoryVCA } from "src/interfaces/ISablierMerkleFactoryVCA.sol";
+import { ISablierFactoryMerkleVCA } from "src/interfaces/ISablierFactoryMerkleVCA.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { Errors } from "src/libraries/Errors.sol";
 import { MerkleVCA } from "src/types/DataTypes.sol";
@@ -20,7 +20,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         merkleFactoryVCA.setNativeToken(newNativeToken);
 
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_ForbidNativeToken.selector, newNativeToken)
+            abi.encodeWithSelector(Errors.SablierFactoryMerkleBase_ForbidNativeToken.selector, newNativeToken)
         );
         merkleFactoryVCA.createMerkleVCA(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
     }
@@ -144,7 +144,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
         // It should emit a {CreateMerkleVCA} event.
         vm.expectEmit(address(merkleFactoryVCA));
-        emit ISablierMerkleFactoryVCA.CreateMerkleVCA({
+        emit ISablierFactoryMerkleVCA.CreateMerkleVCA({
             merkleVCA: ISablierMerkleVCA(address(expectedMerkleVCA)),
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
@@ -184,7 +184,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
         // It should emit a {CreateMerkleVCA} event.
         vm.expectEmit(address(merkleFactoryVCA));
-        emit ISablierMerkleFactoryVCA.CreateMerkleVCA({
+        emit ISablierFactoryMerkleVCA.CreateMerkleVCA({
             merkleVCA: ISablierMerkleVCA(address(expectedMerkleVCA)),
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,

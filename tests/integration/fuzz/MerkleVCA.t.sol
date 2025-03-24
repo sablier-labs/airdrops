@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ISablierMerkleFactoryVCA } from "src/interfaces/ISablierMerkleFactoryVCA.sol";
+import { ISablierFactoryMerkleVCA } from "src/interfaces/ISablierFactoryMerkleVCA.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { MerkleVCA } from "src/types/DataTypes.sol";
 
@@ -16,7 +16,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryVCA} contract as {ISablierMerkleFactoryBase}
+        // Cast the {merkleFactoryVCA} contract as {ISablierFactoryMerkleBase}
         merkleFactoryBase = merkleFactoryVCA;
     }
 
@@ -102,7 +102,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
 
         // Expect a {CreateMerkleVCA} event.
         vm.expectEmit({ emitter: address(merkleFactoryVCA) });
-        emit ISablierMerkleFactoryVCA.CreateMerkleVCA({
+        emit ISablierFactoryMerkleVCA.CreateMerkleVCA({
             merkleVCA: ISablierMerkleVCA(expectedMerkleVCA),
             params: params,
             aggregateAmount: aggregateAmount,

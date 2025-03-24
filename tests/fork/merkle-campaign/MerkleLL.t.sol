@@ -5,7 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ud60x18 } from "@prb/math/src/UD60x18.sol";
 import { Lockup, LockupLinear } from "@sablier/lockup/src/types/DataTypes.sol";
 
-import { ISablierMerkleFactoryLL } from "src/interfaces/ISablierMerkleFactoryLL.sol";
+import { ISablierFactoryMerkleLL } from "src/interfaces/ISablierFactoryMerkleLL.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
 import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
 import { MerkleLL } from "src/types/DataTypes.sol";
@@ -27,7 +27,7 @@ abstract contract MerkleLL_Fork_Test is MerkleBase_Fork_Test {
     function setUp() public virtual override {
         Fork_Test.setUp();
 
-        // Cast the {merkleFactoryLL} contract as {ISablierMerkleFactoryBase}
+        // Cast the {merkleFactoryLL} contract as {ISablierFactoryMerkleBase}
         merkleFactoryBase = merkleFactoryLL;
     }
 
@@ -67,7 +67,7 @@ abstract contract MerkleLL_Fork_Test is MerkleBase_Fork_Test {
             computeMerkleLLAddress({ params: constructorParams, campaignCreator: params.campaignCreator });
 
         vm.expectEmit({ emitter: address(merkleFactoryLL) });
-        emit ISablierMerkleFactoryLL.CreateMerkleLL({
+        emit ISablierFactoryMerkleLL.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(vars.expectedMerkleCampaign),
             params: constructorParams,
             aggregateAmount: vars.aggregateAmount,

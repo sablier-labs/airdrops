@@ -4,7 +4,7 @@ pragma solidity >=0.8.22 <0.9.0;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Lockup } from "@sablier/lockup/src/types/DataTypes.sol";
 
-import { ISablierMerkleFactoryLT } from "src/interfaces/ISablierMerkleFactoryLT.sol";
+import { ISablierFactoryMerkleLT } from "src/interfaces/ISablierFactoryMerkleLT.sol";
 import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
 import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
 import { MerkleLT } from "src/types/DataTypes.sol";
@@ -26,7 +26,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
     function setUp() public virtual override {
         Fork_Test.setUp();
 
-        // Cast the {merkleFactoryLT} contract as {ISablierMerkleFactoryBase}
+        // Cast the {merkleFactoryLT} contract as {ISablierFactoryMerkleBase}
         merkleFactoryBase = merkleFactoryLT;
     }
 
@@ -66,7 +66,7 @@ abstract contract MerkleLT_Fork_Test is MerkleBase_Fork_Test {
             computeMerkleLTAddress({ params: constructorParams, campaignCreator: params.campaignCreator });
 
         vm.expectEmit({ emitter: address(merkleFactoryLT) });
-        emit ISablierMerkleFactoryLT.CreateMerkleLT({
+        emit ISablierFactoryMerkleLT.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(vars.expectedMerkleCampaign),
             params: constructorParams,
             aggregateAmount: vars.aggregateAmount,

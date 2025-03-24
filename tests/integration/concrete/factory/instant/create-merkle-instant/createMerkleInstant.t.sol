@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ISablierMerkleFactoryInstant } from "src/interfaces/ISablierMerkleFactoryInstant.sol";
+import { ISablierFactoryMerkleInstant } from "src/interfaces/ISablierFactoryMerkleInstant.sol";
 import { ISablierMerkleInstant } from "src/interfaces/ISablierMerkleInstant.sol";
 import { Errors } from "src/libraries/Errors.sol";
 import { MerkleInstant } from "src/types/DataTypes.sol";
@@ -18,7 +18,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         merkleFactoryInstant.setNativeToken(newNativeToken);
 
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_ForbidNativeToken.selector, newNativeToken)
+            abi.encodeWithSelector(Errors.SablierFactoryMerkleBase_ForbidNativeToken.selector, newNativeToken)
         );
         merkleFactoryInstant.createMerkleInstant(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
     }
@@ -47,7 +47,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
         // It should emit a {CreateMerkleInstant} event.
         vm.expectEmit({ emitter: address(merkleFactoryInstant) });
-        emit ISablierMerkleFactoryInstant.CreateMerkleInstant({
+        emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
@@ -75,7 +75,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
         // It should emit a {CreateMerkleInstant} event.
         vm.expectEmit({ emitter: address(merkleFactoryInstant) });
-        emit ISablierMerkleFactoryInstant.CreateMerkleInstant({
+        emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
             merkleInstant: ISablierMerkleInstant(expectedMerkleInstant),
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,

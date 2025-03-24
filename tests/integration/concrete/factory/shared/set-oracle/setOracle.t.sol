@@ -4,7 +4,7 @@ pragma solidity >=0.8.22 <0.9.0;
 import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Errors.sol";
 import { Noop } from "@sablier/evm-utils/src/mocks/Noop.sol";
 
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
+import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 import { ChainlinkOracleMock } from "tests/utils/ChainlinkMocks.sol";
 
 import { Integration_Test } from "../../../../Integration.t.sol";
@@ -21,7 +21,7 @@ abstract contract SetOracle_Integration_Test is Integration_Test {
     function test_WhenNewOracleZero() external whenCallerAdmin {
         // It should emit a {SetOracle} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetOracle(users.admin, address(0), address(oracle));
+        emit ISablierFactoryMerkleBase.SetOracle(users.admin, address(0), address(oracle));
         merkleFactoryBase.setOracle(address(0));
 
         // It should set the oracle to zero.
@@ -41,7 +41,7 @@ abstract contract SetOracle_Integration_Test is Integration_Test {
 
         // It should emit a {SetOracle} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetOracle(users.admin, address(newOracleWithImpl), address(oracle));
+        emit ISablierFactoryMerkleBase.SetOracle(users.admin, address(newOracleWithImpl), address(oracle));
         merkleFactoryBase.setOracle(address(newOracleWithImpl));
 
         // It should set the oracle.

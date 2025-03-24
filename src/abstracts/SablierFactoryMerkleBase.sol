@@ -3,32 +3,31 @@ pragma solidity >=0.8.22;
 
 import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import { Adminable } from "@sablier/evm-utils/src/Adminable.sol";
+import { ISablierFactoryMerkleBase } from "./../interfaces/ISablierFactoryMerkleBase.sol";
+import { ISablierMerkleBase } from "./../interfaces/ISablierMerkleBase.sol";
+import { Errors } from "./../libraries/Errors.sol";
+import { MerkleFactory } from "./../types/DataTypes.sol";
 
-import { ISablierMerkleBase } from "../interfaces/ISablierMerkleBase.sol";
-import { ISablierMerkleFactoryBase } from "../interfaces/ISablierMerkleFactoryBase.sol";
-import { Errors } from "../libraries/Errors.sol";
-import { MerkleFactory } from "../types/DataTypes.sol";
-
-/// @title SablierMerkleFactoryBase
-/// @notice See the documentation in {ISablierMerkleFactoryBase}.
-abstract contract SablierMerkleFactoryBase is
-    ISablierMerkleFactoryBase, // 1 inherited component
+/// @title SablierFactoryMerkleBase
+/// @notice See the documentation in {ISablierFactoryMerkleBase}.
+abstract contract SablierFactoryMerkleBase is
+    ISablierFactoryMerkleBase, // 1 inherited component
     Adminable // 1 inherited component
 {
     /*//////////////////////////////////////////////////////////////////////////
                                   STATE VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     uint256 public constant override MAX_FEE_USD = 100e8;
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     address public override oracle;
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     uint256 public override minFeeUSD;
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     address public override nativeToken;
 
     /// @dev A mapping of custom fees mapped by campaign creator addresses.
@@ -53,7 +52,7 @@ abstract contract SablierMerkleFactoryBase is
                            USER-FACING CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     function minFeeUSDFor(address campaignCreator) external view returns (uint256) {
         return _minFeeUSDFor(campaignCreator);
     }
@@ -62,7 +61,7 @@ abstract contract SablierMerkleFactoryBase is
                          USER-FACING NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     function collectFees(ISablierMerkleBase campaign) external override {
         // Effect: collect the fees from the campaign contract.
         uint256 feeAmount = campaign.collectFees(admin);
@@ -71,7 +70,7 @@ abstract contract SablierMerkleFactoryBase is
         emit CollectFees(admin, campaign, feeAmount);
     }
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     function disableCustomFeeUSD(address campaignCreator) external override onlyAdmin {
         delete _customFeesUSD[campaignCreator];
 
@@ -79,13 +78,13 @@ abstract contract SablierMerkleFactoryBase is
         emit DisableCustomFeeUSD({ admin: msg.sender, campaignCreator: campaignCreator });
     }
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     function setCustomFeeUSD(address campaignCreator, uint256 customFeeUSD) external override onlyAdmin {
         MerkleFactory.CustomFeeUSD storage customFee = _customFeesUSD[campaignCreator];
 
         // Check: the new fee is not greater than the maximum allowed.
         if (customFeeUSD > MAX_FEE_USD) {
-            revert Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded(customFeeUSD, MAX_FEE_USD);
+            revert Errors.SablierFactoryMerkleBase_MaxFeeUSDExceeded(customFeeUSD, MAX_FEE_USD);
         }
 
         // Effect: enable the custom fee for the user if it is not already enabled.
@@ -100,11 +99,11 @@ abstract contract SablierMerkleFactoryBase is
         emit SetCustomFeeUSD({ admin: msg.sender, campaignCreator: campaignCreator, customFeeUSD: customFeeUSD });
     }
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     function setMinFeeUSD(uint256 newMinFeeUSD) external override onlyAdmin {
         // Check: the new fee is not greater than the maximum allowed.
         if (newMinFeeUSD > MAX_FEE_USD) {
-            revert Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded(newMinFeeUSD, MAX_FEE_USD);
+            revert Errors.SablierFactoryMerkleBase_MaxFeeUSDExceeded(newMinFeeUSD, MAX_FEE_USD);
         }
 
         // Effect: update the min USD fee.
@@ -115,16 +114,16 @@ abstract contract SablierMerkleFactoryBase is
         emit SetMinFeeUSD({ admin: msg.sender, newMinFeeUSD: newMinFeeUSD, previousMinFeeUSD: currentMinFeeUSD });
     }
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     function setNativeToken(address newNativeToken) external override onlyAdmin {
         // Check: provided token is not zero address.
         if (newNativeToken == address(0)) {
-            revert Errors.SablierMerkleFactoryBase_NativeTokenZeroAddress();
+            revert Errors.SablierFactoryMerkleBase_NativeTokenZeroAddress();
         }
 
         // Check: native token is not set.
         if (nativeToken != address(0)) {
-            revert Errors.SablierMerkleFactoryBase_NativeTokenAlreadySet(nativeToken);
+            revert Errors.SablierFactoryMerkleBase_NativeTokenAlreadySet(nativeToken);
         }
 
         // Effect: set the native token.
@@ -134,7 +133,7 @@ abstract contract SablierMerkleFactoryBase is
         emit SetNativeToken({ admin: msg.sender, nativeToken: newNativeToken });
     }
 
-    /// @inheritdoc ISablierMerkleFactoryBase
+    /// @inheritdoc ISablierFactoryMerkleBase
     function setOracle(address newOracle) external override onlyAdmin {
         address currentOracle = oracle;
 
@@ -153,7 +152,7 @@ abstract contract SablierMerkleFactoryBase is
     /// @dev Reverts if the provided token is the native token.
     function _forbidNativeToken(address token) internal view {
         if (token == nativeToken) {
-            revert Errors.SablierMerkleFactoryBase_ForbidNativeToken(token);
+            revert Errors.SablierFactoryMerkleBase_ForbidNativeToken(token);
         }
     }
 

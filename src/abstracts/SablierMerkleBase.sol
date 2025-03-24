@@ -7,9 +7,8 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import { BitMaps } from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import { Adminable } from "@sablier/evm-utils/src/Adminable.sol";
-
+import { ISablierFactoryMerkleBase } from "./../interfaces/ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleBase } from "./../interfaces/ISablierMerkleBase.sol";
-import { ISablierMerkleFactoryBase } from "./../interfaces/ISablierMerkleFactoryBase.sol";
 import { Errors } from "./../libraries/Errors.sol";
 
 /// @title SablierMerkleBase
@@ -74,11 +73,11 @@ abstract contract SablierMerkleBase is
         EXPIRATION = expiration;
         FACTORY = msg.sender;
         MERKLE_ROOT = merkleRoot;
-        ORACLE = ISablierMerkleFactoryBase(FACTORY).oracle();
+        ORACLE = ISablierFactoryMerkleBase(FACTORY).oracle();
         TOKEN = token;
         campaignName = campaignName_;
         ipfsCID = ipfsCID_;
-        minFeeUSD = ISablierMerkleFactoryBase(FACTORY).minFeeUSDFor(campaignCreator);
+        minFeeUSD = ISablierFactoryMerkleBase(FACTORY).minFeeUSDFor(campaignCreator);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -192,7 +191,7 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     function lowerMinFeeUSD(uint256 newMinFeeUSD) external override {
         // Safe Interaction: retrieve the factory admin.
-        address factoryAdmin = ISablierMerkleFactoryBase(FACTORY).admin();
+        address factoryAdmin = ISablierFactoryMerkleBase(FACTORY).admin();
 
         // Check: the caller is the factory admin.
         if (factoryAdmin != msg.sender) {

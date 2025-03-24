@@ -2,10 +2,8 @@
 pragma solidity >=0.8.22 <0.9.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
+import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
-
 import { LeafData, MerkleBuilder } from "./../../utils/MerkleBuilder.sol";
 import { Fork_Test } from "./../Fork.t.sol";
 
@@ -140,7 +138,7 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
 
     function testCollectFees() internal {
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.CollectFees({
+        emit ISablierFactoryMerkleBase.CollectFees({
             admin: factoryAdmin,
             campaign: merkleBase,
             feeAmount: vars.minFeeWei

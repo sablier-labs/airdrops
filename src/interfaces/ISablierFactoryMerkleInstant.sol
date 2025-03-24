@@ -2,13 +2,13 @@
 pragma solidity >=0.8.22;
 
 import { MerkleInstant } from "./../types/DataTypes.sol";
-import { ISablierMerkleFactoryBase } from "./ISablierMerkleFactoryBase.sol";
+import { ISablierFactoryMerkleBase } from "./ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleInstant } from "./ISablierMerkleInstant.sol";
 
-/// @title ISablierMerkleFactoryInstant
+/// @title ISablierFactoryMerkleInstant
 /// @notice A factory that deploys MerkleInstant campaign contracts.
 /// @dev See the documentation in {ISablierMerkleInstant}.
-interface ISablierMerkleFactoryInstant is ISablierMerkleFactoryBase {
+interface ISablierFactoryMerkleInstant is ISablierFactoryMerkleBase {
     /*//////////////////////////////////////////////////////////////////////////
                                        EVENTS
     //////////////////////////////////////////////////////////////////////////*/

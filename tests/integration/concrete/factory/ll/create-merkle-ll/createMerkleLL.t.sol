@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ISablierMerkleFactoryLL } from "src/interfaces/ISablierMerkleFactoryLL.sol";
+import { ISablierFactoryMerkleLL } from "src/interfaces/ISablierFactoryMerkleLL.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
 import { Errors } from "src/libraries/Errors.sol";
 import { MerkleLL } from "src/types/DataTypes.sol";
@@ -18,7 +18,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         merkleFactoryLL.setNativeToken(newNativeToken);
 
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleFactoryBase_ForbidNativeToken.selector, newNativeToken)
+            abi.encodeWithSelector(Errors.SablierFactoryMerkleBase_ForbidNativeToken.selector, newNativeToken)
         );
         merkleFactoryLL.createMerkleLL(params, AGGREGATE_AMOUNT, AGGREGATE_AMOUNT);
     }
@@ -46,7 +46,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
 
         // It should emit a {CreateMerkleLL} event.
         vm.expectEmit({ emitter: address(merkleFactoryLL) });
-        emit ISablierMerkleFactoryLL.CreateMerkleLL({
+        emit ISablierFactoryMerkleLL.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedLL),
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
@@ -72,7 +72,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
 
         // It should emit a {CreateMerkleInstant} event.
         vm.expectEmit({ emitter: address(merkleFactoryLL) });
-        emit ISablierMerkleFactoryLL.CreateMerkleLL({
+        emit ISablierFactoryMerkleLL.CreateMerkleLL({
             merkleLL: ISablierMerkleLL(expectedLL),
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,

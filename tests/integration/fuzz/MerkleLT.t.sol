@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ISablierMerkleFactoryLT } from "src/interfaces/ISablierMerkleFactoryLT.sol";
+import { ISablierFactoryMerkleLT } from "src/interfaces/ISablierFactoryMerkleLT.sol";
 import { ISablierMerkleLockup } from "src/interfaces/ISablierMerkleLockup.sol";
 import { ISablierMerkleLT } from "src/interfaces/ISablierMerkleLT.sol";
 
@@ -18,7 +18,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryLT} contract as {ISablierMerkleFactoryBase}
+        // Cast the {merkleFactoryLT} contract as {ISablierFactoryMerkleBase}
         merkleFactoryBase = merkleFactoryLT;
     }
 
@@ -104,7 +104,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
 
         // Expect a {CreateMerkleLT} event.
         vm.expectEmit({ emitter: address(merkleFactoryLT) });
-        emit ISablierMerkleFactoryLT.CreateMerkleLT({
+        emit ISablierFactoryMerkleLT.CreateMerkleLT({
             merkleLT: ISablierMerkleLT(expectedMerkleLT),
             params: params,
             aggregateAmount: aggregateAmount,

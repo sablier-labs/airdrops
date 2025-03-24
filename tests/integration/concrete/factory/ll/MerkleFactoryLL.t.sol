@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
+import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
 import { Integration_Test } from "./../../../Integration.t.sol";
 import { CollectFees_Integration_Test } from "./../shared/collect-fees/collectFees.t.sol";
 import { DisableCustomFeeUSD_Integration_Test } from "./../shared/disable-custom-fee-usd/disableCustomFeeUSD.t.sol";
@@ -19,8 +19,8 @@ abstract contract MerkleFactoryLL_Integration_Shared_Test is Integration_Test {
     function setUp() public virtual override {
         Integration_Test.setUp();
 
-        // Cast the {merkleFactoryLL} contract as {ISablierMerkleFactoryBase}
-        merkleFactoryBase = ISablierMerkleFactoryBase(merkleFactoryLL);
+        // Cast the {merkleFactoryLL} contract as {ISablierFactoryMerkleBase}
+        merkleFactoryBase = ISablierFactoryMerkleBase(merkleFactoryLL);
 
         // Set the `merkleBase` to the merkleLL contract to use it in the tests.
         merkleBase = ISablierMerkleBase(merkleLL);

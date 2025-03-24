@@ -2,7 +2,7 @@
 pragma solidity >=0.8.22 <0.9.0;
 
 import { BaseScript } from "script/Base.sol";
-import { SablierMerkleFactoryInstant } from "src/SablierMerkleFactoryInstant.sol";
+import { SablierFactoryMerkleInstant } from "src/SablierFactoryMerkleInstant.sol";
 
 import { Base_Test } from "./../../Base.t.sol";
 
@@ -13,7 +13,7 @@ contract ChainlinkOracle_Fork_Test is BaseScript, Base_Test {
         vm.createSelectFork({ urlOrAlias: chainName });
 
         // Deploy the Merkle Instant factory and create a new campaign.
-        merkleFactoryInstant = new SablierMerkleFactoryInstant(users.admin, initialMinFeeUSD(), chainlinkOracle());
+        merkleFactoryInstant = new SablierFactoryMerkleInstant(users.admin, initialMinFeeUSD(), chainlinkOracle());
         merkleInstant = merkleFactoryInstant.createMerkleInstant(
             merkleInstantConstructorParams(), AGGREGATE_AMOUNT, RECIPIENT_COUNT
         );

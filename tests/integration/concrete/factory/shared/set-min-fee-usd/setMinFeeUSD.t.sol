@@ -2,7 +2,7 @@
 pragma solidity >=0.8.22 <0.9.0;
 
 import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Errors.sol";
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
+import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 import { Errors } from "src/libraries/Errors.sol";
 import { Integration_Test } from "./../../../../Integration.t.sol";
 
@@ -17,7 +17,7 @@ abstract contract SetMinFeeUSD_Integration_Test is Integration_Test {
         uint256 newMinFeeUSD = MAX_FEE_USD + 1;
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleFactoryBase_MaxFeeUSDExceeded.selector, newMinFeeUSD, MAX_FEE_USD
+                Errors.SablierFactoryMerkleBase_MaxFeeUSDExceeded.selector, newMinFeeUSD, MAX_FEE_USD
             )
         );
         merkleFactoryBase.setMinFeeUSD(newMinFeeUSD);
@@ -28,7 +28,7 @@ abstract contract SetMinFeeUSD_Integration_Test is Integration_Test {
 
         // It should emit a {SetMinFeeUSD} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.SetMinFeeUSD({
+        emit ISablierFactoryMerkleBase.SetMinFeeUSD({
             admin: users.admin,
             newMinFeeUSD: newMinFeeUSD,
             previousMinFeeUSD: MIN_FEE_USD

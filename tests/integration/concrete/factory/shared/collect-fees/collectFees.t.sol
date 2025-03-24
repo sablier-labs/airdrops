@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
+import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleBase } from "src/interfaces/ISablierMerkleBase.sol";
-import { ISablierMerkleFactoryBase } from "src/interfaces/ISablierMerkleFactoryBase.sol";
 import { Errors } from "src/libraries/Errors.sol";
-
-import { Integration_Test } from "../../../../Integration.t.sol";
+import { Integration_Test } from "./../../../../Integration.t.sol";
 
 abstract contract CollectFees_Integration_Test is Integration_Test {
     function test_RevertWhen_ProvidedMerkleLockupNotValid() external {
@@ -57,7 +56,7 @@ abstract contract CollectFees_Integration_Test is Integration_Test {
 
         // It should emit a {CollectFees} event.
         vm.expectEmit({ emitter: address(merkleFactoryBase) });
-        emit ISablierMerkleFactoryBase.CollectFees({ admin: admin, campaign: merkleBase, feeAmount: MIN_FEE_WEI });
+        emit ISablierFactoryMerkleBase.CollectFees({ admin: admin, campaign: merkleBase, feeAmount: MIN_FEE_WEI });
 
         // Make Alice the caller.
         resetPrank({ msgSender: users.eve });
