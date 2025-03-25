@@ -28,6 +28,37 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
         });
     }
 
+    function test_WhenStartTimeInPresent() external whenMerkleProofValid whenStartTimeNotInFuture {
+        // Forward in time so that the end time is in the past.
+        vm.warp({ newTimestamp: VCA_START_TIME });
+
+        // It should emit a {Claim} event.
+        vm.expectEmit({ emitter: address(merkleVCA) });
+        emit ISablierMerkleVCA.Claim({
+            index: INDEX1,
+            recipient: users.recipient1,
+            claimAmount: VCA_UNLOCK_AMOUNT,
+            forgoneAmount: VCA_VESTING_AMOUNT
+        });
+
+        // It should transfer the unlock amount.
+        expectCallToTransfer({ to: users.recipient1, value: VCA_UNLOCK_AMOUNT });
+        expectCallToClaimWithMsgValue(address(merkleVCA), MIN_FEE_WEI);
+
+        merkleVCA.claim{ value: MIN_FEE_WEI }({
+            index: 1,
+            recipient: users.recipient1,
+            amount: VCA_FULL_AMOUNT,
+            merkleProof: index1Proof()
+        });
+
+        // It should update the claimed status.
+        assertTrue(merkleVCA.hasClaimed(INDEX1), "not claimed");
+
+        // It should update the total forgone amount.
+        assertEq(merkleVCA.totalForgoneAmount(), VCA_VESTING_AMOUNT, "total forgone amount");
+    }
+
     function test_WhenEndTimeInPast() external whenMerkleProofValid whenStartTimeNotInFuture {
         // Forward in time so that the end time is in the past.
         vm.warp({ newTimestamp: VESTING_END_TIME });
@@ -60,7 +91,7 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
     }
 
     function test_WhenEndTimeNotInPast() external whenMerkleProofValid whenStartTimeNotInFuture {
-        uint128 claimAmount = (VCA_FULL_AMOUNT * 2 days) / VESTING_TOTAL_DURATION;
+        uint128 claimAmount = VCA_UNLOCK_AMOUNT + (VCA_VESTING_AMOUNT * 2 days) / TOTAL_DURATION;
         uint128 forgoneAmount = VCA_FULL_AMOUNT - claimAmount;
 
         // It should emit a {Claim} event.

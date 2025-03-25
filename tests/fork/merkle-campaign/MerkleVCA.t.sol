@@ -60,7 +60,8 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
             expiration: params.expiration,
             merkleRoot: vars.merkleRoot,
             startTime: startTime,
-            tokenAddress: FORK_TOKEN
+            tokenAddress: FORK_TOKEN,
+            unlockPercentage: VCA_UNLOCK_PERCENTAGE
         });
 
         vars.expectedMerkleCampaign =
@@ -91,8 +92,12 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         preClaim(params);
 
         // Calculate claim and forgone amount based on the vesting start and end time.
-        (uint128 claimAmount, uint128 forgoneAmount) =
-            calculateMerkleVCAAmounts({ fullAmount: vars.leafToClaim.amount, endTime: endTime, startTime: startTime });
+        (uint128 claimAmount, uint128 forgoneAmount) = calculateMerkleVCAAmounts({
+            fullAmount: vars.leafToClaim.amount,
+            unlockPercentage: VCA_UNLOCK_PERCENTAGE,
+            endTime: endTime,
+            startTime: startTime
+        });
 
         vm.expectEmit({ emitter: address(merkleVCA) });
         emit ISablierMerkleVCA.Claim({

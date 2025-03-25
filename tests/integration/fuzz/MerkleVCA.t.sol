@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
+import { UD2x18, UNIT } from "@prb/math/src/UD2x18.sol";
 import { ISablierFactoryMerkleVCA } from "src/interfaces/ISablierFactoryMerkleVCA.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { MerkleVCA } from "src/types/DataTypes.sol";
@@ -24,10 +25,57 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
                                    TEST FUNCTION
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @dev Given enough fuzz runs, all possible values of claim time and full amount will be fuzzed. This test uses
+    /// the instance of `merkleVCA` deployed in {Integration_Test}.
+    function testFuzz_ClaimAndForgoneAmount(uint128 fullAmount, uint40 claimTime) external {
+        uint128 actualClaimAmount = merkleVCA.calculateClaimAmount(fullAmount, claimTime);
+        uint128 actualForgoneAmount = merkleVCA.calculateForgoneAmount(fullAmount, claimTime);
+
+        // Because zero is the sentinel value for `block.timestamp`, warp to the claim time if its not 0.
+        if (claimTime > 0) {
+            vm.warp({ newTimestamp: claimTime });
+        }
+
+        // Assert the claim and forgone amounts if start time is in the future.
+        if (getBlockTimestamp() < VCA_START_TIME) {
+            assertEq(actualClaimAmount, 0, "claim amount before start time");
+            assertEq(actualForgoneAmount, 0, "forgone amount before start time");
+        }
+
+        // Assert the claim and forgone amounts if start time is in the present.
+        if (getBlockTimestamp() == VCA_START_TIME) {
+            uint128 unlockAmount = uint128(VCA_UNLOCK_PERCENTAGE.unwrap() * uint256(fullAmount) / 1e18);
+
+            assertEq(actualClaimAmount, unlockAmount, "claim amount at start time");
+            assertEq(actualForgoneAmount, fullAmount - unlockAmount, "forgone amount at start time");
+        }
+        // Assert the claim and forgone amounts if start time is in the past.
+        else {
+            // Assert the claim and forgone amounts if end time is in the future.
+            if (getBlockTimestamp() < VCA_END_TIME) {
+                (uint128 expectedClaimAmount, uint128 expectedForgoneAmount) = calculateMerkleVCAAmounts({
+                    fullAmount: fullAmount,
+                    unlockPercentage: VCA_UNLOCK_PERCENTAGE,
+                    endTime: VCA_END_TIME,
+                    startTime: VCA_START_TIME
+                });
+
+                assertEq(actualClaimAmount, expectedClaimAmount, "claim amount before end time");
+                assertEq(actualForgoneAmount, expectedForgoneAmount, "forgone amount before end time");
+            }
+            // Assert the claim and forgone amounts if end time is not in the future.
+            else {
+                assertEq(actualClaimAmount, fullAmount, "claim amount after end time");
+                assertEq(actualForgoneAmount, 0, "forgone amount after end time");
+            }
+        }
+    }
+
     /// @dev Given enough fuzz runs, all of the following scenarios will be fuzzed:
     ///
     /// - Fuzzed custom fee.
     /// - MerkleVCA campaign with fuzzed leaves data, expiration, end time and start time.
+    /// - Unlock percentage does not exceed 1e18.
     /// - Finite (only in future) expiration.
     /// - Start time in the past.
     /// - Claiming airdrops for multiple indexes with fuzzed claim fee.
@@ -42,7 +90,8 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         uint256[] memory indexesToClaim,
         uint256 msgValue,
         LeafData[] memory rawLeavesData,
-        uint40 startTime
+        uint40 startTime,
+        UD2x18 unlockPercentage
     )
         external
     {
@@ -57,7 +106,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         feeForUser = enableCustomFeeUSD ? testSetCustomFeeUSD(feeForUser) : MIN_FEE_USD;
 
         // Test creating the MerkleVCA campaign.
-        _testCreateMerkleVCA(aggregateAmount, endTime, expiration, feeForUser, merkleRoot, startTime);
+        _testCreateMerkleVCA(aggregateAmount, endTime, expiration, feeForUser, merkleRoot, startTime, unlockPercentage);
 
         // Test claiming the airdrop for the given indexes.
         testClaimMultipleAirdrops(indexesToClaim, msgValue);
@@ -79,15 +128,20 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         uint40 expiration,
         uint256 feeForUser,
         bytes32 merkleRoot,
-        uint40 startTime
+        uint40 startTime,
+        UD2x18 unlockPercentage
     )
         private
         givenCampaignNotExists
+        whenUnlockPercentageNotGreaterThan100
         whenStartTimeNotZero
         whenEndTimeGreaterThanStartTime
         whenNotZeroExpiration
         whenExpirationExceedsOneWeekFromEndTime
     {
+        // Bound unlock percentage to be less than or equal to 1e18.
+        unlockPercentage = bound(unlockPercentage, 0, UNIT);
+
         // Bound start time to be in the past.
         startTime = boundUint40(startTime, 1 seconds, getBlockTimestamp() - 1 seconds);
 
@@ -126,11 +180,14 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         // It should return false for hasExpired.
         assertFalse(merkleVCA.hasExpired(), "isExpired");
 
-        // It should set return the correct end time.
+        // It should set the correct end time.
         assertEq(merkleVCA.END_TIME(), endTime, "end time");
 
-        // It should set return the correct start time.
+        // It should set the correct start time.
         assertEq(merkleVCA.START_TIME(), startTime, "start time");
+
+        // It should set the correct unlock percentage.
+        assertEq(merkleVCA.UNLOCK_PERCENTAGE(), unlockPercentage, "unlock percentage");
 
         // Fund the MerkleVCA contract.
         deal({ token: address(dai), to: address(merkleVCA), give: aggregateAmount });
@@ -147,6 +204,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         // Calculate claim and forgone amount based on the vesting start and end time.
         (uint256 claimAmount, uint256 forgoneAmount) = calculateMerkleVCAAmounts({
             fullAmount: leafData.amount,
+            unlockPercentage: merkleVCA.UNLOCK_PERCENTAGE(),
             endTime: merkleVCA.END_TIME(),
             startTime: merkleVCA.START_TIME()
         });
