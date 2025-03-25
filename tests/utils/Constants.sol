@@ -16,6 +16,9 @@ abstract contract Constants {
     uint128 public constant START_AMOUNT = 100e18;
     UD2x18 public immutable START_PERCENTAGE = (ud(START_AMOUNT).div(ud(CLAIM_AMOUNT)).intoUD2x18());
     uint128 internal constant VCA_FULL_AMOUNT = CLAIM_AMOUNT;
+    uint128 internal constant VCA_UNLOCK_AMOUNT = START_AMOUNT;
+    UD2x18 internal immutable VCA_UNLOCK_PERCENTAGE = START_PERCENTAGE;
+    uint128 internal constant VCA_VESTING_AMOUNT = CLAIM_AMOUNT - START_AMOUNT;
 
     // Durations and Timestamps
     uint40 public constant CLIFF_DURATION = 2 days;

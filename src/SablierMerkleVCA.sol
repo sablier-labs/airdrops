@@ -3,6 +3,8 @@ pragma solidity >=0.8.22;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { UD2x18, uUNIT } from "@prb/math/src/UD2x18.sol";
+import { ud60x18 } from "@prb/math/src/UD60x18.sol";
 
 import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
 import { ISablierMerkleVCA } from "./interfaces/ISablierMerkleVCA.sol";
@@ -46,6 +48,9 @@ contract SablierMerkleVCA is
     uint40 public immutable override START_TIME;
 
     /// @inheritdoc ISablierMerkleVCA
+    UD2x18 public immutable override UNLOCK_PERCENTAGE;
+
+    /// @inheritdoc ISablierMerkleVCA
     uint256 public override totalForgoneAmount;
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -67,6 +72,11 @@ contract SablierMerkleVCA is
             params.token
         )
     {
+        // Check: unlock percentage is not greater than 1e18.
+        if (params.unlockPercentage.unwrap() > uUNIT) {
+            revert Errors.SablierMerkleVCA_UnlockPercentageTooHigh(params.unlockPercentage);
+        }
+
         // Check: start time is not zero.
         if (params.startTime == 0) {
             revert Errors.SablierMerkleVCA_StartTimeZero();
@@ -95,6 +105,9 @@ contract SablierMerkleVCA is
 
         // Effect: set the start time.
         START_TIME = params.startTime;
+
+        // Effect: set the unlock percentage.
+        UNLOCK_PERCENTAGE = params.unlockPercentage;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -108,8 +121,8 @@ contract SablierMerkleVCA is
             claimTime = uint40(block.timestamp);
         }
 
-        // If claim time is not greater than start time, return 0.
-        if (claimTime <= START_TIME) {
+        // If the claim time is less than start time, return 0.
+        if (claimTime < START_TIME) {
             return 0;
         }
 
@@ -124,9 +137,9 @@ contract SablierMerkleVCA is
             claimTime = uint40(block.timestamp);
         }
 
-        // If the claim time is not greater than start time, no amount can be forgone since the claim cannot be made, so
-        // we return 0.
-        if (claimTime <= START_TIME) {
+        // If the claim time is less than start time, no amount can be forgone since the claim cannot be made, so return
+        // 0.
+        if (claimTime < START_TIME) {
             return 0;
         }
 
@@ -143,6 +156,14 @@ contract SablierMerkleVCA is
         uint40 elapsedTime;
         uint40 totalDuration;
 
+        // Calculate the initial unlocked amount.
+        uint128 initialUnlockedAmount = ud60x18(fullAmount).mul(UNLOCK_PERCENTAGE.intoUD60x18()).intoUint128();
+
+        // If claim time is equal to the start time, return the initial unlock.
+        if (claimTime == START_TIME) {
+            return initialUnlockedAmount;
+        }
+
         // If the vesting period has ended, the claim amount is the full amount.
         if (claimTime >= END_TIME) {
             return fullAmount;
@@ -154,8 +175,11 @@ contract SablierMerkleVCA is
                 totalDuration = END_TIME - START_TIME;
             }
 
-            // Safe to cast because the result in a value less than `fullAmount`, which is already an `uint128`.
-            return uint128((uint256(fullAmount) * elapsedTime) / totalDuration);
+            // Safe to cast because the result in a value less than `fullAmount - initialUnlockedAmount`, which is
+            // already an `uint128`.
+            uint128 vestedAmount = uint128((uint256(fullAmount - initialUnlockedAmount) * elapsedTime) / totalDuration);
+
+            return initialUnlockedAmount + vestedAmount;
         }
     }
 
@@ -167,8 +191,8 @@ contract SablierMerkleVCA is
     function _claim(uint256 index, address recipient, uint128 fullAmount) internal override {
         uint40 blockTimestamp = uint40(block.timestamp);
 
-        // Check: start time is in the past.
-        if (blockTimestamp <= START_TIME) {
+        // Check: start time is not in the future.
+        if (blockTimestamp < START_TIME) {
             revert Errors.SablierMerkleVCA_CampaignNotStarted(START_TIME);
         }
 
