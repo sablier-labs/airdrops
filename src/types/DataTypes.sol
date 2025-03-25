@@ -144,6 +144,6 @@ library MerkleVCA {
         bytes32 merkleRoot;
         uint40 startTime;
         IERC20 token;
-        UD2x18 unlockPercentage;
+        UD60x18 unlockPercentage;
     }
 }

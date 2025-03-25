@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.22;
 
-import { UD2x18 } from "@prb/math/src/UD2x18.sol";
+import { UD60x18 } from "@prb/math/src/UD60x18.sol";
 
 /// @title Errors
 /// @notice Library containing all custom errors the protocol may revert with.
@@ -81,5 +81,5 @@ library Errors {
     error SablierMerkleVCA_StartTimeZero();
 
     /// @notice Thrown if the unlock percentage is greater than 1e18.
-    error SablierMerkleVCA_UnlockPercentageTooHigh(UD2x18 unlockPercentage);
+    error SablierMerkleVCA_UnlockPercentageTooHigh(UD60x18 unlockPercentage);
 }

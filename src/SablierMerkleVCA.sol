@@ -3,8 +3,7 @@ pragma solidity >=0.8.22;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { UD2x18, uUNIT } from "@prb/math/src/UD2x18.sol";
-import { ud60x18 } from "@prb/math/src/UD60x18.sol";
+import { ud60x18, UD60x18, uUNIT } from "@prb/math/src/UD60x18.sol";
 
 import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
 import { ISablierMerkleVCA } from "./interfaces/ISablierMerkleVCA.sol";
@@ -48,7 +47,7 @@ contract SablierMerkleVCA is
     uint40 public immutable override START_TIME;
 
     /// @inheritdoc ISablierMerkleVCA
-    UD2x18 public immutable override UNLOCK_PERCENTAGE;
+    UD60x18 public immutable override UNLOCK_PERCENTAGE;
 
     /// @inheritdoc ISablierMerkleVCA
     uint256 public override totalForgoneAmount;
@@ -157,7 +156,7 @@ contract SablierMerkleVCA is
         uint40 totalDuration;
 
         // Calculate the initial unlocked amount.
-        uint128 initialUnlockedAmount = ud60x18(fullAmount).mul(UNLOCK_PERCENTAGE.intoUD60x18()).intoUint128();
+        uint128 initialUnlockedAmount = ud60x18(fullAmount).mul(UNLOCK_PERCENTAGE).intoUint128();
 
         // If claim time is equal to the start time, return the initial unlock.
         if (claimTime == START_TIME) {

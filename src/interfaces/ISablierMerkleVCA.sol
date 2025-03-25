@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.22;
 
-import { UD2x18 } from "@prb/math/src/UD2x18.sol";
+import { UD60x18 } from "@prb/math/src/UD60x18.sol";
 import { ISablierMerkleBase } from "./ISablierMerkleBase.sol";
 
 /// @title ISablierMerkleVCA
@@ -28,7 +28,7 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
 
     /// @notice Returns the percentage of the tokens allocated to a user to be unlocked at the start time, denoted as a
     /// fixed-point number where 1e18 is 100%.
-    function UNLOCK_PERCENTAGE() external view returns (UD2x18);
+    function UNLOCK_PERCENTAGE() external view returns (UD60x18);
 
     /// @notice Calculates the amount that would be claimed if the claim were made at `claimTime`.
     /// @dev This is for informational purposes only. To actually claim the airdrop, a Merkle proof is required.

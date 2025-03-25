@@ -3,8 +3,8 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
-import { ud2x18, UD2x18 } from "@prb/math/src/UD2x18.sol";
-import { ud } from "@prb/math/src/UD60x18.sol";
+import { ud2x18 } from "@prb/math/src/UD2x18.sol";
+import { ud, UD60x18 } from "@prb/math/src/UD60x18.sol";
 import { BaseTest as EvmUtilsBase } from "@sablier/evm-utils/src/tests/BaseTest.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 import { LockupNFTDescriptor } from "@sablier/lockup/src/LockupNFTDescriptor.sol";
@@ -539,7 +539,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     /// @dev Mirrors the logic from {SablierMerkleVCA._calculateClaimAmount}.
     function calculateMerkleVCAAmounts(
         uint128 fullAmount,
-        UD2x18 unlockPercentage,
+        UD60x18 unlockPercentage,
         uint40 endTime,
         uint40 startTime
     )
@@ -640,7 +640,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         bytes32 merkleRoot,
         uint40 startTime,
         IERC20 tokenAddress,
-        UD2x18 unlockPercentage
+        UD60x18 unlockPercentage
     )
         public
         view
