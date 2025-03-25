@@ -378,20 +378,18 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         return MerkleLL.ConstructorParams({
             campaignName: CAMPAIGN_NAME,
             cancelable: STREAM_CANCELABLE,
+            cliffDuration: CLIFF_DURATION,
+            cliffUnlockPercentage: CLIFF_PERCENTAGE,
             expiration: expiration,
             initialAdmin: campaignCreator,
             ipfsCID: IPFS_CID,
             lockup: lockupAddress,
             merkleRoot: merkleRoot,
-            schedule: MerkleLL.Schedule({
-                startTime: startTime,
-                startPercentage: START_PERCENTAGE,
-                cliffDuration: CLIFF_DURATION,
-                cliffPercentage: CLIFF_PERCENTAGE,
-                totalDuration: TOTAL_DURATION
-            }),
+            startUnlockPercentage: START_PERCENTAGE,
+            startTime: startTime,
             shape: STREAM_SHAPE,
             token: tokenAddress,
+            totalDuration: TOTAL_DURATION,
             transferable: STREAM_TRANSFERABLE
         });
     }

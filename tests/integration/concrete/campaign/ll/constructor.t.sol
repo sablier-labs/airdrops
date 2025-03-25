@@ -2,7 +2,6 @@
 pragma solidity >=0.8.22 <0.9.0;
 
 import { SablierMerkleLL } from "src/SablierMerkleLL.sol";
-import { MerkleLL } from "src/types/DataTypes.sol";
 
 import { Integration_Test } from "./../../../Integration.t.sol";
 
@@ -36,11 +35,10 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         assertEq(constructedLL.STREAM_TRANSFERABLE(), STREAM_TRANSFERABLE, "stream transferable");
 
         // SablierMerkleLL
-        MerkleLL.Schedule memory actualSchedule = constructedLL.getSchedule();
-        assertEq(actualSchedule.startTime, RANGED_STREAM_START_TIME, "schedule.startTime");
-        assertEq(actualSchedule.startPercentage, START_PERCENTAGE, "schedule.startPercentage");
-        assertEq(actualSchedule.cliffDuration, CLIFF_DURATION, "schedule.cliffDuration");
-        assertEq(actualSchedule.cliffPercentage, CLIFF_PERCENTAGE, "schedule.cliffPercentage");
-        assertEq(actualSchedule.totalDuration, TOTAL_DURATION, "schedule.totalDuration");
+        assertEq(constructedLL.CLIFF_DURATION(), CLIFF_DURATION, "cliffDuration");
+        assertEq(constructedLL.CLIFF_UNLOCK_PERCENTAGE(), CLIFF_PERCENTAGE, "cliffUnlockPercentage");
+        assertEq(constructedLL.START_TIME(), RANGED_STREAM_START_TIME, "startTime");
+        assertEq(constructedLL.START_UNLOCK_PERCENTAGE(), START_PERCENTAGE, "startUnlockPercentage");
+        assertEq(constructedLL.TOTAL_DURATION(), TOTAL_DURATION, "totalDuration");
     }
 }

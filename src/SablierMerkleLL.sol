@@ -3,6 +3,7 @@ pragma solidity >=0.8.22;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { UD2x18 } from "@prb/math/src/UD2x18.sol";
 import { ud60x18 } from "@prb/math/src/UD60x18.sol";
 import { Lockup, LockupLinear } from "@sablier/lockup/src/types/DataTypes.sol";
 
@@ -41,8 +42,20 @@ contract SablierMerkleLL is
                                   STATE VARIABLES
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev See the documentation in {ISablierMerkleLL.getSchedule}.
-    MerkleLL.Schedule private _schedule;
+    /// @inheritdoc ISablierMerkleLL
+    uint40 public immutable override CLIFF_DURATION;
+
+    /// @inheritdoc ISablierMerkleLL
+    UD2x18 public immutable override CLIFF_UNLOCK_PERCENTAGE;
+
+    /// @inheritdoc ISablierMerkleLL
+    uint40 public immutable override START_TIME;
+
+    /// @inheritdoc ISablierMerkleLL
+    UD2x18 public immutable override START_UNLOCK_PERCENTAGE;
+
+    /// @inheritdoc ISablierMerkleLL
+    uint40 public immutable override TOTAL_DURATION;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
@@ -68,16 +81,11 @@ contract SablierMerkleLL is
             params.transferable
         )
     {
-        _schedule = params.schedule;
-    }
-
-    /*//////////////////////////////////////////////////////////////////////////
-                           USER-FACING CONSTANT FUNCTIONS
-    //////////////////////////////////////////////////////////////////////////*/
-
-    /// @inheritdoc ISablierMerkleLL
-    function getSchedule() external view override returns (MerkleLL.Schedule memory) {
-        return _schedule;
+        CLIFF_DURATION = params.cliffDuration;
+        CLIFF_UNLOCK_PERCENTAGE = params.cliffUnlockPercentage;
+        START_TIME = params.startTime;
+        START_UNLOCK_PERCENTAGE = params.startUnlockPercentage;
+        TOTAL_DURATION = params.totalDuration;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -86,18 +94,15 @@ contract SablierMerkleLL is
 
     /// @inheritdoc SablierMerkleBase
     function _claim(uint256 index, address recipient, uint128 amount) internal override {
-        // Load schedule from storage into memory.
-        MerkleLL.Schedule memory schedule = _schedule;
-
         // Calculate the timestamps.
         Lockup.Timestamps memory timestamps;
         // Zero is a sentinel value for `block.timestamp`.
-        if (schedule.startTime == 0) {
+        if (START_TIME == 0) {
             timestamps.start = uint40(block.timestamp);
         } else {
-            timestamps.start = schedule.startTime;
+            timestamps.start = START_TIME;
         }
-        timestamps.end = timestamps.start + schedule.totalDuration;
+        timestamps.end = timestamps.start + TOTAL_DURATION;
 
         // If the end time is not in the future, transfer the amount directly to the recipient.
         if (timestamps.end <= block.timestamp) {
@@ -111,14 +116,14 @@ contract SablierMerkleLL is
         else {
             // Calculate cliff time.
             uint40 cliffTime;
-            if (schedule.cliffDuration > 0) {
-                cliffTime = timestamps.start + schedule.cliffDuration;
+            if (CLIFF_DURATION > 0) {
+                cliffTime = timestamps.start + CLIFF_DURATION;
             }
 
             // Calculate the unlock amounts based on the percentages.
             LockupLinear.UnlockAmounts memory unlockAmounts;
-            unlockAmounts.start = ud60x18(amount).mul(schedule.startPercentage.intoUD60x18()).intoUint128();
-            unlockAmounts.cliff = ud60x18(amount).mul(schedule.cliffPercentage.intoUD60x18()).intoUint128();
+            unlockAmounts.start = ud60x18(amount).mul(START_UNLOCK_PERCENTAGE.intoUD60x18()).intoUint128();
+            unlockAmounts.cliff = ud60x18(amount).mul(CLIFF_UNLOCK_PERCENTAGE.intoUD60x18()).intoUint128();
 
             // Safe Interaction: create the stream.
             uint256 streamId = SABLIER_LOCKUP.createWithTimestampsLL(

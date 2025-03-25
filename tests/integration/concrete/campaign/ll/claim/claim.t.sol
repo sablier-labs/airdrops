@@ -44,8 +44,8 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
 
         // Crate a MerkleLL campaign with a total percentage greater than 100.
-        params.schedule.startPercentage = ud2x18(0.5e18);
-        params.schedule.cliffPercentage = ud2x18(0.6e18);
+        params.startUnlockPercentage = ud2x18(0.5e18);
+        params.cliffUnlockPercentage = ud2x18(0.6e18);
 
         merkleLL = factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
         uint128 startUnlockAmount = ud60x18(CLAIM_AMOUNT).mul(ud60x18(0.5e18)).intoUint128();
@@ -69,14 +69,14 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         });
     }
 
-    function test_WhenScheduledStartTimeZero()
+    function test_WhenStartTimeZero()
         external
         whenMerkleProofValid
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentageNotGreaterThan100
     {
         MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
-        params.schedule.startTime = 0;
+        params.startTime = 0;
 
         merkleLL = factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
@@ -84,16 +84,16 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         _test_Claim({ startTime: getBlockTimestamp(), cliffTime: getBlockTimestamp() + CLIFF_DURATION });
     }
 
-    function test_WhenScheduledCliffDurationZero()
+    function test_WhenCliffDurationZero()
         external
         whenMerkleProofValid
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentageNotGreaterThan100
-        whenScheduledStartTimeNotZero
+        whenStartTimeNotZero
     {
         MerkleLL.ConstructorParams memory params = merkleLLConstructorParams();
-        params.schedule.cliffDuration = 0;
-        params.schedule.cliffPercentage = ud2x18(0);
+        params.cliffDuration = 0;
+        params.cliffUnlockPercentage = ud2x18(0);
 
         merkleLL = factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
@@ -102,12 +102,12 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         _test_Claim({ startTime: RANGED_STREAM_START_TIME, cliffTime: 0 });
     }
 
-    function test_WhenScheduledCliffDurationNotZero()
+    function test_WhenCliffDurationNotZero()
         external
         whenMerkleProofValid
         whenVestingEndTimeExceedsClaimTime
         whenTotalPercentageNotGreaterThan100
-        whenScheduledStartTimeNotZero
+        whenStartTimeNotZero
     {
         // It should create a stream with block.timestamp as start time.
         // It should create a stream with cliff as start time + cliff duration.
