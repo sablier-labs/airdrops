@@ -36,11 +36,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         createMerkleVCA(params);
     }
 
-    function test_RevertGiven_WhenUnlockPercentageGreaterThan100()
-        external
-        whenNativeTokenNotFound
-        givenCampaignNotExists
-    {
+    function test_RevertWhen_UnlockPercentageGreaterThan100() external whenNativeTokenNotFound givenCampaignNotExists {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
         params.unlockPercentage = UNIT.add(UNIT);
 
