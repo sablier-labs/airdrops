@@ -139,14 +139,14 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         whenNotZeroExpiration
         whenExpirationExceedsOneWeekFromEndTime
     {
-        // Bound unlock percentage to be less than or equal to 1e18.
-        unlockPercentage = bound(unlockPercentage, 0, UNIT);
-
         // Bound start time to be in the past.
         startTime = boundUint40(startTime, 1 seconds, getBlockTimestamp() - 1 seconds);
 
         // Bound end time to be greater than the start time but within than a year from now.
         endTime = boundUint40(endTime, startTime + 1, getBlockTimestamp() + 365 days);
+
+        // Bound unlock percentage to be less than or equal to 1e18.
+        unlockPercentage = bound(unlockPercentage, 0, UNIT);
 
         // Set campaign creator as the caller.
         setMsgSender(users.campaignCreator);
@@ -155,6 +155,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         params.merkleRoot = merkleRoot;
         params.endTime = endTime;
         params.startTime = startTime;
+        params.unlockPercentage = unlockPercentage;
 
         // Precompute the deterministic address.
         address expectedMerkleVCA = computeMerkleVCAAddress(params, users.campaignCreator);

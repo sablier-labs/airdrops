@@ -150,11 +150,7 @@ contract SablierMerkleVCA is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev See the documentation for the user-facing functions that call this internal function.
-    function _calculateClaimAmount(uint128 fullAmount, uint40 claimTime) internal view returns (uint128) {
-        // Calculate the claim amount.
-        uint40 elapsedTime;
-        uint40 totalDuration;
-
+    function _calculateClaimAmount(uint128 fullAmount, uint40 claimTime) internal view returns (uint128 claimAmount) {
         // Calculate the initial unlocked amount.
         uint128 initialUnlockedAmount = ud60x18(fullAmount).mul(UNLOCK_PERCENTAGE).intoUint128();
 
@@ -169,16 +165,24 @@ contract SablierMerkleVCA is
         }
         // Otherwise, calculate the claim amount based on the elapsed time.
         else {
+            uint40 elapsedDuration;
+            uint40 totalDuration;
+            uint128 vestingFullAmount;
+
+            // Safe to unchecked because it cannot overflow due to above checks.
             unchecked {
-                elapsedTime = claimTime - START_TIME;
+                elapsedDuration = claimTime - START_TIME;
                 totalDuration = END_TIME - START_TIME;
+                vestingFullAmount = fullAmount - initialUnlockedAmount;
             }
 
-            // Safe to cast because the result in a value less than `fullAmount - initialUnlockedAmount`, which is
-            // already an `uint128`.
-            uint128 vestedAmount = uint128((uint256(fullAmount - initialUnlockedAmount) * elapsedTime) / totalDuration);
+            // Safe to cast because the result in a value less than `vestingFullAmount`, which is already an `uint128`.
+            uint128 vestedAmount = uint128((uint256(vestingFullAmount) * elapsedDuration) / totalDuration);
 
-            return initialUnlockedAmount + vestedAmount;
+            // Safe to unchecked because it cannot overflow due to above calculations.
+            unchecked {
+                claimAmount = initialUnlockedAmount + vestedAmount;
+            }
         }
     }
 

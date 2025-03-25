@@ -560,10 +560,10 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         }
 
         if (getBlockTimestamp() < endTime) {
-            uint40 elapsedTime = (getBlockTimestamp() - startTime);
-            uint40 totalTime = endTime - startTime;
+            uint40 elapsedDuration = (getBlockTimestamp() - startTime);
+            uint40 totalDuration = endTime - startTime;
 
-            claimAmount = uint128(uint256(fullAmount - unlockAmount) * elapsedTime / totalTime);
+            claimAmount = unlockAmount + uint128((uint256(fullAmount - unlockAmount) * elapsedDuration) / totalDuration);
             forgoneAmount = fullAmount - claimAmount;
         } else {
             claimAmount = fullAmount;
