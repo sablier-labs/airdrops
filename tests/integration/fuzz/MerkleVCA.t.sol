@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { UD2x18, UNIT } from "@prb/math/src/UD2x18.sol";
+import { UD60x18, UNIT } from "@prb/math/src/UD60x18.sol";
 import { ISablierFactoryMerkleVCA } from "src/interfaces/ISablierFactoryMerkleVCA.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { MerkleVCA } from "src/types/DataTypes.sol";
@@ -91,7 +91,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         uint256 msgValue,
         LeafData[] memory rawLeavesData,
         uint40 startTime,
-        UD2x18 unlockPercentage
+        UD60x18 unlockPercentage
     )
         external
     {
@@ -129,7 +129,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
         uint256 feeForUser,
         bytes32 merkleRoot,
         uint40 startTime,
-        UD2x18 unlockPercentage
+        UD60x18 unlockPercentage
     )
         private
         givenCampaignNotExists

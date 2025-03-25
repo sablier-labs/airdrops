@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ud2x18, uUNIT } from "@prb/math/src/UD2x18.sol";
+import { UNIT } from "@prb/math/src/UD60x18.sol";
 import { ISablierFactoryMerkleVCA } from "src/interfaces/ISablierFactoryMerkleVCA.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { Errors } from "src/libraries/Errors.sol";
@@ -42,11 +42,11 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         givenCampaignNotExists
     {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
-        params.unlockPercentage = ud2x18(uUNIT + 1);
+        params.unlockPercentage = UNIT.add(UNIT);
 
         // It should revert.
         vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleVCA_UnlockPercentageTooHigh.selector, ud2x18(uUNIT + 1))
+            abi.encodeWithSelector(Errors.SablierMerkleVCA_UnlockPercentageTooHigh.selector, params.unlockPercentage)
         );
         createMerkleVCA(params);
     }

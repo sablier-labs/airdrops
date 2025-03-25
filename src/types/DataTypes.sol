@@ -3,6 +3,7 @@ pragma solidity >=0.8.22;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { UD2x18 } from "@prb/math/src/UD2x18.sol";
+import { UD60x18 } from "@prb/math/src/UD60x18.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 
 library FactoryMerkle {
@@ -148,6 +149,6 @@ library MerkleVCA {
         bytes32 merkleRoot;
         uint40 startTime;
         IERC20 token;
-        UD2x18 unlockPercentage;
+        UD60x18 unlockPercentage;
     }
 }
