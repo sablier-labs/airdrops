@@ -3,8 +3,7 @@ pragma solidity >=0.8.22;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { UD2x18 } from "@prb/math/src/UD2x18.sol";
-import { ud60x18 } from "@prb/math/src/UD60x18.sol";
+import { ud60x18, UD60x18 } from "@prb/math/src/UD60x18.sol";
 import { Lockup, LockupLinear } from "@sablier/lockup/src/types/DataTypes.sol";
 
 import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
@@ -46,13 +45,13 @@ contract SablierMerkleLL is
     uint40 public immutable override CLIFF_DURATION;
 
     /// @inheritdoc ISablierMerkleLL
-    UD2x18 public immutable override CLIFF_UNLOCK_PERCENTAGE;
+    UD60x18 public immutable override CLIFF_UNLOCK_PERCENTAGE;
 
     /// @inheritdoc ISablierMerkleLL
     uint40 public immutable override START_TIME;
 
     /// @inheritdoc ISablierMerkleLL
-    UD2x18 public immutable override START_UNLOCK_PERCENTAGE;
+    UD60x18 public immutable override START_UNLOCK_PERCENTAGE;
 
     /// @inheritdoc ISablierMerkleLL
     uint40 public immutable override TOTAL_DURATION;
@@ -81,6 +80,7 @@ contract SablierMerkleLL is
             params.transferable
         )
     {
+        // Effect: set immutable variables.
         CLIFF_DURATION = params.cliffDuration;
         CLIFF_UNLOCK_PERCENTAGE = params.cliffUnlockPercentage;
         START_TIME = params.startTime;
@@ -122,8 +122,8 @@ contract SablierMerkleLL is
 
             // Calculate the unlock amounts based on the percentages.
             LockupLinear.UnlockAmounts memory unlockAmounts;
-            unlockAmounts.start = ud60x18(amount).mul(START_UNLOCK_PERCENTAGE.intoUD60x18()).intoUint128();
-            unlockAmounts.cliff = ud60x18(amount).mul(CLIFF_UNLOCK_PERCENTAGE.intoUD60x18()).intoUint128();
+            unlockAmounts.start = ud60x18(amount).mul(START_UNLOCK_PERCENTAGE).intoUint128();
+            unlockAmounts.cliff = ud60x18(amount).mul(CLIFF_UNLOCK_PERCENTAGE).intoUint128();
 
             // Safe Interaction: create the stream.
             uint256 streamId = SABLIER_LOCKUP.createWithTimestampsLL(

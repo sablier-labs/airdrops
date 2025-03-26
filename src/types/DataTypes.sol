@@ -3,6 +3,7 @@ pragma solidity >=0.8.22;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { UD2x18 } from "@prb/math/src/UD2x18.sol";
+import { UD60x18 } from "@prb/math/src/UD60x18.sol";
 import { ISablierLockup } from "@sablier/lockup/src/interfaces/ISablierLockup.sol";
 
 library FactoryMerkle {
@@ -42,7 +43,7 @@ library MerkleLL {
     /// @param cancelable Indicates if the Lockup stream will be cancelable after claiming.
     /// @param cliffDuration The duration of the cliff in seconds.
     /// @param cliffUnlockPercentage The percentage of the claim amount to be unlocked at cliff time, denoted as a
-    /// fixed-point number.
+    /// fixed-point number where 1e18 is 100%.
     /// @param expiration The expiration of the campaign, as a Unix timestamp. A value of zero means the campaign does
     /// not expire.
     /// @param initialAdmin The initial admin of the campaign.
@@ -52,7 +53,7 @@ library MerkleLL {
     /// @param shape The shape of Lockup stream, which is used for differentiating between streams in the UI.
     /// @param startTime The start time of the stream. Zero is a sentinel value for `block.timestamp`.
     /// @param startUnlockPercentage The percentage of the claim amount to be unlocked at start time, denoted as a
-    /// fixed-point number.
+    /// fixed-point number where 1e18 is 100%.
     /// @param token The contract address of the ERC-20 token to be distributed.
     /// @param totalDuration The total duration of the stream in seconds.
     /// @param transferable Indicates if the Lockup stream will be transferable after claiming.
@@ -60,7 +61,7 @@ library MerkleLL {
         string campaignName;
         bool cancelable;
         uint40 cliffDuration;
-        UD2x18 cliffUnlockPercentage;
+        UD60x18 cliffUnlockPercentage;
         uint40 expiration;
         address initialAdmin;
         string ipfsCID;
@@ -68,7 +69,7 @@ library MerkleLL {
         bytes32 merkleRoot;
         string shape;
         uint40 startTime;
-        UD2x18 startUnlockPercentage;
+        UD60x18 startUnlockPercentage;
         IERC20 token;
         uint40 totalDuration;
         bool transferable;

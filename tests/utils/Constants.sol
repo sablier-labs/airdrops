@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.22;
 
-import { UD2x18, uUNIT } from "@prb/math/src/UD2x18.sol";
-import { ud } from "@prb/math/src/UD60x18.sol";
+import { uUNIT } from "@prb/math/src/UD2x18.sol";
+import { ud, UD60x18 } from "@prb/math/src/UD60x18.sol";
 
 abstract contract Constants {
     // Amounts
     uint256 public constant AGGREGATE_AMOUNT = CLAIM_AMOUNT * RECIPIENT_COUNT;
     uint128 public constant CLAIM_AMOUNT = 10_000e18;
     uint128 public constant CLIFF_AMOUNT = (CLAIM_AMOUNT * CLIFF_DURATION) / TOTAL_DURATION;
-    UD2x18 public immutable CLIFF_PERCENTAGE = (ud(CLIFF_AMOUNT).div(ud(CLAIM_AMOUNT)).intoUD2x18());
+    UD60x18 public immutable CLIFF_PERCENTAGE = ud(CLIFF_AMOUNT).div(ud(CLAIM_AMOUNT));
     uint256 public constant MAX_FEE_USD = 100e8; // $100
     uint256 public constant MIN_FEE_USD = 3e8; // $3 fee
     uint256 public constant MIN_FEE_WEI = (1e18 * MIN_FEE_USD) / 3000e8; // at $3000 per ETH price
     uint128 public constant START_AMOUNT = 100e18;
-    UD2x18 public immutable START_PERCENTAGE = (ud(START_AMOUNT).div(ud(CLAIM_AMOUNT)).intoUD2x18());
+    UD60x18 public immutable START_PERCENTAGE = ud(START_AMOUNT).div(ud(CLAIM_AMOUNT));
     uint128 internal constant VCA_FULL_AMOUNT = CLAIM_AMOUNT;
 
     // Durations and Timestamps

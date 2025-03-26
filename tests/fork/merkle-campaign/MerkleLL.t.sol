@@ -140,8 +140,8 @@ abstract contract MerkleLL_Fork_Test is MerkleBase_Fork_Test {
         // Assertions when end time exceeds the block time.
         else {
             LockupLinear.UnlockAmounts memory expectedUnlockAmounts = LockupLinear.UnlockAmounts({
-                start: ud60x18(vars.leafToClaim.amount).mul(START_PERCENTAGE.intoUD60x18()).intoUint128(),
-                cliff: ud60x18(vars.leafToClaim.amount).mul(CLIFF_PERCENTAGE.intoUD60x18()).intoUint128()
+                start: ud60x18(vars.leafToClaim.amount).mul(START_PERCENTAGE).intoUint128(),
+                cliff: ud60x18(vars.leafToClaim.amount).mul(CLIFF_PERCENTAGE).intoUint128()
             });
 
             Lockup.CreateWithTimestamps memory expectedLockup = Lockup.CreateWithTimestamps({

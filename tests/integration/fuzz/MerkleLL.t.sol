@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ud2x18, UD2x18 } from "@prb/math/src/UD2x18.sol";
+import { UD60x18, ZERO } from "@prb/math/src/UD60x18.sol";
 
 import { ISablierFactoryMerkleLL } from "src/interfaces/ISablierFactoryMerkleLL.sol";
 import { ISablierMerkleLL } from "src/interfaces/ISablierMerkleLL.sol";
@@ -40,7 +40,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     function testFuzz_MerkleLL(
         uint128 clawbackAmount,
         uint40 cliffDuration,
-        UD2x18 cliffUnlockPercentage,
+        UD60x18 cliffUnlockPercentage,
         bool enableCustomFee,
         uint40 expiration,
         uint256 feeForUser,
@@ -48,7 +48,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         uint256 msgValue,
         LeafData[] memory rawLeavesData,
         uint40 startTime,
-        UD2x18 startUnlockPercentage,
+        UD60x18 startUnlockPercentage,
         uint40 totalDuration
     )
         external
@@ -90,12 +90,12 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
     function _testCreateMerkleLL(
         uint256 aggregateAmount,
         uint40 cliffDuration,
-        UD2x18 cliffUnlockPercentage,
+        UD60x18 cliffUnlockPercentage,
         uint40 expiration,
         uint256 feeForUser,
         bytes32 merkleRoot,
         uint40 startTime,
-        UD2x18 startUnlockPercentage,
+        UD60x18 startUnlockPercentage,
         uint40 totalDuration
     )
         private
@@ -119,7 +119,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
 
         // Bound cliff percentage so that the sum does not exceed 100% and is 0 if cliff duration is 0.
         cliffUnlockPercentage =
-            cliffDuration > 0 ? _bound(cliffUnlockPercentage, 0, 1e18 - startUnlockPercentage.unwrap()) : ud2x18(0);
+            cliffDuration > 0 ? _bound(cliffUnlockPercentage, 0, 1e18 - startUnlockPercentage.unwrap()) : ZERO;
 
         // Set campaign creator as the caller.
         setMsgSender(users.campaignCreator);
