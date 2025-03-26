@@ -15,11 +15,11 @@ abstract contract Constants {
     uint256 public constant MIN_FEE_USD = 3e8; // $3 fee
     uint256 public constant MIN_FEE_WEI = (1e18 * MIN_FEE_USD) / 3000e8; // at $3000 per ETH price
     uint128 public constant START_AMOUNT = 100e18; // 1% of claim amount.
-    UD2x18 public immutable START_PERCENTAGE = ud2x18(1e16); // 1%.
+    UD2x18 public immutable START_PERCENTAGE = ud2x18(0.01e18); // 1%.
     uint128 internal constant VCA_CLAIM_AMOUNT = VCA_UNLOCK_AMOUNT + (VCA_VESTING_AMOUNT * 2 days) / TOTAL_DURATION;
     uint128 internal constant VCA_FULL_AMOUNT = CLAIM_AMOUNT;
     uint128 internal constant VCA_UNLOCK_AMOUNT = START_AMOUNT; // 1% of full amount.
-    UD60x18 internal immutable VCA_UNLOCK_PERCENTAGE = ud60x18(1e16); // 1%.
+    UD60x18 internal immutable VCA_UNLOCK_PERCENTAGE = ud60x18(0.01e18); // 1%.
     uint128 internal constant VCA_VESTING_AMOUNT = CLAIM_AMOUNT - START_AMOUNT;
 
     // Durations and Timestamps
