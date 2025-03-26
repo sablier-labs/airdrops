@@ -44,7 +44,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         startTime = boundUint40(startTime, 1 seconds, getBlockTimestamp() - 1 seconds);
 
         // Bound the end time.
-        endTime = boundUint40(endTime, startTime + 1, MAX_UNIX_TIMESTAMP - 2 weeks);
+        endTime = boundUint40(endTime, startTime + 1 days, MAX_UNIX_TIMESTAMP - 2 weeks);
 
         // The expiration must exceed the end time by at least 1 week.
         if (endTime > getBlockTimestamp() - 1 weeks) {
@@ -90,6 +90,9 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         //////////////////////////////////////////////////////////////////////////*/
 
         preClaim(params);
+
+        // Its not allowed to claim with a zero amount.
+        findAndWarpToClaimAmountGt0(vars.leafToClaim.amount, startTime, endTime);
 
         // Calculate claim and forgone amount based on the vesting start and end time.
         (uint128 claimAmount, uint128 forgoneAmount) = calculateMerkleVCAAmounts({
@@ -140,5 +143,29 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         //////////////////////////////////////////////////////////////////////////*/
 
         testCollectFees();
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                      HELPERS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev Binary searches for earliest timestamp when claim amount > 0, then warps to that time.
+    function findAndWarpToClaimAmountGt0(uint128 amount, uint40 startTime, uint40 endTime) private {
+        if (merkleVCA.calculateClaimAmount(amount, startTime) > 0) {
+            vm.warp(startTime);
+            return;
+        }
+
+        while (startTime < endTime) {
+            uint40 mid = startTime + (endTime - startTime) / 2;
+
+            if (merkleVCA.calculateClaimAmount(amount, mid) > 0) {
+                endTime = mid;
+            } else {
+                startTime = mid + 1;
+            }
+        }
+
+        vm.warp(startTime);
     }
 }
