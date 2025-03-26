@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { ud, ud60x18, ZERO } from "@prb/math/src/UD60x18.sol";
+import { ud, ZERO } from "@prb/math/src/UD60x18.sol";
 import { Errors as LockupErrors } from "@sablier/lockup/src/libraries/Errors.sol";
 import { Lockup } from "@sablier/lockup/src/types/DataTypes.sol";
 
@@ -47,8 +47,8 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         params.cliffUnlockPercentage = ud(0.6e18);
 
         merkleLL = factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
-        uint128 startUnlockAmount = ud60x18(CLAIM_AMOUNT).mul(ud60x18(0.5e18)).intoUint128();
-        uint128 cliffUnlockAmount = ud60x18(CLAIM_AMOUNT).mul(ud60x18(0.6e18)).intoUint128();
+        uint128 startUnlockAmount = ud(CLAIM_AMOUNT).mul(ud(0.5e18)).intoUint128();
+        uint128 cliffUnlockAmount = ud(CLAIM_AMOUNT).mul(ud(0.6e18)).intoUint128();
 
         vm.expectRevert(
             abi.encodeWithSelector(

@@ -27,6 +27,10 @@
   fail_on_revert = true
   runs = 20
 
+# Speed up compilation and tests during development
+[profile.lite]
+  fuzz.runs = 50
+
 # Compile only the production code and the test mocks with via IR
 [profile.optimized]
   out = "out-optimized"
