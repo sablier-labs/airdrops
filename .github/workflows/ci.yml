@@ -55,3 +55,4 @@ jobs:
     uses: "sablier-labs/reusable-workflows/.github/workflows/forge-coverage.yml@main"
     with:
       match-path: "tests/integration/**/*.sol"
+      via-ir-minimum: true
