@@ -1,5 +1,7 @@
-# Sablier Airdrops [![Github Actions][gha-badge]][gha] [![Coverage][codecov-badge]][codecov] [![Foundry][foundry-badge]][foundry] [![Discord][discord-badge]][discord] [![Twitter][twitter-badge]][twitter]
+# Sablier Airdrops [![Github Tag][github-badge]][tag] [![Github Actions][gha-badge]][gha] [![Coverage][codecov-badge]][codecov] [![Foundry][foundry-badge]][foundry] [![Discord][discord-badge]][discord] [![Twitter][twitter-badge]][twitter]
 
+[github-badge]: https://img.shields.io/github/v/tag/sablier-labs/airdrops?sort=semver
+[tag]: https://github.com/sablier-labs/airdrops/releases
 [gha]: https://github.com/sablier-labs/airdrops/actions
 [gha-badge]: https://github.com/sablier-labs/airdrops/actions/workflows/ci.yml/badge.svg
 [codecov]: https://codecov.io/gh/sablier-labs/airdrops
