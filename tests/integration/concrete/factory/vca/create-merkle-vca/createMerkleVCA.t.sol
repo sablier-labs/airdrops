@@ -36,23 +36,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         createMerkleVCA(params);
     }
 
-    function test_RevertWhen_UnlockPercentageGreaterThan100() external whenNativeTokenNotFound givenCampaignNotExists {
-        MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
-        params.unlockPercentage = UNIT.add(UNIT);
-
-        // It should revert.
-        vm.expectRevert(
-            abi.encodeWithSelector(Errors.SablierMerkleVCA_UnlockPercentageTooHigh.selector, params.unlockPercentage)
-        );
-        createMerkleVCA(params);
-    }
-
-    function test_RevertWhen_StartTimeZero()
-        external
-        whenNativeTokenNotFound
-        givenCampaignNotExists
-        whenUnlockPercentageNotGreaterThan100
-    {
+    function test_RevertWhen_StartTimeZero() external whenNativeTokenNotFound givenCampaignNotExists {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
         params.startTime = 0;
 
@@ -65,7 +49,6 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         external
         whenNativeTokenNotFound
         givenCampaignNotExists
-        whenUnlockPercentageNotGreaterThan100
         whenStartTimeNotZero
     {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
@@ -85,7 +68,6 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         external
         whenNativeTokenNotFound
         givenCampaignNotExists
-        whenUnlockPercentageNotGreaterThan100
         whenStartTimeNotZero
     {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
@@ -105,7 +87,6 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         external
         whenNativeTokenNotFound
         givenCampaignNotExists
-        whenUnlockPercentageNotGreaterThan100
         whenStartTimeNotZero
         whenEndTimeGreaterThanStartTime
     {
@@ -121,7 +102,6 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         external
         whenNativeTokenNotFound
         givenCampaignNotExists
-        whenUnlockPercentageNotGreaterThan100
         whenStartTimeNotZero
         whenEndTimeGreaterThanStartTime
         whenNotZeroExpiration
@@ -138,15 +118,34 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         createMerkleVCA(params);
     }
 
-    function test_GivenCustomFeeUSDSet()
+    function test_RevertWhen_UnlockPercentageGreaterThan100()
         external
         whenNativeTokenNotFound
         givenCampaignNotExists
-        whenUnlockPercentageNotGreaterThan100
         whenStartTimeNotZero
         whenEndTimeGreaterThanStartTime
         whenNotZeroExpiration
         whenExpirationExceedsOneWeekFromEndTime
+    {
+        MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
+        params.unlockPercentage = UNIT.add(UNIT);
+
+        // It should revert.
+        vm.expectRevert(
+            abi.encodeWithSelector(Errors.SablierMerkleVCA_UnlockPercentageTooHigh.selector, params.unlockPercentage)
+        );
+        createMerkleVCA(params);
+    }
+
+    function test_GivenCustomFeeUSDSet()
+        external
+        whenNativeTokenNotFound
+        givenCampaignNotExists
+        whenStartTimeNotZero
+        whenEndTimeGreaterThanStartTime
+        whenNotZeroExpiration
+        whenExpirationExceedsOneWeekFromEndTime
+        whenUnlockPercentageNotGreaterThan100
     {
         // Set the custom fee to 0.
         uint256 customFeeUSD = 0;
@@ -192,11 +191,11 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         external
         whenNativeTokenNotFound
         givenCampaignNotExists
-        whenUnlockPercentageNotGreaterThan100
         whenStartTimeNotZero
         whenEndTimeGreaterThanStartTime
         whenNotZeroExpiration
         whenExpirationExceedsOneWeekFromEndTime
+        whenUnlockPercentageNotGreaterThan100
     {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
         params.campaignName = "Merkle VCA campaign with custom fee USD";
