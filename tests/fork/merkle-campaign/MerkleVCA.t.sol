@@ -92,7 +92,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
         preClaim(params);
 
         // Its not allowed to claim with a zero amount.
-        findAndWarpToClaimAmountGt0(vars.leafToClaim.amount, startTime, endTime);
+        _findAndWarpToClaimAmountGt0(vars.leafToClaim.amount, endTime);
 
         // Calculate claim and forgone amount based on the vesting start and end time.
         (uint128 claimAmount, uint128 forgoneAmount) = calculateMerkleVCAAmounts({
@@ -150,22 +150,23 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev Binary searches for earliest timestamp when claim amount > 0, then warps to that time.
-    function findAndWarpToClaimAmountGt0(uint128 amount, uint40 startTime, uint40 endTime) private {
-        if (merkleVCA.calculateClaimAmount(amount, startTime) > 0) {
-            vm.warp(startTime);
+    function _findAndWarpToClaimAmountGt0(uint128 amount, uint40 endTime) private {
+        uint40 currentTime = getBlockTimestamp();
+
+        if (merkleVCA.calculateClaimAmount(amount, currentTime) > 0) {
             return;
         }
 
-        while (startTime < endTime) {
-            uint40 mid = startTime + (endTime - startTime) / 2;
+        while (currentTime < endTime) {
+            uint40 mid = currentTime + (endTime - currentTime) / 2;
 
             if (merkleVCA.calculateClaimAmount(amount, mid) > 0) {
                 endTime = mid;
             } else {
-                startTime = mid + 1;
+                currentTime = mid + 1;
             }
         }
 
-        vm.warp(startTime);
+        vm.warp(currentTime);
     }
 }
