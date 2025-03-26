@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { UD60x18, UNIT } from "@prb/math/src/UD60x18.sol";
+import { ud, UD60x18, UNIT } from "@prb/math/src/UD60x18.sol";
 import { ISablierFactoryMerkleVCA } from "src/interfaces/ISablierFactoryMerkleVCA.sol";
 import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { MerkleVCA } from "src/types/DataTypes.sol";
@@ -44,7 +44,7 @@ contract MerkleVCA_Fuzz_Test is Shared_Fuzz_Test {
 
         // Assert the claim and forgone amounts if start time is in the present.
         if (getBlockTimestamp() == VCA_START_TIME) {
-            uint128 unlockAmount = uint128(VCA_UNLOCK_PERCENTAGE.unwrap() * uint256(fullAmount) / 1e18);
+            uint128 unlockAmount = VCA_UNLOCK_PERCENTAGE.mul(ud(fullAmount)).intoUint128();
 
             assertEq(actualClaimAmount, unlockAmount, "claim amount at start time");
             assertEq(actualForgoneAmount, fullAmount - unlockAmount, "forgone amount at start time");

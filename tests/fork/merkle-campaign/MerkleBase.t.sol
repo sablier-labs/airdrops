@@ -97,14 +97,9 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
 
         vars.leafToClaim = params.leavesData[params.leafIndex];
 
-        // Bump the caller if it equals campaign address to test the states correctly.
-        address caller = vars.leafToClaim.recipient;
-        if (caller == address(merkleBase)) {
-            caller = address(uint160(caller) + 1);
-        }
-
-        setMsgSender(caller);
-        vm.deal(caller, 1 ether);
+        // Make the recipient as the caller.
+        setMsgSender(vars.leafToClaim.recipient);
+        vm.deal(vars.leafToClaim.recipient, 1 ether);
 
         assertFalse(merkleBase.hasClaimed(vars.leafToClaim.index));
 
