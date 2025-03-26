@@ -547,24 +547,27 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         view
         returns (uint128 claimAmount, uint128 forgoneAmount)
     {
-        if (getBlockTimestamp() < startTime) {
+        uint40 blockTime = getBlockTimestamp();
+        if (blockTime < startTime) {
             return (0, 0);
         }
 
         uint128 unlockAmount = uint128(uint256(fullAmount) * unlockPercentage.unwrap() / 1e18);
 
-        if (getBlockTimestamp() == startTime) {
+        if (blockTime == startTime) {
             return (unlockAmount, fullAmount - unlockAmount);
         }
 
-        if (getBlockTimestamp() < endTime) {
-            uint40 elapsedDuration = (getBlockTimestamp() - startTime);
+        if (blockTime < endTime) {
+            uint40 elapsedTime = (blockTime - startTime);
             uint40 totalDuration = endTime - startTime;
 
-            claimAmount = unlockAmount + uint128((uint256(fullAmount - unlockAmount) * elapsedDuration) / totalDuration);
+            uint256 remainderAmount = uint256(fullAmount - unlockAmount);
+            claimAmount = unlockAmount + uint128((remainderAmount * elapsedTime) / totalDuration);
             forgoneAmount = fullAmount - claimAmount;
         } else {
             claimAmount = fullAmount;
+            forgoneAmount = 0;
         }
     }
 
@@ -622,14 +625,9 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             endTime: VESTING_END_TIME,
             expiration: expiration,
             merkleRoot: MERKLE_ROOT,
-<<<<<<< HEAD
-            startTime: VESTING_START_TIME,
-            tokenAddress: dai
-=======
             startTime: VCA_START_TIME,
             tokenAddress: dai,
             unlockPercentage: VCA_UNLOCK_PERCENTAGE
->>>>>>> 0cb7a99 (feat: unlock amount in vca)
         });
     }
 

@@ -17,7 +17,7 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
         vm.warp({ newTimestamp: VESTING_START_TIME - 1 seconds });
 
         // It should revert.
-        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleVCA_ClaimableAmountZero.selector));
+        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleVCA_ClaimAmountZero.selector, users.recipient1));
 
         // Claim the airdrop.
         merkleVCA.claim{ value: MIN_FEE_WEI }({

@@ -4,15 +4,16 @@ pragma solidity >=0.8.22 <0.9.0;
 import { MerkleVCA_Integration_Shared_Test } from "../MerkleVCA.t.sol";
 
 contract CalculateForgoneAmount_MerkleVCA_Integration_Test is MerkleVCA_Integration_Shared_Test {
-    function test_WhenClaimTimeZero() external view {
-        uint128 expectedForgoneAmount = VCA_FULL_AMOUNT - VCA_CLAIM_AMOUNT;
+    function test_WhenClaimTimeZero() external {
+        vm.warp({ newTimestamp: VCA_START_TIME - 1 seconds });
+        uint40 claimTime = 0;
 
-        // It should return the forgone amount.
-        assertEq(merkleVCA.calculateForgoneAmount(VCA_FULL_AMOUNT, 0), expectedForgoneAmount, "forgone amount");
+        // It should use block time and return 0.
+        assertEq(merkleVCA.calculateForgoneAmount(VCA_FULL_AMOUNT, claimTime), 0, "forgone amount");
     }
 
     function test_WhenClaimTimeLessThanStartTime() external view whenClaimTimeNotZero {
-        uint40 claimTime = VCA_START_TIME - 1;
+        uint40 claimTime = VCA_START_TIME - 1 seconds;
 
         // It should return the full amount.
         assertEq(merkleVCA.calculateForgoneAmount(VCA_FULL_AMOUNT, claimTime), 0, "forgone amount");

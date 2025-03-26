@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.22;
 
-import { ud2x18, UD2x18, uUNIT } from "@prb/math/src/UD2x18.sol";
+import { uUNIT } from "@prb/math/src/UD2x18.sol";
 import { UD60x18, ud60x18 } from "@prb/math/src/UD60x18.sol";
 import { ud } from "@prb/math/src/UD60x18.sol";
 
@@ -13,13 +13,15 @@ abstract contract Constants {
     uint256 public constant MAX_FEE_USD = 100e8; // $100
     uint256 public constant MIN_FEE_USD = 3e8; // $3 fee
     uint256 public constant MIN_FEE_WEI = (1e18 * MIN_FEE_USD) / 3000e8; // at $3000 per ETH price
-    uint128 public constant START_AMOUNT = 100e18; // 1% of claim amount.
-    UD2x18 public immutable START_PERCENTAGE = ud2x18(0.01e18); // 1%.
-    uint128 internal constant VCA_CLAIM_AMOUNT = VCA_UNLOCK_AMOUNT + (VCA_VESTING_AMOUNT * 2 days) / TOTAL_DURATION;
-    uint128 internal constant VCA_FULL_AMOUNT = CLAIM_AMOUNT;
-    uint128 internal constant VCA_UNLOCK_AMOUNT = START_AMOUNT; // 1% of full amount.
-    UD60x18 internal immutable VCA_UNLOCK_PERCENTAGE = ud60x18(0.01e18); // 1%.
-    uint128 internal constant VCA_VESTING_AMOUNT = CLAIM_AMOUNT - START_AMOUNT;
+    uint128 public constant UNLOCK_START_AMOUNT = 100e18;
+    UD60x18 public immutable VESTING_CLIFF_UNLOCK_PERCENTAGE = ud(CLIFF_AMOUNT).div(ud(CLAIM_AMOUNT));
+    UD60x18 public immutable VESTING_START_UNLOCK_PERCENTAGE = ud(UNLOCK_START_AMOUNT).div(ud(CLAIM_AMOUNT));
+    uint128 public constant VCA_FULL_AMOUNT = CLAIM_AMOUNT;
+    uint128 public constant VCA_CLAIM_AMOUNT =
+        VCA_UNLOCK_AMOUNT + (VCA_VESTING_AMOUNT * 2 days) / VESTING_TOTAL_DURATION;
+    uint128 public constant VCA_UNLOCK_AMOUNT = UNLOCK_START_AMOUNT; // 1% of full amount.
+    UD60x18 public immutable VCA_UNLOCK_PERCENTAGE = ud60x18(0.01e18); // 1%.
+    uint128 public constant VCA_VESTING_AMOUNT = CLAIM_AMOUNT - UNLOCK_START_AMOUNT;
 
     // Durations and Timestamps
     uint40 public immutable EXPIRATION = FEB_1_2025 + 12 weeks;
@@ -28,9 +30,11 @@ abstract contract Constants {
     uint40 public constant VESTING_END_TIME = VESTING_START_TIME + VESTING_TOTAL_DURATION;
     uint40 public constant VESTING_START_TIME = FEB_1_2025 - 2 days;
     uint40 public constant VESTING_TOTAL_DURATION = 10 days;
+    uint40 public immutable VCA_END_TIME = VESTING_END_TIME;
+    uint40 public immutable VCA_START_TIME = VESTING_START_TIME;
 
     // Global
-    uint40 internal constant FEB_1_2025 = 1_738_368_000;
+    uint40 public constant FEB_1_2025 = 1_738_368_000;
     uint64 public constant TOTAL_PERCENTAGE = uUNIT;
 
     // Merkle Campaigns

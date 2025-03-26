@@ -65,8 +65,8 @@ library Errors {
                                  SABLIER-MERKLE-VCA
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Thrown when the claimable amount is zero.
-    error SablierMerkleVCA_ClaimableAmountZero();
+    /// @notice Thrown when the claim amount is zero.
+    error SablierMerkleVCA_ClaimAmountZero(address recipient);
 
     /// @notice Thrown if expiration time is within 1 week from the vesting end time.
     error SablierMerkleVCA_ExpirationTooEarly(uint40 endTime, uint40 expiration);
@@ -80,6 +80,6 @@ library Errors {
     /// @notice Thrown if the start time is zero.
     error SablierMerkleVCA_StartTimeZero();
 
-    /// @notice Thrown if the unlock percentage is greater than 1e18.
+    /// @notice Thrown if the unlock percentage is greater than 100%.
     error SablierMerkleVCA_UnlockPercentageTooHigh(UD60x18 unlockPercentage);
 }
