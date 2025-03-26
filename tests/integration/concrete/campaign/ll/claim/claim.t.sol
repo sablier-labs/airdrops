@@ -18,7 +18,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
     function test_WhenVestingEndTimeNotExceedClaimTime() external whenMerkleProofValid {
         // Forward in time to the end of the vesting period.
-        vm.warp({ newTimestamp: RANGED_STREAM_END_TIME });
+        vm.warp({ newTimestamp: VESTING_END_TIME });
 
         uint256 expectedRecipientBalance = dai.balanceOf(users.recipient1) + CLAIM_AMOUNT;
 
@@ -80,7 +80,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         merkleLL = factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
         // It should create a stream with block.timestamp as start time.
-        _test_Claim({ startTime: getBlockTimestamp(), cliffTime: getBlockTimestamp() + CLIFF_DURATION });
+        _test_Claim({ startTime: getBlockTimestamp(), cliffTime: getBlockTimestamp() + VESTING_CLIFF_DURATION });
     }
 
     function test_WhenCliffDurationZero()
@@ -98,7 +98,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
 
         // It should create a stream with block.timestamp as start time.
         // It should create a stream with cliff as zero.
-        _test_Claim({ startTime: RANGED_STREAM_START_TIME, cliffTime: 0 });
+        _test_Claim({ startTime: VESTING_START_TIME, cliffTime: 0 });
     }
 
     function test_WhenCliffDurationNotZero()
@@ -110,7 +110,7 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
     {
         // It should create a stream with block.timestamp as start time.
         // It should create a stream with cliff as start time + cliff duration.
-        _test_Claim({ startTime: RANGED_STREAM_START_TIME, cliffTime: RANGED_STREAM_START_TIME + CLIFF_DURATION });
+        _test_Claim({ startTime: VESTING_START_TIME, cliffTime: VESTING_START_TIME + VESTING_CLIFF_DURATION });
     }
 
     /// @dev Helper function to test claim.
@@ -130,18 +130,18 @@ contract Claim_MerkleLL_Integration_Test is Claim_Integration_Test, MerkleLL_Int
         // Claim the airstream.
         merkleLL.claim{ value: MIN_FEE_WEI }(INDEX1, users.recipient1, CLAIM_AMOUNT, index1Proof());
 
-        uint128 expectedCliffAmount = cliffTime > 0 ? CLIFF_AMOUNT : 0;
+        uint128 expectedUnlockCliffAmount = cliffTime > 0 ? CLIFF_AMOUNT : 0;
 
         // Assert that the stream has been created successfully.
-        assertEq(lockup.getCliffTime(expectedStreamId), cliffTime, "cliff time");
+        assertEq(lockup.getCliffTime(expectedStreamId), cliffTime, "vesting cliff time");
         assertEq(lockup.getDepositedAmount(expectedStreamId), CLAIM_AMOUNT, "depositedAmount");
-        assertEq(lockup.getEndTime(expectedStreamId), startTime + TOTAL_DURATION, "end time");
+        assertEq(lockup.getEndTime(expectedStreamId), startTime + VESTING_TOTAL_DURATION, "end time");
         assertEq(lockup.getRecipient(expectedStreamId), users.recipient1, "recipient");
         assertEq(lockup.getSender(expectedStreamId), users.campaignCreator, "sender");
         assertEq(lockup.getStartTime(expectedStreamId), startTime, "start time");
         assertEq(lockup.getUnderlyingToken(expectedStreamId), dai, "token");
-        assertEq(lockup.getUnlockAmounts(expectedStreamId).cliff, expectedCliffAmount, "unlock amount cliff");
-        assertEq(lockup.getUnlockAmounts(expectedStreamId).start, START_AMOUNT, "unlock amount start");
+        assertEq(lockup.getUnlockAmounts(expectedStreamId).cliff, expectedUnlockCliffAmount, "unlock cliff amount");
+        assertEq(lockup.getUnlockAmounts(expectedStreamId).start, UNLOCK_START_AMOUNT, "unlock start amount");
         assertEq(lockup.isCancelable(expectedStreamId), STREAM_CANCELABLE, "is cancelable");
         assertEq(lockup.isDepleted(expectedStreamId), false, "is depleted");
         assertEq(lockup.isStream(expectedStreamId), true, "is stream");

@@ -12,20 +12,20 @@ interface ISablierMerkleLL is ISablierMerkleLockup {
                                  CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    ///@notice Returns the duration of the cliff in seconds.
-    function CLIFF_DURATION() external view returns (uint40);
+    ///@notice Retrieves the cliff duration of the vesting Lockup stream, in seconds.
+    function VESTING_CLIFF_DURATION() external view returns (uint40);
 
-    /// @notice Returns the percentage of the claim amount to be unlocked at cliff time, as a fixed-point number where
-    /// 1e18 is 100%.
-    function CLIFF_UNLOCK_PERCENTAGE() external view returns (UD60x18);
+    /// @notice Retrieves the percentage of the claim amount due to be unlocked at the vesting cliff time, as a
+    /// fixed-point number where 1e18 is 100%.
+    function VESTING_CLIFF_UNLOCK_PERCENTAGE() external view returns (UD60x18);
 
-    /// @notice Returns the start time of the stream. Zero is a sentinel value for `block.timestamp`.
-    function START_TIME() external view returns (uint40);
+    /// @notice Retrieves the start time of the vesting Lockup stream. Zero is a sentinel value for `block.timestamp`.
+    function VESTING_START_TIME() external view returns (uint40);
 
-    /// @notice Returns the percentage of the claim amount to be unlocked at start time, as a fixed-point number where
-    /// 1e18 is 100%.
-    function START_UNLOCK_PERCENTAGE() external view returns (UD60x18);
+    /// @notice Retrieves the percentage of the claim amount due to be unlocked at the vesting start time, as a
+    /// fixed-point number where 1e18 is 100%.
+    function VESTING_START_UNLOCK_PERCENTAGE() external view returns (UD60x18);
 
-    /// @notice Returns the total duration of the stream in seconds.
-    function TOTAL_DURATION() external view returns (uint40);
+    /// @notice Retrieves the total duration of the vesting Lockup stream, in seconds.
+    function VESTING_TOTAL_DURATION() external view returns (uint40);
 }

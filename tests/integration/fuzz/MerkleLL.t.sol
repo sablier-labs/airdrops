@@ -157,11 +157,11 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         assertFalse(merkleLL.hasExpired(), "isExpired");
 
         // It should return the correct contract state.
-        assertEq(merkleLL.CLIFF_DURATION(), cliffDuration, "cliffDuration");
-        assertEq(merkleLL.CLIFF_UNLOCK_PERCENTAGE(), cliffUnlockPercentage, "cliffUnlockPercentage");
-        assertEq(merkleLL.START_TIME(), startTime, "startTime");
-        assertEq(merkleLL.START_UNLOCK_PERCENTAGE(), startUnlockPercentage, "startUnlockPercentage");
-        assertEq(merkleLL.TOTAL_DURATION(), totalDuration, "totalDuration");
+        assertEq(merkleLL.VESTING_CLIFF_DURATION(), cliffDuration, "vesting cliff duration");
+        assertEq(merkleLL.VESTING_CLIFF_UNLOCK_PERCENTAGE(), cliffUnlockPercentage, "vesting cliff unlock percentage");
+        assertEq(merkleLL.VESTING_START_TIME(), startTime, "vesting start time");
+        assertEq(merkleLL.VESTING_START_UNLOCK_PERCENTAGE(), startUnlockPercentage, "vesting start unlock percentage");
+        assertEq(merkleLL.VESTING_TOTAL_DURATION(), totalDuration, "vesting total duration");
 
         // Fund the MerkleLL contract.
         deal({ token: address(dai), to: address(merkleLL), give: aggregateAmount });
@@ -176,16 +176,17 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
 
     function expectClaimEvent(LeafData memory leafData) internal override {
         // It should emit {Claim} event based on the end time.
-        uint40 expectedStartTime = merkleLL.START_TIME() == 0 ? getBlockTimestamp() : merkleLL.START_TIME();
+        uint40 expectedVestingStartTime =
+            merkleLL.VESTING_START_TIME() == 0 ? getBlockTimestamp() : merkleLL.VESTING_START_TIME();
 
         // If the vesting has ended, the claim should be transferred directly to the recipient.
-        if (expectedStartTime + merkleLL.TOTAL_DURATION() <= getBlockTimestamp()) {
+        if (expectedVestingStartTime + merkleLL.VESTING_TOTAL_DURATION() <= getBlockTimestamp()) {
             vm.expectEmit({ emitter: address(merkleLL) });
             emit ISablierMerkleLockup.Claim(leafData.index, leafData.recipient, leafData.amount);
 
             expectCallToTransfer({ token: dai, to: leafData.recipient, value: leafData.amount });
         }
-        // Otherwise, the claim should be transferred to the lockup contract.
+        // Otherwise, the claim should be made via a Lockup stream.
         else {
             uint256 expectedStreamId = lockup.nextStreamId();
             vm.expectEmit({ emitter: address(merkleLL) });

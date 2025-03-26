@@ -42,19 +42,19 @@ contract SablierMerkleLL is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleLL
-    uint40 public immutable override CLIFF_DURATION;
+    uint40 public immutable override VESTING_CLIFF_DURATION;
 
     /// @inheritdoc ISablierMerkleLL
-    UD60x18 public immutable override CLIFF_UNLOCK_PERCENTAGE;
+    UD60x18 public immutable override VESTING_CLIFF_UNLOCK_PERCENTAGE;
 
     /// @inheritdoc ISablierMerkleLL
-    uint40 public immutable override START_TIME;
+    uint40 public immutable override VESTING_START_TIME;
 
     /// @inheritdoc ISablierMerkleLL
-    UD60x18 public immutable override START_UNLOCK_PERCENTAGE;
+    UD60x18 public immutable override VESTING_START_UNLOCK_PERCENTAGE;
 
     /// @inheritdoc ISablierMerkleLL
-    uint40 public immutable override TOTAL_DURATION;
+    uint40 public immutable override VESTING_TOTAL_DURATION;
 
     /*//////////////////////////////////////////////////////////////////////////
                                     CONSTRUCTOR
@@ -81,11 +81,11 @@ contract SablierMerkleLL is
         )
     {
         // Effect: set the immutable variables.
-        CLIFF_DURATION = params.cliffDuration;
-        CLIFF_UNLOCK_PERCENTAGE = params.cliffUnlockPercentage;
-        START_TIME = params.startTime;
-        START_UNLOCK_PERCENTAGE = params.startUnlockPercentage;
-        TOTAL_DURATION = params.totalDuration;
+        VESTING_CLIFF_DURATION = params.cliffDuration;
+        VESTING_CLIFF_UNLOCK_PERCENTAGE = params.cliffUnlockPercentage;
+        VESTING_START_TIME = params.startTime;
+        VESTING_START_UNLOCK_PERCENTAGE = params.startUnlockPercentage;
+        VESTING_TOTAL_DURATION = params.totalDuration;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -97,12 +97,12 @@ contract SablierMerkleLL is
         // Calculate the timestamps.
         Lockup.Timestamps memory timestamps;
         // Zero is a sentinel value for `block.timestamp`.
-        if (START_TIME == 0) {
+        if (VESTING_START_TIME == 0) {
             timestamps.start = uint40(block.timestamp);
         } else {
-            timestamps.start = START_TIME;
+            timestamps.start = VESTING_START_TIME;
         }
-        timestamps.end = timestamps.start + TOTAL_DURATION;
+        timestamps.end = timestamps.start + VESTING_TOTAL_DURATION;
 
         // If the end time is not in the future, transfer the amount directly to the recipient.
         if (timestamps.end <= block.timestamp) {
@@ -116,14 +116,14 @@ contract SablierMerkleLL is
         else {
             // Calculate cliff time.
             uint40 cliffTime;
-            if (CLIFF_DURATION > 0) {
-                cliffTime = timestamps.start + CLIFF_DURATION;
+            if (VESTING_CLIFF_DURATION > 0) {
+                cliffTime = timestamps.start + VESTING_CLIFF_DURATION;
             }
 
             // Calculate the unlock amounts based on the percentages.
             LockupLinear.UnlockAmounts memory unlockAmounts;
-            unlockAmounts.start = ud60x18(amount).mul(START_UNLOCK_PERCENTAGE).intoUint128();
-            unlockAmounts.cliff = ud60x18(amount).mul(CLIFF_UNLOCK_PERCENTAGE).intoUint128();
+            unlockAmounts.start = ud60x18(amount).mul(VESTING_START_UNLOCK_PERCENTAGE).intoUint128();
+            unlockAmounts.cliff = ud60x18(amount).mul(VESTING_CLIFF_UNLOCK_PERCENTAGE).intoUint128();
 
             // Safe Interaction: create the stream.
             uint256 streamId = SABLIER_LOCKUP.createWithTimestampsLL(
