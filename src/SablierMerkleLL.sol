@@ -80,7 +80,7 @@ contract SablierMerkleLL is
             params.transferable
         )
     {
-        // Effect: set immutable variables.
+        // Effect: set the immutable variables.
         CLIFF_DURATION = params.cliffDuration;
         CLIFF_UNLOCK_PERCENTAGE = params.cliffUnlockPercentage;
         START_TIME = params.startTime;
