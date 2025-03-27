@@ -99,14 +99,10 @@ contract SablierMerkleVCA is
             revert Errors.SablierMerkleVCA_UnlockPercentageTooHigh(params.unlockPercentage);
         }
 
-        // Effect: set the vesting end time.
-        VESTING_END_TIME = params.endTime;
-
-        // Effect: set the vesting start time.
-        VESTING_START_TIME = params.startTime;
-
-        // Effect: set the unlock percentage.
+        // Effect: set the immutable variables.
         UNLOCK_PERCENTAGE = params.unlockPercentage;
+        VESTING_END_TIME = params.endTime;
+        VESTING_START_TIME = params.startTime;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
