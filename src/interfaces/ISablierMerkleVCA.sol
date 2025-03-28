@@ -27,8 +27,7 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
     /// @notice Retrieves the time when the VCA airdrop is fully vested, as a Unix timestamp.
     function VESTING_END_TIME() external view returns (uint40);
 
-    /// @notice Retrieves the time when the VCA airdrop begins to unlock, as a Unix timestamp. Zero is a sentinel value
-    /// for `block.timestamp`.
+    /// @notice Retrieves the time when the VCA airdrop begins to unlock, as a Unix timestamp.
     function VESTING_START_TIME() external view returns (uint40);
 
     /// @notice Calculates the amount that would be claimed if the claim were made at `claimTime`.
