@@ -204,6 +204,6 @@ contract SablierMerkleVCA is
         TOKEN.safeTransfer({ to: recipient, value: claimAmount });
 
         // Log the claim.
-        emit Claim(index, recipient, claimAmount, forgoneAmount);
+        emit Claim({ index: index, recipient: recipient, claimAmount: claimAmount, forgoneAmount: forgoneAmount });
     }
 }
