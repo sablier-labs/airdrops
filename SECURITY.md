@@ -21,3 +21,6 @@ vulnerability, it must adhere to these assumptions as well:
 - The token contract has only one entry point.
 - The token contract does not allow callbacks (e.g. ERC-777 is not supported).
 - The native token of the chain, i.e. the one used for `msg.value` payments, has 18 decimals.
+- Do not pre-fund an airdrop campaign (i.e., sending tokens to the to-be-deployed address) before creating it through
+  the factory. Otherwise, if the provided parameters are invalid, the campaign will fail to be created, and the funds
+  will be lost
