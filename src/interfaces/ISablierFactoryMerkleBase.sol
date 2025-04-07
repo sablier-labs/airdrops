@@ -66,11 +66,9 @@ interface ISablierFactoryMerkleBase is IAdminable {
                                NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Collects the fees accrued in the given campaign contract.
+    /// @notice Collects the fees accrued in the given campaign contract. If `feeRecipient` is a contract, it must be
+    /// able to receive native tokens, e.g., ETH for Ethereum Mainnet.
     /// @dev Emits a {CollectFees} event.
-    ///
-    /// Notes:
-    /// - If `feeRecipient` is a contract, it must be able to receive native tokens, e.g., ETH for Ethereum Mainnet.
     ///
     /// Requirements:
     /// - If `msg.sender` is not the admin, `feeRecipient` must be the admin address.
