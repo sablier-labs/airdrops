@@ -42,6 +42,10 @@ library Errors {
                             SABLIER-MERKLE-FACTORY-BASE
     //////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Thrown when non-admin address calls {collectFees} without setting the fee recipient to the admin
+    /// address.
+    error sablierMerkleFactoryBase_FeeRecipientNotAdmin(address feeRecipient, address admin);
+
     /// @notice Thrown when trying to create a campaign with native token.
     error SablierFactoryMerkleBase_ForbidNativeToken(address nativeToken);
 
