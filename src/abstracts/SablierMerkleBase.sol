@@ -171,7 +171,7 @@ abstract contract SablierMerkleBase is
     }
 
     /// @inheritdoc ISablierMerkleBase
-    function collectFees(address to) external override returns (uint256 feeAmount) {
+    function collectFees(address feeRecipient) external override returns (uint256 feeAmount) {
         // Check: the caller is the FACTORY.
         if (msg.sender != address(FACTORY)) {
             revert Errors.SablierMerkleBase_CallerNotFactory({ factory: address(FACTORY), caller: msg.sender });
@@ -179,12 +179,12 @@ abstract contract SablierMerkleBase is
 
         feeAmount = address(this).balance;
 
-        // Effect: transfer the fees to the `to` address.
-        (bool success,) = to.call{ value: feeAmount }("");
+        // Effect: transfer the fees to the `feeRecipient` address.
+        (bool success,) = feeRecipient.call{ value: feeAmount }("");
 
         // Revert if the transfer failed.
         if (!success) {
-            revert Errors.SablierMerkleBase_FeeTransferFail(to, feeAmount);
+            revert Errors.SablierMerkleBase_FeeTransferFail(feeRecipient, feeAmount);
         }
     }
 

@@ -62,17 +62,17 @@ abstract contract SablierFactoryMerkleBase is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierFactoryMerkleBase
-    function collectFees(ISablierMerkleBase campaign, address to) external override {
-        // Check: if `msg.sender` is not the admin, `to` must be the admin address.
-        if (msg.sender != admin && to != admin) {
-            revert Errors.sablierMerkleFactoryBase_FeeRecipientNotAdmin({ feeRecipient: to, admin: admin });
+    function collectFees(ISablierMerkleBase campaign, address feeRecipient) external override {
+        // Check: if `msg.sender` is not the admin, `feeRecipient` must be the admin address.
+        if (msg.sender != admin && feeRecipient != admin) {
+            revert Errors.SablierMerkleFactoryBase_FeeRecipientNotAdmin({ feeRecipient: feeRecipient, admin: admin });
         }
 
         // Effect: collect the fees from the campaign contract.
-        uint256 feeAmount = campaign.collectFees(to);
+        uint256 feeAmount = campaign.collectFees(feeRecipient);
 
         // Log the fee withdrawal.
-        emit CollectFees({ feeRecipient: to, campaign: campaign, feeAmount: feeAmount });
+        emit CollectFees({ admin: admin, campaign: campaign, feeRecipient: feeRecipient, feeAmount: feeAmount });
     }
 
     /// @inheritdoc ISablierFactoryMerkleBase

@@ -9,16 +9,16 @@ import { Integration_Test } from "./../../../../Integration.t.sol";
 abstract contract CollectFees_Integration_Test is Integration_Test {
     function test_RevertWhen_ProvidedMerkleLockupNotValid() external {
         vm.expectRevert();
-        factoryMerkleBase.collectFees({ campaign: ISablierMerkleBase(users.eve), to: users.admin });
+        factoryMerkleBase.collectFees({ campaign: ISablierMerkleBase(users.eve), feeRecipient: users.admin });
     }
 
     function test_RevertWhen_FeeRecipientNotAdmin() external whenProvidedMerkleLockupValid whenCallerNotAdmin {
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.sablierMerkleFactoryBase_FeeRecipientNotAdmin.selector, users.eve, users.admin
+                Errors.SablierMerkleFactoryBase_FeeRecipientNotAdmin.selector, users.eve, users.admin
             )
         );
-        factoryMerkleBase.collectFees({ campaign: merkleBase, to: users.eve });
+        factoryMerkleBase.collectFees({ campaign: merkleBase, feeRecipient: users.eve });
     }
 
     function test_WhenFeeRecipientAdmin() external whenProvidedMerkleLockupValid whenCallerNotAdmin {
@@ -44,7 +44,7 @@ abstract contract CollectFees_Integration_Test is Integration_Test {
                 address(merkleBase).balance
             )
         );
-        factoryMerkleBase.collectFees({ campaign: merkleBase, to: address(contractWithoutReceive) });
+        factoryMerkleBase.collectFees({ campaign: merkleBase, feeRecipient: address(contractWithoutReceive) });
     }
 
     function test_WhenFeeRecipientImplementsReceiveFunction()
@@ -63,12 +63,13 @@ abstract contract CollectFees_Integration_Test is Integration_Test {
         // It should emit a {CollectFees} event.
         vm.expectEmit({ emitter: address(factoryMerkleBase) });
         emit ISablierFactoryMerkleBase.CollectFees({
-            feeRecipient: feeRecipient,
+            admin: users.admin,
             campaign: merkleBase,
+            feeRecipient: feeRecipient,
             feeAmount: MIN_FEE_WEI
         });
 
-        factoryMerkleBase.collectFees({ campaign: merkleBase, to: feeRecipient });
+        factoryMerkleBase.collectFees({ campaign: merkleBase, feeRecipient: feeRecipient });
 
         // It should decrease merkle contract balance to zero.
         assertEq(address(merkleBase).balance, 0, "merkle lockup ETH balance");

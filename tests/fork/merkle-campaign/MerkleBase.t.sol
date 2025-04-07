@@ -139,11 +139,12 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
 
         vm.expectEmit({ emitter: address(factoryMerkleBase) });
         emit ISablierFactoryMerkleBase.CollectFees({
-            feeRecipient: factoryAdmin,
+            admin: factoryAdmin,
             campaign: merkleBase,
+            feeRecipient: factoryAdmin,
             feeAmount: vars.minFeeWei
         });
-        factoryMerkleBase.collectFees({ campaign: merkleBase, to: factoryAdmin });
+        factoryMerkleBase.collectFees({ campaign: merkleBase, feeRecipient: factoryAdmin });
 
         assertEq(address(merkleBase).balance, 0, "merkle ETH balance");
         assertEq(factoryAdmin.balance, vars.initialAdminBalance + vars.minFeeWei, "admin ETH balance");
