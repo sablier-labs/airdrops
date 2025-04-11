@@ -1,15 +1,36 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Errors.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 
 import { Integration_Test } from "../../../../Integration.t.sol";
 
 abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
-    function test_RevertWhen_CallerNotAdmin() external {
+    function test_WhenCallerWithFeeManagementRole() external whenCallerNotAdmin {
+        setMsgSender(users.accountant);
+
+        // Enable the custom fee.
+        factoryMerkleBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: 0.5e8 });
+
+        // Check that custom fee is enabled.
+        assertNotEq(
+            factoryMerkleBase.minFeeUSDFor(users.campaignCreator),
+            factoryMerkleBase.minFeeUSD(),
+            "custom fee USD not enabled"
+        );
+
+        // Disable the custom fee.
+        _disableCustomFeeUSD();
+    }
+
+    function test_RevertWhen_CallerWithoutFeeManagementRole() external whenCallerNotAdmin {
         setMsgSender(users.eve);
-        vm.expectRevert(abi.encodeWithSelector(EvmUtilsErrors.CallerNotAdmin.selector, users.admin, users.eve));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, users.eve, FEE_MANAGEMENT_ROLE
+            )
+        );
         factoryMerkleBase.disableCustomFeeUSD({ campaignCreator: users.campaignCreator });
     }
 
@@ -21,19 +42,8 @@ abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
             "custom fee USD enabled"
         );
 
-        // It should emit a {DisableCustomFeeUSD} event.
-        vm.expectEmit({ emitter: address(factoryMerkleBase) });
-        emit ISablierFactoryMerkleBase.DisableCustomFeeUSD({ admin: users.admin, campaignCreator: users.campaignCreator });
-
-        // Reset the custom fee.
-        factoryMerkleBase.disableCustomFeeUSD({ campaignCreator: users.campaignCreator });
-
-        // It should return the min fee.
-        assertEq(
-            factoryMerkleBase.minFeeUSDFor(users.campaignCreator),
-            factoryMerkleBase.minFeeUSD(),
-            "custom fee USD changed"
-        );
+        // Disable the custom fee.
+        _disableCustomFeeUSD();
     }
 
     function test_WhenEnabled() external whenCallerAdmin {
@@ -47,6 +57,11 @@ abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
             "custom fee USD not enabled"
         );
 
+        // Disable the custom fee.
+        _disableCustomFeeUSD();
+    }
+
+    function _disableCustomFeeUSD() private {
         // It should emit a {DisableCustomFeeUSD} event.
         vm.expectEmit({ emitter: address(factoryMerkleBase) });
         emit ISablierFactoryMerkleBase.DisableCustomFeeUSD({ admin: users.admin, campaignCreator: users.campaignCreator });
@@ -55,10 +70,6 @@ abstract contract DisableCustomFeeUSD_Integration_Test is Integration_Test {
         factoryMerkleBase.disableCustomFeeUSD({ campaignCreator: users.campaignCreator });
 
         // It should return the min USD fee.
-        assertEq(
-            factoryMerkleBase.minFeeUSDFor(users.campaignCreator),
-            factoryMerkleBase.minFeeUSD(),
-            "custom fee USD not changed"
-        );
+        assertEq(factoryMerkleBase.minFeeUSDFor(users.campaignCreator), factoryMerkleBase.minFeeUSD(), "custom fee USD");
     }
 }

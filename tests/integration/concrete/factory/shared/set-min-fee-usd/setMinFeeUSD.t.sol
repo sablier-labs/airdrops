@@ -1,15 +1,26 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Errors.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 import { Errors } from "src/libraries/Errors.sol";
 import { Integration_Test } from "./../../../../Integration.t.sol";
 
 abstract contract SetMinFeeUSD_Integration_Test is Integration_Test {
-    function test_RevertWhen_CallerNotAdmin() external {
+    function test_WhenCallerWithFeeManagementRole() external whenCallerNotAdmin {
+        setMsgSender(users.accountant);
+
+        // Set the min fee USD.
+        _setMinFeeUSD();
+    }
+
+    function test_RevertWhen_CallerWithoutFeeManagementRole() external {
         setMsgSender(users.eve);
-        vm.expectRevert(abi.encodeWithSelector(EvmUtilsErrors.CallerNotAdmin.selector, users.admin, users.eve));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, users.eve, FEE_MANAGEMENT_ROLE
+            )
+        );
         factoryMerkleBase.setMinFeeUSD(0.001e18);
     }
 
@@ -24,6 +35,11 @@ abstract contract SetMinFeeUSD_Integration_Test is Integration_Test {
     }
 
     function test_WhenNewMinFeeNotExceedMaxFee() external whenCallerAdmin {
+        // Set the min fee USD.
+        _setMinFeeUSD();
+    }
+
+    function _setMinFeeUSD() private {
         uint256 newMinFeeUSD = MAX_FEE_USD;
 
         // It should emit a {SetMinFeeUSD} event.
