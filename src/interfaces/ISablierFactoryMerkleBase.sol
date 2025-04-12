@@ -85,7 +85,7 @@ interface ISablierFactoryMerkleBase is IRoleAdminable {
     /// - The min fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
     ///
     /// Requirements:
-    /// - `msg.sender` must have {IRoleAdminable.FEE_MANAGEMENT_ROLE} role.
+    /// - `msg.sender` must be either the admin or have the {IRoleAdminable.FEE_MANAGEMENT_ROLE} role.
     ///
     /// @param campaignCreator The user to disable the custom fee for.
     function disableCustomFeeUSD(address campaignCreator) external;
@@ -97,7 +97,7 @@ interface ISablierFactoryMerkleBase is IRoleAdminable {
     /// - The custom USD fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
     ///
     /// Requirements:
-    /// - `msg.sender` must have {IRoleAdminable.FEE_MANAGEMENT_ROLE} role.
+    /// - `msg.sender` must be either the admin or have the {IRoleAdminable.FEE_MANAGEMENT_ROLE} role.
     ///
     /// @param campaignCreator The user for whom the fee is set.
     /// @param customFeeUSD The custom USD fee to set, denominated in 8 decimals.
@@ -110,7 +110,7 @@ interface ISablierFactoryMerkleBase is IRoleAdminable {
     /// - The new USD fee will apply only to future campaigns. Fees for past campaigns remain unchanged.
     ///
     /// Requirements:
-    /// - `msg.sender` must have {IRoleAdminable.FEE_MANAGEMENT_ROLE} role.
+    /// - `msg.sender` must be either the admin or have the {IRoleAdminable.FEE_MANAGEMENT_ROLE} role.
     ///
     /// @param newMinFeeUSD The custom USD fee to set, denominated in 8 decimals.
     function setMinFeeUSD(uint256 newMinFeeUSD) external;

@@ -12,7 +12,7 @@ import { FactoryMerkle } from "./../types/DataTypes.sol";
 /// @notice See the documentation in {ISablierFactoryMerkleBase}.
 abstract contract SablierFactoryMerkleBase is
     ISablierFactoryMerkleBase, // 1 inherited component
-    RoleAdminable // 2 inherited components
+    RoleAdminable // 6 inherited components
 {
     /*//////////////////////////////////////////////////////////////////////////
                                   STATE VARIABLES
