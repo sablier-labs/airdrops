@@ -15,5 +15,3 @@ SetCustomFeeUSD_Integration_Test
       └── when enabled
          ├── it should set the custom fee
          └── it should emit a {SetCustomFeeUSD} event
-
-
