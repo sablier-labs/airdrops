@@ -71,8 +71,8 @@ interface ISablierFactoryMerkleBase is IRoleAdminable {
     /// @dev Emits a {CollectFees} event.
     ///
     /// Requirements:
-    /// - If `msg.sender` does not have {IRoleAdminable.FEE_COLLECTOR_ROLE} role, `feeRecipient` must be the admin
-    /// address.
+    /// - If `msg.sender` has neither the {IRoleAdminable.FEE_COLLECTOR_ROLE} role nor is the contract admin, then
+    /// `feeRecipient` must be the admin address.
     ///
     /// @param campaign The address of the Merkle contract to collect the fees from.
     /// @param feeRecipient The address where the fees will be collected.
