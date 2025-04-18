@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { Errors as EvmUtilsErrors } from "@sablier/evm-utils/src/libraries/Errors.sol";
 import { ISablierFactoryMerkleBase } from "src/interfaces/ISablierFactoryMerkleBase.sol";
 import { Errors } from "src/libraries/Errors.sol";
 
@@ -18,9 +18,7 @@ abstract contract SetCustomFeeUSD_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerWithoutFeeManagementRole() external whenCallerNotAdmin {
         setMsgSender(users.eve);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, users.eve, FEE_MANAGEMENT_ROLE
-            )
+            abi.encodeWithSelector(EvmUtilsErrors.UnauthorizedAccess.selector, users.eve, FEE_MANAGEMENT_ROLE)
         );
         factoryMerkleBase.setCustomFeeUSD({ campaignCreator: users.campaignCreator, customFeeUSD: 0 });
     }

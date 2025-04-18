@@ -65,7 +65,8 @@ abstract contract SablierFactoryMerkleBase is
     function collectFees(ISablierMerkleBase campaign, address feeRecipient) external override {
         // Check: if `msg.sender` has neither the {IRoleAdminable.FEE_COLLECTOR_ROLE} role nor is the contract admin,
         // then `feeRecipient` must be the admin address.
-        if (!hasRoleOrIsAdmin(FEE_COLLECTOR_ROLE) && feeRecipient != admin) {
+        bool hasRoleOrIsAdmin = hasRoleOrIsAdmin({ role: FEE_COLLECTOR_ROLE, account: msg.sender });
+        if (!hasRoleOrIsAdmin && feeRecipient != admin) {
             revert Errors.SablierMerkleFactoryBase_FeeRecipientNotAdmin({ feeRecipient: feeRecipient, admin: admin });
         }
 
