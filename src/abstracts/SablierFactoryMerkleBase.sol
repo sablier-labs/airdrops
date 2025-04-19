@@ -11,8 +11,8 @@ import { FactoryMerkle } from "./../types/DataTypes.sol";
 /// @title SablierFactoryMerkleBase
 /// @notice See the documentation in {ISablierFactoryMerkleBase}.
 abstract contract SablierFactoryMerkleBase is
-    ISablierFactoryMerkleBase, // 1 inherited component
-    RoleAdminable // 6 inherited components
+    ISablierFactoryMerkleBase, // 2 inherited components
+    RoleAdminable // 3 inherited components
 {
     /*//////////////////////////////////////////////////////////////////////////
                                   STATE VARIABLES
@@ -65,7 +65,7 @@ abstract contract SablierFactoryMerkleBase is
     function collectFees(ISablierMerkleBase campaign, address feeRecipient) external override {
         // Check: if `msg.sender` has neither the {IRoleAdminable.FEE_COLLECTOR_ROLE} role nor is the contract admin,
         // then `feeRecipient` must be the admin address.
-        bool hasRoleOrIsAdmin = hasRoleOrIsAdmin({ role: FEE_COLLECTOR_ROLE, account: msg.sender });
+        bool hasRoleOrIsAdmin = _hasRoleOrIsAdmin({ role: FEE_COLLECTOR_ROLE, account: msg.sender });
         if (!hasRoleOrIsAdmin && feeRecipient != admin) {
             revert Errors.SablierMerkleFactoryBase_FeeRecipientNotAdmin({ feeRecipient: feeRecipient, admin: admin });
         }
