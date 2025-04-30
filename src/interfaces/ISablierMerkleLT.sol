@@ -8,7 +8,7 @@ import { ISablierMerkleLockup } from "./ISablierMerkleLockup.sol";
 /// @notice MerkleLT enables an airdrop model with a vesting period powered by the Lockup Tranched model.
 interface ISablierMerkleLT is ISablierMerkleLockup {
     /*//////////////////////////////////////////////////////////////////////////
-                                 CONSTANT FUNCTIONS
+                                READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice The total percentage of the tranches.
@@ -22,7 +22,7 @@ interface ISablierMerkleLT is ISablierMerkleLockup {
     function tranchesWithPercentages() external view returns (MerkleLT.TrancheWithPercentage[] memory);
 
     /*//////////////////////////////////////////////////////////////////////////
-                               NON-CONSTANT FUNCTIONS
+                              STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Makes the claim. If the vesting end time is in the future, it creates a Lockup Tranched stream,

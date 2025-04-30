@@ -106,7 +106,7 @@ contract SablierMerkleVCA is
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                           USER-FACING CONSTANT FUNCTIONS
+                          USER-FACING READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleVCA
@@ -137,7 +137,7 @@ contract SablierMerkleVCA is
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                           USER-FACING NON-CONSTANT FUNCTIONS
+                        USER-FACING STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleVCA
@@ -184,11 +184,11 @@ contract SablierMerkleVCA is
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                            INTERNAL CONSTANT FUNCTIONS
+                            PRIVATE READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev See the documentation for the user-facing functions that call this internal function.
-    function _calculateClaimAmount(uint128 fullAmount, uint40 claimTime) internal view returns (uint128) {
+    function _calculateClaimAmount(uint128 fullAmount, uint40 claimTime) private view returns (uint128) {
         // If the claim time is less than the vesting start time, there's nothing to calculate, so we return zero.
         if (claimTime < VESTING_START_TIME) {
             return 0;

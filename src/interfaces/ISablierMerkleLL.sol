@@ -9,7 +9,7 @@ import { ISablierMerkleLockup } from "./ISablierMerkleLockup.sol";
 /// @notice MerkleLL enables an airdrop model with a vesting period powered by the Lockup Linear model.
 interface ISablierMerkleLL is ISablierMerkleLockup {
     /*//////////////////////////////////////////////////////////////////////////
-                                 CONSTANT FUNCTIONS
+                                READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     ///@notice Retrieves the cliff duration of the vesting stream, in seconds.
@@ -31,7 +31,7 @@ interface ISablierMerkleLL is ISablierMerkleLockup {
     function VESTING_TOTAL_DURATION() external view returns (uint40);
 
     /*//////////////////////////////////////////////////////////////////////////
-                               NON-CONSTANT FUNCTIONS
+                              STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Makes the claim. If the vesting end time is in the future, it creates a Lockup Linear stream,

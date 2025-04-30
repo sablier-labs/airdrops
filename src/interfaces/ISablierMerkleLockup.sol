@@ -20,7 +20,7 @@ interface ISablierMerkleLockup is ISablierMerkleBase {
     event Claim(uint256 index, address indexed recipient, uint128 amount, uint256 indexed streamId);
 
     /*//////////////////////////////////////////////////////////////////////////
-                                 CONSTANT FUNCTIONS
+                                READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice The address of the {SablierLockup} contract.

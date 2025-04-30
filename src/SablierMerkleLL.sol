@@ -88,7 +88,7 @@ contract SablierMerkleLL is
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                           USER-FACING NON-CONSTANT FUNCTIONS
+                        USER-FACING STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleLL

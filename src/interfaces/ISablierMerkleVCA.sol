@@ -17,7 +17,7 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
     event Claim(uint256 index, address indexed recipient, uint128 claimAmount, uint128 forgoneAmount);
 
     /*//////////////////////////////////////////////////////////////////////////
-                                 CONSTANT FUNCTIONS
+                                READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Retrieves the percentage of the full amount that will unlock immediately at the start time. The
@@ -49,7 +49,7 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
     function totalForgoneAmount() external view returns (uint256);
 
     /*//////////////////////////////////////////////////////////////////////////
-                               NON-CONSTANT FUNCTIONS
+                              STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Makes the claim by transferring the tokens directly to the recipient. If the vesting end time is in the

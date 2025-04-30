@@ -55,7 +55,7 @@ contract SablierMerkleInstant is
     { }
 
     /*//////////////////////////////////////////////////////////////////////////
-                          USER-FACING NON-CONSTANT FUNCTIONS
+                        USER-FACING STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleInstant

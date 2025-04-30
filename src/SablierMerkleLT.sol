@@ -90,7 +90,7 @@ contract SablierMerkleLT is
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                           USER-FACING CONSTANT FUNCTIONS
+                          USER-FACING READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleLT
@@ -99,7 +99,7 @@ contract SablierMerkleLT is
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                           USER-FACING NON-CONSTANT FUNCTIONS
+                        USER-FACING STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleLT
@@ -164,13 +164,13 @@ contract SablierMerkleLT is
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                            INTERNAL CONSTANT FUNCTIONS
+                            PRIVATE READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev Calculates the start time, and the tranches based on the claim amount and the unlock percentages for each
     /// tranche.
     function _calculateStartTimeAndTranches(uint128 claimAmount)
-        internal
+        private
         view
         returns (uint40 startTime, LockupTranched.Tranche[] memory tranches)
     {

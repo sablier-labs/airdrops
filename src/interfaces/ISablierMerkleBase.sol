@@ -19,7 +19,7 @@ interface ISablierMerkleBase is IAdminable {
     event LowerMinFeeUSD(address indexed factoryAdmin, uint256 newMinFeeUSD, uint256 previousMinFeeUSD);
 
     /*//////////////////////////////////////////////////////////////////////////
-                                 CONSTANT FUNCTIONS
+                                READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice The cut-off point for the campaign, as a Unix timestamp. A value of zero means there is no expiration.
@@ -76,7 +76,7 @@ interface ISablierMerkleBase is IAdminable {
     function minFeeUSD() external view returns (uint256);
 
     /*//////////////////////////////////////////////////////////////////////////
-                               NON-CONSTANT FUNCTIONS
+                              STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Claws back the unclaimed tokens.

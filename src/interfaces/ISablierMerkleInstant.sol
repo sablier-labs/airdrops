@@ -14,7 +14,7 @@ interface ISablierMerkleInstant is ISablierMerkleBase {
     event Claim(uint256 index, address indexed recipient, uint128 amount);
 
     /*//////////////////////////////////////////////////////////////////////////
-                               NON-CONSTANT FUNCTIONS
+                              STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Makes the claim by transferring the tokens directly to the recipient.
