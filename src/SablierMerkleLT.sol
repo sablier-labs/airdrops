@@ -7,7 +7,6 @@ import { uUNIT } from "@prb/math/src/UD2x18.sol";
 import { UD60x18, ud60x18 } from "@prb/math/src/UD60x18.sol";
 import { Lockup, LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol";
 
-import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
 import { SablierMerkleLockup } from "./abstracts/SablierMerkleLockup.sol";
 import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
 import { Errors } from "./libraries/Errors.sol";
@@ -44,7 +43,7 @@ contract SablierMerkleLT is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleLT
-    uint64 public immutable override TOTAL_PERCENTAGE;
+    uint64 public immutable override TRANCHES_TOTAL_PERCENTAGE;
 
     /// @inheritdoc ISablierMerkleLT
     uint40 public immutable override VESTING_START_TIME;
@@ -87,7 +86,7 @@ contract SablierMerkleLT is
             totalPercentage += percentage;
             _tranchesWithPercentages.push(params.tranchesWithPercentages[i]);
         }
-        TOTAL_PERCENTAGE = totalPercentage;
+        TRANCHES_TOTAL_PERCENTAGE = totalPercentage;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -95,19 +94,31 @@ contract SablierMerkleLT is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierMerkleLT
-    function getTranchesWithPercentages() external view override returns (MerkleLT.TrancheWithPercentage[] memory) {
+    function tranchesWithPercentages() external view override returns (MerkleLT.TrancheWithPercentage[] memory) {
         return _tranchesWithPercentages;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
-                           INTERNAL NON-CONSTANT FUNCTIONS
+                           USER-FACING NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc SablierMerkleBase
-    function _claim(uint256 index, address recipient, uint128 amount) internal override {
+    /// @inheritdoc ISablierMerkleLT
+    function claim(
+        uint256 index,
+        address recipient,
+        uint128 amount,
+        bytes32[] calldata merkleProof
+    )
+        external
+        payable
+        override
+    {
+        // Check and Effect: Pre-process the claim parameters.
+        _preProcessClaim(index, recipient, amount, merkleProof);
+
         // Check: the sum of percentages equals 100%.
-        if (TOTAL_PERCENTAGE != uUNIT) {
-            revert Errors.SablierMerkleLT_TotalPercentageNotOneHundred(TOTAL_PERCENTAGE);
+        if (TRANCHES_TOTAL_PERCENTAGE != uUNIT) {
+            revert Errors.SablierMerkleLT_TotalPercentageNotOneHundred(TRANCHES_TOTAL_PERCENTAGE);
         }
 
         // Calculate the tranches based on the unlock percentages.
@@ -171,17 +182,17 @@ contract SablierMerkleLT is
         }
 
         // Load the tranches in memory (to save gas).
-        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages = _tranchesWithPercentages;
+        MerkleLT.TrancheWithPercentage[] memory tranchesWithPct = _tranchesWithPercentages;
 
         // Declare the variables needed for calculation.
         uint128 calculatedAmountsSum;
         UD60x18 claimAmountUD = ud60x18(claimAmount);
-        uint256 trancheCount = tranchesWithPercentages.length;
+        uint256 trancheCount = tranchesWithPct.length;
         tranches = new LockupTranched.Tranche[](trancheCount);
 
         unchecked {
             // Convert the tranche's percentage from the `UD2x18` to the `UD60x18` type.
-            UD60x18 percentage = (tranchesWithPercentages[0].unlockPercentage).intoUD60x18();
+            UD60x18 percentage = (tranchesWithPct[0].unlockPercentage).intoUD60x18();
 
             // Calculate the tranche's amount by multiplying the claim amount by the unlock percentage.
             uint128 calculatedAmount = claimAmountUD.mul(percentage).intoUint128();
@@ -190,20 +201,18 @@ contract SablierMerkleLT is
             calculatedAmountsSum += calculatedAmount;
 
             // The first tranche is precomputed because it is needed in the for loop below.
-            tranches[0] = LockupTranched.Tranche({
-                amount: calculatedAmount,
-                timestamp: startTime + tranchesWithPercentages[0].duration
-            });
+            tranches[0] =
+                LockupTranched.Tranche({ amount: calculatedAmount, timestamp: startTime + tranchesWithPct[0].duration });
 
             // Iterate over each tranche to calculate its timestamp and unlock amount.
             for (uint256 i = 1; i < trancheCount; ++i) {
-                percentage = (tranchesWithPercentages[i].unlockPercentage).intoUD60x18();
+                percentage = (tranchesWithPct[i].unlockPercentage).intoUD60x18();
                 calculatedAmount = claimAmountUD.mul(percentage).intoUint128();
                 calculatedAmountsSum += calculatedAmount;
 
                 tranches[i] = LockupTranched.Tranche({
                     amount: calculatedAmount,
-                    timestamp: tranches[i - 1].timestamp + tranchesWithPercentages[i].duration
+                    timestamp: tranches[i - 1].timestamp + tranchesWithPct[i].duration
                 });
             }
         }
