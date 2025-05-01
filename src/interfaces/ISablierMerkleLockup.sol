@@ -13,11 +13,11 @@ interface ISablierMerkleLockup is ISablierMerkleBase {
                                        EVENTS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Emitted when the recipient receives the airdrop through a direct transfer.
-    event Claim(uint256 index, address indexed recipient, uint128 amount);
+    /// @notice Emitted when `to` receives the airdrop through a direct transfer on behalf of `recipient`.
+    event Claim(uint256 index, address indexed recipient, uint128 amount, address to);
 
-    /// @notice Emitted when the recipient receives the airdrop through a Lockup stream.
-    event Claim(uint256 index, address indexed recipient, uint128 amount, uint256 indexed streamId);
+    /// @notice Emitted when `to` receives the airdrop through a Lockup stream on behalf of `recipient`.
+    event Claim(uint256 index, address indexed recipient, uint128 amount, uint256 indexed streamId, address to);
 
     /*//////////////////////////////////////////////////////////////////////////
                                 READ-ONLY FUNCTIONS

@@ -26,6 +26,9 @@ library Errors {
     /// @notice Thrown if the fees withdrawal failed.
     error SablierMerkleBase_FeeTransferFail(address feeRecipient, uint256 feeAmount);
 
+    /// @notice Thrown when trying to claim the same index more than once.
+    error SablierMerkleBase_IndexClaimed(uint256 index);
+
     /// @notice Thrown when trying to claim without paying the min fee.
     error SablierMerkleBase_InsufficientFeePayment(uint256 feePaid, uint256 minFeeWei);
 
@@ -35,8 +38,8 @@ library Errors {
     /// @notice Thrown when trying to set a new min USD fee that is higher than the current fee.
     error SablierMerkleBase_NewMinFeeUSDNotLower(uint256 currentMinFeeUSD, uint256 newMinFeeUSD);
 
-    /// @notice Thrown when trying to claim the same index more than once.
-    error SablierMerkleBase_IndexClaimed(uint256 index);
+    /// @notice Thrown when trying to claim to the zero address.
+    error SablierMerkleBase_ToZeroAddress();
 
     /*//////////////////////////////////////////////////////////////////////////
                             SABLIER-MERKLE-FACTORY-BASE

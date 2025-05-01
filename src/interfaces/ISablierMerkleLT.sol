@@ -43,4 +43,20 @@ interface ISablierMerkleLT is ISablierMerkleLockup {
     /// @param amount The amount of ERC-20 tokens allocated to the recipient.
     /// @param merkleProof The proof of inclusion in the Merkle tree.
     function claim(uint256 index, address recipient, uint128 amount, bytes32[] calldata merkleProof) external payable;
+
+    /// @notice Makes the claim. If the vesting end time is in the future, it creates a Lockup Tranched stream with `to`
+    /// address as the stream recipient, otherwise it transfers the tokens directly to the `to` address.
+    ///
+    /// @dev It emits a {Claim} event.
+    ///
+    /// Requirements:
+    /// - `msg.sender` must be the airdrop recipient.
+    /// - The `to` must not be the zero address.
+    /// - Refer to the requirements in {claim}.
+    ///
+    /// @param index The index of the `msg.sender` in the Merkle tree.
+    /// @param to The address to which Lockup stream or ERC-20 tokens will be sent on behalf of `msg.sender`.
+    /// @param amount The amount of ERC-20 tokens allocated to the `msg.sender`.
+    /// @param merkleProof The proof of inclusion in the Merkle tree.
+    function claimTo(uint256 index, address to, uint128 amount, bytes32[] calldata merkleProof) external payable;
 }

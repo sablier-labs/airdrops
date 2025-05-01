@@ -5,87 +5,103 @@ import { Errors } from "src/libraries/Errors.sol";
 
 import { Integration_Test } from "../../../../Integration.t.sol";
 
-abstract contract Claim_Integration_Test is Integration_Test {
-    function test_RevertGiven_CampaignExpired() external {
+abstract contract ClaimTo_Integration_Test is Integration_Test {
+    function setUp() public virtual override {
+        Integration_Test.setUp();
+
+        // Make `users.recipient1` the caller for this test.
+        setMsgSender(users.recipient1);
+    }
+
+    function test_RevertWhen_ToAddressZero() external {
+        vm.expectRevert(Errors.SablierMerkleBase_ToZeroAddress.selector);
+        claimTo({
+            msgValue: MIN_FEE_WEI,
+            index: INDEX1,
+            to: address(0),
+            amount: CLAIM_AMOUNT,
+            merkleProof: index1Proof()
+        });
+    }
+
+    function test_RevertGiven_CampaignExpired() external whenToAddressNotZero {
         uint256 warpTime = EXPIRATION + 1 seconds;
         vm.warp({ newTimestamp: warpTime });
 
         vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleBase_CampaignExpired.selector, warpTime, EXPIRATION));
-        claim();
+        claimTo();
     }
 
-    function test_RevertGiven_MsgValueLessThanFee() external givenCampaignNotExpired {
+    function test_RevertGiven_MsgValueLessThanFee() external whenToAddressNotZero givenCampaignNotExpired {
         vm.expectRevert(
             abi.encodeWithSelector(Errors.SablierMerkleBase_InsufficientFeePayment.selector, 0, MIN_FEE_WEI)
         );
-        claim({
-            msgValue: 0,
-            index: INDEX1,
-            recipient: users.recipient1,
-            amount: CLAIM_AMOUNT,
-            merkleProof: index1Proof()
-        });
+        claimTo({ msgValue: 0, index: INDEX1, to: users.eve, amount: CLAIM_AMOUNT, merkleProof: index1Proof() });
     }
 
-    function test_RevertGiven_RecipientClaimed() external givenCampaignNotExpired givenMsgValueNotLessThanFee {
-        claim();
+    function test_RevertGiven_CallerClaimed()
+        external
+        whenToAddressNotZero
+        givenCampaignNotExpired
+        givenMsgValueNotLessThanFee
+    {
+        claimTo();
 
         vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleBase_IndexClaimed.selector, INDEX1));
-        claim();
+        claimTo();
     }
 
     function test_RevertWhen_IndexNotValid()
         external
+        whenToAddressNotZero
         givenCampaignNotExpired
         givenMsgValueNotLessThanFee
-        givenRecipientNotClaimed
+        givenCallerNotClaimed
     {
         uint256 invalidIndex = 1337;
 
         vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
-        claim({
+        claimTo({
             msgValue: MIN_FEE_WEI,
             index: invalidIndex,
-            recipient: users.recipient1,
+            to: users.eve,
             amount: CLAIM_AMOUNT,
             merkleProof: index1Proof()
         });
     }
 
-    function test_RevertWhen_RecipientNotEligible()
+    function test_RevertWhen_CallerNotEligible()
         external
+        whenToAddressNotZero
         givenCampaignNotExpired
         givenMsgValueNotLessThanFee
-        givenRecipientNotClaimed
+        givenCallerNotClaimed
         whenIndexValid
     {
-        address invalidRecipient = address(1337);
+        vm.deal(address(1337), MIN_FEE_WEI);
+
+        setMsgSender(address(1337));
 
         vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
-        claim({
-            msgValue: MIN_FEE_WEI,
-            index: INDEX1,
-            recipient: invalidRecipient,
-            amount: CLAIM_AMOUNT,
-            merkleProof: index1Proof()
-        });
+        claimTo();
     }
 
     function test_RevertWhen_AmountNotValid()
         external
+        whenToAddressNotZero
         givenCampaignNotExpired
         givenMsgValueNotLessThanFee
-        givenRecipientNotClaimed
+        givenCallerNotClaimed
         whenIndexValid
-        whenRecipientEligible
+        whenCallerEligible
     {
         uint128 invalidAmount = 1337;
 
         vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
-        claim({
+        claimTo({
             msgValue: MIN_FEE_WEI,
             index: INDEX1,
-            recipient: users.recipient1,
+            to: users.eve,
             amount: invalidAmount,
             merkleProof: index1Proof()
         });
@@ -93,32 +109,28 @@ abstract contract Claim_Integration_Test is Integration_Test {
 
     function test_RevertWhen_MerkleProofNotValid()
         external
+        whenToAddressNotZero
         givenCampaignNotExpired
         givenMsgValueNotLessThanFee
-        givenRecipientNotClaimed
+        givenCallerNotClaimed
         whenIndexValid
-        whenRecipientEligible
+        whenCallerEligible
         whenAmountValid
     {
         vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
-        claim({
-            msgValue: MIN_FEE_WEI,
-            index: INDEX1,
-            recipient: users.recipient1,
-            amount: CLAIM_AMOUNT,
-            merkleProof: index2Proof()
-        });
+        claimTo({ msgValue: MIN_FEE_WEI, index: INDEX1, to: users.eve, amount: CLAIM_AMOUNT, merkleProof: index2Proof() });
     }
 
-    /// @dev Since the implementation of `claim()` differs in each Merkle campaign, we declare this dummy test. The
+    /// @dev Since the implementation of `claimTo()` differs in each Merkle campaign, we declare this dummy test. The
     /// child contracts implement the rest of the tests.
     function test_WhenMerkleProofValid()
         external
+        whenToAddressNotZero
         givenCampaignNotExpired
         givenMsgValueNotLessThanFee
-        givenRecipientNotClaimed
+        givenCallerNotClaimed
         whenIndexValid
-        whenRecipientEligible
+        whenCallerEligible
         whenAmountValid
     {
         // The child contract must check that the claim event is emitted.
