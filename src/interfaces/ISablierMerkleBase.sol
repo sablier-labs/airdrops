@@ -69,6 +69,7 @@ interface ISablierMerkleBase is IAdminable {
     function hasExpired() external view returns (bool);
 
     /// @notice The content identifier for indexing the campaign on IPFS.
+    /// @dev An empty value may break certain UI features that depend upon the IPFS CID.
     function ipfsCID() external view returns (string memory);
 
     /// @notice Retrieves the min USD fee required to claim the airdrop, denominated in 8 decimals.
