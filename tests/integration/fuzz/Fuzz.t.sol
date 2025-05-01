@@ -57,7 +57,8 @@ contract Shared_Fuzz_Test is Integration_Test {
     {
         firstClaimTime = getBlockTimestamp();
 
-        address caller = makeAddr("philanthropist");
+        // Use a random address as the caller.
+        address caller = vm.randomAddress();
         setMsgSender(caller);
 
         for (uint256 i = 0; i < indexesToClaim.length; ++i) {
@@ -73,7 +74,7 @@ contract Shared_Fuzz_Test is Integration_Test {
 
             // Bound `msgValue` so that it's >= min USD fee.
             msgValue = bound(msgValue, merkleBase.calculateMinFeeWei(), 100 ether);
-            vm.deal(caller, msgValue);
+            deal(caller, msgValue);
 
             // If the claim amount for VCA airdrops is zero, skip this claim.
             if (merkleBase == merkleVCA && merkleVCA.calculateClaimAmount(leafData.amount, getBlockTimestamp()) == 0) {
@@ -103,7 +104,7 @@ contract Shared_Fuzz_Test is Integration_Test {
             // Warp to a new time.
             uint40 timeJumpSeed = uint40(uint256(keccak256(abi.encode(leafData))));
             uint40 timeJump = boundUint40(timeJumpSeed, 0, 7 days);
-            vm.warp(getBlockTimestamp() + timeJump);
+            skip(timeJump);
 
             // Break loop if the campaign has expired.
             if (merkleBase.EXPIRATION() > 0 && getBlockTimestamp() >= merkleBase.EXPIRATION()) {
