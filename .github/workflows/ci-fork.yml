@@ -12,7 +12,7 @@ jobs:
     uses: "sablier-labs/gha-utils/.github/workflows/forge-build.yml@main"
 
   test-fork:
-      needs: ["lint", "build"]
+      needs: ["build"]
       secrets:
         MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
       uses: "sablier-labs/gha-utils/.github/workflows/forge-test.yml@main"
@@ -24,7 +24,7 @@ jobs:
         name: "Fork tests"
 
   test-utils:
-    needs: ["lint", "build"]
+    needs: ["build"]
     uses: "sablier-labs/gha-utils/.github/workflows/forge-test.yml@main"
     with:
       foundry-profile: "test-optimized"
