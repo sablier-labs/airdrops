@@ -78,8 +78,6 @@ abstract contract ClaimTo_Integration_Test is Integration_Test {
         givenCallerNotClaimed
         whenIndexValid
     {
-        vm.deal(address(1337), MIN_FEE_WEI);
-
         setMsgSender(address(1337));
 
         vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
