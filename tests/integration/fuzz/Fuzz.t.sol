@@ -121,7 +121,7 @@ contract Shared_Fuzz_Test is Integration_Test {
 
         // It should emit event if the campaign has not expired or is within the grace period of 7 days.
         if (merkleBase.EXPIRATION() > 0 || getBlockTimestamp() <= firstClaimTime + 7 days) {
-            vm.warp(merkleBase.EXPIRATION());
+            vm.warp({ newTimestamp: merkleBase.EXPIRATION() });
 
             expectCallToTransfer({ token: dai, to: users.campaignCreator, value: amount });
             vm.expectEmit({ emitter: address(merkleBase) });
