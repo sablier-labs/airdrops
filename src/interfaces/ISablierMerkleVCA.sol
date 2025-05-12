@@ -87,7 +87,7 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
     /// - Refer to the requirements in {claim}.
     ///
     /// @param index The index of the `msg.sender` in the Merkle tree.
-    /// @param to The address to which ERC-20 tokens will be sent on behalf of `msg.sender`.
+    /// @param to The address receiving the ERC-20 tokens on behalf of `msg.sender`.
     /// @param fullAmount The total amount of ERC-20 tokens allocated to the recipient.
     /// @param merkleProof The proof of inclusion in the Merkle tree.
     function claimTo(uint256 index, address to, uint128 fullAmount, bytes32[] calldata merkleProof) external payable;

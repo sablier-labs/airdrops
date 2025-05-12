@@ -133,7 +133,7 @@ contract SablierMerkleLT is
     {
         // Check: `to` must not be the zero address.
         if (to == address(0)) {
-            revert Errors.SablierMerkleBase_ToZeroAddress();
+            revert Errors.SablierMerkleLT_ToZeroAddress();
         }
 
         // Check and Effect: Pre-process the claim parameters.
@@ -210,7 +210,8 @@ contract SablierMerkleLT is
                           PRIVATE STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev Post-processes the claim execution by handling the tokens transfer and emitting an event.
+    /// @dev Post-processes the claim execution by creating the stream or transferring the tokens directly and emitting
+    /// an event.
     function _postProcessClaim(uint256 index, address recipient, address to, uint128 amount) private {
         // Check: the sum of percentages equals 100%.
         if (TRANCHES_TOTAL_PERCENTAGE != uUNIT) {

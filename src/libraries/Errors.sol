@@ -38,9 +38,6 @@ library Errors {
     /// @notice Thrown when trying to set a new min USD fee that is higher than the current fee.
     error SablierMerkleBase_NewMinFeeUSDNotLower(uint256 currentMinFeeUSD, uint256 newMinFeeUSD);
 
-    /// @notice Thrown when trying to claim to the zero address.
-    error SablierMerkleBase_ToZeroAddress();
-
     /*//////////////////////////////////////////////////////////////////////////
                             SABLIER-MERKLE-FACTORY-BASE
     //////////////////////////////////////////////////////////////////////////*/
@@ -61,11 +58,28 @@ library Errors {
     error SablierFactoryMerkleBase_NativeTokenZeroAddress();
 
     /*//////////////////////////////////////////////////////////////////////////
+                               SABLIER-MERKLE-INSTANT
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Thrown when trying to claim to the zero address.
+    error SablierMerkleInstant_ToZeroAddress();
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                 SABLIER-MERKLE-LL
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Thrown when trying to claim to the zero address.
+    error SablierMerkleLL_ToZeroAddress();
+
+    /*//////////////////////////////////////////////////////////////////////////
                                  SABLIER-MERKLE-LT
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Thrown when trying to claim from an LT campaign with tranches' unlock percentages not adding up to 100%.
     error SablierMerkleLT_TotalPercentageNotOneHundred(uint64 totalPercentage);
+
+    /// @notice Thrown when trying to claim to the zero address.
+    error SablierMerkleLT_ToZeroAddress();
 
     /*//////////////////////////////////////////////////////////////////////////
                                  SABLIER-MERKLE-VCA
@@ -85,6 +99,9 @@ library Errors {
 
     /// @notice Thrown if the start time is zero.
     error SablierMerkleVCA_StartTimeZero();
+
+    /// @notice Thrown when trying to claim to the zero address.
+    error SablierMerkleVCA_ToZeroAddress();
 
     /// @notice Thrown if the unlock percentage is greater than 100%.
     error SablierMerkleVCA_UnlockPercentageTooHigh(UD60x18 unlockPercentage);

@@ -171,7 +171,7 @@ contract SablierMerkleVCA is
     {
         // Check: `to` must not be the zero address.
         if (to == address(0)) {
-            revert Errors.SablierMerkleBase_ToZeroAddress();
+            revert Errors.SablierMerkleVCA_ToZeroAddress();
         }
         // Check and Effect: Pre-process the claim parameters.
 
