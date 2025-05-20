@@ -172,10 +172,6 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
-    modifier whenProvidedMerkleLockupValid() {
-        _;
-    }
-
     modifier whenRecipientEligible() {
         _;
     }
