@@ -79,7 +79,7 @@
     "prettier:write": "prettier --cache --write \"**/*.{json,md,yml}\"",
     "solhint:check": "solhint \"{scripts/solidity,src,tests}/**/*.sol\"",
     "solhint:fix": "solhint --fix --noPrompt \"{scripts/solidity,src,tests}/**/*.sol\"",
-    "test": "forge test",
+    "test": "forge test --nmc ChainlinkOracle_Fork_Test",
     "test:bulloak": "bulloak check --skip-modifiers ./tests/**/*.tree",
     "test:lite": "FOUNDRY_PROFILE=lite forge test --nmt testFork",
     "test:optimized": "bun run build:optimized && FOUNDRY_PROFILE=test-optimized forge test"

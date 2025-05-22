@@ -64,6 +64,7 @@ contract SablierMerkleLT is
         SablierMerkleLockup(
             campaignCreator,
             params.campaignName,
+            params.campaignStartTime,
             params.cancelable,
             params.lockup,
             params.expiration,
@@ -75,7 +76,7 @@ contract SablierMerkleLT is
             params.transferable
         )
     {
-        VESTING_START_TIME = params.startTime;
+        VESTING_START_TIME = params.vestingStartTime;
 
         uint256 count = params.tranchesWithPercentages.length;
 
@@ -147,18 +148,18 @@ contract SablierMerkleLT is
                             PRIVATE READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev Calculates the start time, and the tranches based on the claim amount and the unlock percentages for each
-    /// tranche.
+    /// @dev Calculates the vesting start time, and the tranches based on the claim amount and the unlock percentages
+    /// for each tranche.
     function _calculateStartTimeAndTranches(uint128 claimAmount)
         private
         view
-        returns (uint40 startTime, LockupTranched.Tranche[] memory tranches)
+        returns (uint40 vestingStartTime, LockupTranched.Tranche[] memory tranches)
     {
         // Calculate the vesting start time. Zero is a sentinel value for `block.timestamp`.
         if (VESTING_START_TIME == 0) {
-            startTime = uint40(block.timestamp);
+            vestingStartTime = uint40(block.timestamp);
         } else {
-            startTime = VESTING_START_TIME;
+            vestingStartTime = VESTING_START_TIME;
         }
 
         // Load the tranches in memory (to save gas).
@@ -181,8 +182,10 @@ contract SablierMerkleLT is
             calculatedAmountsSum += calculatedAmount;
 
             // The first tranche is precomputed because it is needed in the for loop below.
-            tranches[0] =
-                LockupTranched.Tranche({ amount: calculatedAmount, timestamp: startTime + tranchesWithPct[0].duration });
+            tranches[0] = LockupTranched.Tranche({
+                amount: calculatedAmount,
+                timestamp: vestingStartTime + tranchesWithPct[0].duration
+            });
 
             // Iterate over each tranche to calculate its timestamp and unlock amount.
             for (uint256 i = 1; i < trancheCount; ++i) {
@@ -219,16 +222,16 @@ contract SablierMerkleLT is
         }
 
         // Calculate the tranches based on the unlock percentages.
-        (uint40 startTime, LockupTranched.Tranche[] memory tranches) = _calculateStartTimeAndTranches(amount);
+        (uint40 streamStartTime, LockupTranched.Tranche[] memory tranches) = _calculateStartTimeAndTranches(amount);
 
         // Calculate the stream's end time.
-        uint40 endTime;
+        uint40 streamEndTime;
         unchecked {
-            endTime = tranches[tranches.length - 1].timestamp;
+            streamEndTime = tranches[tranches.length - 1].timestamp;
         }
 
         // If the stream end time is not in the future, transfer the amount directly to the `to` address.
-        if (endTime <= block.timestamp) {
+        if (streamEndTime <= block.timestamp) {
             // Interaction: transfer the tokens to the `to` address.
             TOKEN.safeTransfer(to, amount);
 
@@ -246,7 +249,7 @@ contract SablierMerkleLT is
                     token: TOKEN,
                     cancelable: STREAM_CANCELABLE,
                     transferable: STREAM_TRANSFERABLE,
-                    timestamps: Lockup.Timestamps({ start: startTime, end: endTime }),
+                    timestamps: Lockup.Timestamps({ start: streamStartTime, end: streamEndTime }),
                     shape: streamShape
                 }),
                 tranches
