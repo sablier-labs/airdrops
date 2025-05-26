@@ -129,7 +129,7 @@ contract Integration_Test is Base_Test {
     {
         campaignAddress = factoryMerkleInstant.createMerkleInstant(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
-        // Fund the contracts.
+        // Fund the campaign.
         fundCampaignWithDai(address(campaignAddress));
     }
 
@@ -147,7 +147,7 @@ contract Integration_Test is Base_Test {
     {
         campaignAddress = factoryMerkleLL.createMerkleLL(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
-        // Fund the contracts.
+        // Fund the campaign.
         fundCampaignWithDai(address(campaignAddress));
     }
 
@@ -165,7 +165,7 @@ contract Integration_Test is Base_Test {
     {
         campaignAddress = factoryMerkleLT.createMerkleLT(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
-        // Fund the contracts.
+        // Fund the campaign.
         fundCampaignWithDai(address(campaignAddress));
     }
 
@@ -183,7 +183,7 @@ contract Integration_Test is Base_Test {
     {
         campaignAddress = factoryMerkleVCA.createMerkleVCA(params, AGGREGATE_AMOUNT, RECIPIENT_COUNT);
 
-        // Fund the contracts.
+        // Fund the campaign.
         fundCampaignWithDai(address(campaignAddress));
     }
 }
