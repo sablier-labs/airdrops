@@ -34,8 +34,8 @@ interface ISablierMerkleLL is ISablierMerkleLockup {
                               STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Makes the claim. If the vesting end time is in the future, it creates a Lockup Linear stream,
-    /// otherwise it transfers the tokens directly to the recipient.
+    /// @notice Claim airdrop on behalf of eligible recipient. If the vesting end time is in the future, it creates a
+    /// Lockup Linear stream, otherwise it transfers the tokens directly to the recipient address.
     ///
     /// @dev It emits a {Claim} event.
     ///
@@ -53,7 +53,7 @@ interface ISablierMerkleLL is ISablierMerkleLockup {
     /// @param merkleProof The proof of inclusion in the Merkle tree.
     function claim(uint256 index, address recipient, uint128 amount, bytes32[] calldata merkleProof) external payable;
 
-    /// @notice Makes the claim. If the vesting end time is in the future, it creates a Lockup Linear stream with `to`
+    /// @notice Claim airdrop. If the vesting end time is in the future, it creates a Lockup Linear stream with `to`
     /// address as the stream recipient, otherwise it transfers the tokens directly to the `to` address.
     ///
     /// @dev It emits a {Claim} event.

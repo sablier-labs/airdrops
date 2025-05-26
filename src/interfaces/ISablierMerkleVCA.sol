@@ -52,8 +52,8 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
                               STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Makes the claim by transferring the tokens directly to the recipient. If the vesting end time is in the
-    /// future, it calculates the claim amount, otherwise it transfers the full amount.
+    /// @notice Claim airdrop on behalf of eligible recipient and transfer it to the recipient address. If the vesting
+    /// end time is in the future, it calculates the claim amount, otherwise it transfers the full amount.
     ///
     /// @dev It emits a {Claim} event.
     ///
@@ -78,7 +78,8 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
         external
         payable;
 
-    /// @notice Makes the claim by transferring the tokens directly to the `to` address.
+    /// @notice Claim airdrop and transfer the tokens to the `to` address. If the vesting end time is in the future, it
+    /// calculates the claim amount, otherwise it transfers the full amount.
     ///
     /// @dev It emits a {Claim} event.
     ///

@@ -17,7 +17,7 @@ interface ISablierMerkleInstant is ISablierMerkleBase {
                               STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Makes the claim by transferring the tokens directly to the recipient.
+    /// @notice Claim airdrop on behalf of eligible recipient and transfer it to the recipient address.
     ///
     /// @dev It emits a {Claim} event.
     ///
@@ -34,7 +34,7 @@ interface ISablierMerkleInstant is ISablierMerkleBase {
     /// @param merkleProof The proof of inclusion in the Merkle tree.
     function claim(uint256 index, address recipient, uint128 amount, bytes32[] calldata merkleProof) external payable;
 
-    /// @notice Makes the claim by transferring the tokens directly to the `to` address.
+    /// @notice Claim airdrop and transfer the tokens to the `to` address.
     ///
     /// @dev It emits a {Claim} event.
     ///
