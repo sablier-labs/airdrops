@@ -73,6 +73,7 @@
     "forge:write": "forge fmt",
     "full:check": "bun run solhint:check && bun run forge:check && bun run prettier:check",
     "full:write": " bun run solhint:write && bun run forge:write && bun run prettier:write",
+    "lint": "bun run full:check",
     "prepack": "bun install && bash ./scripts/bash/prepare-artifacts.sh",
     "prepare": "husky",
     "prettier:check": "prettier --cache --check \"**/*.{json,md,yml}\"",
