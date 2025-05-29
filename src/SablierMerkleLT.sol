@@ -221,17 +221,20 @@ contract SablierMerkleLT is
             revert Errors.SablierMerkleLT_TotalPercentageNotOneHundred(TRANCHES_TOTAL_PERCENTAGE);
         }
 
+        // Declare the variables needed for the stream creation.
+        Lockup.Timestamps memory timestamps;
+        LockupTranched.Tranche[] memory tranches;
+
         // Calculate the tranches based on the unlock percentages.
-        (uint40 streamStartTime, LockupTranched.Tranche[] memory tranches) = _calculateStartTimeAndTranches(amount);
+        (timestamps.start, tranches) = _calculateStartTimeAndTranches(amount);
 
         // Calculate the stream's end time.
-        uint40 streamEndTime;
         unchecked {
-            streamEndTime = tranches[tranches.length - 1].timestamp;
+            timestamps.end = tranches[tranches.length - 1].timestamp;
         }
 
         // If the stream end time is not in the future, transfer the amount directly to the `to` address.
-        if (streamEndTime <= block.timestamp) {
+        if (timestamps.end <= block.timestamp) {
             // Interaction: transfer the tokens to the `to` address.
             TOKEN.safeTransfer(to, amount);
 
@@ -249,7 +252,7 @@ contract SablierMerkleLT is
                     token: TOKEN,
                     cancelable: STREAM_CANCELABLE,
                     transferable: STREAM_TRANSFERABLE,
-                    timestamps: Lockup.Timestamps({ start: streamStartTime, end: streamEndTime }),
+                    timestamps: timestamps,
                     shape: streamShape
                 }),
                 tranches
