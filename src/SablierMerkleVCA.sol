@@ -181,7 +181,7 @@ contract SablierMerkleVCA is
         // Check, Effect and Interaction: Pre-process the claim parameters.
         _preProcessClaim({ index: index, recipient: msg.sender, amount: fullAmount, merkleProof: merkleProof });
 
-        // Interaction: Post-process the claim parameters.
+        // Check, Effect and Interaction: Post-process the claim parameters.
         _postProcessClaim({ index: index, recipient: msg.sender, to: to, fullAmount: fullAmount });
     }
 
