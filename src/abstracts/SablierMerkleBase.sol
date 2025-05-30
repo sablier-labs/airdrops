@@ -272,7 +272,7 @@ abstract contract SablierMerkleBase is
         // Effect: mark the index as claimed.
         _claimedBitMap.set(index);
 
-        // Interaction: transfer the fee to factory if its greater than 0.
+        // Interaction: transfer the fee to factory if it's greater than 0.
         if (feePaid > 0) {
             (bool success,) = address(FACTORY).call{ value: feePaid }("");
 
