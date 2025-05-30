@@ -188,9 +188,12 @@ abstract contract Shared_Fuzz_Test is Integration_Test {
         internal
         returns (uint256 aggregateAmount, bytes32 merkleRoot)
     {
-        // Fuzz the leaves data.
+        // Exclude the factory contract from being the recipient. Otherwise, the fee accrued may not be equal to the sum
+        // of all `msg.value`.
         address[] memory excludedAddresses = new address[](1);
         excludedAddresses[0] = address(factoryMerkleBase);
+
+        // Fuzz the leaves data.
         aggregateAmount = fuzzMerkleData({ leavesData: rawLeavesData, excludedAddresses: excludedAddresses });
 
         // Store the merkle tree leaves in storage.

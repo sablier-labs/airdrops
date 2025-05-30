@@ -66,9 +66,12 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
         // Load the factory admin from mainnet.
         factoryAdmin = factoryMerkleBase.admin();
 
-        // Fuzz the leaves data.
+        // Exclude the factory contract from being the recipient. Otherwise, the fee accrued may not be equal to the sum
+        // of all `msg.value`.
         address[] memory excludedAddresses = new address[](1);
         excludedAddresses[0] = address(factoryMerkleBase);
+
+        // Fuzz the leaves data.
         vars.aggregateAmount = fuzzMerkleData({ leavesData: params.leavesData, excludedAddresses: excludedAddresses });
 
         // Store the merkle tree leaves in storage.
