@@ -5,6 +5,8 @@ import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/inte
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import { BitMaps } from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import { Adminable } from "@sablier/evm-utils/src/Adminable.sol";
 import { ISablierFactoryMerkleBase } from "./../interfaces/ISablierFactoryMerkleBase.sol";
@@ -57,6 +59,18 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     uint256 public override minFeeUSD;
 
+    /// @dev The struct type hash used for computing the domain separator for EIP-712 and EIP-1271 signatures.
+    bytes32 private constant _CLAIM_TYPEHASH =
+        keccak256("Claim(uint256 index,address recipient,address to,uint128 amount)");
+
+    /// @dev The domain separator, as required by EIP-712 and EIP-1271, used for signing claim to prevent replay attacks
+    /// across different campaigns.
+    bytes32 private immutable _DOMAIN_SEPARATOR;
+
+    /// @dev The domain type hash used for computing the domain separator for EIP-712 and EIP-1271 signatures.
+    bytes32 private constant _DOMAIN_TYPE_HASH =
+        keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)");
+
     /// @dev Packed booleans that record the history of claims.
     BitMaps.BitMap internal _claimedBitMap;
 
@@ -77,12 +91,18 @@ abstract contract SablierMerkleBase is
     )
         Adminable(initialAdmin)
     {
+        // Compute the domain separator to be used for claiming using an EIP-712 or EIP-1271 signature.
+        _DOMAIN_SEPARATOR = keccak256(
+            abi.encode(_DOMAIN_TYPE_HASH, keccak256("Sablier Merkle Airdrops Protocol"), block.chainid, address(this))
+        );
+
         CAMPAIGN_START_TIME = campaignStartTime;
         EXPIRATION = expiration;
         FACTORY = ISablierFactoryMerkleBase(msg.sender);
         MERKLE_ROOT = merkleRoot;
         ORACLE = FACTORY.oracle();
         TOKEN = token;
+
         campaignName = campaignName_;
         ipfsCID = ipfsCID_;
         minFeeUSD = FACTORY.minFeeUSDFor(campaignCreator);
@@ -158,10 +178,52 @@ abstract contract SablierMerkleBase is
     }
 
     /*//////////////////////////////////////////////////////////////////////////
+                            INTERNAL READ-ONLY FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev Verifies the signature against the provided parameters. It supports both EIP-712 and EIP-1271 signatures.
+    function _checkSignature(
+        uint256 index,
+        address recipient,
+        address to,
+        uint128 amount,
+        bytes calldata signature
+    )
+        internal
+        view
+    {
+        // Encode the claim parameters using claim type hash and hash it.
+        bytes32 claimHash = keccak256(abi.encode(_CLAIM_TYPEHASH, index, recipient, to, amount));
+
+        // Returns the keccak256 digest of the claim parameters using claim hash and the domain separator.
+        bytes32 digest = MessageHashUtils.toTypedDataHash(_DOMAIN_SEPARATOR, claimHash);
+
+        // If recipient is an EOA, `isValidSignatureNow` recovers the signer using ECDSA from the signature and the
+        // digest. It returns true if the recovered signer matches the recipient. If the recipient is a contract,
+        // `isValidSignatureNow` checks if the recipient implements the `IERC1271` interface and returns the magic value
+        // as per EIP-1271 for the given digest and signature.
+        bool isSignatureValid =
+            SignatureChecker.isValidSignatureNow({ signer: recipient, hash: digest, signature: signature });
+
+        // Check: `isSignatureValid` is true.
+        if (!isSignatureValid) {
+            revert Errors.SablierMerkleBase_InvalidSignature();
+        }
+    }
+
+    /// @dev Reverts if the `to` address is the zero address.
+    function _revertIfToZeroAddress(address to) internal pure {
+        // Check: `to` is not the zero address.
+        if (to == address(0)) {
+            revert Errors.SablierMerkleBase_ToZeroAddress();
+        }
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
                             PRIVATE READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev See the documentation for the user-facing functions that call this internal function.
+    /// @dev See the documentation for the user-facing functions that call this private function.
     function _calculateMinFeeWei() private view returns (uint256) {
         // If the oracle is not set, return 0.
         if (ORACLE == address(0)) {

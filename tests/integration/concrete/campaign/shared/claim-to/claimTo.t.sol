@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.22 <0.9.0;
 
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { Errors } from "src/libraries/Errors.sol";
 
 import { Integration_Test } from "../../../../Integration.t.sol";
@@ -15,15 +14,7 @@ abstract contract ClaimTo_Integration_Test is Integration_Test {
     }
 
     function test_RevertWhen_ToAddressZero() external {
-        if (Strings.equal(campaignType, "instant")) {
-            vm.expectRevert(Errors.SablierMerkleInstant_ToZeroAddress.selector);
-        } else if (Strings.equal(campaignType, "ll")) {
-            vm.expectRevert(Errors.SablierMerkleLL_ToZeroAddress.selector);
-        } else if (Strings.equal(campaignType, "lt")) {
-            vm.expectRevert(Errors.SablierMerkleLT_ToZeroAddress.selector);
-        } else if (Strings.equal(campaignType, "vca")) {
-            vm.expectRevert(Errors.SablierMerkleVCA_ToZeroAddress.selector);
-        }
+        vm.expectRevert(Errors.SablierMerkleBase_ToZeroAddress.selector);
         claimTo({
             msgValue: MIN_FEE_WEI,
             index: INDEX1,

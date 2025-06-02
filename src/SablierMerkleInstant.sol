@@ -6,7 +6,6 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 
 import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
 import { ISablierMerkleInstant } from "./interfaces/ISablierMerkleInstant.sol";
-import { Errors } from "./libraries/Errors.sol";
 import { MerkleInstant } from "./types/DataTypes.sol";
 
 /*
@@ -71,10 +70,10 @@ contract SablierMerkleInstant is
         payable
         override
     {
-        // Check, Effect and Interaction: Pre-process the claim parameters.
+        // Check, Effect and Interaction: Pre-process the claim parameters on behalf of the recipient.
         _preProcessClaim(index, recipient, amount, merkleProof);
 
-        // Interaction: Post-process the claim parameters.
+        // Interaction: Post-process the claim parameters on behalf of the recipient.
         _postProcessClaim({ index: index, recipient: recipient, to: recipient, amount: amount });
     }
 
@@ -89,16 +88,40 @@ contract SablierMerkleInstant is
         payable
         override
     {
-        // Check: `to` must not be the zero address.
-        if (to == address(0)) {
-            revert Errors.SablierMerkleInstant_ToZeroAddress();
-        }
+        // Check: `to` is not the zero address.
+        _revertIfToZeroAddress(to);
 
-        // Check, Effect and Interaction: Pre-process the claim parameters.
+        // Check, Effect and Interaction: Pre-process the claim parameters on behalf of `msg.sender`.
         _preProcessClaim({ index: index, recipient: msg.sender, amount: amount, merkleProof: merkleProof });
 
-        // Interaction: Post-process the claim parameters.
+        // Interaction: Post-process the claim parameters on behalf of `msg.sender`.
         _postProcessClaim({ index: index, recipient: msg.sender, to: to, amount: amount });
+    }
+
+    /// @inheritdoc ISablierMerkleInstant
+    function claimViaSig(
+        uint256 index,
+        address recipient,
+        address to,
+        uint128 amount,
+        bytes32[] calldata merkleProof,
+        bytes calldata signature
+    )
+        external
+        payable
+        override
+    {
+        // Check: `to` is not the zero address.
+        _revertIfToZeroAddress(to);
+
+        // Check: the signature is valid and the recovered signer matches the recipient.
+        _checkSignature(index, recipient, to, amount, signature);
+
+        // Check, Effect and Interaction: Pre-process the claim parameters on behalf of the recipient.
+        _preProcessClaim(index, recipient, amount, merkleProof);
+
+        // Interaction: Post-process the claim parameters on behalf of the recipient.
+        _postProcessClaim(index, recipient, to, amount);
     }
 
     /*//////////////////////////////////////////////////////////////////////////

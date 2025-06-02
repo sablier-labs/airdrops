@@ -8,7 +8,6 @@ import { Lockup, LockupLinear } from "@sablier/lockup/src/types/DataTypes.sol";
 
 import { SablierMerkleLockup } from "./abstracts/SablierMerkleLockup.sol";
 import { ISablierMerkleLL } from "./interfaces/ISablierMerkleLL.sol";
-import { Errors } from "./libraries/Errors.sol";
 import { MerkleLL } from "./types/DataTypes.sol";
 
 /*
@@ -104,10 +103,10 @@ contract SablierMerkleLL is
         payable
         override
     {
-        // Check, Effect and Interaction: Pre-process the claim parameters.
+        // Check, Effect and Interaction: Pre-process the claim parameters on behalf of the recipient.
         _preProcessClaim(index, recipient, amount, merkleProof);
 
-        // Effect and Interaction: Post-process the claim parameters.
+        // Effect and Interaction: Post-process the claim parameters on behalf of the recipient.
         _postProcessClaim({ index: index, recipient: recipient, to: recipient, amount: amount });
     }
 
@@ -122,16 +121,40 @@ contract SablierMerkleLL is
         payable
         override
     {
-        // Check: `to` must not be the zero address.
-        if (to == address(0)) {
-            revert Errors.SablierMerkleLL_ToZeroAddress();
-        }
+        // Check: `to` is not the zero address.
+        _revertIfToZeroAddress(to);
 
-        // Check, Effect and Interaction: Pre-process the claim parameters.
+        // Check, Effect and Interaction: Pre-process the claim parameters on behalf of `msg.sender`.
         _preProcessClaim({ index: index, recipient: msg.sender, amount: amount, merkleProof: merkleProof });
 
-        // Effect and Interaction: Post-process the claim parameters.
+        // Effect and Interaction: Post-process the claim parameters on behalf of `msg.sender`.
         _postProcessClaim({ index: index, recipient: msg.sender, to: to, amount: amount });
+    }
+
+    /// @inheritdoc ISablierMerkleLL
+    function claimViaSig(
+        uint256 index,
+        address recipient,
+        address to,
+        uint128 amount,
+        bytes32[] calldata merkleProof,
+        bytes calldata signature
+    )
+        external
+        payable
+        override
+    {
+        // Check: `to` is not the zero address.
+        _revertIfToZeroAddress(to);
+
+        // Check: the signature is valid and the recovered signer matches the recipient.
+        _checkSignature(index, recipient, to, amount, signature);
+
+        // Check, Effect and Interaction: Pre-process the claim parameters on behalf of the recipient.
+        _preProcessClaim(index, recipient, amount, merkleProof);
+
+        // Effect and Interaction: Post-process the claim parameters on behalf of the recipient.
+        _postProcessClaim(index, recipient, to, amount);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
