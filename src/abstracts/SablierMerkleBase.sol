@@ -67,10 +67,6 @@ abstract contract SablierMerkleBase is
     /// across different campaigns.
     bytes32 private immutable _DOMAIN_SEPARATOR;
 
-    /// @dev The domain type hash used for computing the domain separator for EIP-712 and EIP-1271 signatures.
-    bytes32 private constant _DOMAIN_TYPE_HASH =
-        keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)");
-
     /// @dev Packed booleans that record the history of claims.
     BitMaps.BitMap internal _claimedBitMap;
 
@@ -91,9 +87,12 @@ abstract contract SablierMerkleBase is
     )
         Adminable(initialAdmin)
     {
+        // Compute the domain type hash for computing the domain separator.
+        bytes32 domainTypeHash = keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)");
+
         // Compute the domain separator to be used for claiming using an EIP-712 or EIP-1271 signature.
         _DOMAIN_SEPARATOR = keccak256(
-            abi.encode(_DOMAIN_TYPE_HASH, keccak256("Sablier Merkle Airdrops Protocol"), block.chainid, address(this))
+            abi.encode(domainTypeHash, keccak256("Sablier Merkle Airdrops Protocol"), block.chainid, address(this))
         );
 
         CAMPAIGN_START_TIME = campaignStartTime;
