@@ -80,6 +80,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
 
         // Create the protocol admin.
         users.admin = payable(makeAddr({ name: "Admin" }));
+        vm.startPrank(users.admin);
 
         // Deploy the Lockup contract.
         address nftDescriptor = address(new LockupNFTDescriptor());
@@ -197,6 +198,8 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             index = INDEX3;
         } else if (recipient == users.unknownRecipient) {
             index = INDEX4;
+        } else {
+            revert("Invalid recipient");
         }
     }
 
