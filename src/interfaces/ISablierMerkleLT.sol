@@ -91,7 +91,7 @@ interface ISablierMerkleLT is ISablierMerkleLockup {
     ///   ],
     /// },
     /// domain: {
-    ///   name: "Sablier Merkle Airdrops Protocol",
+    ///   name: "Sablier Airdrops Protocol",
     ///   chainId: 1, // Chain on which the contract is deployed
     ///   verifyingContract: "0xTheAddressOfThisContract", // The address of this contract
     /// },
