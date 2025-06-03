@@ -7,27 +7,29 @@ import { Integration_Test } from "../../../../Integration.t.sol";
 
 abstract contract ClaimTo_Integration_Test is Integration_Test {
     function setUp() public virtual override {
-        Integration_Test.setUp();
-
-        // Make `users.recipient1` the caller for this test.
-        setMsgSender(users.recipient1);
+        // Make `users.recipient` the caller for this test.
+        setMsgSender(users.recipient);
     }
 
     function test_RevertWhen_ToAddressZero() external {
         vm.expectRevert(Errors.SablierMerkleBase_ToZeroAddress.selector);
         claimTo({
             msgValue: MIN_FEE_WEI,
-            index: INDEX1,
+            index: getIndexInMerkleTree(users.recipient),
             to: address(0),
             amount: CLAIM_AMOUNT,
-            merkleProof: index1Proof()
+            merkleProof: getMerkleProof(users.recipient)
         });
     }
 
     function test_RevertGiven_CallerClaimed() external whenToAddressNotZero {
         claimTo();
 
-        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleBase_IndexClaimed.selector, INDEX1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Errors.SablierMerkleBase_IndexClaimed.selector, getIndexInMerkleTree(users.recipient)
+            )
+        );
         claimTo();
     }
 
@@ -38,9 +40,15 @@ abstract contract ClaimTo_Integration_Test is Integration_Test {
         claimTo();
     }
 
-    /// @dev Since the implementation of `claimTo()` differs in each Merkle campaign, we declare this dummy test. The
-    /// child contracts implement the rest of the tests.
-    function test_WhenMerkleProofValid() external whenToAddressNotZero givenCallerNotClaimed whenCallerEligible {
+    /// @dev Since the implementation of `claimTo()` differs in each Merkle campaign, we declare this virtual dummy
+    /// test. The child contracts implement it.
+    function test_WhenMerkleProofValid()
+        external
+        virtual
+        whenToAddressNotZero
+        givenCallerNotClaimed
+        whenCallerEligible
+    {
         // The child contract must check that the claim event is emitted.
         // It should mark the index as claimed.
         // It should transfer the fee from the caller address to the merkle lockup.

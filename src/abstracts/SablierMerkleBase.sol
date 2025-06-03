@@ -12,6 +12,7 @@ import { Adminable } from "@sablier/evm-utils/src/Adminable.sol";
 import { ISablierFactoryMerkleBase } from "./../interfaces/ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleBase } from "./../interfaces/ISablierMerkleBase.sol";
 import { Errors } from "./../libraries/Errors.sol";
+import { SignatureHash } from "./../libraries/SignatureHash.sol";
 
 /// @title SablierMerkleBase
 /// @notice See the documentation in {ISablierMerkleBase}.
@@ -28,6 +29,9 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     uint40 public immutable override CAMPAIGN_START_TIME;
+
+    /// @inheritdoc ISablierMerkleBase
+    bytes32 public immutable DOMAIN_SEPARATOR;
 
     /// @inheritdoc ISablierMerkleBase
     uint40 public immutable override EXPIRATION;
@@ -59,14 +63,6 @@ abstract contract SablierMerkleBase is
     /// @inheritdoc ISablierMerkleBase
     uint256 public override minFeeUSD;
 
-    /// @dev The struct type hash used for computing the domain separator for EIP-712 and EIP-1271 signatures.
-    bytes32 private constant _CLAIM_TYPEHASH =
-        keccak256("Claim(uint256 index,address recipient,address to,uint128 amount)");
-
-    /// @dev The domain separator, as required by EIP-712 and EIP-1271, used for signing claim to prevent replay attacks
-    /// across different campaigns.
-    bytes32 private immutable _DOMAIN_SEPARATOR;
-
     /// @dev Packed booleans that record the history of claims.
     BitMaps.BitMap internal _claimedBitMap;
 
@@ -87,12 +83,9 @@ abstract contract SablierMerkleBase is
     )
         Adminable(initialAdmin)
     {
-        // Compute the domain type hash for computing the domain separator.
-        bytes32 domainTypeHash = keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)");
-
         // Compute the domain separator to be used for claiming using an EIP-712 or EIP-1271 signature.
-        _DOMAIN_SEPARATOR = keccak256(
-            abi.encode(domainTypeHash, keccak256("Sablier Merkle Airdrops Protocol"), block.chainid, address(this))
+        DOMAIN_SEPARATOR = keccak256(
+            abi.encode(SignatureHash.DOMAIN_TYPEHASH, SignatureHash.PROTOCOL_NAME, block.chainid, address(this))
         );
 
         CAMPAIGN_START_TIME = campaignStartTime;
@@ -192,10 +185,10 @@ abstract contract SablierMerkleBase is
         view
     {
         // Encode the claim parameters using claim type hash and hash it.
-        bytes32 claimHash = keccak256(abi.encode(_CLAIM_TYPEHASH, index, recipient, to, amount));
+        bytes32 claimHash = keccak256(abi.encode(SignatureHash.CLAIM_TYPEHASH, index, recipient, to, amount));
 
         // Returns the keccak256 digest of the claim parameters using claim hash and the domain separator.
-        bytes32 digest = MessageHashUtils.toTypedDataHash(_DOMAIN_SEPARATOR, claimHash);
+        bytes32 digest = MessageHashUtils.toTypedDataHash({ domainSeparator: DOMAIN_SEPARATOR, structHash: claimHash });
 
         // If recipient is an EOA, `isValidSignatureNow` recovers the signer using ECDSA from the signature and the
         // digest. It returns true if the recovered signer matches the recipient. If the recipient is a contract,
