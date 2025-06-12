@@ -23,7 +23,7 @@ contract Claim_MerkleInstant_Integration_Test is Claim_Integration_Test, MerkleI
         whenAmountValid
     {
         uint256 previousFeeAccrued = address(factoryMerkleInstant).balance;
-        uint256 index = getIndexInMerkleTree(users.recipient);
+        uint256 index = getIndexInMerkleTree();
 
         vm.expectEmit({ emitter: address(merkleInstant) });
         emit ISablierMerkleInstant.Claim(index, users.recipient, CLAIM_AMOUNT, users.recipient);

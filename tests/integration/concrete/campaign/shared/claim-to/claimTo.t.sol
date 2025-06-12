@@ -15,21 +15,17 @@ abstract contract ClaimTo_Integration_Test is Integration_Test {
         vm.expectRevert(Errors.SablierMerkleBase_ToZeroAddress.selector);
         claimTo({
             msgValue: MIN_FEE_WEI,
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             to: address(0),
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient)
+            merkleProof: getMerkleProof()
         });
     }
 
     function test_RevertGiven_CallerClaimed() external whenToAddressNotZero {
         claimTo();
 
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                Errors.SablierMerkleBase_IndexClaimed.selector, getIndexInMerkleTree(users.recipient)
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleBase_IndexClaimed.selector, getIndexInMerkleTree()));
         claimTo();
     }
 

@@ -11,7 +11,7 @@ abstract contract HasClaimed_Integration_Test is Integration_Test {
 
     function test_GivenRecipientNotClaimed() external view whenIndexInMerkleTree {
         // It should return false.
-        assertFalse(merkleBase.hasClaimed(getIndexInMerkleTree(users.recipient)), "claimed");
+        assertFalse(merkleBase.hasClaimed(getIndexInMerkleTree()), "claimed");
     }
 
     function test_GivenRecipientClaimed() external whenIndexInMerkleTree {
@@ -19,6 +19,6 @@ abstract contract HasClaimed_Integration_Test is Integration_Test {
         claim();
 
         // It should return true.
-        assertTrue(merkleBase.hasClaimed(getIndexInMerkleTree(users.recipient)), "not claimed");
+        assertTrue(merkleBase.hasClaimed(getIndexInMerkleTree()), "not claimed");
     }
 }

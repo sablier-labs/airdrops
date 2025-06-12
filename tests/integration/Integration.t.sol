@@ -43,10 +43,10 @@ abstract contract Integration_Test is Base_Test {
     function claim() internal {
         claim({
             msgValue: MIN_FEE_WEI,
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             recipient: users.recipient,
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient)
+            merkleProof: getMerkleProof()
         });
     }
 
@@ -69,10 +69,10 @@ abstract contract Integration_Test is Base_Test {
     function claimTo() internal {
         claimTo({
             msgValue: MIN_FEE_WEI,
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient)
+            merkleProof: getMerkleProof()
         });
     }
 
@@ -95,11 +95,11 @@ abstract contract Integration_Test is Base_Test {
     function claimViaSig() internal {
         claimViaSig({
             msgValue: MIN_FEE_WEI,
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient),
+            merkleProof: getMerkleProof(),
             signature: eip712Signature
         });
     }

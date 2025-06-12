@@ -34,10 +34,10 @@ abstract contract Claim_Integration_Test is Integration_Test {
         );
         claim({
             msgValue: 0,
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             recipient: users.recipient,
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient)
+            merkleProof: getMerkleProof()
         });
     }
 
@@ -49,11 +49,7 @@ abstract contract Claim_Integration_Test is Integration_Test {
     {
         claim();
 
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                Errors.SablierMerkleBase_IndexClaimed.selector, getIndexInMerkleTree(users.recipient)
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleBase_IndexClaimed.selector, getIndexInMerkleTree()));
         claim();
     }
 
@@ -72,7 +68,7 @@ abstract contract Claim_Integration_Test is Integration_Test {
             index: invalidIndex,
             recipient: users.recipient,
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient)
+            merkleProof: getMerkleProof()
         });
     }
 
@@ -89,10 +85,10 @@ abstract contract Claim_Integration_Test is Integration_Test {
         vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
         claim({
             msgValue: MIN_FEE_WEI,
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             recipient: invalidRecipient,
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient)
+            merkleProof: getMerkleProof()
         });
     }
 
@@ -110,10 +106,10 @@ abstract contract Claim_Integration_Test is Integration_Test {
         vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
         claim({
             msgValue: MIN_FEE_WEI,
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             recipient: users.recipient,
             amount: invalidAmount,
-            merkleProof: getMerkleProof(users.recipient)
+            merkleProof: getMerkleProof()
         });
     }
 
@@ -130,7 +126,7 @@ abstract contract Claim_Integration_Test is Integration_Test {
         vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
         claim({
             msgValue: MIN_FEE_WEI,
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             recipient: users.recipient,
             amount: CLAIM_AMOUNT,
             merkleProof: getMerkleProof(users.unknownRecipient)

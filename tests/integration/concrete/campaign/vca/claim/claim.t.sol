@@ -24,10 +24,10 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
 
         // Claim the airdrop.
         merkleVCA.claim{ value: MIN_FEE_WEI }({
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             recipient: users.recipient,
             fullAmount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient)
+            merkleProof: getMerkleProof()
         });
     }
 
@@ -55,7 +55,7 @@ contract Claim_MerkleVCA_Integration_Test is Claim_Integration_Test, MerkleVCA_I
         // Cast the {MerkleVCA} contract as {ISablierMerkleBase}.
         merkleBase = merkleVCA;
 
-        uint256 index = getIndexInMerkleTree(users.recipient);
+        uint256 index = getIndexInMerkleTree();
 
         uint128 forgoneAmount = VCA_FULL_AMOUNT - claimAmount;
         uint256 previousFeeAccrued = address(factoryMerkleVCA).balance;

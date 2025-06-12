@@ -21,7 +21,7 @@ contract ClaimViaSig_MerkleLL_Integration_Test is ClaimViaSig_Integration_Test, 
     {
         uint256 expectedStreamId = lockup.nextStreamId();
         uint256 previousFeeAccrued = address(factoryMerkleLL).balance;
-        uint256 index = getIndexInMerkleTree(users.recipient);
+        uint256 index = getIndexInMerkleTree();
 
         eip712Signature = generateSignature(users.recipient, address(merkleLL));
 

@@ -16,17 +16,17 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
         vm.expectRevert(Errors.SablierMerkleBase_ToZeroAddress.selector);
         claimViaSig({
             msgValue: MIN_FEE_WEI,
-            index: getIndexInMerkleTree(users.recipient),
+            index: getIndexInMerkleTree(),
             recipient: users.recipient,
             to: address(0),
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient),
+            merkleProof: getMerkleProof(),
             signature: abi.encode(0)
         });
     }
 
     function test_RevertWhen_SignatureNotCompatible() external whenToAddressNotZero givenRecipientIsEOA {
-        uint256 index = getIndexInMerkleTree(users.recipient);
+        uint256 index = getIndexInMerkleTree();
 
         // Generate an incompatible signature.
         bytes memory incompatibleSignature =
@@ -40,7 +40,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient),
+            merkleProof: getMerkleProof(),
             signature: incompatibleSignature
         });
     }
@@ -51,7 +51,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
         givenRecipientIsEOA
         whenSignatureCompatible
     {
-        uint256 index = getIndexInMerkleTree(users.recipient);
+        uint256 index = getIndexInMerkleTree();
 
         // Create a new user.
         (address newSigner, uint256 newSignerPrivateKey) = makeAddrAndKey("new signer");
@@ -71,7 +71,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof(users.recipient),
+            merkleProof: getMerkleProof(),
             signature: signatureFromNewSigner
         });
     }

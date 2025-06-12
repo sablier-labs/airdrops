@@ -24,9 +24,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
 
         // It should emit a {Claim} event.
         vm.expectEmit({ emitter: address(merkleLT) });
-        emit ISablierMerkleLockup.Claim(
-            getIndexInMerkleTree(users.recipient), users.recipient, CLAIM_AMOUNT, users.recipient
-        );
+        emit ISablierMerkleLockup.Claim(getIndexInMerkleTree(), users.recipient, CLAIM_AMOUNT, users.recipient);
 
         expectCallToTransfer({ to: users.recipient, value: CLAIM_AMOUNT });
         expectCallToClaimWithMsgValue(address(merkleLT), MIN_FEE_WEI);
@@ -116,7 +114,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         // It should emit a {Claim} event.
         vm.expectEmit({ emitter: address(merkleLT) });
         emit ISablierMerkleLockup.Claim(
-            getIndexInMerkleTree(users.recipient), users.recipient, CLAIM_AMOUNT, expectedStreamId, users.recipient
+            getIndexInMerkleTree(), users.recipient, CLAIM_AMOUNT, expectedStreamId, users.recipient
         );
 
         expectCallToTransferFrom({ from: address(merkleLT), to: address(lockup), value: CLAIM_AMOUNT });
@@ -143,7 +141,7 @@ contract Claim_MerkleLT_Integration_Test is Claim_Integration_Test, MerkleLT_Int
         assertEq(lockup.isTransferable(expectedStreamId), STREAM_TRANSFERABLE, "is transferable");
         assertEq(lockup.wasCanceled(expectedStreamId), false, "was canceled");
 
-        assertTrue(merkleLT.hasClaimed(getIndexInMerkleTree(users.recipient)), "not claimed");
+        assertTrue(merkleLT.hasClaimed(getIndexInMerkleTree()), "not claimed");
 
         // It should create the stream with the correct Lockup model.
         assertEq(lockup.getLockupModel(expectedStreamId), Lockup.Model.LOCKUP_TRANCHED);

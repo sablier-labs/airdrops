@@ -25,7 +25,7 @@ contract ClaimTo_MerkleLL_Integration_Test is ClaimTo_Integration_Test, MerkleLL
 
         // It should emit a {Claim} event.
         vm.expectEmit({ emitter: address(merkleLL) });
-        emit ISablierMerkleLockup.Claim(getIndexInMerkleTree(users.recipient), users.recipient, CLAIM_AMOUNT, users.eve);
+        emit ISablierMerkleLockup.Claim(getIndexInMerkleTree(), users.recipient, CLAIM_AMOUNT, users.eve);
 
         expectCallToTransfer({ to: users.eve, value: CLAIM_AMOUNT });
         expectCallToClaimToWithMsgValue(address(merkleLL), MIN_FEE_WEI);
@@ -126,7 +126,7 @@ contract ClaimTo_MerkleLL_Integration_Test is ClaimTo_Integration_Test, MerkleLL
         uint256 expectedStreamId = lockup.nextStreamId();
         uint256 previousFeeAccrued = address(factoryMerkleLL).balance;
 
-        uint256 index = getIndexInMerkleTree(users.recipient);
+        uint256 index = getIndexInMerkleTree();
 
         // It should emit a {Claim} event.
         vm.expectEmit({ emitter: address(merkleLL) });

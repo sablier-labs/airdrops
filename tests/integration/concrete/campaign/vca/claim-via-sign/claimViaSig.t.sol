@@ -21,7 +21,7 @@ contract ClaimViaSig_MerkleVCA_Integration_Test is ClaimViaSig_Integration_Test,
     {
         uint128 forgoneAmount = VCA_FULL_AMOUNT - VCA_CLAIM_AMOUNT;
         uint256 previousFeeAccrued = address(factoryMerkleVCA).balance;
-        uint256 index = getIndexInMerkleTree(users.recipient);
+        uint256 index = getIndexInMerkleTree();
 
         eip712Signature = generateSignature(users.recipient, address(merkleVCA));
 

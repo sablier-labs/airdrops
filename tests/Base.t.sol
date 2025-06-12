@@ -188,6 +188,11 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         merkleProof = leaves.length == 1 ? new bytes32[](0) : getProof(leaves.toBytes32(), pos);
     }
 
+    /// @dev Returns the index of the default recipient in the Merkle tree.
+    function getIndexInMerkleTree() internal view returns (uint256 index) {
+        index = getIndexInMerkleTree(users.recipient);
+    }
+
     /// @dev Returns the index of the recipient in the Merkle tree.
     function getIndexInMerkleTree(address recipient) internal view returns (uint256 index) {
         if (recipient == users.recipient) {
@@ -201,6 +206,11 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         } else {
             revert("Invalid recipient");
         }
+    }
+
+    /// @dev Returns the Merkle proof for the default recipient.
+    function getMerkleProof() internal view returns (bytes32[] memory merkleProof) {
+        merkleProof = getMerkleProof(users.recipient);
     }
 
     /// @dev Returns the Merkle proof for the given recipient.
@@ -254,8 +264,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             merkleLockup,
             msgValue,
             abi.encodeCall(
-                ISablierMerkleInstant.claimTo,
-                (getIndexInMerkleTree(users.recipient), users.eve, CLAIM_AMOUNT, getMerkleProof(users.recipient))
+                ISablierMerkleInstant.claimTo, (getIndexInMerkleTree(), users.eve, CLAIM_AMOUNT, getMerkleProof())
             )
         );
     }
@@ -267,14 +276,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             msgValue,
             abi.encodeCall(
                 ISablierMerkleInstant.claimViaSig,
-                (
-                    getIndexInMerkleTree(users.recipient),
-                    users.recipient,
-                    users.eve,
-                    CLAIM_AMOUNT,
-                    getMerkleProof(users.recipient),
-                    eip712Signature
-                )
+                (getIndexInMerkleTree(), users.recipient, users.eve, CLAIM_AMOUNT, getMerkleProof(), eip712Signature)
             )
         );
     }
@@ -301,8 +303,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             merkleLockup,
             msgValue,
             abi.encodeCall(
-                ISablierMerkleInstant.claim,
-                (getIndexInMerkleTree(users.recipient), users.recipient, CLAIM_AMOUNT, getMerkleProof(users.recipient))
+                ISablierMerkleInstant.claim, (getIndexInMerkleTree(), users.recipient, CLAIM_AMOUNT, getMerkleProof())
             )
         );
     }

@@ -23,7 +23,7 @@ contract ClaimViaSig_MerkleInstant_Integration_Test is
         whenSignatureCompatible
     {
         uint256 previousFeeAccrued = address(factoryMerkleInstant).balance;
-        uint256 index = getIndexInMerkleTree(users.recipient);
+        uint256 index = getIndexInMerkleTree();
 
         eip712Signature = generateSignature(users.recipient, address(merkleInstant));
 
