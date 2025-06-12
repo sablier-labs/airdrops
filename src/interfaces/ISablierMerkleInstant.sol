@@ -49,7 +49,8 @@ interface ISablierMerkleInstant is ISablierMerkleBase {
     /// @param merkleProof The proof of inclusion in the Merkle tree.
     function claimTo(uint256 index, address to, uint128 amount, bytes32[] calldata merkleProof) external payable;
 
-    /// @notice Claim airdrop on behalf of eligible recipient using an EIP-712 or EIP-1271 signature.
+    /// @notice Claim airdrop on behalf of eligible recipient using an EIP-712 or EIP-1271 signature, and transfer the
+    /// tokens to the `to` address.
     ///
     /// @dev It emits a {Claim} event.
     ///

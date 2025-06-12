@@ -131,10 +131,8 @@ contract SablierMerkleLT is
         external
         payable
         override
+        notZeroAddress(to)
     {
-        // Check: `to` is not the zero address.
-        _revertIfToZeroAddress(to);
-
         // Check, Effect and Interaction: Pre-process the claim parameters on behalf of `msg.sender`.
         _preProcessClaim({ index: index, recipient: msg.sender, amount: amount, merkleProof: merkleProof });
 
@@ -154,10 +152,8 @@ contract SablierMerkleLT is
         external
         payable
         override
+        notZeroAddress(to)
     {
-        // Check: `to` is not the zero address.
-        _revertIfToZeroAddress(to);
-
         // Check: the signature is valid and the recovered signer matches the recipient.
         _checkSignature(index, recipient, to, amount, signature);
 
