@@ -10,20 +10,19 @@ import { Integration_Test } from "../../../../Integration.t.sol";
 
 abstract contract LowerMinFeeUSD_Integration_Test is Integration_Test {
     function test_RevertWhen_CallerNotComptroller() external {
-        setMsgSender(users.campaignCreator);
+        setMsgSender(users.eve);
 
         // It should revert.
         vm.expectRevert(
             abi.encodeWithSelector(
-                Errors.SablierMerkleBase_CallerNotComptroller.selector, address(comptroller), users.campaignCreator
+                Errors.SablierMerkleBase_CallerNotComptroller.selector, address(comptroller), users.eve
             )
         );
         merkleBase.lowerMinFeeUSD(AIRDROP_MIN_FEE_USD - 1);
     }
 
-    function test_RevertWhen_NewFeeNotLower() external whenCallerFactoryAdmin {
+    function test_RevertWhen_NewFeeNotLower() external whenCallerComptroller {
         uint256 newMinFeeUSD = AIRDROP_MIN_FEE_USD + 1;
-        setMsgSender(address(comptroller));
 
         // It should revert.
         vm.expectRevert(
@@ -34,9 +33,8 @@ abstract contract LowerMinFeeUSD_Integration_Test is Integration_Test {
         merkleBase.lowerMinFeeUSD(newMinFeeUSD);
     }
 
-    function test_WhenNewFeeNotZero() external whenCallerFactoryAdmin whenNewFeeLower {
+    function test_WhenNewFeeNotZero() external whenCallerComptroller whenNewFeeLower {
         uint256 newMinFeeUSD = AIRDROP_MIN_FEE_USD - 1;
-        setMsgSender(address(comptroller));
 
         // It should emit a {LowerMinFeeUSD} event.
         vm.expectEmit({ emitter: address(merkleBase) });
@@ -48,9 +46,7 @@ abstract contract LowerMinFeeUSD_Integration_Test is Integration_Test {
         assertEq(merkleBase.minFeeUSD(), newMinFeeUSD);
     }
 
-    function test_WhenNewFeeZero() external whenCallerFactoryAdmin whenNewFeeLower {
-        setMsgSender(address(comptroller));
-
+    function test_WhenNewFeeZero() external whenCallerComptroller whenNewFeeLower {
         // It should emit a {LowerMinFeeUSD} event.
         vm.expectEmit({ emitter: address(merkleBase) });
         emit ISablierMerkleBase.LowerMinFeeUSD(address(comptroller), 0, AIRDROP_MIN_FEE_USD);

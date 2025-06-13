@@ -40,6 +40,5 @@ contract SetNativeToken_FactoryMerkleLL_Integration_Test is
 {
     function setUp() public override(FactoryMerkleLL_Integration_Shared_Test, Integration_Test) {
         FactoryMerkleLL_Integration_Shared_Test.setUp();
-        setMsgSender(address(comptroller));
     }
 }

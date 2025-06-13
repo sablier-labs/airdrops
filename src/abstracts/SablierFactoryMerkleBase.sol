@@ -9,8 +9,8 @@ import { Errors } from "./../libraries/Errors.sol";
 /// @title SablierFactoryMerkleBase
 /// @notice See the documentation in {ISablierFactoryMerkleBase}.
 abstract contract SablierFactoryMerkleBase is
-    ComptrollerManager, // 1 inherited components
-    ISablierFactoryMerkleBase // 2 inherited components
+    ComptrollerManager, // 1 inherited component
+    ISablierFactoryMerkleBase // 1 inherited component
 {
     /*//////////////////////////////////////////////////////////////////////////
                                   STATE VARIABLES

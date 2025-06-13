@@ -48,14 +48,14 @@ abstract contract MerkleInstant_Fork_Test is MerkleBase_Fork_Test {
         vars.expectedMerkleCampaign =
             computeMerkleInstantAddress({ params: constructorParams, campaignCreator: params.campaignCreator });
 
-        // vm.expectEmit({ emitter: address(factoryMerkleInstant) });
-        // emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
-        //     merkleInstant: ISablierMerkleInstant(vars.expectedMerkleCampaign),
-        //     params: constructorParams,
-        //     aggregateAmount: vars.aggregateAmount,
-        //     recipientCount: vars.leavesData.length,
-        //     minFeeUSD: vars.minFeeUSD
-        // });
+        vm.expectEmit({ emitter: address(factoryMerkleInstant) });
+        emit ISablierFactoryMerkleInstant.CreateMerkleInstant({
+            merkleInstant: ISablierMerkleInstant(vars.expectedMerkleCampaign),
+            params: constructorParams,
+            aggregateAmount: vars.aggregateAmount,
+            recipientCount: vars.leavesData.length,
+            minFeeUSD: vars.minFeeUSD
+        });
 
         merkleInstant =
             factoryMerkleInstant.createMerkleInstant(constructorParams, vars.aggregateAmount, vars.leavesData.length);

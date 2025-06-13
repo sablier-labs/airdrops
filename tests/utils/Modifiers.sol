@@ -35,15 +35,7 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
-    modifier givenMinFeeUSDNotZero() {
-        _;
-    }
-
     modifier givenMsgValueNotLessThanFee() {
-        _;
-    }
-
-    modifier givenOracleNotZero() {
         _;
     }
 
@@ -73,12 +65,8 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
-    modifier whenCallerAdmin() {
-        setMsgSender(admin);
-        _;
-    }
-
     modifier whenCallerComptroller() {
+        setMsgSender(address(comptroller));
         _;
     }
 
@@ -89,18 +77,6 @@ abstract contract Modifiers is EvmUtilsBase {
 
     modifier whenCallerEligible() {
         setMsgSender(users.recipient);
-        _;
-    }
-
-    modifier whenCallerFactoryAdmin() {
-        _;
-    }
-
-    modifier whenCallerNotAdmin() {
-        _;
-    }
-
-    modifier whenCallerWithoutFeeCollectorRole() {
         _;
     }
 
@@ -124,10 +100,6 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
-    modifier whenFeeRecipientContract() {
-        _;
-    }
-
     modifier whenIndexInMerkleTree() {
         _;
     }
@@ -148,27 +120,7 @@ abstract contract Modifiers is EvmUtilsBase {
         _;
     }
 
-    modifier whenNewFeeNotExceedMaxFee() {
-        _;
-    }
-
-    modifier whenNewOracleNotZero() {
-        _;
-    }
-
     modifier whenNotZeroExpiration() {
-        _;
-    }
-
-    modifier whenOracleUpdatedTimeNotInFuture() {
-        _;
-    }
-
-    modifier whenOraclePriceNotOutdated() {
-        _;
-    }
-
-    modifier whenOraclePriceNotZero() {
         _;
     }
 

@@ -35,7 +35,7 @@ interface ISablierFactoryMerkleBase is IComptrollerManager {
     /// Emits a {SetNativeToken} event.
     ///
     /// Requirements:
-    /// - `msg.sender` must be the admin.
+    /// - `msg.sender` must be the comptroller.
     /// - `newNativeToken` must not be zero address.
     /// - The native token must not be already set.
     /// @param newNativeToken The address of the native token.
