@@ -72,7 +72,6 @@ abstract contract SablierMerkleBase is
 
     /// @dev Modifier to check that `to` is not zero address.
     modifier notZeroAddress(address to) {
-        // Check: `to` is not zero address.
         _revertIfToZeroAddress(to);
 
         _;
@@ -276,7 +275,7 @@ abstract contract SablierMerkleBase is
         return firstClaimTime > 0 && block.timestamp > firstClaimTime + 7 days;
     }
 
-    /// @dev Reverts if `to` is zero address.
+    /// @dev This function checks if `to` is zero address.
     function _revertIfToZeroAddress(address to) private pure {
         if (to == address(0)) {
             revert Errors.SablierMerkleBase_ToZeroAddress();
