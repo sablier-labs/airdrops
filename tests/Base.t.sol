@@ -33,7 +33,6 @@ import { SablierMerkleLT } from "src/SablierMerkleLT.sol";
 import { SablierMerkleVCA } from "src/SablierMerkleVCA.sol";
 import { MerkleInstant, MerkleLL, MerkleLT, MerkleVCA } from "src/types/DataTypes.sol";
 import { Assertions } from "./utils/Assertions.sol";
-import { ChainlinkOracleMock } from "./utils/ChainlinkMocks.sol";
 import { Constants } from "./utils/Constants.sol";
 import { DeployOptimized } from "./utils/DeployOptimized.sol";
 import { Fuzzers } from "./utils/Fuzzers.sol";
@@ -69,7 +68,6 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
     ISablierMerkleLL internal merkleLL;
     ISablierMerkleLT internal merkleLT;
     ISablierMerkleVCA internal merkleVCA;
-    ChainlinkOracleMock internal oracle;
 
     /*//////////////////////////////////////////////////////////////////////////
                                   SET-UP FUNCTION
@@ -85,9 +83,6 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         // Deploy the Lockup contract.
         address nftDescriptor = address(new LockupNFTDescriptor());
         lockup = new SablierLockup(users.admin, nftDescriptor);
-
-        // Deploy the mock Chainlink Oracle.
-        oracle = new ChainlinkOracleMock();
 
         // Deploy the factories.
         deployFactoriesConditionally();
