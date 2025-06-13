@@ -19,8 +19,7 @@ interface ISablierFactoryMerkleVCA is ISablierFactoryMerkleBase {
         MerkleVCA.ConstructorParams params,
         uint256 aggregateAmount,
         uint256 recipientCount,
-        uint256 minFeeUSD,
-        address oracle
+        uint256 minFeeUSD
     );
 
     /*//////////////////////////////////////////////////////////////////////////

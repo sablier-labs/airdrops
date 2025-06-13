@@ -74,7 +74,11 @@ abstract contract Modifiers is EvmUtilsBase {
     }
 
     modifier whenCallerAdmin() {
-        setMsgSender(users.admin);
+        setMsgSender(admin);
+        _;
+    }
+
+    modifier whenCallerComptroller() {
         _;
     }
 

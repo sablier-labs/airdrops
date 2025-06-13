@@ -13,7 +13,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         MerkleInstant.ConstructorParams memory params = merkleInstantConstructorParams();
 
         // Set dai as the native token.
-        setMsgSender(users.admin);
+        setMsgSender(address(comptroller));
         address newNativeToken = address(dai);
         factoryMerkleInstant.setNativeToken(newNativeToken);
 
@@ -34,9 +34,9 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
     function test_GivenCustomFeeUSDSet() external whenNativeTokenNotFound givenCampaignNotExists {
         // Set a custom fee.
-        setMsgSender(users.admin);
+        setMsgSender(admin);
         uint256 customFeeUSD = 0;
-        factoryMerkleInstant.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
+        comptroller.setAirdropsCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         setMsgSender(users.campaignCreator);
 
@@ -52,8 +52,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            minFeeUSD: customFeeUSD,
-            oracle: address(oracle)
+            minFeeUSD: customFeeUSD
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(params);
@@ -80,8 +79,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            minFeeUSD: MIN_FEE_USD,
-            oracle: address(oracle)
+            minFeeUSD: AIRDROP_MIN_FEE_USD
         });
 
         ISablierMerkleInstant actualInstant = createMerkleInstant(params);
@@ -92,6 +90,6 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(address(actualInstant.FACTORY()), address(factoryMerkleInstant));
-        assertEq(actualInstant.minFeeUSD(), MIN_FEE_USD, "min fee USD");
+        assertEq(actualInstant.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
     }
 }

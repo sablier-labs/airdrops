@@ -28,8 +28,7 @@ contract Constructor_MerkleVCA_Integration_Test is Integration_Test {
         assertEq(constructedVCA.ipfsCID(), IPFS_CID, "IPFS CID");
         assertEq(constructedVCA.IS_SABLIER_MERKLE(), true, "is sablier merkle");
         assertEq(constructedVCA.MERKLE_ROOT(), MERKLE_ROOT, "Merkle root");
-        assertEq(constructedVCA.minFeeUSD(), MIN_FEE_USD, "min fee USD");
-        assertEq(constructedVCA.ORACLE(), address(oracle), "oracle");
+        assertEq(constructedVCA.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
         assertEq(address(constructedVCA.TOKEN()), address(dai), "token");
 
         // SablierMerkleVCA

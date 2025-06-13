@@ -13,7 +13,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
 
         // Set dai as the native token.
-        setMsgSender(users.admin);
+        setMsgSender(address(comptroller));
         address newNativeToken = address(dai);
         factoryMerkleLT.setNativeToken(newNativeToken);
 
@@ -33,9 +33,9 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
 
     function test_GivenCustomFeeUSDSet() external whenNativeTokenNotFound givenCampaignNotExists {
         // Set a custom fee.
-        setMsgSender(users.admin);
+        setMsgSender(admin);
         uint256 customFeeUSD = 0;
-        factoryMerkleLT.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
+        comptroller.setAirdropsCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         setMsgSender(users.campaignCreator);
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
@@ -51,8 +51,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
             totalDuration: VESTING_TOTAL_DURATION,
-            minFeeUSD: customFeeUSD,
-            oracle: address(oracle)
+            minFeeUSD: customFeeUSD
         });
 
         ISablierMerkleLT actualLT = createMerkleLT(params);
@@ -77,8 +76,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
             totalDuration: VESTING_TOTAL_DURATION,
-            minFeeUSD: MIN_FEE_USD,
-            oracle: address(oracle)
+            minFeeUSD: AIRDROP_MIN_FEE_USD
         });
 
         ISablierMerkleLT actualLT = createMerkleLT(params);
@@ -90,6 +88,6 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
 
         // It should set the current factory address.
         assertEq(address(actualLT.FACTORY()), address(factoryMerkleLT), "factory");
-        assertEq(actualLT.minFeeUSD(), MIN_FEE_USD, "min fee USD");
+        assertEq(actualLT.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
     }
 }

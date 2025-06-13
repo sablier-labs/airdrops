@@ -16,7 +16,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
 
         // Set dai as the native token.
-        setMsgSender(users.admin);
+        setMsgSender(address(comptroller));
         address newNativeToken = address(dai);
         factoryMerkleVCA.setNativeToken(newNativeToken);
 
@@ -154,8 +154,8 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // Set the custom fee to 0.
         uint256 customFeeUSD = 0;
 
-        setMsgSender(users.admin);
-        factoryMerkleVCA.setCustomFeeUSD(users.campaignCreator, customFeeUSD);
+        setMsgSender(admin);
+        comptroller.setAirdropsCustomFeeUSD(users.campaignCreator, customFeeUSD);
 
         setMsgSender(users.campaignCreator);
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
@@ -170,8 +170,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            minFeeUSD: customFeeUSD,
-            oracle: address(oracle)
+            minFeeUSD: customFeeUSD
         });
 
         ISablierMerkleVCA actualVCA = createMerkleVCA(params);
@@ -213,8 +212,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
-            minFeeUSD: MIN_FEE_USD,
-            oracle: address(oracle)
+            minFeeUSD: AIRDROP_MIN_FEE_USD
         });
 
         ISablierMerkleVCA actualVCA = createMerkleVCA(params);
@@ -222,7 +220,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
 
         // It should create the campaign.
-        assertEq(actualVCA.minFeeUSD(), MIN_FEE_USD, "min fee USD");
+        assertEq(actualVCA.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
         // It should set the current factory address.
         assertEq(address(actualVCA.FACTORY()), address(factoryMerkleVCA), "factory");
 

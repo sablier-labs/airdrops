@@ -29,8 +29,7 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
         assertEq(constructedInstant.ipfsCID(), IPFS_CID, "IPFS CID");
         assertEq(constructedInstant.IS_SABLIER_MERKLE(), true, "is sablier merkle");
         assertEq(constructedInstant.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");
-        assertEq(constructedInstant.minFeeUSD(), MIN_FEE_USD, "min fee USD");
-        assertEq(constructedInstant.ORACLE(), address(oracle), "oracle");
+        assertEq(constructedInstant.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
         assertEq(address(constructedInstant.TOKEN()), address(dai), "token");
     }
 }

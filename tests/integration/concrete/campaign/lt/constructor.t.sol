@@ -35,8 +35,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         assertEq(constructedLT.ipfsCID(), IPFS_CID, "IPFS CID");
         assertEq(constructedLT.IS_SABLIER_MERKLE(), true, "is sablier merkle");
         assertEq(constructedLT.MERKLE_ROOT(), MERKLE_ROOT, "Merkle root");
-        assertEq(constructedLT.minFeeUSD(), MIN_FEE_USD, "min fee USD");
-        assertEq(constructedLT.ORACLE(), address(oracle), "oracle");
+        assertEq(constructedLT.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
         assertEq(address(constructedLT.TOKEN()), address(dai), "token");
 
         // SablierMerkleLockup
