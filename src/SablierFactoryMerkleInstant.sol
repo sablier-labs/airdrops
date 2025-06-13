@@ -53,10 +53,14 @@ contract SablierFactoryMerkleInstant is ISablierFactoryMerkleInstant, SablierFac
         _forbidNativeToken(address(params.token));
 
         // Hash the parameters to generate a salt.
-        bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
+        bytes32 salt = keccak256(abi.encodePacked(msg.sender, comptroller, abi.encode(params)));
 
         // Deploy the MerkleInstant contract with CREATE2.
-        merkleInstant = new SablierMerkleInstant{ salt: salt }({ params: params, campaignCreator: msg.sender });
+        merkleInstant = new SablierMerkleInstant{ salt: salt }({
+            params: params,
+            campaignCreator: msg.sender,
+            comptroller: address(comptroller)
+        });
 
         // Log the creation of the MerkleInstant contract, including some metadata that is not stored on-chain.
         emit CreateMerkleInstant({
@@ -64,6 +68,7 @@ contract SablierFactoryMerkleInstant is ISablierFactoryMerkleInstant, SablierFac
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
+            comptroller: address(comptroller),
             minFeeUSD: comptroller.getAirdropsMinFeeUSDFor(msg.sender)
         });
     }

@@ -319,17 +319,20 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         view
         returns (address)
     {
-        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, comptroller, abi.encode(params)));
         bytes32 creationBytecodeHash;
 
         if (!isTestOptimizedProfile()) {
-            creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleInstant).creationCode, abi.encode(params, campaignCreator)));
+            creationBytecodeHash = keccak256(
+                bytes.concat(
+                    type(SablierMerkleInstant).creationCode, abi.encode(params, campaignCreator, address(comptroller))
+                )
+            );
         } else {
             creationBytecodeHash = keccak256(
                 bytes.concat(
                     vm.getCode("out-optimized/SablierMerkleInstant.sol/SablierMerkleInstant.json"),
-                    abi.encode(params, campaignCreator)
+                    abi.encode(params, campaignCreator, address(comptroller))
                 )
             );
         }
@@ -408,17 +411,20 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         view
         returns (address)
     {
-        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, comptroller, abi.encode(params)));
 
         bytes32 creationBytecodeHash;
         if (!isTestOptimizedProfile()) {
-            creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleLL).creationCode, abi.encode(params, campaignCreator)));
+            creationBytecodeHash = keccak256(
+                bytes.concat(
+                    type(SablierMerkleLL).creationCode, abi.encode(params, campaignCreator, address(comptroller))
+                )
+            );
         } else {
             creationBytecodeHash = keccak256(
                 bytes.concat(
                     vm.getCode("out-optimized/SablierMerkleLL.sol/SablierMerkleLL.json"),
-                    abi.encode(params, campaignCreator)
+                    abi.encode(params, campaignCreator, address(comptroller))
                 )
             );
         }
@@ -505,17 +511,20 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         view
         returns (address)
     {
-        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, comptroller, abi.encode(params)));
 
         bytes32 creationBytecodeHash;
         if (!isTestOptimizedProfile()) {
-            creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleLT).creationCode, abi.encode(params, campaignCreator)));
+            creationBytecodeHash = keccak256(
+                bytes.concat(
+                    type(SablierMerkleLT).creationCode, abi.encode(params, campaignCreator, address(comptroller))
+                )
+            );
         } else {
             creationBytecodeHash = keccak256(
                 bytes.concat(
                     vm.getCode("out-optimized/SablierMerkleLT.sol/SablierMerkleLT.json"),
-                    abi.encode(params, campaignCreator)
+                    abi.encode(params, campaignCreator, address(comptroller))
                 )
             );
         }
@@ -683,17 +692,20 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         view
         returns (address)
     {
-        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, abi.encode(params)));
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, comptroller, abi.encode(params)));
 
         bytes32 creationBytecodeHash;
         if (!isTestOptimizedProfile()) {
-            creationBytecodeHash =
-                keccak256(bytes.concat(type(SablierMerkleVCA).creationCode, abi.encode(params, campaignCreator)));
+            creationBytecodeHash = keccak256(
+                bytes.concat(
+                    type(SablierMerkleVCA).creationCode, abi.encode(params, campaignCreator, address(comptroller))
+                )
+            );
         } else {
             creationBytecodeHash = keccak256(
                 bytes.concat(
                     vm.getCode("out-optimized/SablierMerkleVCA.sol/SablierMerkleVCA.json"),
-                    abi.encode(params, campaignCreator)
+                    abi.encode(params, campaignCreator, address(comptroller))
                 )
             );
         }

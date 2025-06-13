@@ -51,6 +51,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
             totalDuration: VESTING_TOTAL_DURATION,
+            comptroller: address(comptroller),
             minFeeUSD: customFeeUSD
         });
 
@@ -76,6 +77,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
             totalDuration: VESTING_TOTAL_DURATION,
+            comptroller: address(comptroller),
             minFeeUSD: AIRDROP_MIN_FEE_USD
         });
 
@@ -85,6 +87,9 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
 
         // It should set the correct stream shape.
         assertEq(actualLT.streamShape(), STREAM_SHAPE, "stream shape");
+
+        // It should set the comptroller address.
+        assertEq(address(actualLT.COMPTROLLER()), address(comptroller), "comptroller");
 
         // It should set the current factory address.
         assertEq(address(actualLT.FACTORY()), address(factoryMerkleLT), "factory");

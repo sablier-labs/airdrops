@@ -74,6 +74,7 @@ abstract contract MerkleVCA_Fork_Test is MerkleBase_Fork_Test {
             params: constructorParams,
             aggregateAmount: vars.aggregateAmount,
             recipientCount: vars.leavesData.length,
+            comptroller: address(comptroller),
             minFeeUSD: vars.minFeeUSD
         });
 

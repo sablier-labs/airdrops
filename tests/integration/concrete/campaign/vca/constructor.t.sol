@@ -12,12 +12,14 @@ contract Constructor_MerkleVCA_Integration_Test is Integration_Test {
         setMsgSender(address(factoryMerkleVCA));
 
         // Deploy the SablierMerkleVCA contract.
-        SablierMerkleVCA constructedVCA = new SablierMerkleVCA(merkleVCAConstructorParams(), users.campaignCreator);
+        SablierMerkleVCA constructedVCA =
+            new SablierMerkleVCA(merkleVCAConstructorParams(), users.campaignCreator, address(comptroller));
 
         // SablierMerkleBase
         assertEq(constructedVCA.admin(), users.campaignCreator, "admin");
         assertEq(constructedVCA.campaignName(), CAMPAIGN_NAME, "campaign name");
         assertEq(constructedVCA.CAMPAIGN_START_TIME(), CAMPAIGN_START_TIME, "campaign start time");
+        assertEq(constructedVCA.COMPTROLLER(), address(comptroller), "comptroller");
         assertEq(
             constructedVCA.DOMAIN_SEPARATOR(),
             Utilities.computeEIP712DomainSeparator(address(constructedVCA)),

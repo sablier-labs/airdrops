@@ -8,6 +8,8 @@ import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/Mes
 import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import { BitMaps } from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import { Adminable } from "@sablier/evm-utils/src/Adminable.sol";
+import { ISablierComptroller } from "@sablier/evm-utils/src/interfaces/ISablierComptroller.sol";
+
 import { ISablierFactoryMerkleBase } from "./../interfaces/ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleBase } from "./../interfaces/ISablierMerkleBase.sol";
 import { Errors } from "./../libraries/Errors.sol";
@@ -28,6 +30,9 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     uint40 public immutable override CAMPAIGN_START_TIME;
+
+    /// @inheritdoc ISablierMerkleBase
+    address public immutable override COMPTROLLER;
 
     /// @inheritdoc ISablierMerkleBase
     bytes32 public immutable DOMAIN_SEPARATOR;
@@ -82,6 +87,7 @@ abstract contract SablierMerkleBase is
         address campaignCreator,
         string memory campaignName_,
         uint40 campaignStartTime,
+        address comptroller,
         uint40 expiration,
         address initialAdmin,
         string memory ipfsCID_,
@@ -96,6 +102,7 @@ abstract contract SablierMerkleBase is
         );
 
         CAMPAIGN_START_TIME = campaignStartTime;
+        COMPTROLLER = comptroller;
         EXPIRATION = expiration;
         FACTORY = ISablierFactoryMerkleBase(msg.sender);
         MERKLE_ROOT = merkleRoot;
@@ -103,7 +110,7 @@ abstract contract SablierMerkleBase is
 
         campaignName = campaignName_;
         ipfsCID = ipfsCID_;
-        minFeeUSD = FACTORY.comptroller().getAirdropsMinFeeUSDFor(campaignCreator);
+        minFeeUSD = ISablierComptroller(COMPTROLLER).getAirdropsMinFeeUSDFor(campaignCreator);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -144,12 +151,9 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     function lowerMinFeeUSD(uint256 newMinFeeUSD) external override {
-        // Safe Interaction: retrieve the comptroller address.
-        address comptroller = address(FACTORY.comptroller());
-
         // Check: the caller is the comptroller.
-        if (comptroller != msg.sender) {
-            revert Errors.SablierMerkleBase_CallerNotComptroller(comptroller, msg.sender);
+        if (COMPTROLLER != msg.sender) {
+            revert Errors.SablierMerkleBase_CallerNotComptroller(COMPTROLLER, msg.sender);
         }
 
         uint256 currentMinFeeUSD = minFeeUSD;
@@ -163,7 +167,7 @@ abstract contract SablierMerkleBase is
         minFeeUSD = newMinFeeUSD;
 
         // Log the event.
-        emit LowerMinFeeUSD({ comptroller: comptroller, newMinFeeUSD: newMinFeeUSD, previousMinFeeUSD: currentMinFeeUSD });
+        emit LowerMinFeeUSD({ comptroller: COMPTROLLER, newMinFeeUSD: newMinFeeUSD, previousMinFeeUSD: currentMinFeeUSD });
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -244,7 +248,7 @@ abstract contract SablierMerkleBase is
         }
 
         // Safe interaction: calculate the min fee in wei.
-        uint256 minFeeWei = FACTORY.comptroller().calculateMinFeeWei(minFeeUSD);
+        uint256 minFeeWei = ISablierComptroller(COMPTROLLER).calculateMinFeeWei(minFeeUSD);
 
         uint256 feePaid = msg.value;
 
@@ -276,11 +280,11 @@ abstract contract SablierMerkleBase is
 
         // Interaction: transfer the fee to comptroller if it's greater than 0.
         if (feePaid > 0) {
-            (bool success,) = address(FACTORY.comptroller()).call{ value: feePaid }("");
+            (bool success,) = COMPTROLLER.call{ value: feePaid }("");
 
             // Revert if the transfer failed.
             if (!success) {
-                revert Errors.SablierMerkleBase_FeeTransferFailed(address(FACTORY), feePaid);
+                revert Errors.SablierMerkleBase_FeeTransferFailed(COMPTROLLER, feePaid);
             }
         }
     }

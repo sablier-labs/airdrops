@@ -170,6 +170,7 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
+            comptroller: address(comptroller),
             minFeeUSD: customFeeUSD
         });
 
@@ -179,6 +180,9 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
 
         // It should create the campaign with 0 custom fee.
         assertEq(actualVCA.minFeeUSD(), customFeeUSD, "custom fee USD");
+
+        // It should set the comptroller address.
+        assertEq(address(actualVCA.COMPTROLLER()), address(comptroller), "comptroller address");
 
         // It should set the current factory address.
         assertEq(address(actualVCA.FACTORY()), address(factoryMerkleVCA), "factory");
@@ -212,12 +216,16 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
+            comptroller: address(comptroller),
             minFeeUSD: AIRDROP_MIN_FEE_USD
         });
 
         ISablierMerkleVCA actualVCA = createMerkleVCA(params);
         assertGt(address(actualVCA).code.length, 0, "MerkleVCA contract not created");
         assertEq(address(actualVCA), expectedMerkleVCA, "MerkleVCA contract does not match computed address");
+
+        // It should set the comptroller address.
+        assertEq(address(actualVCA.COMPTROLLER()), address(comptroller), "comptroller address");
 
         // It should create the campaign.
         assertEq(actualVCA.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");

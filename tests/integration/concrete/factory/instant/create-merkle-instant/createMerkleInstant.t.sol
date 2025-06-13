@@ -52,6 +52,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
+            comptroller: address(comptroller),
             minFeeUSD: customFeeUSD
         });
 
@@ -79,6 +80,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
             params: params,
             aggregateAmount: AGGREGATE_AMOUNT,
             recipientCount: RECIPIENT_COUNT,
+            comptroller: address(comptroller),
             minFeeUSD: AIRDROP_MIN_FEE_USD
         });
 
@@ -87,6 +89,9 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         assertEq(
             address(actualInstant), expectedMerkleInstant, "MerkleInstant contract does not match computed address"
         );
+
+        // It should set the comptroller address.
+        assertEq(address(actualInstant.COMPTROLLER()), address(comptroller), "comptroller address");
 
         // It should set the current factory address.
         assertEq(address(actualInstant.FACTORY()), address(factoryMerkleInstant));

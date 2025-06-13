@@ -12,7 +12,8 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         setMsgSender(address(factoryMerkleLL));
 
         // Deploy the SablierMerkleLL contract.
-        SablierMerkleLL constructedLL = new SablierMerkleLL(merkleLLConstructorParams(), users.campaignCreator);
+        SablierMerkleLL constructedLL =
+            new SablierMerkleLL(merkleLLConstructorParams(), users.campaignCreator, address(comptroller));
 
         // Token allowance
         uint256 actualAllowance = dai.allowance(address(constructedLL), address(lockup));
@@ -21,6 +22,7 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         // SablierMerkleBase
         assertEq(constructedLL.admin(), users.campaignCreator, "admin");
         assertEq(constructedLL.CAMPAIGN_START_TIME(), CAMPAIGN_START_TIME, "campaign start time");
+        assertEq(constructedLL.COMPTROLLER(), address(comptroller), "comptroller");
         assertEq(
             constructedLL.DOMAIN_SEPARATOR(),
             Utilities.computeEIP712DomainSeparator(address(constructedLL)),

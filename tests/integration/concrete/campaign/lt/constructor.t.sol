@@ -15,7 +15,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         // Deploy the SablierMerkleLT contract.
         MerkleLT.ConstructorParams memory params = merkleLTConstructorParams();
 
-        SablierMerkleLT constructedLT = new SablierMerkleLT(params, users.campaignCreator);
+        SablierMerkleLT constructedLT = new SablierMerkleLT(params, users.campaignCreator, address(comptroller));
 
         // Token allowance
         uint256 actualAllowance = dai.allowance(address(constructedLT), address(lockup));
@@ -25,6 +25,7 @@ contract Constructor_MerkleLT_Integration_Test is Integration_Test {
         assertEq(constructedLT.admin(), users.campaignCreator, "admin");
         assertEq(constructedLT.campaignName(), CAMPAIGN_NAME, "campaign name");
         assertEq(constructedLT.CAMPAIGN_START_TIME(), CAMPAIGN_START_TIME, "campaign start time");
+        assertEq(constructedLT.COMPTROLLER(), address(comptroller), "comptroller");
         assertEq(
             constructedLT.DOMAIN_SEPARATOR(),
             Utilities.computeEIP712DomainSeparator(address(constructedLT)),

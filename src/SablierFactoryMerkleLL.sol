@@ -53,10 +53,14 @@ contract SablierFactoryMerkleLL is ISablierFactoryMerkleLL, SablierFactoryMerkle
         _forbidNativeToken(address(params.token));
 
         // Hash the parameters to generate a salt.
-        bytes32 salt = keccak256(abi.encodePacked(msg.sender, abi.encode(params)));
+        bytes32 salt = keccak256(abi.encodePacked(msg.sender, comptroller, abi.encode(params)));
 
         // Deploy the MerkleLL contract with CREATE2.
-        merkleLL = new SablierMerkleLL{ salt: salt }({ params: params, campaignCreator: msg.sender });
+        merkleLL = new SablierMerkleLL{ salt: salt }({
+            params: params,
+            campaignCreator: msg.sender,
+            comptroller: address(comptroller)
+        });
 
         // Log the creation of the MerkleLL contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLL({
@@ -64,6 +68,7 @@ contract SablierFactoryMerkleLL is ISablierFactoryMerkleLL, SablierFactoryMerkle
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
+            comptroller: address(comptroller),
             minFeeUSD: comptroller.getAirdropsMinFeeUSDFor(msg.sender)
         });
     }
