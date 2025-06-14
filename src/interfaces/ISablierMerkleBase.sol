@@ -3,7 +3,6 @@ pragma solidity >=0.8.22;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IAdminable } from "@sablier/evm-utils/src/interfaces/IAdminable.sol";
-import { ISablierFactoryMerkleBase } from "./ISablierFactoryMerkleBase.sol";
 
 /// @title ISablierMerkleBase
 /// @dev Common interface between campaign contracts.
@@ -36,9 +35,6 @@ interface ISablierMerkleBase is IAdminable {
     /// @notice The cut-off point for the campaign, as a Unix timestamp. A value of zero means there is no expiration.
     /// @dev This is an immutable state variable.
     function EXPIRATION() external view returns (uint40);
-
-    /// @notice Retrieves the address of the factory contract.
-    function FACTORY() external view returns (ISablierFactoryMerkleBase);
 
     /// @notice Returns `true` indicating that this campaign contract is deployed using the Sablier Factory.
     /// @dev This is a constant state variable.

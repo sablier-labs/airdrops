@@ -10,7 +10,6 @@ import { BitMaps } from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import { Adminable } from "@sablier/evm-utils/src/Adminable.sol";
 import { ISablierComptroller } from "@sablier/evm-utils/src/interfaces/ISablierComptroller.sol";
 
-import { ISablierFactoryMerkleBase } from "./../interfaces/ISablierFactoryMerkleBase.sol";
 import { ISablierMerkleBase } from "./../interfaces/ISablierMerkleBase.sol";
 import { Errors } from "./../libraries/Errors.sol";
 import { SignatureHash } from "./../libraries/SignatureHash.sol";
@@ -39,9 +38,6 @@ abstract contract SablierMerkleBase is
 
     /// @inheritdoc ISablierMerkleBase
     uint40 public immutable override EXPIRATION;
-
-    /// @inheritdoc ISablierMerkleBase
-    ISablierFactoryMerkleBase public immutable override FACTORY;
 
     /// @inheritdoc ISablierMerkleBase
     bool public constant override IS_SABLIER_MERKLE = true;
@@ -104,7 +100,6 @@ abstract contract SablierMerkleBase is
         CAMPAIGN_START_TIME = campaignStartTime;
         COMPTROLLER = comptroller;
         EXPIRATION = expiration;
-        FACTORY = ISablierFactoryMerkleBase(msg.sender);
         MERKLE_ROOT = merkleRoot;
         TOKEN = token;
 

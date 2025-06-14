@@ -30,7 +30,6 @@ contract Constructor_MerkleLL_Integration_Test is Integration_Test {
         );
         assertEq(constructedLL.campaignName(), CAMPAIGN_NAME, "campaign name");
         assertEq(constructedLL.EXPIRATION(), EXPIRATION, "expiration");
-        assertEq(address(constructedLL.FACTORY()), address(factoryMerkleLL), "factory");
         assertEq(constructedLL.ipfsCID(), IPFS_CID, "IPFS CID");
         assertEq(constructedLL.IS_SABLIER_MERKLE(), true, "is sablier merkle");
         assertEq(constructedLL.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");

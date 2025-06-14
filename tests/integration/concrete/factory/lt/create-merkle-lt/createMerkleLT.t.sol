@@ -59,8 +59,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         assertGt(address(actualLT).code.length, 0, "MerkleLT contract not created");
         assertEq(address(actualLT), expectedLT, "MerkleLT contract does not match computed address");
 
-        // It should set the current factory address.
-        assertEq(address(actualLT.FACTORY()), address(factoryMerkleLT), "factory");
+        // It should set the min fee.
         assertEq(actualLT.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
@@ -91,8 +90,7 @@ contract CreateMerkleLT_Integration_Test is Integration_Test {
         // It should set the comptroller address.
         assertEq(address(actualLT.COMPTROLLER()), address(comptroller), "comptroller");
 
-        // It should set the current factory address.
-        assertEq(address(actualLT.FACTORY()), address(factoryMerkleLT), "factory");
+        // It should set the min fee.
         assertEq(actualLT.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
     }
 }

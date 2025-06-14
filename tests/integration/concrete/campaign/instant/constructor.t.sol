@@ -26,7 +26,6 @@ contract Constructor_MerkleInstant_Integration_Test is Integration_Test {
             "domain separator"
         );
         assertEq(constructedInstant.EXPIRATION(), EXPIRATION, "expiration");
-        assertEq(address(constructedInstant.FACTORY()), address(factoryMerkleInstant), "factory");
         assertEq(constructedInstant.ipfsCID(), IPFS_CID, "IPFS CID");
         assertEq(constructedInstant.IS_SABLIER_MERKLE(), true, "is sablier merkle");
         assertEq(constructedInstant.MERKLE_ROOT(), MERKLE_ROOT, "merkleRoot");

@@ -59,8 +59,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         assertLt(0, address(actualLL).code.length, "MerkleLL contract not created");
         assertEq(address(actualLL), expectedLL, "MerkleLL contract does not match computed address");
 
-        // It should set the current factory address.
-        assertEq(address(actualLL.FACTORY()), address(factoryMerkleLL), "factory");
+        // It should set the min fee.
         assertEq(actualLL.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
@@ -88,8 +87,7 @@ contract CreateMerkleLL_Integration_Test is Integration_Test {
         // It should set the correct stream shape.
         assertEq(actualLL.streamShape(), STREAM_SHAPE, "stream shape");
 
-        // It should set the current factory address.
-        assertEq(address(actualLL.FACTORY()), address(factoryMerkleLL), "factory");
+        // It should set the min fee.
         assertEq(actualLL.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
     }
 }

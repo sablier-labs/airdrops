@@ -63,7 +63,6 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         );
 
         // It should set the current factory address.
-        assertEq(address(actualInstant.FACTORY()), address(factoryMerkleInstant));
         assertEq(actualInstant.minFeeUSD(), customFeeUSD, "min fee USD");
     }
 
@@ -93,8 +92,7 @@ contract CreateMerkleInstant_Integration_Test is Integration_Test {
         // It should set the comptroller address.
         assertEq(address(actualInstant.COMPTROLLER()), address(comptroller), "comptroller address");
 
-        // It should set the current factory address.
-        assertEq(address(actualInstant.FACTORY()), address(factoryMerkleInstant));
+        // It should set the min fee.
         assertEq(actualInstant.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
     }
 }

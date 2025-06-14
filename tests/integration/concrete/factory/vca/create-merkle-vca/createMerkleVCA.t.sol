@@ -184,9 +184,6 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // It should set the comptroller address.
         assertEq(address(actualVCA.COMPTROLLER()), address(comptroller), "comptroller address");
 
-        // It should set the current factory address.
-        assertEq(address(actualVCA.FACTORY()), address(factoryMerkleVCA), "factory");
-
         // It should set the correct vesting end time.
         assertEq(actualVCA.VESTING_END_TIME(), VESTING_END_TIME, "vesting end time");
 
@@ -227,10 +224,8 @@ contract CreateMerkleVCA_Integration_Test is Integration_Test {
         // It should set the comptroller address.
         assertEq(address(actualVCA.COMPTROLLER()), address(comptroller), "comptroller address");
 
-        // It should create the campaign.
+        // It should set the correct min fee.
         assertEq(actualVCA.minFeeUSD(), AIRDROP_MIN_FEE_USD, "min fee USD");
-        // It should set the current factory address.
-        assertEq(address(actualVCA.FACTORY()), address(factoryMerkleVCA), "factory");
 
         // It should set the correct vesting end time.
         assertEq(actualVCA.VESTING_END_TIME(), VESTING_END_TIME, "vesting end time");

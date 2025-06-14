@@ -26,7 +26,6 @@ contract Constructor_MerkleVCA_Integration_Test is Integration_Test {
             "domain separator"
         );
         assertEq(constructedVCA.EXPIRATION(), EXPIRATION, "expiration");
-        assertEq(address(constructedVCA.FACTORY()), address(factoryMerkleVCA), "factory");
         assertEq(constructedVCA.ipfsCID(), IPFS_CID, "IPFS CID");
         assertEq(constructedVCA.IS_SABLIER_MERKLE(), true, "is sablier merkle");
         assertEq(constructedVCA.MERKLE_ROOT(), MERKLE_ROOT, "Merkle root");
