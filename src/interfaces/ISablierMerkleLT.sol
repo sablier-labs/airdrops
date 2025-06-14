@@ -51,7 +51,7 @@ interface ISablierMerkleLT is ISablierMerkleLockup {
     /// @notice Claim airdrop on behalf of eligible recipient. If the vesting end time is in the future, it creates a
     /// Lockup Tranched stream, otherwise it transfers the tokens directly to the recipient address.
     ///
-    /// @dev It either emits {ClaimLTWithTransfer} or {ClaimLTWithVesting} event.
+    /// @dev It emits either {ClaimLTWithTransfer} or {ClaimLTWithVesting} event.
     ///
     /// Requirements:
     /// - The current time must be greater than or equal to the campaign start time.
@@ -71,7 +71,7 @@ interface ISablierMerkleLT is ISablierMerkleLockup {
     /// @notice Claim airdrop. If the vesting end time is in the future, it creates a Lockup Tranched stream with `to`
     /// address as the stream recipient, otherwise it transfers the tokens directly to the `to` address.
     ///
-    /// @dev It either emits {ClaimLTWithTransfer} or {ClaimLTWithVesting} event.
+    /// @dev It emits either {ClaimLTWithTransfer} or {ClaimLTWithVesting} event.
     ///
     /// Requirements:
     /// - `msg.sender` must be the airdrop recipient.
@@ -88,7 +88,7 @@ interface ISablierMerkleLT is ISablierMerkleLockup {
     /// time is in the future, it creates a Lockup Tranched stream with `to` address as the stream recipient, otherwise
     /// it transfers the tokens directly to the `to` address.
     ///
-    /// @dev It either emits {ClaimLTWithTransfer} or {ClaimLTWithVesting} event.
+    /// @dev It emits either {ClaimLTWithTransfer} or {ClaimLTWithVesting} event.
     ///
     /// Requirements:
     /// - If `recipient` is an EOA, it must match the recovered signer.
