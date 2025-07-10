@@ -14,7 +14,126 @@ contract ClaimTo_MerkleVCA_Integration_Test is ClaimTo_Integration_Test, MerkleV
         ClaimTo_Integration_Test.setUp();
     }
 
-    function test_RevertWhen_VestingStartTimeInFuture() external whenMerkleProofValid {
+    function test_RevertGiven_CampaignStartTimeInFuture() external {
+        uint40 warpTime = CAMPAIGN_START_TIME - 1 seconds;
+        vm.warp({ newTimestamp: warpTime });
+
+        vm.expectRevert(
+            abi.encodeWithSelector(Errors.SablierMerkleBase_CampaignNotStarted.selector, warpTime, CAMPAIGN_START_TIME)
+        );
+        claimTo();
+    }
+
+    function test_RevertGiven_CampaignExpired() external givenCampaignStartTimeNotInFuture {
+        uint40 warpTime = EXPIRATION + 1 seconds;
+        vm.warp({ newTimestamp: warpTime });
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleBase_CampaignExpired.selector, warpTime, EXPIRATION));
+        claimTo();
+    }
+
+    function test_RevertGiven_MsgValueLessThanFee()
+        external
+        givenCampaignStartTimeNotInFuture
+        givenCampaignNotExpired
+    {
+        vm.expectRevert(
+            abi.encodeWithSelector(Errors.SablierMerkleBase_InsufficientFeePayment.selector, 0, AIRDROP_MIN_FEE_WEI)
+        );
+        claimTo({
+            msgValue: 0,
+            index: getIndexInMerkleTree(),
+            to: users.recipient,
+            amount: CLAIM_AMOUNT,
+            merkleProof: getMerkleProof()
+        });
+    }
+
+    function test_RevertGiven_RecipientClaimed()
+        external
+        givenCampaignStartTimeNotInFuture
+        givenCampaignNotExpired
+        givenMsgValueNotLessThanFee
+    {
+        claimTo();
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleBase_IndexClaimed.selector, getIndexInMerkleTree()));
+        claimTo();
+    }
+
+    function test_RevertWhen_IndexNotValid()
+        external
+        givenCampaignStartTimeNotInFuture
+        givenCampaignNotExpired
+        givenMsgValueNotLessThanFee
+        givenRecipientNotClaimed
+    {
+        uint256 invalidIndex = 1337;
+
+        vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
+        claimTo({
+            msgValue: AIRDROP_MIN_FEE_WEI,
+            index: invalidIndex,
+            to: users.recipient,
+            amount: CLAIM_AMOUNT,
+            merkleProof: getMerkleProof()
+        });
+    }
+
+    function test_RevertWhen_AmountNotValid()
+        external
+        givenCampaignStartTimeNotInFuture
+        givenCampaignNotExpired
+        givenMsgValueNotLessThanFee
+        givenRecipientNotClaimed
+        whenIndexValid
+    {
+        uint128 invalidAmount = 1337;
+
+        vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
+        claimTo({
+            msgValue: AIRDROP_MIN_FEE_WEI,
+            index: getIndexInMerkleTree(),
+            to: users.recipient,
+            amount: invalidAmount,
+            merkleProof: getMerkleProof()
+        });
+    }
+
+    function test_RevertWhen_MerkleProofNotValid()
+        external
+        givenCampaignStartTimeNotInFuture
+        givenCampaignNotExpired
+        givenMsgValueNotLessThanFee
+        givenRecipientNotClaimed
+        whenIndexValid
+        whenAmountValid
+    {
+        vm.expectRevert(Errors.SablierMerkleBase_InvalidProof.selector);
+        claimTo({
+            msgValue: AIRDROP_MIN_FEE_WEI,
+            index: getIndexInMerkleTree(),
+            to: users.recipient,
+            amount: CLAIM_AMOUNT,
+            merkleProof: getMerkleProof(users.unknownRecipient)
+        });
+    }
+
+    /// @dev The test for the modifiers added below can be found in {ClaimTo_Integration_Test}.
+
+    function test_RevertWhen_VestingStartTimeInFuture()
+        external
+        givenCampaignStartTimeNotInFuture
+        givenCampaignNotExpired
+        givenMsgValueNotLessThanFee
+        givenRecipientNotClaimed
+        whenIndexValid
+        whenAmountValid
+        whenToAddressNotZero
+        givenCallerNotClaimed
+        whenCallerEligible
+        whenMerkleProofValid
+    {
         // Create a new campaign with vesting start time in the future.
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
         params.vestingStartTime = getBlockTimestamp() + 1 seconds;
@@ -32,7 +151,20 @@ contract ClaimTo_MerkleVCA_Integration_Test is ClaimTo_Integration_Test, MerkleV
         });
     }
 
-    function test_WhenVestingStartTimeInPresent() external whenMerkleProofValid whenVestingStartTimeNotInFuture {
+    function test_WhenVestingStartTimeInPresent()
+        external
+        givenCampaignStartTimeNotInFuture
+        givenCampaignNotExpired
+        givenMsgValueNotLessThanFee
+        givenRecipientNotClaimed
+        whenIndexValid
+        whenAmountValid
+        whenToAddressNotZero
+        givenCallerNotClaimed
+        whenCallerEligible
+        whenMerkleProofValid
+        whenVestingStartTimeNotInFuture
+    {
         // Create a new campaign with vesting start time in the present.
         MerkleVCA.ConstructorParams memory params = merkleVCAConstructorParams();
         params.vestingStartTime = getBlockTimestamp();
@@ -41,14 +173,40 @@ contract ClaimTo_MerkleVCA_Integration_Test is ClaimTo_Integration_Test, MerkleV
         _test_ClaimTo(VCA_UNLOCK_AMOUNT);
     }
 
-    function test_WhenVestingEndTimeInPast() external whenMerkleProofValid whenVestingStartTimeNotInFuture {
+    function test_WhenVestingEndTimeInPast()
+        external
+        givenCampaignStartTimeNotInFuture
+        givenCampaignNotExpired
+        givenMsgValueNotLessThanFee
+        givenRecipientNotClaimed
+        whenIndexValid
+        whenAmountValid
+        whenToAddressNotZero
+        givenCallerNotClaimed
+        whenCallerEligible
+        whenMerkleProofValid
+        whenVestingStartTimeNotInFuture
+    {
         // Forward in time so that the vesting end time is in the past.
         vm.warp({ newTimestamp: VESTING_END_TIME });
 
         _test_ClaimTo(VCA_FULL_AMOUNT);
     }
 
-    function test_WhenVestingEndTimeNotInPast() external whenMerkleProofValid whenVestingStartTimeNotInFuture {
+    function test_WhenVestingEndTimeNotInPast()
+        external
+        givenCampaignStartTimeNotInFuture
+        givenCampaignNotExpired
+        givenMsgValueNotLessThanFee
+        givenRecipientNotClaimed
+        whenIndexValid
+        whenAmountValid
+        whenToAddressNotZero
+        givenCallerNotClaimed
+        whenCallerEligible
+        whenMerkleProofValid
+        whenVestingStartTimeNotInFuture
+    {
         _test_ClaimTo(VCA_CLAIM_AMOUNT);
     }
 
