@@ -3,7 +3,6 @@ pragma solidity >=0.8.22 <0.9.0;
 
 import { Errors } from "src/libraries/Errors.sol";
 
-import { Utilities } from "../../../../../utils/Utilities.sol";
 import { Integration_Test } from "../../../../Integration.t.sol";
 
 abstract contract ClaimViaSig_Integration_Test is Integration_Test {
@@ -30,7 +29,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
 
         // Generate an incompatible signature.
         bytes memory incompatibleSignature =
-            Utilities.generateEIP191Signature(recipientPrivateKey, index, users.eve, users.recipient, CLAIM_AMOUNT);
+            generateEIP191Signature(recipientPrivateKey, index, users.eve, users.recipient, CLAIM_AMOUNT);
 
         // Expect revert.
         vm.expectRevert(Errors.SablierMerkleBase_InvalidSignature.selector);
@@ -59,7 +58,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
         setMsgSender(newSigner);
 
         // Generate the signature using the new user's private key.
-        bytes memory signatureFromNewSigner = Utilities.generateEIP712Signature(
+        bytes memory signatureFromNewSigner = generateEIP712Signature(
             newSignerPrivateKey, address(merkleBase), index, users.recipient, users.eve, CLAIM_AMOUNT
         );
 

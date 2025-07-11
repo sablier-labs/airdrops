@@ -8,7 +8,6 @@ import { ISablierMerkleVCA } from "src/interfaces/ISablierMerkleVCA.sol";
 import { MerkleInstant, MerkleLL, MerkleLT, MerkleVCA } from "src/types/DataTypes.sol";
 
 import { Base_Test } from "../Base.t.sol";
-import { Utilities } from "../utils/Utilities.sol";
 
 abstract contract Integration_Test is Base_Test {
     /*//////////////////////////////////////////////////////////////////////////
@@ -125,7 +124,7 @@ abstract contract Integration_Test is Base_Test {
 
     /// @dev Generate the EIP-712 signature to claim with default parameters.
     function generateSignature(address user, address merkleContract) internal view returns (bytes memory) {
-        return Utilities.generateEIP712Signature({
+        return generateEIP712Signature({
             signerPrivateKey: recipientPrivateKey,
             merkleContract: merkleContract,
             index: getIndexInMerkleTree(user),

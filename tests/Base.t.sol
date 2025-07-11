@@ -39,9 +39,10 @@ import { DeployOptimized } from "./utils/DeployOptimized.sol";
 import { Fuzzers } from "./utils/Fuzzers.sol";
 import { LeafData, MerkleBuilder } from "./utils/MerkleBuilder.sol";
 import { Users } from "./utils/Types.sol";
+import { Utilities } from "./utils/Utilities.sol";
 
 /// @notice Base test contract with common logic needed by all tests.
-abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Fuzzers {
+abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Fuzzers, Utilities {
     using MerkleBuilder for uint256[];
 
     /*//////////////////////////////////////////////////////////////////////////
