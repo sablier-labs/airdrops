@@ -1,40 +1,20 @@
 ClaimTo_MerkleVCA_Integration_Test
-├── given campaign start time in future
-│  └── it should revert
-└── given campaign start time not in future
-   ├── given campaign expired
+└── when merkle proof valid
+   ├── when vesting start time in future
    │  └── it should revert
-   └── given campaign not expired
-      ├── given msg value less than fee
-      │  └── it should revert
-      └── given msg value not less than fee
-         ├── given recipient claimed
-         │  └── it should revert
-         └── given recipient not claimed
-            ├── when index not valid
-            │  └── it should revert
-            └── when index valid
-               ├── when amount not valid
-               │  └── it should revert
-               └── when amount valid
-                  ├── when merkle proof not valid
-                  │  └── it should revert
-                  └── when merkle proof valid
-                     ├── when vesting start time in future
-                     │  └── it should revert
-                     ├── when vesting start time in present
-                     │  ├── it should transfer the unlock amount to Eve
-                     │  ├── it should update the claimed status
-                     │  ├── it should update total forgone amount
-                     │  └── it should emit a {ClaimTo} event
-                     └── when vesting start time in past
-                        ├── when vesting end time in past
-                        │  ├── it should transfer the full amount to Eve
-                        │  ├── it should update the claimed status
-                        │  ├── it should not update total forgone amount
-                        │  └── it should emit a {ClaimTo} event
-                        └── when vesting end time not in past
-                           ├── it should transfer a portion of the amount to Eve
-                           ├── it should update the claimed status
-                           ├── it should update total forgone amount
-                           └── it should emit a {ClaimTo} event
+   ├── when vesting start time in present
+   │  ├── it should transfer the unlock amount to Eve
+   │  ├── it should update the claimed status
+   │  ├── it should update total forgone amount
+   │  └── it should emit a {ClaimVCA} event
+   └── when vesting start time in past
+      ├── when vesting end time in past
+      │  ├── it should transfer the full amount to Eve
+      │  ├── it should update the claimed status
+      │  ├── it should not update total forgone amount
+      │  └── it should emit a {ClaimVCA} event
+      └── when vesting end time not in past
+         ├── it should transfer a portion of the amount to Eve
+         ├── it should update the claimed status
+         ├── it should update total forgone amount
+         └── it should emit a {ClaimVCA} event

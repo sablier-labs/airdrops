@@ -68,8 +68,7 @@ abstract contract Shared_Fuzz_Test is Integration_Test {
 
             bytes32[] memory merkleProof = computeMerkleProof(leafData, leaves);
 
-            // If `leafIndex` is even and the campaign being tested is not of the "vca" type, use {claim} function,
-            // otherwise use {claimTo} to claim the airdrop.
+            // If `leafIndex` is even and the campaign type is not "vca", use {claim} function.
             if (leafIndex % 2 == 0 && !Strings.equal(campaignType, "vca")) {
                 // Use a random address as the caller.
                 address caller = vm.randomAddress();
@@ -92,7 +91,9 @@ abstract contract Shared_Fuzz_Test is Integration_Test {
                     amount: leafData.amount,
                     merkleProof: merkleProof
                 });
-            } else {
+            }
+            // Otherwise use {claimTo} to claim the airdrop.
+            else {
                 // Change the caller to the eligible recipient.
                 setMsgSender(leafData.recipient);
 

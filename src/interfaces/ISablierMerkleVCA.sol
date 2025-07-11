@@ -90,8 +90,7 @@ interface ISablierMerkleVCA is ISablierMerkleBase {
     /// Requirements:
     /// - If `recipient` is an EOA, it must match the recovered signer.
     /// - If `recipient` is a contract, it must implement the IERC-1271 interface.
-    /// - The `to` must not be the zero address.
-    /// - Refer to the requirements in {claimTo}.
+    /// - Refer to the requirements in {claimTo} except that there are no restrictions on `msg.sender`.
     ///
     /// Below is the example of typed data to be signed by the airdrop recipient, referenced from
     /// https://docs.metamask.io/wallet/how-to/sign-data/#example.
