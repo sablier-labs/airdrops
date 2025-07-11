@@ -94,7 +94,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         // Bound the vesting start time.
         vestingStartTime = boundUint40(vestingStartTime, 0, getBlockTimestamp() + 1000);
 
-        uint40 streamDuration = fuzzTranchesMerkleLT(vestingStartTime, tranches);
+        fuzzTranchesMerkleLT(vestingStartTime, tranches);
 
         // Set campaign creator as the caller.
         setMsgSender(users.campaignCreator);
@@ -114,7 +114,6 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
             params: params,
             aggregateAmount: aggregateAmount,
             recipientCount: leavesData.length,
-            totalDuration: streamDuration,
             comptroller: address(comptroller),
             minFeeUSD: feeForUser
         });
@@ -131,7 +130,6 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
 
         // It should return the correct schedule tranches.
         assertEq(merkleLT.tranchesWithPercentages(), tranches);
-        assertEq(merkleLT.TRANCHES_TOTAL_PERCENTAGE(), 1e18);
         assertEq(merkleLT.VESTING_START_TIME(), vestingStartTime);
 
         // Fund the MerkleLT contract.

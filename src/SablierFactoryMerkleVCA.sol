@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.8.22;
 
+import { uUNIT } from "@prb/math/src/UD60x18.sol";
 import { ISablierComptroller } from "@sablier/evm-utils/src/interfaces/ISablierComptroller.sol";
+
 import { SablierFactoryMerkleBase } from "./abstracts/SablierFactoryMerkleBase.sol";
 import { ISablierFactoryMerkleVCA } from "./interfaces/ISablierFactoryMerkleVCA.sol";
 import { ISablierMerkleVCA } from "./interfaces/ISablierMerkleVCA.sol";
+import { Errors } from "./libraries/Errors.sol";
 import { SablierMerkleVCA } from "./SablierMerkleVCA.sol";
 import { MerkleVCA } from "./types/DataTypes.sol";
 
@@ -37,6 +40,65 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
     constructor(address initialComptroller) SablierFactoryMerkleBase(initialComptroller) { }
 
     /*//////////////////////////////////////////////////////////////////////////
+                          USER-FACING READ-ONLY FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @inheritdoc ISablierFactoryMerkleVCA
+    function computeMerkleVCA(
+        address campaignCreator,
+        MerkleVCA.ConstructorParams memory params
+    )
+        external
+        view
+        override
+        returns (address merkleVCA)
+    {
+        // Check: user-provided token is not the native token.
+        _forbidNativeToken(address(params.token));
+
+        // Check: vesting start time is not zero.
+        if (params.vestingStartTime == 0) {
+            revert Errors.SablierFactoryMerkleVCA_StartTimeZero();
+        }
+
+        // Check: vesting end time is greater than the vesting start time.
+        if (params.vestingEndTime <= params.vestingStartTime) {
+            revert Errors.SablierFactoryMerkleVCA_VestingEndTimeNotGreaterThanVestingStartTime(
+                params.vestingStartTime, params.vestingEndTime
+            );
+        }
+
+        // Check: campaign expiration is not zero.
+        if (params.expiration == 0) {
+            revert Errors.SablierFactoryMerkleVCA_ExpirationTimeZero();
+        }
+
+        // Check: campaign expiration is at least 1 week later than the vesting end time.
+        if (params.expiration < params.vestingEndTime + 1 weeks) {
+            revert Errors.SablierFactoryMerkleVCA_ExpirationTooEarly(params.vestingEndTime, params.expiration);
+        }
+
+        // Check: unlock percentage is not greater than 100%.
+        if (params.unlockPercentage.unwrap() > uUNIT) {
+            revert Errors.SablierFactoryMerkleVCA_UnlockPercentageTooHigh(params.unlockPercentage);
+        }
+
+        // Hash the parameters to generate a salt.
+        bytes32 salt = keccak256(abi.encodePacked(campaignCreator, comptroller, abi.encode(params)));
+
+        // Get the bytecode hash for the {SablierMerkleVCA} contract.
+        bytes32 bytecodeHash = keccak256(
+            abi.encodePacked(
+                type(SablierMerkleVCA).creationCode, abi.encode(params, campaignCreator, address(comptroller))
+            )
+        );
+
+        // Compute CREATE2 address using: `keccak256(0xff + deployer + salt + bytecodeHash)`.
+        merkleVCA =
+            address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, bytecodeHash)))));
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
                         USER-FACING STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
@@ -49,9 +111,6 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
         external
         returns (ISablierMerkleVCA merkleVCA)
     {
-        // Check: user-provided token is not the native token.
-        _forbidNativeToken(address(params.token));
-
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, comptroller, abi.encode(params)));
 

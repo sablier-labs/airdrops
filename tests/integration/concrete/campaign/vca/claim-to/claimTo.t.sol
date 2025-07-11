@@ -34,7 +34,9 @@ contract ClaimTo_MerkleVCA_Integration_Test is
         merkleVCA = createMerkleVCA(params);
 
         // It should revert.
-        vm.expectRevert(abi.encodeWithSelector(Errors.SablierMerkleVCA_ClaimAmountZero.selector, users.recipient));
+        vm.expectRevert(
+            abi.encodeWithSelector(Errors.SablierFactoryMerkleVCA_ClaimAmountZero.selector, users.recipient)
+        );
 
         // Claim the airdrop.
         merkleVCA.claimTo{ value: AIRDROP_MIN_FEE_WEI }({
