@@ -18,6 +18,7 @@ interface ISablierFactoryMerkleLT is ISablierFactoryMerkleBase {
         ISablierMerkleLT indexed merkleLT,
         MerkleLT.ConstructorParams params,
         uint256 aggregateAmount,
+        uint256 totalDuration,
         uint256 recipientCount,
         address comptroller,
         uint256 minFeeUSD

@@ -54,7 +54,7 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
         returns (address merkleVCA)
     {
         // Check: validate the deployment parameters.
-        _checkDeployment(
+        _checkDeploymentParams(
             address(params.token),
             params.vestingStartTime,
             params.vestingEndTime,
@@ -91,7 +91,7 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
         returns (ISablierMerkleVCA merkleVCA)
     {
         // Check: validate the deployment parameters.
-        _checkDeployment(
+        _checkDeploymentParams(
             address(params.token),
             params.vestingStartTime,
             params.vestingEndTime,
@@ -125,7 +125,7 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev See the documentation for the user-facing functions that call this private function.
-    function _checkDeployment(
+    function _checkDeploymentParams(
         address token,
         uint40 vestingStartTime,
         uint40 vestingEndTime,

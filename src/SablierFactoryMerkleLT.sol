@@ -54,7 +54,7 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
         returns (address merkleLT)
     {
         // Check: validate the deployment parameters.
-        _checkDeployment(address(params.token), params.tranchesWithPercentages);
+        _checkDeploymentParams(address(params.token), params.tranchesWithPercentages);
 
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, comptroller, abi.encode(params)));
@@ -96,7 +96,7 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
         returns (ISablierMerkleLT merkleLT)
     {
         // Check: validate the deployment parameters.
-        _checkDeployment(address(params.token), params.tranchesWithPercentages);
+        _checkDeploymentParams(address(params.token), params.tranchesWithPercentages);
 
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, comptroller, abi.encode(params)));
@@ -108,11 +108,22 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
             comptroller: address(comptroller)
         });
 
+        // Calculate the sum of percentages and durations across all tranches.
+        uint256 count = params.tranchesWithPercentages.length;
+        uint256 totalDuration;
+        for (uint256 i = 0; i < count; ++i) {
+            unchecked {
+                // Safe to use `unchecked` because its only used in the event.
+                totalDuration += params.tranchesWithPercentages[i].duration;
+            }
+        }
+
         // Log the creation of the MerkleLT contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLT({
             merkleLT: merkleLT,
             params: params,
             aggregateAmount: aggregateAmount,
+            totalDuration: totalDuration,
             recipientCount: recipientCount,
             comptroller: address(comptroller),
             minFeeUSD: comptroller.getMinFeeUSDFor({ protocol: ISablierComptroller.Protocol.Airdrops, user: msg.sender })
@@ -135,7 +146,7 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
     }
 
     /// @dev See the documentation for the user-facing functions that call this private function.
-    function _checkDeployment(
+    function _checkDeploymentParams(
         address token,
         MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages
     )
