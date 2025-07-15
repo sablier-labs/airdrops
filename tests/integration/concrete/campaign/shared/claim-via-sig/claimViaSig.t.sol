@@ -20,7 +20,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: address(0),
             amount: CLAIM_AMOUNT,
-            validFrom: getBlockTimestamp(),
+            validFrom: VALID_FROM,
             merkleProof: getMerkleProof(),
             signature: abi.encode(0)
         });
@@ -42,7 +42,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: getBlockTimestamp(),
+            validFrom: VALID_FROM,
             merkleProof: getMerkleProof(),
             signature: incompatibleSignature
         });
@@ -69,7 +69,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: getBlockTimestamp()
+            validFrom: VALID_FROM
         });
 
         // Expect revert.
@@ -80,7 +80,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: getBlockTimestamp(),
+            validFrom: VALID_FROM,
             merkleProof: getMerkleProof(),
             signature: signatureFromNewSigner
         });
@@ -94,7 +94,9 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
         whenSignerSameAsRecipient
     {
         uint256 index = getIndexInMerkleTree();
-        uint40 validFromInFuture = getBlockTimestamp() + 1;
+
+        // Warp to a timestamp before the `VALID_FROM` so that the signature is not valid.
+        vm.warp(VALID_FROM - 1);
 
         // Generate the signature using the new user's private key.
         bytes memory signatureFromNewSigner = Utilities.generateEIP712Signature({
@@ -104,14 +106,12 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: validFromInFuture
+            validFrom: VALID_FROM
         });
 
         // Expect revert.
         vm.expectRevert(
-            abi.encodeWithSelector(
-                Errors.SablierMerkleBase_SignatureNotYetValid.selector, validFromInFuture, getBlockTimestamp()
-            )
+            abi.encodeWithSelector(Errors.SablierMerkleBase_SignatureNotYetValid.selector, VALID_FROM, VALID_FROM - 1)
         );
         claimViaSig({
             msgValue: AIRDROP_MIN_FEE_WEI,
@@ -119,7 +119,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: validFromInFuture,
+            validFrom: VALID_FROM,
             merkleProof: getMerkleProof(),
             signature: signatureFromNewSigner
         });
@@ -152,7 +152,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.smartWalletWithoutIERC1271,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: getBlockTimestamp(),
+            validFrom: VALID_FROM,
             merkleProof: getMerkleProof(users.smartWalletWithoutIERC1271),
             signature: abi.encode(0)
         });

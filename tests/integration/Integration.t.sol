@@ -105,7 +105,7 @@ abstract contract Integration_Test is Base_Test {
             recipient: recipient,
             to: users.eve,
             amount: amount,
-            validFrom: getBlockTimestamp(),
+            validFrom: VALID_FROM,
             merkleProof: getMerkleProof(recipient),
             signature: generateSignature(recipient, address(merkleBase))
         });
@@ -140,7 +140,7 @@ abstract contract Integration_Test is Base_Test {
             recipient: user,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: getBlockTimestamp()
+            validFrom: VALID_FROM
         });
     }
 
