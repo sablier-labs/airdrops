@@ -24,6 +24,19 @@ interface ISablierFactoryMerkleInstant is ISablierFactoryMerkleBase {
     );
 
     /*//////////////////////////////////////////////////////////////////////////
+                                READ-ONLY FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Computes the deterministic address where {SablierMerkleInstant} campaign will be deployed.
+    function computeMerkleInstant(
+        address campaignCreator,
+        MerkleInstant.ConstructorParams memory params
+    )
+        external
+        view
+        returns (address merkleInstant);
+
+    /*//////////////////////////////////////////////////////////////////////////
                               STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 

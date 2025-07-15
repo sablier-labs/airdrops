@@ -24,6 +24,19 @@ interface ISablierFactoryMerkleLL is ISablierFactoryMerkleBase {
     );
 
     /*//////////////////////////////////////////////////////////////////////////
+                                READ-ONLY FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Computes the deterministic address where {SablierMerkleLL} campaign will be deployed.
+    function computeMerkleLL(
+        address campaignCreator,
+        MerkleLL.ConstructorParams memory params
+    )
+        external
+        view
+        returns (address merkleLL);
+
+    /*//////////////////////////////////////////////////////////////////////////
                               STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 

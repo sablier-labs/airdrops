@@ -6,7 +6,6 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ud, UD60x18 } from "@prb/math/src/UD60x18.sol";
 
 import { SablierMerkleBase } from "./abstracts/SablierMerkleBase.sol";
-import { ISablierFactoryMerkleVCA } from "./interfaces/ISablierFactoryMerkleVCA.sol";
 import { ISablierMerkleVCA } from "./interfaces/ISablierMerkleVCA.sol";
 import { Errors } from "./libraries/Errors.sol";
 import { MerkleVCA } from "./types/DataTypes.sol";
@@ -75,9 +74,6 @@ contract SablierMerkleVCA is
             params.token
         )
     {
-        // Peform the checks.
-        ISablierFactoryMerkleVCA(msg.sender).computeMerkleVCA(campaignCreator, params);
-
         // Effect: set the immutable variables.
         UNLOCK_PERCENTAGE = params.unlockPercentage;
         VESTING_END_TIME = params.vestingEndTime;

@@ -44,16 +44,6 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ISablierFactoryMerkleLT
-    function isPercentagesSum100(MerkleLT.TrancheWithPercentage[] calldata tranches)
-        external
-        pure
-        override
-        returns (bool result)
-    {
-        return _calculateTotalPercentage(tranches) == uUNIT;
-    }
-
-    /// @inheritdoc ISablierFactoryMerkleLT
     function computeMerkleLT(
         address campaignCreator,
         MerkleLT.ConstructorParams memory params
@@ -63,16 +53,8 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
         override
         returns (address merkleLT)
     {
-        // Check: user-provided token is not the native token.
-        _forbidNativeToken(address(params.token));
-
-        // Calculate the total percentage.
-        uint64 totalPercentage = _calculateTotalPercentage(params.tranchesWithPercentages);
-
-        // Check: the sum of percentages equals 100%.
-        if (totalPercentage != uUNIT) {
-            revert Errors.SablierFactoryMerkleLT_TotalPercentageNotOneHundred(totalPercentage);
-        }
+        // Check: validate the deployment parameters.
+        _checkDeployment(address(params.token), params.tranchesWithPercentages);
 
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, comptroller, abi.encode(params)));
@@ -89,6 +71,16 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
             address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, bytecodeHash)))));
     }
 
+    /// @inheritdoc ISablierFactoryMerkleLT
+    function isPercentagesSum100(MerkleLT.TrancheWithPercentage[] calldata tranches)
+        external
+        pure
+        override
+        returns (bool result)
+    {
+        return _calculateTotalPercentage(tranches) == uUNIT;
+    }
+
     /*//////////////////////////////////////////////////////////////////////////
                         USER-FACING STATE-CHANGING FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
@@ -103,6 +95,9 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
         override
         returns (ISablierMerkleLT merkleLT)
     {
+        // Check: validate the deployment parameters.
+        _checkDeployment(address(params.token), params.tranchesWithPercentages);
+
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, comptroller, abi.encode(params)));
 
@@ -136,6 +131,26 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
     {
         for (uint256 i = 0; i < tranches.length; ++i) {
             totalPercentage += tranches[i].unlockPercentage.unwrap();
+        }
+    }
+
+    /// @dev See the documentation for the user-facing functions that call this private function.
+    function _checkDeployment(
+        address token,
+        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages
+    )
+        private
+        view
+    {
+        // Check: user-provided token is not the native token.
+        _forbidNativeToken(token);
+
+        // Calculate the total percentage.
+        uint64 totalPercentage = _calculateTotalPercentage(tranchesWithPercentages);
+
+        // Check: the sum of percentages equals 100%.
+        if (totalPercentage != uUNIT) {
+            revert Errors.SablierFactoryMerkleLT_TotalPercentageNotOneHundred(totalPercentage);
         }
     }
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.8.22;
 
-import { uUNIT } from "@prb/math/src/UD60x18.sol";
+import { UD60x18, uUNIT } from "@prb/math/src/UD60x18.sol";
 import { ISablierComptroller } from "@sablier/evm-utils/src/interfaces/ISablierComptroller.sol";
 
 import { SablierFactoryMerkleBase } from "./abstracts/SablierFactoryMerkleBase.sol";
@@ -53,35 +53,14 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
         override
         returns (address merkleVCA)
     {
-        // Check: user-provided token is not the native token.
-        _forbidNativeToken(address(params.token));
-
-        // Check: vesting start time is not zero.
-        if (params.vestingStartTime == 0) {
-            revert Errors.SablierFactoryMerkleVCA_StartTimeZero();
-        }
-
-        // Check: vesting end time is greater than the vesting start time.
-        if (params.vestingEndTime <= params.vestingStartTime) {
-            revert Errors.SablierFactoryMerkleVCA_VestingEndTimeNotGreaterThanVestingStartTime(
-                params.vestingStartTime, params.vestingEndTime
-            );
-        }
-
-        // Check: campaign expiration is not zero.
-        if (params.expiration == 0) {
-            revert Errors.SablierFactoryMerkleVCA_ExpirationTimeZero();
-        }
-
-        // Check: campaign expiration is at least 1 week later than the vesting end time.
-        if (params.expiration < params.vestingEndTime + 1 weeks) {
-            revert Errors.SablierFactoryMerkleVCA_ExpirationTooEarly(params.vestingEndTime, params.expiration);
-        }
-
-        // Check: unlock percentage is not greater than 100%.
-        if (params.unlockPercentage.unwrap() > uUNIT) {
-            revert Errors.SablierFactoryMerkleVCA_UnlockPercentageTooHigh(params.unlockPercentage);
-        }
+        // Check: validate the deployment parameters.
+        _checkDeployment(
+            address(params.token),
+            params.vestingStartTime,
+            params.vestingEndTime,
+            params.expiration,
+            params.unlockPercentage
+        );
 
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, comptroller, abi.encode(params)));
@@ -111,6 +90,15 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
         external
         returns (ISablierMerkleVCA merkleVCA)
     {
+        // Check: validate the deployment parameters.
+        _checkDeployment(
+            address(params.token),
+            params.vestingStartTime,
+            params.vestingEndTime,
+            params.expiration,
+            params.unlockPercentage
+        );
+
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, comptroller, abi.encode(params)));
 
@@ -130,5 +118,51 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
             comptroller: address(comptroller),
             minFeeUSD: comptroller.getMinFeeUSDFor({ protocol: ISablierComptroller.Protocol.Airdrops, user: msg.sender })
         });
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                            PRIVATE READ-ONLY FUNCTIONS
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev See the documentation for the user-facing functions that call this private function.
+    function _checkDeployment(
+        address token,
+        uint40 vestingStartTime,
+        uint40 vestingEndTime,
+        uint40 expiration,
+        UD60x18 unlockPercentage
+    )
+        private
+        view
+    {
+        // Check: user-provided token is not the native token.
+        _forbidNativeToken(token);
+
+        // Check: vesting start time is not zero.
+        if (vestingStartTime == 0) {
+            revert Errors.SablierFactoryMerkleVCA_StartTimeZero();
+        }
+
+        // Check: vesting end time is greater than the vesting start time.
+        if (vestingEndTime <= vestingStartTime) {
+            revert Errors.SablierFactoryMerkleVCA_VestingEndTimeNotGreaterThanVestingStartTime(
+                vestingStartTime, vestingEndTime
+            );
+        }
+
+        // Check: campaign expiration is not zero.
+        if (expiration == 0) {
+            revert Errors.SablierFactoryMerkleVCA_ExpirationTimeZero();
+        }
+
+        // Check: campaign expiration is at least 1 week later than the vesting end time.
+        if (expiration < vestingEndTime + 1 weeks) {
+            revert Errors.SablierFactoryMerkleVCA_ExpirationTooEarly(vestingEndTime, expiration);
+        }
+
+        // Check: unlock percentage is not greater than 100%.
+        if (unlockPercentage.unwrap() > uUNIT) {
+            revert Errors.SablierFactoryMerkleVCA_UnlockPercentageTooHigh(unlockPercentage);
+        }
     }
 }

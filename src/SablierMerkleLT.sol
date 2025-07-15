@@ -7,7 +7,6 @@ import { UD60x18, ud60x18 } from "@prb/math/src/UD60x18.sol";
 import { Lockup, LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol";
 
 import { SablierMerkleLockup } from "./abstracts/SablierMerkleLockup.sol";
-import { ISablierFactoryMerkleLT } from "./interfaces/ISablierFactoryMerkleLT.sol";
 import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
 import { MerkleLT } from "./types/DataTypes.sol";
 /*
@@ -73,9 +72,6 @@ contract SablierMerkleLT is
             params.transferable
         )
     {
-        // Perform the checks.
-        ISablierFactoryMerkleLT(msg.sender).computeMerkleLT(campaignCreator, params);
-
         VESTING_START_TIME = params.vestingStartTime;
 
         // Save the tranches in the contract state.
