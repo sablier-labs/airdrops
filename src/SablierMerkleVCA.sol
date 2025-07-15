@@ -207,7 +207,7 @@ contract SablierMerkleVCA is
 
         // Check: the claim amount is not zero.
         if (claimAmount == 0) {
-            revert Errors.SablierFactoryMerkleVCA_ClaimAmountZero(recipient);
+            revert Errors.SablierMerkleVCA_ClaimAmountZero(recipient);
         }
 
         uint128 forgoneAmount;

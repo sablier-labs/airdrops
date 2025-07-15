@@ -30,9 +30,6 @@ library Errors {
                              SABLIER-FACTORY-MERKLE-VCA
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Thrown when the claim amount is zero.
-    error SablierFactoryMerkleVCA_ClaimAmountZero(address recipient);
-
     /// @notice Thrown if expiration time is within 1 week from the vesting end time.
     error SablierFactoryMerkleVCA_ExpirationTooEarly(uint40 vestingEndTime, uint40 expiration);
 
@@ -94,4 +91,7 @@ library Errors {
 
     /// @notice Thrown when calculating the forgone amount with claim time less than the vesting start time.
     error SablierMerkleVCA_CampaignNotStarted(uint40 claimTime, uint40 vestingStartTime);
+
+    /// @notice Thrown when the claim amount is zero.
+    error SablierMerkleVCA_ClaimAmountZero(address recipient);
 }
