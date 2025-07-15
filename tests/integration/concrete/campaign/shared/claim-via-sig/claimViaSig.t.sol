@@ -20,7 +20,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: address(0),
             amount: CLAIM_AMOUNT,
-            validFrom: uint40(getBlockTimestamp()),
+            validFrom: getBlockTimestamp(),
             merkleProof: getMerkleProof(),
             signature: abi.encode(0)
         });
@@ -31,7 +31,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
 
         // Generate an incompatible signature.
         bytes memory incompatibleSignature = Utilities.generateEIP191Signature(
-            recipientPrivateKey, index, users.eve, users.recipient, CLAIM_AMOUNT, uint40(getBlockTimestamp())
+            recipientPrivateKey, index, users.eve, users.recipient, CLAIM_AMOUNT, getBlockTimestamp()
         );
 
         // Expect revert.
@@ -42,7 +42,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: uint40(getBlockTimestamp()),
+            validFrom: getBlockTimestamp(),
             merkleProof: getMerkleProof(),
             signature: incompatibleSignature
         });
@@ -69,7 +69,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: uint40(getBlockTimestamp())
+            validFrom: getBlockTimestamp()
         });
 
         // Expect revert.
@@ -80,7 +80,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.recipient,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: uint40(getBlockTimestamp()),
+            validFrom: getBlockTimestamp(),
             merkleProof: getMerkleProof(),
             signature: signatureFromNewSigner
         });
@@ -94,7 +94,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
         whenSignerSameAsRecipient
     {
         uint256 index = getIndexInMerkleTree();
-        uint40 validFromInFuture = uint40(getBlockTimestamp() + 1);
+        uint40 validFromInFuture = getBlockTimestamp() + 1;
 
         // Generate the signature using the new user's private key.
         bytes memory signatureFromNewSigner = Utilities.generateEIP712Signature({
@@ -137,7 +137,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
     {
         // The child contract must check that the claim event is emitted.
         // It should mark the index as claimed.
-        // It should transfer the fee from the caller address to the merkle lockup.
+        // It should transfer the fee from the caller address to the comptroller.
     }
 
     function test_RevertWhen_RecipientNotImplementIERC1271Interface()
@@ -152,7 +152,7 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
             recipient: users.smartWalletWithoutIERC1271,
             to: users.eve,
             amount: CLAIM_AMOUNT,
-            validFrom: uint40(getBlockTimestamp()),
+            validFrom: getBlockTimestamp(),
             merkleProof: getMerkleProof(users.smartWalletWithoutIERC1271),
             signature: abi.encode(0)
         });
@@ -168,6 +168,6 @@ abstract contract ClaimViaSig_Integration_Test is Integration_Test {
     {
         // The child contract must check that the claim event is emitted.
         // It should mark the index as claimed.
-        // It should transfer the fee from the caller address to the merkle lockup.
+        // It should transfer the fee from the caller address to the comptroller.
     }
 }

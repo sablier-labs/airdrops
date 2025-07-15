@@ -267,7 +267,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
                     users.recipient,
                     users.eve,
                     CLAIM_AMOUNT,
-                    uint40(getBlockTimestamp()),
+                    getBlockTimestamp(),
                     getMerkleProof(),
                     eip712Signature
                 )

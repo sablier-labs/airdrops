@@ -13,12 +13,12 @@ ClaimViaSig_Integration_Test
    │        │ └── it should revert
    │        └── when signature validity timestamp not in future
    │          ├── it should mark the index as Claimed
-   │          ├── it should transfer the ETH to the merkle lockup
+   │          ├── it should transfer the ETH to the comptroller
    │          └── it should emit claim event
    └── given recipient is contract
       ├── when recipient not implement IERC1271 interface
       │  └── it should revert
       └── when recipient implements IERC1271 interface
          ├── it should mark the index as Claimed
-         ├── it should transfer the ETH to the merkle lockup
+         ├── it should transfer the ETH to the comptroller
          └── it should emit claim event
