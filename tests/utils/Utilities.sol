@@ -5,7 +5,7 @@ import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/Mes
 import { StdConstants } from "forge-std/src/StdConstants.sol";
 import { SignatureHash } from "src/libraries/SignatureHash.sol";
 
-abstract contract Utilities {
+library Utilities {
     /// @notice Computes the EIP-712 domain separator for the provided Merkle contract.
     function computeEIP712DomainSeparator(address merkleContract) internal view returns (bytes32) {
         return keccak256(
