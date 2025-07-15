@@ -63,7 +63,7 @@ contract SablierFactoryMerkleInstant is ISablierFactoryMerkleInstant, SablierFac
             )
         );
 
-        // Compute CREATE2 address using: `keccak256(0xff + deployer + salt + bytecodeHash)`.
+        // Compute CREATE2 address using `keccak256(0xff + deployer + salt + bytecodeHash)`.
         merkleInstant =
             address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, bytecodeHash)))));
     }

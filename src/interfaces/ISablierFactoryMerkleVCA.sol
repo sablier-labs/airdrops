@@ -28,7 +28,7 @@ interface ISablierFactoryMerkleVCA is ISablierFactoryMerkleBase {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Computes the deterministic address where {SablierMerkleVCA} campaign will be deployed.
-    /// @dev See requirements in `createMerkleVCA`.
+    /// @dev Reverts if the requirements from {createMerkleVCA} are not met.
     function computeMerkleVCA(
         address campaignCreator,
         MerkleVCA.ConstructorParams memory params

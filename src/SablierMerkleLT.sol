@@ -9,6 +9,7 @@ import { Lockup, LockupTranched } from "@sablier/lockup/src/types/DataTypes.sol"
 import { SablierMerkleLockup } from "./abstracts/SablierMerkleLockup.sol";
 import { ISablierMerkleLT } from "./interfaces/ISablierMerkleLT.sol";
 import { MerkleLT } from "./types/DataTypes.sol";
+
 /*
 
 ███████╗ █████╗ ██████╗ ██╗     ██╗███████╗██████╗

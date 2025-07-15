@@ -37,7 +37,7 @@ interface ISablierFactoryMerkleLT is ISablierFactoryMerkleBase {
         returns (bool result);
 
     /// @notice Computes the deterministic address where {SablierMerkleLT} campaign will be deployed.
-    /// @dev See requirements in `createMerkleLT`.
+    /// @dev Reverts if the requirements from {createMerkleLT} are not met.
     function computeMerkleLT(
         address campaignCreator,
         MerkleLT.ConstructorParams memory params
