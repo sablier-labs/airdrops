@@ -124,7 +124,7 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
                             PRIVATE READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev See the documentation for the user-facing functions that call this private function.
+    /// @dev Validate the deployment parameters.
     function _checkDeploymentParams(
         address token,
         uint40 vestingStartTime,

@@ -53,8 +53,11 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
         override
         returns (address merkleLT)
     {
-        // Check: validate the deployment parameters.
-        _checkDeploymentParams(address(params.token), params.tranchesWithPercentages);
+        // Calculate the total percentage.
+        (, uint64 totalPercentage) = _calculateTrancheTotals(params.tranchesWithPercentages);
+
+        // Check: validate the user-provided token and the total percentage.
+        _checkDeploymentParams(address(params.token), totalPercentage);
 
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(campaignCreator, comptroller, abi.encode(params)));
@@ -78,7 +81,11 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
         override
         returns (bool result)
     {
-        return _calculateTotalPercentage(tranches) == uUNIT;
+        // Calculate the total percentage.
+        (, uint64 totalPercentage) = _calculateTrancheTotals(tranches);
+
+        // Return true if the sum of percentages equals 100%.
+        return totalPercentage == uUNIT;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -95,8 +102,11 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
         override
         returns (ISablierMerkleLT merkleLT)
     {
-        // Check: validate the deployment parameters.
-        _checkDeploymentParams(address(params.token), params.tranchesWithPercentages);
+        // Calculate the total percentage.
+        (uint256 totalDuration, uint64 totalPercentage) = _calculateTrancheTotals(params.tranchesWithPercentages);
+
+        // Check: validate the user-provided token and the total percentage.
+        _checkDeploymentParams(address(params.token), totalPercentage);
 
         // Hash the parameters to generate a salt.
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, comptroller, abi.encode(params)));
@@ -107,16 +117,6 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
             campaignCreator: msg.sender,
             comptroller: address(comptroller)
         });
-
-        // Calculate the sum of percentages and durations across all tranches.
-        uint256 count = params.tranchesWithPercentages.length;
-        uint256 totalDuration;
-        for (uint256 i = 0; i < count; ++i) {
-            unchecked {
-                // Safe to use `unchecked` because its only used in the event.
-                totalDuration += params.tranchesWithPercentages[i].duration;
-            }
-        }
 
         // Log the creation of the MerkleLT contract, including some metadata that is not stored on-chain.
         emit CreateMerkleLT({
@@ -134,30 +134,27 @@ contract SablierFactoryMerkleLT is ISablierFactoryMerkleLT, SablierFactoryMerkle
                             PRIVATE READ-ONLY FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev See the documentation for the user-facing functions that call this private function.
-    function _calculateTotalPercentage(MerkleLT.TrancheWithPercentage[] memory tranches)
+    /// @dev Calculate the total duration and total percentage of the tranches.
+    function _calculateTrancheTotals(MerkleLT.TrancheWithPercentage[] memory tranches)
         private
         pure
-        returns (uint64 totalPercentage)
+        returns (uint256 totalDuration, uint64 totalPercentage)
     {
-        for (uint256 i = 0; i < tranches.length; ++i) {
+        uint256 count = tranches.length;
+        for (uint256 i = 0; i < count; ++i) {
             totalPercentage += tranches[i].unlockPercentage.unwrap();
+
+            // Safe to use `unchecked` for total duration because its only used in the event.
+            unchecked {
+                totalDuration += tranches[i].duration;
+            }
         }
     }
 
-    /// @dev See the documentation for the user-facing functions that call this private function.
-    function _checkDeploymentParams(
-        address token,
-        MerkleLT.TrancheWithPercentage[] memory tranchesWithPercentages
-    )
-        private
-        view
-    {
-        // Check: user-provided token is not the native token.
+    /// @dev Validate the token and the total percentage.
+    function _checkDeploymentParams(address token, uint64 totalPercentage) private view {
+        // Check: token is not the native token.
         _forbidNativeToken(token);
-
-        // Calculate the total percentage.
-        uint64 totalPercentage = _calculateTotalPercentage(tranchesWithPercentages);
 
         // Check: the sum of percentages equals 100%.
         if (totalPercentage != uUNIT) {
