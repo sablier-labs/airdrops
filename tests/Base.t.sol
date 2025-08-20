@@ -34,14 +34,14 @@ import { SablierMerkleLT } from "src/SablierMerkleLT.sol";
 import { SablierMerkleVCA } from "src/SablierMerkleVCA.sol";
 import { MerkleInstant, MerkleLL, MerkleLT, MerkleVCA } from "src/types/DataTypes.sol";
 import { Assertions } from "./utils/Assertions.sol";
-import { Constants } from "./utils/Constants.sol";
 import { DeployOptimized } from "./utils/DeployOptimized.sol";
 import { Fuzzers } from "./utils/Fuzzers.sol";
 import { LeafData, MerkleBuilder } from "./utils/MerkleBuilder.sol";
 import { Users } from "./utils/Types.sol";
+import { Utils } from "./utils/Utils.sol";
 
 /// @notice Base test contract with common logic needed by all tests.
-abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, Fuzzers {
+abstract contract Base_Test is Assertions, DeployOptimized, Fuzzers, Merkle, Utils {
     using MerkleBuilder for uint256[];
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -216,8 +216,9 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         recipients[3] = users.unknownRecipient;
 
         for (uint256 i = 0; i < RECIPIENT_COUNT; ++i) {
-            leafData[i] =
-                LeafData({ index: getIndexInMerkleTree(recipients[i]), recipient: recipients[i], amount: CLAIM_AMOUNT });
+            leafData[i] = LeafData({
+                index: getIndexInMerkleTree(recipients[i]), recipient: recipients[i], amount: CLAIM_AMOUNT
+            });
         }
 
         MerkleBuilder.computeLeaves(LEAVES, leafData);
@@ -346,9 +347,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         }
 
         return vm.computeCreate2Address({
-            salt: salt,
-            initCodeHash: creationBytecodeHash,
-            deployer: address(factoryMerkleInstant)
+            salt: salt, initCodeHash: creationBytecodeHash, deployer: address(factoryMerkleInstant)
         });
     }
 
@@ -437,9 +436,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             );
         }
         return vm.computeCreate2Address({
-            salt: salt,
-            initCodeHash: creationBytecodeHash,
-            deployer: address(factoryMerkleLL)
+            salt: salt, initCodeHash: creationBytecodeHash, deployer: address(factoryMerkleLL)
         });
     }
 
@@ -538,9 +535,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         }
 
         return vm.computeCreate2Address({
-            salt: salt,
-            initCodeHash: creationBytecodeHash,
-            deployer: address(factoryMerkleLT)
+            salt: salt, initCodeHash: creationBytecodeHash, deployer: address(factoryMerkleLT)
         });
     }
 
@@ -718,9 +713,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             );
         }
         return vm.computeCreate2Address({
-            salt: salt,
-            initCodeHash: creationBytecodeHash,
-            deployer: address(factoryMerkleVCA)
+            salt: salt, initCodeHash: creationBytecodeHash, deployer: address(factoryMerkleVCA)
         });
     }
 
