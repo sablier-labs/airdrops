@@ -33,8 +33,8 @@ abstract contract Fork_Test is Base_Test {
     //////////////////////////////////////////////////////////////////////////*/
 
     function setUp() public virtual override {
-        // Fork Ethereum Mainnet at a specific block number.
-        vm.createSelectFork({ blockNumber: 23_478_567, urlOrAlias: "ethereum" });
+        // Fork Ethereum Mainnet at the latest block number.
+        vm.createSelectFork({ urlOrAlias: "ethereum" });
 
         // Load deployed addresses from Ethereum Mainnet.
         comptroller = ISablierComptroller(0x0000008ABbFf7a84a2fE09f9A9b74D3BC2072399);
@@ -43,7 +43,7 @@ abstract contract Fork_Test is Base_Test {
         factoryMerkleLT = ISablierFactoryMerkleLT(0x336d464276e2c7C76927d975Ef866Df8a7Ecf8DD);
         factoryMerkleVCA = ISablierFactoryMerkleVCA(0x91FdBd7077d615f951a0defA81Ec30Bfd68dbd8D);
 
-        // TODO: Update lockup address.
-        lockup = ISablierLockup(0x7C01AA3783577E15fD7e272443D44B92d5b21056);
+        // Update lockup address.
+        lockup = ISablierLockup(0xcF8ce57fa442ba50aCbC57147a62aD03873FfA73);
     }
 }
