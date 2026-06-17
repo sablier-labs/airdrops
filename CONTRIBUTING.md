@@ -2,8 +2,7 @@
 
 # Contributing
 
-Feel free to dive in! [Open](../../issues/new) an issue, [start](../../discussions/new) a discussion or submit a PR. For
-any informal concerns or feedback, please join our [Discord server](https://discord.gg/bSwRCwWRsT).
+Feel free to dive in! [Open](../../issues/new) an issue, [start](../../discussions/new) a discussion or submit a PR.
 
 Contributions are welcome by anyone interested in writing more tests, improving readability, optimizing for gas
 efficiency, or extending the protocol via new features.

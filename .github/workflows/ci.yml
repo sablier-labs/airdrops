@@ -49,13 +49,3 @@ jobs:
       foundry-profile: "test-optimized"
       match-path: "tests/fork/**/*.sol"
       name: "Fork tests"
-
-  coverage:
-    needs: ["build"]
-    if: needs.build.outputs.cache-status != 'primary'
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-    uses: "sablier-labs/gha-utils/.github/workflows/forge-coverage.yml@main"
-    with:
-      match-path: "tests/integration/**/*.sol"
-      via-ir-minimum: true

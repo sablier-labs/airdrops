@@ -3,14 +3,10 @@
 This repository is no longer maintained, and it is archived. The latest version of the airdrops protocol can be viewed
 in the [evm-monorepo](https://github.com/sablier-labs/evm-monorepo/tree/main/airdrops).
 
-# Sablier Airdrops [![Github Actions][gha-badge]][gha] [![Coverage][codecov-badge]][codecov] [![Foundry][foundry-badge]][foundry] [![Discord][discord-badge]][discord] [![Twitter][twitter-badge]][twitter]
+# Sablier Airdrops [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![Twitter][twitter-badge]][twitter]
 
 [gha]: https://github.com/sablier-labs/airdrops/actions
 [gha-badge]: https://github.com/sablier-labs/airdrops/actions/workflows/ci.yml/badge.svg
-[codecov]: https://codecov.io/gh/sablier-labs/airdrops
-[codecov-badge]: https://codecov.io/gh/sablier-labs/airdrops/branch/main/graph/badge.svg
-[discord]: https://discord.gg/bSwRCwWRsT
-[discord-badge]: https://img.shields.io/discord/659709894315868191
 [foundry]: https://getfoundry.sh
 [foundry-badge]: https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg
 [twitter-badge]: https://img.shields.io/twitter/follow/Sablier
@@ -54,8 +50,7 @@ For any security-related concerns, please refer to the [SECURITY](./SECURITY.md)
 ## Contributing
 
 Contributions are welcome. [Open](https://github.com/sablier-labs/airdrops/issues/new) an issue,
-[start](https://github.com/sablier-labs/airdrops/discussions/new) a discussion, or submit a PR. For informal concerns or
-feedback, join our [Discord server](https://discord.gg/bSwRCwWRsT).
+[start](https://github.com/sablier-labs/airdrops/discussions/new) a discussion, or submit a PR.
 
 See [`AGENTS.md`](./AGENTS.md) for the development workflow, commands, and conventions.
 
