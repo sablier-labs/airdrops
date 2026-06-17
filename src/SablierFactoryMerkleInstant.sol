@@ -90,9 +90,7 @@ contract SablierFactoryMerkleInstant is ISablierFactoryMerkleInstant, SablierFac
 
         // Deploy the MerkleInstant contract with CREATE2.
         merkleInstant = new SablierMerkleInstant{ salt: salt }({
-            params: params,
-            campaignCreator: msg.sender,
-            comptroller: address(comptroller)
+            params: params, campaignCreator: msg.sender, comptroller: address(comptroller)
         });
 
         // Log the creation of the MerkleInstant contract, including some metadata that is not stored on-chain.
@@ -102,7 +100,9 @@ contract SablierFactoryMerkleInstant is ISablierFactoryMerkleInstant, SablierFac
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
             comptroller: address(comptroller),
-            minFeeUSD: comptroller.getMinFeeUSDFor({ protocol: ISablierComptroller.Protocol.Airdrops, user: msg.sender })
+            minFeeUSD: comptroller.getMinFeeUSDFor({
+                protocol: ISablierComptroller.Protocol.Airdrops, user: msg.sender
+            })
         });
     }
 }

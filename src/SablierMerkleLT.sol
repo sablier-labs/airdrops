@@ -196,8 +196,7 @@ contract SablierMerkleLT is
 
             // The first tranche is precomputed because it is needed in the for loop below.
             tranches[0] = LockupTranched.Tranche({
-                amount: calculatedAmount,
-                timestamp: vestingStartTime + tranchesWithPct[0].duration
+                amount: calculatedAmount, timestamp: vestingStartTime + tranchesWithPct[0].duration
             });
 
             // Iterate over each tranche to calculate its timestamp and unlock amount.
@@ -207,8 +206,7 @@ contract SablierMerkleLT is
                 calculatedAmountsSum += calculatedAmount;
 
                 tranches[i] = LockupTranched.Tranche({
-                    amount: calculatedAmount,
-                    timestamp: tranches[i - 1].timestamp + tranchesWithPct[i].duration
+                    amount: calculatedAmount, timestamp: tranches[i - 1].timestamp + tranchesWithPct[i].duration
                 });
             }
         }

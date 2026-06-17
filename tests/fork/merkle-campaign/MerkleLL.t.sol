@@ -117,10 +117,7 @@ abstract contract MerkleLL_Fork_Test is MerkleBase_Fork_Test {
                 viaSig: false
             });
             expectCallToTransferFrom({
-                token: FORK_TOKEN,
-                from: address(merkleLL),
-                to: address(lockup),
-                value: vars.leafToClaim.amount
+                token: FORK_TOKEN, from: address(merkleLL), to: address(lockup), value: vars.leafToClaim.amount
             });
         }
 
@@ -164,8 +161,7 @@ abstract contract MerkleLL_Fork_Test is MerkleBase_Fork_Test {
                 cancelable: STREAM_CANCELABLE,
                 transferable: STREAM_TRANSFERABLE,
                 timestamps: Lockup.Timestamps({
-                    start: expectedVestingStartTime,
-                    end: expectedVestingStartTime + VESTING_TOTAL_DURATION
+                    start: expectedVestingStartTime, end: expectedVestingStartTime + VESTING_TOTAL_DURATION
                 }),
                 shape: STREAM_SHAPE
             });

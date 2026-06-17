@@ -104,9 +104,7 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
 
         // Deploy the MerkleVCA contract with CREATE2.
         merkleVCA = new SablierMerkleVCA{ salt: salt }({
-            params: params,
-            campaignCreator: msg.sender,
-            comptroller: address(comptroller)
+            params: params, campaignCreator: msg.sender, comptroller: address(comptroller)
         });
 
         // Log the creation of the MerkleVCA contract, including some metadata that is not stored on-chain.
@@ -116,7 +114,9 @@ contract SablierFactoryMerkleVCA is ISablierFactoryMerkleVCA, SablierFactoryMerk
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
             comptroller: address(comptroller),
-            minFeeUSD: comptroller.getMinFeeUSDFor({ protocol: ISablierComptroller.Protocol.Airdrops, user: msg.sender })
+            minFeeUSD: comptroller.getMinFeeUSDFor({
+                protocol: ISablierComptroller.Protocol.Airdrops, user: msg.sender
+            })
         });
     }
 

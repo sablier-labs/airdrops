@@ -188,11 +188,7 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
         if (expectedVestingStartTime + merkleLL.VESTING_TOTAL_DURATION() <= getBlockTimestamp()) {
             vm.expectEmit({ emitter: address(merkleLL) });
             emit ISablierMerkleLL.ClaimLLWithTransfer({
-                index: leafData.index,
-                recipient: leafData.recipient,
-                amount: leafData.amount,
-                to: to,
-                viaSig: false
+                index: leafData.index, recipient: leafData.recipient, amount: leafData.amount, to: to, viaSig: false
             });
 
             expectCallToTransfer({ token: dai, to: to, value: leafData.amount });
@@ -210,7 +206,9 @@ contract MerkleLL_Fuzz_Test is Shared_Fuzz_Test {
                 viaSig: false
             });
 
-            expectCallToTransferFrom({ token: dai, from: address(merkleLL), to: address(lockup), value: leafData.amount });
+            expectCallToTransferFrom({
+                token: dai, from: address(merkleLL), to: address(lockup), value: leafData.amount
+            });
         }
     }
 }

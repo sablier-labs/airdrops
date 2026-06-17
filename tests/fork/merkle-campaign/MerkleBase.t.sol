@@ -124,9 +124,7 @@ abstract contract MerkleBase_Fork_Test is Fork_Test {
             expectCallToTransfer({ token: FORK_TOKEN, to: params.campaignCreator, value: vars.clawbackAmount });
             vm.expectEmit({ emitter: address(merkleBase) });
             emit ISablierMerkleBase.Clawback({
-                to: params.campaignCreator,
-                admin: params.campaignCreator,
-                amount: vars.clawbackAmount
+                to: params.campaignCreator, admin: params.campaignCreator, amount: vars.clawbackAmount
             });
             merkleBase.clawback({ to: params.campaignCreator, amount: vars.clawbackAmount });
         }

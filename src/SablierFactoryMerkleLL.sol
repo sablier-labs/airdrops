@@ -90,9 +90,7 @@ contract SablierFactoryMerkleLL is ISablierFactoryMerkleLL, SablierFactoryMerkle
 
         // Deploy the MerkleLL contract with CREATE2.
         merkleLL = new SablierMerkleLL{ salt: salt }({
-            params: params,
-            campaignCreator: msg.sender,
-            comptroller: address(comptroller)
+            params: params, campaignCreator: msg.sender, comptroller: address(comptroller)
         });
 
         // Log the creation of the MerkleLL contract, including some metadata that is not stored on-chain.
@@ -102,7 +100,9 @@ contract SablierFactoryMerkleLL is ISablierFactoryMerkleLL, SablierFactoryMerkle
             aggregateAmount: aggregateAmount,
             recipientCount: recipientCount,
             comptroller: address(comptroller),
-            minFeeUSD: comptroller.getMinFeeUSDFor({ protocol: ISablierComptroller.Protocol.Airdrops, user: msg.sender })
+            minFeeUSD: comptroller.getMinFeeUSDFor({
+                protocol: ISablierComptroller.Protocol.Airdrops, user: msg.sender
+            })
         });
     }
 }

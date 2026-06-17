@@ -156,11 +156,7 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
         if (vestingEndTime <= getBlockTimestamp()) {
             vm.expectEmit({ emitter: address(merkleLT) });
             emit ISablierMerkleLT.ClaimLTWithTransfer({
-                index: leafData.index,
-                recipient: leafData.recipient,
-                amount: leafData.amount,
-                to: to,
-                viaSig: false
+                index: leafData.index, recipient: leafData.recipient, amount: leafData.amount, to: to, viaSig: false
             });
 
             expectCallToTransfer({ token: dai, to: to, value: leafData.amount });
@@ -178,7 +174,9 @@ contract MerkleLT_Fuzz_Test is Shared_Fuzz_Test {
                 viaSig: false
             });
 
-            expectCallToTransferFrom({ token: dai, from: address(merkleLT), to: address(lockup), value: leafData.amount });
+            expectCallToTransferFrom({
+                token: dai, from: address(merkleLT), to: address(lockup), value: leafData.amount
+            });
         }
     }
 }

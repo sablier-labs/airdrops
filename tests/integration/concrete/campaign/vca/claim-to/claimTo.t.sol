@@ -38,10 +38,7 @@ contract ClaimTo_MerkleVCA_Integration_Test is
 
         // Claim the airdrop.
         merkleVCA.claimTo{ value: AIRDROP_MIN_FEE_WEI }({
-            index: getIndexInMerkleTree(),
-            to: users.eve,
-            fullAmount: CLAIM_AMOUNT,
-            merkleProof: getMerkleProof()
+            index: getIndexInMerkleTree(), to: users.eve, fullAmount: CLAIM_AMOUNT, merkleProof: getMerkleProof()
         });
     }
 

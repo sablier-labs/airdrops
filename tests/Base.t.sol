@@ -216,8 +216,9 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         recipients[3] = users.unknownRecipient;
 
         for (uint256 i = 0; i < RECIPIENT_COUNT; ++i) {
-            leafData[i] =
-                LeafData({ index: getIndexInMerkleTree(recipients[i]), recipient: recipients[i], amount: CLAIM_AMOUNT });
+            leafData[i] = LeafData({
+                index: getIndexInMerkleTree(recipients[i]), recipient: recipients[i], amount: CLAIM_AMOUNT
+            });
         }
 
         MerkleBuilder.computeLeaves(LEAVES, leafData);
@@ -346,9 +347,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         }
 
         return vm.computeCreate2Address({
-            salt: salt,
-            initCodeHash: creationBytecodeHash,
-            deployer: address(factoryMerkleInstant)
+            salt: salt, initCodeHash: creationBytecodeHash, deployer: address(factoryMerkleInstant)
         });
     }
 
@@ -437,9 +436,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             );
         }
         return vm.computeCreate2Address({
-            salt: salt,
-            initCodeHash: creationBytecodeHash,
-            deployer: address(factoryMerkleLL)
+            salt: salt, initCodeHash: creationBytecodeHash, deployer: address(factoryMerkleLL)
         });
     }
 
@@ -538,9 +535,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
         }
 
         return vm.computeCreate2Address({
-            salt: salt,
-            initCodeHash: creationBytecodeHash,
-            deployer: address(factoryMerkleLT)
+            salt: salt, initCodeHash: creationBytecodeHash, deployer: address(factoryMerkleLT)
         });
     }
 
@@ -718,9 +713,7 @@ abstract contract Base_Test is Assertions, Constants, DeployOptimized, Merkle, F
             );
         }
         return vm.computeCreate2Address({
-            salt: salt,
-            initCodeHash: creationBytecodeHash,
-            deployer: address(factoryMerkleVCA)
+            salt: salt, initCodeHash: creationBytecodeHash, deployer: address(factoryMerkleVCA)
         });
     }
 

@@ -105,8 +105,7 @@ contract SablierMerkleVCA is
         // Check: the claim time is not less than the vesting start time.
         if (claimTime < VESTING_START_TIME) {
             revert Errors.SablierMerkleVCA_VestingNotStarted({
-                claimTime: claimTime,
-                vestingStartTime: VESTING_START_TIME
+                claimTime: claimTime, vestingStartTime: VESTING_START_TIME
             });
         }
 
