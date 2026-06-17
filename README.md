@@ -16,7 +16,8 @@ in the [evm-monorepo](https://github.com/sablier-labs/evm-monorepo/tree/main/air
 [twitter-badge]: https://img.shields.io/twitter/follow/Sablier
 [twitter]: https://x.com/Sablier
 
-In-depth documentation is available at [docs.sablier.com](https://docs.sablier.com).
+Sablier Airdrops is a collection of EVM smart contracts for distributing ERC-20 tokens via Merkle trees, with optional
+vesting through the Sablier Lockup protocol.
 
 ## Introduction
 
@@ -36,50 +37,12 @@ multiple distributions options, including:
 Sablier Airdrops also offer flexibility in configuring the Airdrop campaigns. For example, you can choose between
 whether you want vesting to begin at the same time for all users (absolute) or at the time of each claim (relative).
 
-## Documentation
+## Links
 
-For guides and technical details, check out the [Sablier documentation](https://docs.sablier.com).
-
-## Getting started
-
-### Install
-
-You can install this repo using either Node.js or Git Submodules.
-
-#### Node.js
-
-This is the recommended approach.
-
-Install this repo using your favorite package manager, e.g., with Bun:
-
-```shell
-bun add @sablier/airdrops
-```
-
-#### Git Submodules
-
-This installation method is not recommended, but it is available for those who prefer it.
-
-First, install the submodule using Forge:
-
-```shell
-forge install sablier-labs/airdrops
-```
-
-Second, install the project's dependencies:
-
-```shell
-forge install sablier-labs/evm-utils@v1.0.0 OpenZeppelin/openzeppelin-contracts@v5.3.0 PaulRBerg/prb-math@v4.1.0 sablier-labs/lockup@v3.0.0
-```
-
-### Branching Tree Technique
-
-You may notice that some test files are accompanied by `.tree` files. This is because we are using Branching Tree
-Technique and [Bulloak](https://bulloak.dev/).
-
-### Deployments
-
-The list of all deployment addresses can be found [here](https://docs.sablier.com/guides/airdrops/deployments).
+- [Documentation](https://docs.sablier.com) — guides and technical details
+- [Deployment addresses](https://docs.sablier.com/guides/airdrops/deployments)
+- [Audits](https://github.com/sablier-labs/audits)
+- [Changelog](./CHANGELOG.md)
 
 ## Security
 
@@ -90,11 +53,11 @@ For any security-related concerns, please refer to the [SECURITY](./SECURITY.md)
 
 ## Contributing
 
-Feel free to dive in! [Open](https://github.com/sablier-labs/airdrops/issues/new) an issue,
-[start](https://github.com/sablier-labs/airdrops/discussions/new) a discussion or submit a PR. For any informal concerns
-or feedback, please join our [Discord server](https://discord.gg/bSwRCwWRsT).
+Contributions are welcome. [Open](https://github.com/sablier-labs/airdrops/issues/new) an issue,
+[start](https://github.com/sablier-labs/airdrops/discussions/new) a discussion, or submit a PR. For informal concerns or
+feedback, join our [Discord server](https://discord.gg/bSwRCwWRsT).
 
-For guidance on how to create PRs, see the [CONTRIBUTING](./CONTRIBUTING.md) guide.
+See [`AGENTS.md`](./AGENTS.md) for the development workflow, commands, and conventions.
 
 ## License
 
