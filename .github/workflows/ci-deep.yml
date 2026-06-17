@@ -1,8 +1,9 @@
 name: "CI Deep"
 
 on:
-  schedule:
-    - cron: "0 3 * * 0" # at 3:00am UTC every Sunday
+  # Cron disabled; run manually via workflow_dispatch.
+  # schedule:
+  #   - cron: "0 3 * * 0" # at 3:00am UTC every Sunday
   workflow_dispatch:
     inputs:
       unitFuzzRuns:

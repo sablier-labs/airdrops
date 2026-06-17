@@ -1,8 +1,10 @@
 name: "CI Slither"
 
 on:
-  schedule:
-    - cron: "0 3 * * 0" # at 3:00am UTC every Sunday
+  # Cron disabled; run manually via workflow_dispatch.
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "0 3 * * 0" # at 3:00am UTC every Sunday
 
 jobs:
   check:
