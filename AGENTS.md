@@ -12,7 +12,7 @@ protocol.
 
 - **Solidity** `0.8.29` (`evm_version = shanghai`), built with **Foundry**/Forge.
 - **Bun** — package manager (`bun.lock`).
-- **Just** — command runner; recipes are imported from `@sablier/devkit` (`just/evm.just`).
+- **Just** — command runner; recipes are imported from `@prb/devkit` (`just/evm.just`).
 - **Solhint** + **Prettier** + **forge fmt** — linting and formatting.
 - **Bulloak** — Branching Tree Technique (BTT) test scaffolding (`.tree` files).
 - **Slither** — static analysis (`slither.config.json`).
@@ -22,7 +22,7 @@ protocol.
 
 ## Commands
 
-Recipes come from `@sablier/devkit`; run `just --list` for the full inventory. Aliases in parentheses.
+Recipes come from `@prb/devkit`; run `just --list` for the full inventory. Aliases in parentheses.
 
 ### Setup
 
