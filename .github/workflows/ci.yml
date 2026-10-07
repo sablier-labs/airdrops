@@ -15,9 +15,13 @@ on:
 jobs:
   lint:
     uses: "sablier-labs/gha-utils/.github/workflows/full-check.yml@main"
+    with:
+      foundry-version: "v1.8.5"
 
   build:
     uses: "sablier-labs/gha-utils/.github/workflows/forge-build.yml@main"
+    with:
+      foundry-version: "v1.8.5"
 
   test-bulloak:
     needs: ["build"]
@@ -32,6 +36,7 @@ jobs:
     if: needs.build.outputs.cache-status != 'primary'
     uses: "sablier-labs/gha-utils/.github/workflows/forge-test.yml@main"
     with:
+      foundry-version: "v1.8.5"
       foundry-fuzz-runs: 2000
       foundry-profile: "test-optimized"
       match-path: "tests/integration/**/*.sol"
@@ -45,6 +50,7 @@ jobs:
       ROUTEMESH_API_KEY: ${{ secrets.ROUTEMESH_API_KEY }}
     uses: "sablier-labs/gha-utils/.github/workflows/forge-test.yml@main"
     with:
+      foundry-version: "v1.8.5"
       foundry-fuzz-runs: 20
       foundry-profile: "test-optimized"
       match-path: "tests/fork/**/*.sol"

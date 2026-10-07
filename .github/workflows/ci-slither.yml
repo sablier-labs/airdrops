@@ -9,6 +9,8 @@ on:
 jobs:
   check:
     uses: "sablier-labs/gha-utils/.github/workflows/full-check.yml@main"
+    with:
+      foundry-version: "v1.8.5"
 
   slither-analyze:
     needs: "check"

@@ -9,9 +9,13 @@ on:
 jobs:
   check:
     uses: "sablier-labs/gha-utils/.github/workflows/full-check.yml@main"
+    with:
+      foundry-version: "v1.8.5"
 
   build:
     uses: "sablier-labs/gha-utils/.github/workflows/forge-build.yml@main"
+    with:
+      foundry-version: "v1.8.5"
 
   test-fork:
     needs: ["check", "build"]
@@ -20,6 +24,7 @@ jobs:
       ROUTEMESH_API_KEY: ${{ secrets.ROUTEMESH_API_KEY }}
     uses: "sablier-labs/gha-utils/.github/workflows/forge-test.yml@main"
     with:
+      foundry-version: "v1.8.5"
       foundry-fuzz-runs: 100
       foundry-profile: "test-optimized"
       fuzz-seed: true
@@ -31,6 +36,7 @@ jobs:
     needs: ["build"]
     uses: "sablier-labs/gha-utils/.github/workflows/forge-test.yml@main"
     with:
+      foundry-version: "v1.8.5"
       foundry-profile: "test-optimized"
       match-path: "tests/utils/**/*.sol"
       name: "Utils tests"
